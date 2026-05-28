@@ -2087,20 +2087,223 @@
                                             ></i>
                                         </div>
                                         <div class="collapse-content hidden">
-                                            <div
-                                                class="text-xs text-gray-500 bg-gray-50 p-3 rounded border border-gray-100"
-                                            >
-                                                <p class="mb-1">
-                                                    • 特殊商品需提供相关资质证明
-                                                </p>
-                                                <p class="mb-1">
-                                                    •
-                                                    请确保商品符合目标市场的法律法规
-                                                </p>
-                                                <p>
-                                                    •
-                                                    如涉及食品、化妆品、医疗器械等，请上传相关许可证
-                                                </p>
+                                            <div class="space-y-4">
+                                                <!-- 合规类别 -->
+                                                <div>
+                                                    <label class="form-label-sm"
+                                                        >合规类别（可多选）</label
+                                                    >
+                                                    <div
+                                                        class="flex flex-wrap gap-2"
+                                                    >
+                                                        <label
+                                                            class="flex items-center gap-1 text-xs px-2 py-1 border border-gray-200 rounded hover:border-purple-300 cursor-pointer"
+                                                            ><input
+                                                                type="checkbox"
+                                                                class="text-purple-600"
+                                                            />
+                                                            食品</label
+                                                        >
+                                                        <label
+                                                            class="flex items-center gap-1 text-xs px-2 py-1 border border-gray-200 rounded hover:border-purple-300 cursor-pointer"
+                                                            ><input
+                                                                type="checkbox"
+                                                                class="text-purple-600"
+                                                            />
+                                                            化妆品</label
+                                                        >
+                                                        <label
+                                                            class="flex items-center gap-1 text-xs px-2 py-1 border border-gray-200 rounded hover:border-purple-300 cursor-pointer"
+                                                            ><input
+                                                                type="checkbox"
+                                                                class="text-purple-600"
+                                                            />
+                                                            医疗器械</label
+                                                        >
+                                                        <label
+                                                            class="flex items-center gap-1 text-xs px-2 py-1 border border-gray-200 rounded hover:border-purple-300 cursor-pointer"
+                                                            ><input
+                                                                type="checkbox"
+                                                                class="text-purple-600"
+                                                            />
+                                                            电子产品
+                                                            (CCC)</label
+                                                        >
+                                                        <label
+                                                            class="flex items-center gap-1 text-xs px-2 py-1 border border-gray-200 rounded hover:border-purple-300 cursor-pointer"
+                                                            ><input
+                                                                type="checkbox"
+                                                                class="text-purple-600"
+                                                            />
+                                                            儿童玩具</label
+                                                        >
+                                                        <label
+                                                            class="flex items-center gap-1 text-xs px-2 py-1 border border-gray-200 rounded hover:border-purple-300 cursor-pointer"
+                                                            ><input
+                                                                type="checkbox"
+                                                                class="text-purple-600"
+                                                            />
+                                                            保健品</label
+                                                        >
+                                                        <label
+                                                            class="flex items-center gap-1 text-xs px-2 py-1 border border-gray-200 rounded hover:border-purple-300 cursor-pointer"
+                                                            ><input
+                                                                type="checkbox"
+                                                                class="text-purple-600"
+                                                            />
+                                                            农药/化工</label
+                                                        >
+                                                        <label
+                                                            class="flex items-center gap-1 text-xs px-2 py-1 border border-gray-200 rounded hover:border-purple-300 cursor-pointer"
+                                                            ><input
+                                                                type="checkbox"
+                                                                class="text-purple-600"
+                                                            />
+                                                            其他</label
+                                                        >
+                                                    </div>
+                                                </div>
+
+                                                <!-- 证书/许可证 -->
+                                                <div
+                                                    class="grid grid-cols-1 md:grid-cols-2 gap-3"
+                                                >
+                                                    <div>
+                                                        <label
+                                                            class="form-label-sm"
+                                                            >合规证书编号</label
+                                                        >
+                                                        <input
+                                                            type="text"
+                                                            class="form-input-sm"
+                                                            placeholder="例: CCC-2026-XXXXX"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label
+                                                            class="form-label-sm"
+                                                            >许可证号</label
+                                                        >
+                                                        <input
+                                                            type="text"
+                                                            class="form-input-sm"
+                                                            placeholder="例: 食品经营许可证编号"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <!-- 资质证明上传 -->
+                                                <div>
+                                                    <label class="form-label-sm"
+                                                        >资质证明文件</label
+                                                    >
+                                                    <div
+                                                        class="border border-dashed border-gray-300 rounded-lg p-3 text-center cursor-pointer hover:border-purple-400 hover:bg-purple-50 transition"
+                                                        onclick="
+                                                            document
+                                                                .getElementById(
+                                                                    'complianceCertUpload',
+                                                                )
+                                                                .click()
+                                                        "
+                                                    >
+                                                        <i
+                                                            class="fas fa-cloud-upload-alt text-purple-400 text-lg mb-1"
+                                                        ></i>
+                                                        <p
+                                                            class="text-xs text-gray-500"
+                                                        >
+                                                            点击上传资质文件（JPG、PDF，最多5个）
+                                                        </p>
+                                                        <input
+                                                            type="file"
+                                                            id="complianceCertUpload"
+                                                            accept=".jpg,.jpeg,.png,.pdf"
+                                                            multiple
+                                                            style="
+                                                                display: none;
+                                                            "
+                                                        />
+                                                    </div>
+                                                    <div
+                                                        id="certFileList"
+                                                        class="flex gap-2 mt-2"
+                                                    ></div>
+                                                </div>
+
+                                                <!-- 危险品与出口合规 -->
+                                                <div
+                                                    class="grid grid-cols-1 md:grid-cols-2 gap-3"
+                                                >
+                                                    <div>
+                                                        <label
+                                                            class="form-label-sm"
+                                                            >危险品标识</label
+                                                        >
+                                                        <select
+                                                            class="form-select-sm"
+                                                        >
+                                                            <option value="">
+                                                                非危险品
+                                                            </option>
+                                                            <option>
+                                                                含锂电池
+                                                            </option>
+                                                            <option>
+                                                                易燃液体
+                                                            </option>
+                                                            <option>
+                                                                腐蚀性物质
+                                                            </option>
+                                                            <option>
+                                                                磁性物质
+                                                            </option>
+                                                            <option>
+                                                                其他危险品
+                                                            </option>
+                                                        </select>
+                                                    </div>
+                                                    <div>
+                                                        <label
+                                                            class="form-label-sm"
+                                                            >出口合规认证</label
+                                                        >
+                                                        <select
+                                                            class="form-select-sm"
+                                                        >
+                                                            <option value="">
+                                                                不适用
+                                                            </option>
+                                                            <option>
+                                                                FDA 认证
+                                                            </option>
+                                                            <option>
+                                                                CE 认证
+                                                            </option>
+                                                            <option>
+                                                                RoHS 认证
+                                                            </option>
+                                                            <option>
+                                                                MSDS 报告
+                                                            </option>
+                                                            <option>
+                                                                其他
+                                                            </option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <!-- 合规提示 -->
+                                                <div
+                                                    class="text-xs text-gray-500 bg-amber-50 p-2.5 rounded border border-amber-200 flex items-start gap-2"
+                                                >
+                                                    <i
+                                                        class="fas fa-exclamation-circle text-amber-500 mt-0.5"
+                                                    ></i>
+                                                    <span>
+                                                        特殊商品需提供相关资质证明，请确保商品符合目标市场的法律法规。如涉及食品、化妆品、医疗器械等，请上传相关许可证。
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
