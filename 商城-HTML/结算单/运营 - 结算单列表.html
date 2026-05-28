@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>结算列表 · 周期汇总视图 · 店铺/单号筛选</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: #f0f2f7;
+            padding: 28px 24px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* 头部 */
+        .header-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px 32px;
+            margin-bottom: 28px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+            border: 1px solid #eef2f8;
+        }
+
+        .header-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .header-title h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1a2c3e;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: #e1f3e8;
+            color: #1a7b5c;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+            padding-top: 16px;
+            border-top: 1px solid #edf2f6;
+            color: #5f6f8a;
+            font-size: 0.9rem;
+        }
+
+        /* 汇总卡片 */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px 24px;
+            border: 1px solid #eef2f8;
+            transition: all 0.2s;
+        }
+
+        .summary-card.highlight {
+            background: #fef9ef;
+            border-left: 4px solid #f5a623;
+        }
+
+        .summary-label {
+            font-size: 0.85rem;
+            color: #6c7c9a;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e2f41;
+            line-height: 1.2;
+        }
+
+        .summary-desc {
+            font-size: 0.75rem;
+            color: #98a9c2;
+            margin-top: 10px;
+        }
+
+        .positive {
+            color: #1e7e5c;
+        }
+
+        .negative {
+            color: #cb3b3b;
+        }
+
+        /* 操作栏 - 增强筛选 */
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+            background: white;
+            padding: 16px 20px;
+            border-radius: 20px;
+            border: 1px solid #eef2f8;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .year-select, .quarter-select, .shop-select {
+            padding: 8px 20px;
+            border-radius: 32px;
+            border: 1px solid #dce3ec;
+            background: white;
+            font-size: 0.85rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .search-input {
+            padding: 8px 18px;
+            border-radius: 32px;
+            border: 1px solid #dce3ec;
+            font-size: 0.85rem;
+            width: 220px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: #2e6b8c;
+        }
+
+        .btn {
+            padding: 8px 24px;
+            border-radius: 32px;
+            border: 1px solid #d0dae8;
+            background: white;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+        .btn-primary {
+            background: #2e6b8c;
+            border-color: #2e6b8c;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1f556f;
+        }
+
+        .btn-outline:hover {
+            background: #f0f5fd;
+        }
+
+        .clear-search {
+            background: #f5f7fa;
+            border-color: #dce3ec;
+            color: #5f6f8a;
+        }
+
+        /* 结算列表表格 */
+        .table-wrapper {
+            background: white;
+            border-radius: 20px;
+            border: 1px solid #eef2f8;
+            overflow-x: auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .settlement-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1100px;
+        }
+
+        .settlement-table th {
+            text-align: left;
+            padding: 18px 16px;
+            background: #fafcff;
+            font-weight: 600;
+            color: #2c3f5c;
+            border-bottom: 1px solid #eef2f8;
+            font-size: 0.85rem;
+        }
+
+        .settlement-table td {
+            padding: 16px 16px;
+            border-bottom: 1px solid #f5f7fc;
+            font-size: 0.85rem;
+            color: #2a3a55;
+        }
+
+        .settlement-table tr:hover td {
+            background: #fafdff;
+        }
+
+        .settlement-table tr.total-row {
+            background: #f8fafd;
+            font-weight: 600;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .period-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: #eef2fa;
+            color: #2c6b8f;
+        }
+
+        .status-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-settled {
+            background: #e1f3e8;
+            color: #1a7b5c;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #c07c2e;
+        }
+
+        .status-audit {
+            background: #eef2fa;
+            color: #5f6f8a;
+        }
+
+        .amount-positive {
+            color: #1e7e5c;
+            font-weight: 600;
+        }
+
+        .amount-negative {
+            color: #cb3b3b;
+            font-weight: 600;
+        }
+
+        .link-btn {
+            background: none;
+            border: none;
+            color: #2e6b8c;
+            cursor: pointer;
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            border-radius: 16px;
+        }
+
+        .link-btn:hover {
+            background: #eef3fc;
+        }
+
+        .footer-note {
+            margin-top: 20px;
+            background: #f8fafd;
+            border-radius: 16px;
+            padding: 14px 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            font-size: 0.8rem;
+            color: #6c7c9a;
+        }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 28px;
+            padding: 28px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #8a99b0;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .detail-item {
+            padding: 12px;
+            background: #f8fafd;
+            border-radius: 16px;
+        }
+
+        .detail-label {
+            font-size: 0.7rem;
+            color: #8a99b0;
+            margin-bottom: 6px;
+        }
+
+        .detail-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1a2c3e;
+        }
+
+        .shop-badge {
+            background: #e9ecef;
+            padding: 4px 12px;
+            border-radius: 24px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-block;
+            color: #3a5670;
+        }
+
+        @media (max-width: 700px) {
+            .summary-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .header-title h1 {
+                font-size: 1.4rem;
+            }
+            .search-input {
+                width: 160px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 头部 -->
+    <div class="header-card">
+        <div class="header-title">
+            <h1>
+                📋 结算列表
+                <span class="status-badge">全部已结算</span>
+            </h1>
+            <div>
+                <button class="btn btn-outline" id="exportBtn">📎 导出列表</button>
+                <button class="btn btn-primary" id="refreshBtn" style="margin-left: 8px;">⟳ 刷新</button>
+            </div>
+        </div>
+        <div class="header-stats">
+            <span>🏢 商户：XX商贸有限公司（多店铺）</span>
+            <span>📅 数据范围：2025年Q1 - 2026年Q1</span>
+            <span>💰 累计结算：¥189,432.50</span>
+        </div>
+    </div>
+
+    <!-- 汇总卡片 - 整体统计 -->
+    <div class="summary-grid">
+        <div class="summary-card">
+            <div class="summary-label">📊 总结算期数</div>
+            <div class="summary-value" id="statPeriodCount">18期</div>
+            <div class="summary-desc">近12个月 · 周结/月结</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-label">💰 累计订单应收</div>
+            <div class="summary-value positive" id="statOrderTotal">¥0.00</div>
+            <div class="summary-desc">所有结算周期订单总额</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-label">🔻 累计抵扣总额</div>
+            <div class="summary-value negative" id="statDeductionTotal">-¥0.00</div>
+            <div class="summary-desc">售后/处罚/佣金等</div>
+        </div>
+        <div class="summary-card highlight">
+            <div class="summary-label">💵 累计实结金额</div>
+            <div class="summary-value" id="statNetTotal">¥0.00</div>
+            <div class="summary-desc">已转入余额</div>
+        </div>
+    </div>
+
+    <!-- 增强筛选栏：增加店铺下拉 + 结算单号模糊搜索 -->
+    <div class="action-bar">
+        <div class="filter-group">
+            <select id="yearFilter" class="year-select">
+                <option value="all">全部年份</option>
+                <option value="2026">2026年</option>
+                <option value="2025">2025年</option>
+                <option value="2024">2024年</option>
+            </select>
+            <select id="quarterFilter" class="quarter-select">
+                <option value="all">全部季度</option>
+                <option value="1">第一季度 (1-3月)</option>
+                <option value="2">第二季度 (4-6月)</option>
+                <option value="3">第三季度 (7-9月)</option>
+                <option value="4">第四季度 (10-12月)</option>
+            </select>
+            <select id="shopFilter" class="shop-select">
+                <option value="all">全部店铺</option>
+                <option value="XX旗舰店">🏬 XX旗舰店</option>
+                <option value="XX专营店">👗 XX专营店</option>
+                <option value="XX集合店">📱 XX集合店</option>
+                <option value="XX生活馆">🏠 XX生活馆</option>
+            </select>
+            <input type="text" id="searchSettlementNo" class="search-input" placeholder="🔍 结算单号" autocomplete="off">
+            <button id="clearSearchBtn" class="btn clear-search">✖ 清空筛选</button>
+        </div>
+        <div>
+            <span style="color:#6c7c9a; font-size:0.8rem;">共 <span id="totalCount">18</span> 个结算周期</span>
+        </div>
+    </div>
+
+    <!-- 结算列表表格 -->
+    <div class="table-wrapper">
+        <table class="settlement-table" id="settlementTable">
+            <thead>
+                <tr>
+                    <th>结算单号</th>
+                    <th>店铺名称</th>
+                    <th>结算周期</th>
+                    <th>周期类型</th>
+                    <th>订单应收(¥)</th>
+                    <th>抵扣总额(¥)</th>
+                    <th>奖励总额(¥)</th>
+                    <th>实结金额(¥)</th>
+                    <th>结算状态</th>
+                    <th>结算时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- 动态渲染 -->
+            </tbody>
+            <tfoot id="tableFoot" style="background: #f8fafd; font-weight: 600;">
+                <!-- 合计行 -->
+            </tfoot>
+        </table>
+    </div>
+
+    <!-- 底部说明 -->
+    <div class="footer-note">
+        <span>📌 结算周期说明：每期结算数据基于订单确认收货后的7天账期，抵扣项包含平台佣金、技术服务费、售后赔付、违规处罚等。</span>
+        <button class="link-btn" id="viewDetailBtn" style="font-size:0.8rem;">📖 查看结算规则</button>
+    </div>
+</div>
+
+
+<script>
+    // ==================== 增强数据：加入店铺字段（多店铺模拟） ====================
+    const settlementPeriods = [
+        { id: "ST-20260315-022", shop: "旗舰店", period: "2026-03-15 ~ 2026-03-21", type: "周结", orderAmount: 7232.00, deductionAmount: 2086.00, rewardAmount: 150.00, netAmount: 5296.00, status: "已结算", statusClass: "settled", settleDate: "2026-03-23" },
+        { id: "ST-20260308-021", shop: "服饰专营店", period: "2026-03-08 ~ 2026-03-14", type: "周结", orderAmount: 12450.00, deductionAmount: 3420.00, rewardAmount: 200.00, netAmount: 9230.00, status: "已结算", statusClass: "settled", settleDate: "2026-03-16" },
+        { id: "ST-20260301-020", shop: "数码集合店", period: "2026-03-01 ~ 2026-03-07", type: "周结", orderAmount: 9870.00, deductionAmount: 2560.00, rewardAmount: 120.00, netAmount: 7430.00, status: "已结算", statusClass: "settled", settleDate: "2026-03-09" },
+        { id: "ST-20260222-019", shop: "旗舰店", period: "2026-02-22 ~ 2026-02-28", type: "周结", orderAmount: 15680.00, deductionAmount: 4230.00, rewardAmount: 180.00, netAmount: 11630.00, status: "已结算", statusClass: "settled", settleDate: "2026-03-02" },
+        { id: "ST-20260215-018", shop: "家居生活馆", period: "2026-02-15 ~ 2026-02-21", type: "周结", orderAmount: 14230.00, deductionAmount: 3890.00, rewardAmount: 95.00, netAmount: 10435.00, status: "已结算", statusClass: "settled", settleDate: "2026-02-23" },
+        { id: "ST-20260208-017", shop: "服饰专营店", period: "2026-02-08 ~ 2026-02-14", type: "周结", orderAmount: 18900.00, deductionAmount: 5210.00, rewardAmount: 320.00, netAmount: 14010.00, status: "已结算", statusClass: "settled", settleDate: "2026-02-16" },
+        { id: "ST-20260201-016", shop: "数码集合店", period: "2026-02-01 ~ 2026-02-07", type: "周结", orderAmount: 11280.00, deductionAmount: 2950.00, rewardAmount: 85.00, netAmount: 8415.00, status: "已结算", statusClass: "settled", settleDate: "2026-02-09" },
+        { id: "ST-20260125-015", shop: "旗舰店", period: "2026-01-25 ~ 2026-01-31", type: "周结", orderAmount: 20340.00, deductionAmount: 5870.00, rewardAmount: 450.00, netAmount: 14920.00, status: "已结算", statusClass: "settled", settleDate: "2026-02-02" },
+        { id: "ST-20260118-014", shop: "家居生活馆", period: "2026-01-18 ~ 2026-01-24", type: "周结", orderAmount: 8760.00, deductionAmount: 2340.00, rewardAmount: 60.00, netAmount: 6480.00, status: "已结算", statusClass: "settled", settleDate: "2026-01-26" },
+        { id: "ST-20260111-013", shop: "服饰专营店", period: "2026-01-11 ~ 2026-01-17", type: "周结", orderAmount: 15420.00, deductionAmount: 4120.00, rewardAmount: 210.00, netAmount: 11510.00, status: "已结算", statusClass: "settled", settleDate: "2026-01-19" },
+        { id: "ST-20260104-012", shop: "数码集合店", period: "2026-01-04 ~ 2026-01-10", type: "周结", orderAmount: 13150.00, deductionAmount: 3480.00, rewardAmount: 135.00, netAmount: 9805.00, status: "已结算", statusClass: "settled", settleDate: "2026-01-12" },
+        { id: "ST-20251228-011", shop: "旗舰店", period: "2025-12-28 ~ 2026-01-03", type: "周结", orderAmount: 24560.00, deductionAmount: 6890.00, rewardAmount: 680.00, netAmount: 18350.00, status: "已结算", statusClass: "settled", settleDate: "2026-01-05" },
+        { id: "ST-20251221-010", shop: "家居生活馆", period: "2025-12-21 ~ 2025-12-27", type: "周结", orderAmount: 17890.00, deductionAmount: 4670.00, rewardAmount: 245.00, netAmount: 13465.00, status: "已结算", statusClass: "settled", settleDate: "2025-12-29" },
+        { id: "ST-20251214-009", shop: "服饰专营店", period: "2025-12-14 ~ 2025-12-20", type: "周结", orderAmount: 11230.00, deductionAmount: 2980.00, rewardAmount: 90.00, netAmount: 8340.00, status: "已结算", statusClass: "settled", settleDate: "2025-12-22" },
+        { id: "ST-20251207-008", shop: "数码集合店", period: "2025-12-07 ~ 2025-12-13", type: "周结", orderAmount: 9860.00, deductionAmount: 2670.00, rewardAmount: 110.00, netAmount: 7300.00, status: "已结算", statusClass: "settled", settleDate: "2025-12-15" },
+        { id: "ST-20251130-007", shop: "旗舰店", period: "2025-11-30 ~ 2025-12-06", type: "周结", orderAmount: 14320.00, deductionAmount: 3890.00, rewardAmount: 175.00, netAmount: 10605.00, status: "已结算", statusClass: "settled", settleDate: "2025-12-08" },
+        { id: "ST-20251123-006", shop: "家居生活馆", period: "2025-11-23 ~ 2025-11-29", type: "周结", orderAmount: 10890.00, deductionAmount: 2910.00, rewardAmount: 82.00, netAmount: 8062.00, status: "已结算", statusClass: "settled", settleDate: "2025-12-01" },
+        { id: "ST-20251116-005", shop: "服饰专营店", period: "2025-11-16 ~ 2025-11-22", type: "周结", orderAmount: 12560.00, deductionAmount: 3350.00, rewardAmount: 128.00, netAmount: 9338.00, status: "已结算", statusClass: "settled", settleDate: "2025-11-24" }
+    ];
+
+    let currentList = [...settlementPeriods];
+
+    // 综合筛选：年份+季度+店铺+结算单号模糊搜索（支持店铺名模糊匹配）
+    function applyFilter() {
+        const yearVal = document.getElementById('yearFilter').value;
+        const quarterVal = document.getElementById('quarterFilter').value;
+        const shopVal = document.getElementById('shopFilter').value;
+        const searchKeyword = document.getElementById('searchSettlementNo').value.trim().toLowerCase();
+
+        currentList = settlementPeriods.filter(item => {
+            // 年份筛选
+            const yearMatch = item.period.match(/(\d{4})/);
+            const year = yearMatch ? yearMatch[1] : '';
+            if (yearVal !== 'all' && year !== yearVal) return false;
+            
+            // 季度筛选
+            if (quarterVal !== 'all') {
+                const monthMatch = item.period.match(/-(\d{2})-/);
+                let month = 1;
+                if (monthMatch) {
+                    month = parseInt(monthMatch[1]);
+                }
+                const quarter = Math.ceil(month / 3);
+                if (quarter !== parseInt(quarterVal)) return false;
+            }
+            
+            // 店铺精确筛选（下拉）
+            if (shopVal !== 'all' && item.shop !== shopVal) return false;
+            
+            // 新增：结算单号 / 店铺名模糊搜索 (单号包含关键字 或 店铺名包含关键字)
+            if (searchKeyword !== '') {
+                const idMatch = item.id.toLowerCase().includes(searchKeyword);
+                const shopMatch = item.shop.toLowerCase().includes(searchKeyword);
+                if (!idMatch && !shopMatch) return false;
+            }
+            
+            return true;
+        });
+        
+        renderTableAndStats();
+        document.getElementById('totalCount').innerText = currentList.length;
+    }
+
+    // 更新顶部汇总卡片（基于筛选后数据）
+    function updateSummaryStats() {
+        let totalOrder = 0, totalDeduction = 0, totalReward = 0, totalNet = 0;
+        currentList.forEach(item => {
+            totalOrder += item.orderAmount;
+            totalDeduction += item.deductionAmount;
+            totalReward += item.rewardAmount;
+            totalNet += item.netAmount;
+        });
+        document.getElementById('statPeriodCount').innerText = currentList.length + '期';
+        document.getElementById('statOrderTotal').innerHTML = `¥${totalOrder.toFixed(2)}`;
+        document.getElementById('statDeductionTotal').innerHTML = `-¥${totalDeduction.toFixed(2)}`;
+        document.getElementById('statNetTotal').innerHTML = `¥${totalNet.toFixed(2)}`;
+        // 额外处理正负样式
+        const netSpan = document.getElementById('statNetTotal');
+        netSpan.style.color = totalNet >= 0 ? '#1e7e5c' : '#cb3b3b';
+    }
+
+    function getStatusClass(status) {
+        if (status === '已结算') return 'status-settled';
+        if (status === '待结算') return 'status-pending';
+        return 'status-audit';
+    }
+
+    function renderTableAndStats() {
+        const tbody = document.getElementById('tableBody');
+        if (currentList.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding:48px;">暂无匹配的结算数据，请调整筛选条件</td></tr>';
+            document.getElementById('tableFoot').innerHTML = '';
+            updateSummaryStats();
+            return;
+        }
+
+        let totalOrder = 0, totalDeduction = 0, totalReward = 0, totalNet = 0;
+        let rows = '';
+        
+        currentList.forEach((item) => {
+            totalOrder += item.orderAmount;
+            totalDeduction += item.deductionAmount;
+            totalReward += item.rewardAmount;
+            totalNet += item.netAmount;
+            
+            const statusClass = getStatusClass(item.status);
+            
+            rows += `<tr>
+                <td><strong style="color:#2e6b8c;">${escapeHtml(item.id)}</strong></td>
+                <td><span class="shop-badge">🏪 ${escapeHtml(item.shop)}</span></td>
+                <td><span class="period-badge">${escapeHtml(item.period)}</span></td>
+                <td>${escapeHtml(item.type)}</td>
+                <td class="amount-positive">¥${item.orderAmount.toFixed(2)}</td>
+                <td class="amount-negative">-¥${item.deductionAmount.toFixed(2)}</td>
+                <td class="amount-positive">+¥${item.rewardAmount.toFixed(2)}</td>
+                <td><strong style="color:#1e7e5c;">¥${item.netAmount.toFixed(2)}</strong></td>
+                <td><span class="status-tag ${statusClass}">${item.status}</span></td>
+                <td>${item.settleDate}</td>
+                <td><button class="link-btn" onclick='showDetail(${JSON.stringify(item).replace(/'/g, "&#39;")})'>查看详情</button></td>
+            </tr>`;
+        });
+        
+        tbody.innerHTML = rows;
+        
+        // 合计脚注
+        const footHtml = `<tr class="total-row">
+            <td colspan="3" style="text-align:right; font-weight:600;">合计 (筛选后)</td>
+            <td class="amount-positive">¥${totalOrder.toFixed(2)}</td>
+            <td class="amount-negative">-¥${totalDeduction.toFixed(2)}</td>
+            <td class="amount-positive">+¥${totalReward.toFixed(2)}</td>
+            <td style="color:#1e7e5c; font-weight:700;">¥${totalNet.toFixed(2)}</td>
+            <td colspan="4"></td>
+        </tr>`;
+        document.getElementById('tableFoot').innerHTML = footHtml;
+        
+        updateSummaryStats();
+    }
+    
+    // 简单防XSS
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
+    }
+
+    // 导出CSV (包含店铺字段)
+    function exportToCSV() {
+        const headers = ['结算单号', '店铺名称', '结算周期', '周期类型', '订单应收(元)', '抵扣总额(元)', '奖励总额(元)', '实结金额(元)', '结算状态', '结算时间'];
+        const rows = currentList.map(item => [
+            item.id,
+            item.shop,
+            item.period,
+            item.type,
+            item.orderAmount.toFixed(2),
+            item.deductionAmount.toFixed(2),
+            item.rewardAmount.toFixed(2),
+            item.netAmount.toFixed(2),
+            item.status,
+            item.settleDate
+        ]);
+        
+        const csvContent = [headers, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+        const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `结算列表_${new Date().toISOString().slice(0,10)}.csv`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+    }
+
+    // 模态框详情展示（含店铺字段）
+    window.showDetail = function(item) {
+        const modalContent = document.getElementById('modalDetailContent');
+        modalContent.innerHTML = `
+            <div class="detail-grid">
+                <div class="detail-item"><div class="detail-label">结算单号</div><div class="detail-value">${item.id}</div></div>
+                <div class="detail-item"><div class="detail-label">店铺名称</div><div class="detail-value">${item.shop}</div></div>
+                <div class="detail-item"><div class="detail-label">结算周期</div><div class="detail-value">${item.period}</div></div>
+                <div class="detail-item"><div class="detail-label">周期类型</div><div class="detail-value">${item.type}</div></div>
+                <div class="detail-item"><div class="detail-label">订单应收</div><div class="detail-value positive">¥${item.orderAmount.toFixed(2)}</div></div>
+                <div class="detail-item"><div class="detail-label">抵扣总额</div><div class="detail-value negative">-¥${item.deductionAmount.toFixed(2)}</div></div>
+                <div class="detail-item"><div class="detail-label">奖励总额</div><div class="detail-value positive">+¥${item.rewardAmount.toFixed(2)}</div></div>
+                <div class="detail-item"><div class="detail-label">实结金额</div><div class="detail-value" style="color:#1e7e5c;">¥${item.netAmount.toFixed(2)}</div></div>
+                <div class="detail-item"><div class="detail-label">结算状态</div><div class="detail-value">${item.status}</div></div>
+                <div class="detail-item"><div class="detail-label">结算时间</div><div class="detail-value">${item.settleDate}</div></div>
+            </div>
+            <div style="background:#f2f6fc; border-radius:16px; padding:12px;"><span style="font-size:0.7rem;">💡 抵扣构成: 平台佣金+技术服务费+售后赔付等</span></div>
+        `;
+        document.getElementById('detailModal').style.display = 'flex';
+    };
+
+    window.closeModal = function(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    };
+
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    };
+
+    // 清空所有筛选（年份、季度、店铺、搜索框）
+    function resetFilters() {
+        document.getElementById('yearFilter').value = 'all';
+        document.getElementById('quarterFilter').value = 'all';
+        document.getElementById('shopFilter').value = 'all';
+        document.getElementById('searchSettlementNo').value = '';
+        applyFilter();
+    }
+
+    // 绑定事件
+    document.getElementById('yearFilter').addEventListener('change', applyFilter);
+    document.getElementById('quarterFilter').addEventListener('change', applyFilter);
+    document.getElementById('shopFilter').addEventListener('change', applyFilter);
+    document.getElementById('searchSettlementNo').addEventListener('input', applyFilter);
+    document.getElementById('clearSearchBtn').addEventListener('click', resetFilters);
+    document.getElementById('exportBtn').addEventListener('click', exportToCSV);
+    document.getElementById('refreshBtn').addEventListener('click', () => {
+        resetFilters();
+    });
+    document.getElementById('viewDetailBtn').addEventListener('click', () => {
+        alert('结算规则：\n• 结算周期为每周一至周日\n• 订单确认收货后7天进入结算\n• 抵扣项包含平台佣金(5%)、技术服务费、售后赔付、违规处罚等\n• 奖励包含大促补贴、物流达标奖励等');
+    });
+
+    // 初始化渲染
+    applyFilter();
+</script>
+</body>
+</html>

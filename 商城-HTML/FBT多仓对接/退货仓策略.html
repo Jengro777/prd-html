@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>退货仓策略引擎 | 逆向物流智能路由 + 残品/次品货位选择</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f0f4f8;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 28px 24px;
+            color: #0f2b3d;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .hero h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #c0392b, #e67e22);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .hero p {
+            color: #5e7a93;
+            font-size: 0.9rem;
+            margin-top: 6px;
+            border-left: 3px solid #e67e22;
+            padding-left: 14px;
+        }
+        .badge-return {
+            background: #fee2e2;
+            color: #c0392b;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .grid-2col {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+        @media (max-width: 860px) {
+            .grid-2col { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02), 0 2px 6px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e6edf4;
+            overflow: hidden;
+        }
+        .card-header {
+            padding: 18px 24px 12px 24px;
+            border-bottom: 1px solid #ecf3fa;
+            background: #fefefe;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .card-header h3 {
+            font-weight: 600;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .help-icon {
+            cursor: pointer;
+            background: #eef2fa;
+            width: 24px;
+            height: 24px;
+            border-radius: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: #e67e22;
+            transition: 0.1s;
+        }
+        .help-icon:hover { background: #e0e9f3; transform: scale(1.02);}
+        .card-body { padding: 20px 24px 24px; }
+
+        .factor-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #eff4fa;
+        }
+        .factor-meta { flex: 2; }
+        .factor-name { font-weight: 600; font-size: 0.95rem; margin-bottom: 3px; }
+        .factor-desc { font-size: 0.7rem; color: #7e95b2; }
+        .factor-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .factor-control input[type="range"] { width: 150px; }
+        .factor-control input[type="number"] {
+            width: 70px;
+            padding: 6px 8px;
+            border: 1px solid #cfdfed;
+            border-radius: 40px;
+            text-align: center;
+        }
+        .weight-badge { min-width: 48px; font-weight: 700; color: #e67e22; }
+        .weight-total-card {
+            background: #fff5eb;
+            border-radius: 20px;
+            padding: 12px 18px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .total-value { font-weight: 800; font-size: 1.2rem; }
+        .valid { color: #2b7e3a; }
+        .invalid { color: #c0392b; }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .setting-card {
+            background: linear-gradient(135deg, #fefaf5 0%, #fff8f0 100%);
+            border-radius: 20px;
+            padding: 18px;
+            border: 1px solid #ffe0cc;
+            transition: all 0.2s;
+        }
+        .setting-card:hover {
+            border-color: #e67e22;
+            box-shadow: 0 4px 12px rgba(230, 126, 34, 0.08);
+        }
+        .setting-icon { font-size: 1.8rem; margin-bottom: 12px; }
+        .setting-label { font-size: 0.7rem; font-weight: 600; color: #b85c1a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .setting-value { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+        .setting-value input { width: 110px; padding: 10px 14px; border-radius: 40px; border: 1px solid #ffd9c0; background: white; font-weight: 600; font-size: 1rem; color: #c0392b; }
+        .setting-value .unit { font-size: 0.7rem; color: #b8865b; }
+        .setting-desc { font-size: 0.6rem; color: #b8865b; line-height: 1.4; }
+
+        .fallback-section {
+            background: #fff0e6;
+            border-radius: 20px;
+            padding: 18px;
+            margin-top: 16px;
+            border: 2px solid #e67e22;
+            position: relative;
+        }
+        .fallback-badge {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #e67e22;
+            color: white;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+        .fallback-select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 40px;
+            border: 1px solid #ffd9c0;
+            background: white;
+            font-size: 0.85rem;
+            margin-top: 12px;
+            cursor: pointer;
+        }
+        .fallback-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 12px;
+            padding: 10px;
+            background: white;
+            border-radius: 16px;
+            font-size: 0.7rem;
+            color: #b85c1a;
+            flex-wrap: wrap;
+        }
+        .return-region-card {
+            background: #ffffff;
+            border: 1px solid #ffe0cc;
+            border-radius: 24px;
+            padding: 18px;
+            margin-bottom: 18px;
+            transition: all 0.2s;
+        }
+        .return-region-card.disabled {
+            background: #fafcfe;
+            opacity: 0.7;
+            border-color: #e2e8f0;
+        }
+        .region-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .region-name {
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .region-index {
+            background: #fee2e2;
+            color: #c0392b;
+            border-radius: 40px;
+            padding: 2px 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .city-badge {
+            background: #fff0e6;
+            border-radius: 40px;
+            padding: 3px 10px;
+            font-size: 0.65rem;
+            color: #e67e22;
+        }
+        .city-tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 12px 0 12px 0;
+        }
+        .city-tag {
+            background: #fff5eb;
+            border-radius: 40px;
+            padding: 5px 12px;
+            font-size: 0.7rem;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .small-btn {
+            background: #fefaf5;
+            border: 1px solid #ffd9c0;
+            border-radius: 30px;
+            padding: 5px 14px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.1s;
+            color: #c0392b;
+        }
+        .small-btn:hover { background: #ffe6d5; border-color: #e67e22; }
+        .btn-primary {
+            background: #e67e22;
+            border: none;
+            padding: 8px 24px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 500;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-primary:hover { background: #c0392b; transform: translateY(-1px); }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #ffd9c0;
+            padding: 7px 22px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #e67e22;
+        }
+        .btn-outline:hover { background: #fff5eb; border-color: #e67e22; }
+        .btn-icon {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 30px;
+            color: #e67e22;
+        }
+        .btn-icon:hover { background: #fff0e6; color: #c0392b; }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+            margin-left: 8px;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.2s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: 0.2s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #e67e22; }
+        input:checked + .slider:before { transform: translateX(20px); }
+        .warehouse-info-row {
+            margin-top: 12px;
+            background: #fefaf5;
+            border-radius: 20px;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border: 1px solid #ffe0cc;
+        }
+        .inventory-type-badge {
+            background: #fee2e2;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.6rem;
+            font-weight: 500;
+            color: #c0392b;
+            margin-left: 6px;
+        }
+        .helper-note {
+            font-size: 0.65rem;
+            color: #b8865b;
+            margin-top: 8px;
+        }
+        .footer-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 18px;
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid #ffe0cc;
+        }
+        .toast-message {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            background: #c0392b;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            z-index: 1100;
+        }
+        .dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1200;
+        }
+        .dialog-card {
+            background: white;
+            border-radius: 36px;
+            width: 800px;
+            max-width: 92vw;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 28px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+        }
+        .dialog-card h3 { font-size: 1.4rem; margin-bottom: 20px; font-weight: 600; color: #c0392b; }
+        .field { margin-bottom: 22px; }
+        .field label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; color: #b85c1a; }
+        .region-tree { border: 1px solid #ffe0cc; border-radius: 24px; padding: 12px; max-height: 320px; overflow-y: auto; }
+        .province-item { margin-bottom: 12px; border-bottom: 1px solid #fff0e6; padding-bottom: 8px; }
+        .province-header { font-weight: 700; padding: 6px 0; cursor: pointer; color: #e67e22; }
+        .city-list { margin-left: 28px; display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+        .city-check { display: flex; align-items: center; gap: 6px; background: #fefaf5; padding: 4px 12px; border-radius: 30px; font-size: 0.75rem; cursor: pointer; }
+        .warehouse-check-list { display: flex; flex-direction: column; gap: 12px; max-height: 450px; overflow-y: auto; border: 1px solid #ffe0cc; border-radius: 24px; padding: 16px; }
+        .warehouse-check-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #fefaf5; border-radius: 20px; border: 1px solid #ffe0cc; flex-wrap: wrap; }
+        .inventory-type-selector { display: flex; gap: 16px; margin-top: 8px; align-items: center; font-size: 0.7rem; }
+        .inventory-type-selector label { display: inline-flex; align-items: center; gap: 6px; background: #f1f5f9; padding: 5px 14px; border-radius: 30px; cursor: pointer; transition: 0.1s; }
+        .inventory-type-selector label.selected { background: #e67e2230; border: 1px solid #e67e22; }
+        .inventory-type-selector input { width: 18px; height: 18px; margin: 0; cursor: pointer; }
+        .dialog-buttons { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+        .formula-content { background: #fff5eb; border-radius: 20px; padding: 12px 16px; margin-top: 8px; font-size: 0.75rem; border-left: 3px solid #e67e22; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <div>
+            <h1>🔄 退货仓策略引擎 · 逆向物流路由</h1>
+            <p>基于退货地址的智能退货仓匹配 | 区域围栏 + 残品/次品货位选择 + 全局兜底退货仓</p>
+        </div>
+        <div class="badge-return">⚡ 支持退货质检货位分类 | 残品/次品独立管理</div>
+    </div>
+
+    <div class="grid-2col">
+        <div class="card">
+            <div class="card-header">
+                <h3>📊 退货决策因子权重 <span class="help-icon" id="weightHelpBtn">?</span></h3>
+                <div class="subnote">影响退货仓优先级排序</div>
+            </div>
+            <div class="card-body">
+                <div id="returnFactorsContainer"></div>
+                <div class="weight-total-card">
+                    <span>📊 权重总和</span>
+                    <span id="totalWeightSpan" class="total-value">0%</span>
+                </div>
+                <div class="helper-note">💡 总和应为100%，权重影响退货仓综合得分</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>🏭 退货仓基础设置</h3>
+                <div class="subnote">全局退货处理参数配置</div>
+            </div>
+            <div class="card-body">
+                <div class="settings-grid">
+                    <div class="setting-card"><div class="setting-icon">📦</div><div class="setting-label">默认退货处理时效</div><div class="setting-value"><input type="number" id="defaultReturnDays" value="7" step="1" min="1"><span class="unit">天</span></div><div class="setting-desc">退货签收后完成质检入库的标准天数</div></div>
+                    <div class="setting-card"><div class="setting-icon">🏷️</div><div class="setting-label">质检合格率阈值</div><div class="setting-value"><input type="number" id="qualityThreshold" value="85" step="5" min="0" max="100"><span class="unit">%</span></div><div class="setting-desc">低于此值触发质检预警，需要人工干预</div></div>
+                    <div class="setting-card"><div class="setting-icon">🔄</div><div class="setting-label">退货二次上架允许天数</div><div class="setting-value"><input type="number" id="reshelfDays" value="3" step="1" min="1"><span class="unit">天</span></div><div class="setting-desc">退货质检后重新上架的标准天数</div></div>
+                    <div class="setting-card"><div class="setting-icon">⚡</div><div class="setting-label">最大日处理退货量</div><div class="setting-value"><input type="number" id="maxDailyReturns" value="500" step="50" min="0"><span class="unit">件/天</span></div><div class="setting-desc">全渠道每日最大退货处理能力</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>📍 退货仓电子围栏 · 区域映射策略</h3>
+            <div class="subnote">退货地址城市 → 退货仓池（支持多仓优先级 + 残品/次品货位类型）</div>
+        </div>
+        <div class="card-body">
+            <div class="region-actions-bar" style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                <button class="btn-primary" id="addReturnRegionBtn">+ 新增退货区域策略</button>
+            </div>
+            <div id="returnRegionContainer"></div>
+            
+            <div class="fallback-section">
+                <div class="fallback-badge">🛡️ 全局兜底退货仓</div>
+                <div style="font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; color: #c0392b;">当退货地址未匹配任何区域策略时，自动路由至兜底仓库</div>
+                <select id="fallbackWarehouse" class="fallback-select"></select>
+                <div class="fallback-info" id="fallbackInfo"></div>
+            </div>
+            <div class="helper-note" style="margin-top: 12px;">✅ 退货单匹配逻辑：区域围栏精确匹配 → 如未命中则使用全局兜底退货仓<br>✅ 每个退货仓可独立配置参与库存计算的货位类型（残品货位/次品货位），支持多选，用于退货质检后分类管理。</div>
+        </div>
+    </div>
+
+    <div class="footer-bar">
+        <button class="btn-outline" id="cancelBtn">撤销更改</button>
+        <button class="btn-primary" id="confirmBtn">✔ 保存退货策略</button>
+    </div>
+</div>
+
+<script>
+    // 退货仓数据结构: 增加 inventoryTypes 字段 (残品货位 defect / 次品货位 substandard)
+    let returnConfig = {
+        factors: [
+            { id: "distance", name: "退货距离优先", desc: "选择离退货地址最近的退货仓", weight: 35, formula: "得分 = (1 - 距离/最大距离) * 权重% * 100" },
+            { id: "capacity", name: "退货处理容量", desc: "优先选择当前处理能力充足的仓", weight: 30, formula: "得分 = (1 - 当前退货量/最大容量) * 权重% * 100" },
+            { id: "quality", name: "质检效率优先", desc: "优先选择质检通过率高的退货仓", weight: 20, formula: "得分 = 历史质检通过率 * 权重% * 100" },
+            { id: "reshelf", name: "二次上架速度", desc: "优先选择上架效率高的退货仓", weight: 15, formula: "得分 = (标准上架天数/实际上架天数) * 权重% * 100" }
+        ],
+        defaultReturnDays: 7,
+        qualityThreshold: 85,
+        reshelfDays: 3,
+        maxDailyReturns: 500,
+        returnWarehouses: [],
+        returnRegionStrategies: [],
+        fallbackWarehouseId: null
+    };
+
+    const provinceCitiesMap = {
+        "大阿克拉地区": ["阿克拉", "特马", "阿达", "多梅"],
+        "阿散蒂地区": ["库马西", "奥布阿西", "埃朱拉", "贝克瓦伊"],
+        "西部省": ["塔科拉迪", "塞康第", "塔夸", "阿辛福索"],
+        "中部省": ["海岸角", "温尼巴", "卡索阿", "姆普雷索"],
+        "东部省": ["科福里杜亚", "恩萨瓦姆", "阿基姆奥达"],
+        "北部省": ["塔马利", "延迪", "萨拉加"],
+        "沃尔特省": ["霍城", "凯塔", "阿科松博"]
+    };
+
+    function initReturnWarehouses() {
+        returnConfig.returnWarehouses = [
+            { id: "ret_wh_accra", name: "阿克拉退货处理中心", city: "阿克拉", priority: 1, capacity: 500, currentLoad: 120, qualityRate: 92, reshelfDays: 2, inventoryTypes: ["defect", "substandard"] },
+            { id: "ret_wh_tema", name: "特马港退货仓", city: "特马", priority: 2, capacity: 300, currentLoad: 80, qualityRate: 88, reshelfDays: 3, inventoryTypes: ["defect"] },
+            { id: "ret_wh_kumasi", name: "库马西退货枢纽", city: "库马西", priority: 1, capacity: 400, currentLoad: 150, qualityRate: 90, reshelfDays: 2, inventoryTypes: ["defect", "substandard"] },
+            { id: "ret_wh_takoradi", name: "塔科拉迪退货仓", city: "塔科拉迪", priority: 2, capacity: 250, currentLoad: 60, qualityRate: 85, reshelfDays: 3, inventoryTypes: ["substandard"] }
+        ];
+        if (!returnConfig.fallbackWarehouseId) returnConfig.fallbackWarehouseId = returnConfig.returnWarehouses[0]?.id || null;
+    }
+
+    function initReturnRegions() {
+        if (returnConfig.returnRegionStrategies.length === 0) {
+            returnConfig.returnRegionStrategies = [
+                { id: "ret_region_accra", name: "大阿克拉退货区", cities: ["阿克拉", "特马", "阿达"], warehouseIds: ["ret_wh_accra", "ret_wh_tema"], enabled: true },
+                { id: "ret_region_ashanti", name: "阿散蒂退货区", cities: ["库马西", "奥布阿西", "埃朱拉"], warehouseIds: ["ret_wh_kumasi"], enabled: true },
+                { id: "ret_region_west", name: "西部省退货区", cities: ["塔科拉迪", "塞康第", "塔夸"], warehouseIds: ["ret_wh_takoradi"], enabled: true }
+            ];
+        }
+    }
+
+    function loadReturnFromLocal() {
+        const saved = localStorage.getItem("return_warehouse_strategy");
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                returnConfig.factors = parsed.factors || returnConfig.factors;
+                returnConfig.defaultReturnDays = parsed.defaultReturnDays ?? 7;
+                returnConfig.qualityThreshold = parsed.qualityThreshold ?? 85;
+                returnConfig.reshelfDays = parsed.reshelfDays ?? 3;
+                returnConfig.maxDailyReturns = parsed.maxDailyReturns ?? 500;
+                if (parsed.returnWarehouses) returnConfig.returnWarehouses = parsed.returnWarehouses;
+                if (parsed.returnRegionStrategies) returnConfig.returnRegionStrategies = parsed.returnRegionStrategies;
+                returnConfig.fallbackWarehouseId = parsed.fallbackWarehouseId ?? null;
+            } catch(e) {}
+        }
+        if (returnConfig.returnWarehouses.length === 0) initReturnWarehouses();
+        if (returnConfig.returnRegionStrategies.length === 0) initReturnRegions();
+        else returnConfig.returnRegionStrategies.forEach(r => { if(r.enabled === undefined) r.enabled = true; });
+        
+        document.getElementById("defaultReturnDays").value = returnConfig.defaultReturnDays;
+        document.getElementById("qualityThreshold").value = returnConfig.qualityThreshold;
+        document.getElementById("reshelfDays").value = returnConfig.reshelfDays;
+        document.getElementById("maxDailyReturns").value = returnConfig.maxDailyReturns;
+        updateFallbackSelect();
+    }
+
+    function updateFallbackSelect() {
+        const select = document.getElementById("fallbackWarehouse");
+        if (!select) return;
+        select.innerHTML = '<option value="">-- 请选择兜底退货仓 --</option>' + 
+            returnConfig.returnWarehouses.map(wh => `<option value="${wh.id}" ${returnConfig.fallbackWarehouseId === wh.id ? 'selected' : ''}>${wh.name} (${wh.city}) | 容量${wh.capacity} | 质检率${wh.qualityRate}%</option>`).join('');
+        const fallbackWh = returnConfig.returnWarehouses.find(w => w.id === returnConfig.fallbackWarehouseId);
+        const infoDiv = document.getElementById("fallbackInfo");
+        if (fallbackWh) {
+            const types = (fallbackWh.inventoryTypes || []);
+            const typeStr = types.map(t => t === 'defect' ? '残品货位' : '次品货位').join('/') || '未配置';
+            infoDiv.innerHTML = `✅ 当前兜底仓：${fallbackWh.name}（${fallbackWh.city}）<br>📊 日处理容量：${fallbackWh.capacity}件 | 质检合格率：${fallbackWh.qualityRate}% | 上架时效：${fallbackWh.reshelfDays}天 | 支持货位：${typeStr}`;
+        } else {
+            infoDiv.innerHTML = `⚠️ 请选择兜底退货仓，确保所有退货单都有最终处理仓库`;
+        }
+    }
+
+    function saveReturnToLocal() {
+        returnConfig.defaultReturnDays = parseInt(document.getElementById("defaultReturnDays").value) || 7;
+        returnConfig.qualityThreshold = parseInt(document.getElementById("qualityThreshold").value) || 85;
+        returnConfig.reshelfDays = parseInt(document.getElementById("reshelfDays").value) || 3;
+        returnConfig.maxDailyReturns = parseInt(document.getElementById("maxDailyReturns").value) || 500;
+        returnConfig.fallbackWarehouseId = document.getElementById("fallbackWarehouse").value || null;
+        localStorage.setItem("return_warehouse_strategy", JSON.stringify(returnConfig));
+    }
+
+    function renderReturnFactors() {
+        const container = document.getElementById("returnFactorsContainer");
+        if (!container) return;
+        container.innerHTML = "";
+        returnConfig.factors.forEach(factor => {
+            const row = document.createElement("div"); row.className = "factor-row";
+            row.innerHTML = `<div class="factor-meta"><div class="factor-name">${factor.name}</div><div class="factor-desc">${factor.desc}</div></div><div class="factor-control"><input type="range" class="factor-slider" data-id="${factor.id}" min="0" max="100" value="${factor.weight}"><input type="number" class="factor-number" data-id="${factor.id}" value="${factor.weight}" min="0" max="100"><span class="weight-badge">${factor.weight}%</span></div>`;
+            container.appendChild(row);
+        });
+        attachFactorEvents();
+        updateTotalWeight();
+    }
+
+    function attachFactorEvents() {
+        document.querySelectorAll("#returnFactorsContainer .factor-slider").forEach(slider => {
+            slider.addEventListener("input", (e) => {
+                const id = slider.dataset.id;
+                const val = parseInt(slider.value);
+                const f = returnConfig.factors.find(f=>f.id===id);
+                if(f) f.weight = val;
+                syncFactorUI(id, val);
+                updateTotalWeight();
+            });
+        });
+        document.querySelectorAll("#returnFactorsContainer .factor-number").forEach(input => {
+            input.addEventListener("change", (e) => {
+                const id = input.dataset.id;
+                let val = parseInt(input.value);
+                if(isNaN(val)) val = 0;
+                val = Math.min(100, Math.max(0, val));
+                const f = returnConfig.factors.find(f=>f.id===id);
+                if(f) f.weight = val;
+                syncFactorUI(id, val);
+                updateTotalWeight();
+            });
+        });
+    }
+
+    function syncFactorUI(id, val) {
+        const container = document.getElementById("returnFactorsContainer");
+        const slider = container.querySelector(`.factor-slider[data-id="${id}"]`);
+        const number = container.querySelector(`.factor-number[data-id="${id}"]`);
+        const badge = slider?.closest(".factor-control")?.querySelector(".weight-badge");
+        if(slider) slider.value = val;
+        if(number) number.value = val;
+        if(badge) badge.innerText = val + "%";
+    }
+
+    function updateTotalWeight() {
+        const total = returnConfig.factors.reduce((s,f)=>s+f.weight, 0);
+        const span = document.getElementById("totalWeightSpan");
+        if(span) {
+            span.innerText = total + "%";
+            span.classList.toggle("invalid", total !== 100);
+            span.classList.toggle("valid", total === 100);
+        }
+    }
+
+    function showFormulaDialog() {
+        let html = `<div class="dialog-card"><h3>📐 退货决策因子计算公式</h3>`;
+        returnConfig.factors.forEach(f => {
+            html += `<div style="margin-bottom:16px;"><strong>${f.name}</strong><div class="formula-content">${f.formula}</div><div class="helper-note">${f.desc}</div></div>`;
+        });
+        html += `<div class="dialog-buttons"><button class="btn-outline" id="closeFormulaBtn">关闭</button></div></div>`;
+        const overlay = document.createElement("div"); overlay.className = "dialog-overlay"; overlay.innerHTML = html;
+        document.body.appendChild(overlay);
+        document.getElementById("closeFormulaBtn")?.addEventListener("click",()=>overlay.remove());
+    }
+
+    // 退货仓池弹窗 + 货位类型多选 (残品/次品)
+    function openReturnWarehouseDialog(regionId) {
+        const region = returnConfig.returnRegionStrategies.find(r => r.id === regionId);
+        if (!region) return;
+        const warehouses = [...returnConfig.returnWarehouses].sort((a,b)=> a.priority - b.priority);
+        const overlay = document.createElement("div"); overlay.className = "dialog-overlay";
+        let itemsHtml = `<div class="warehouse-check-list">`;
+        warehouses.forEach(wh => {
+            const checked = region.warehouseIds.includes(wh.id);
+            const selectedTypes = wh.inventoryTypes || [];
+            itemsHtml += `<div class="warehouse-check-item" data-wh-id="${wh.id}">
+                            <div><strong>${escapeHtml(wh.name)}</strong>
+                            <div style="font-size:0.7rem; margin-top:4px;">${wh.city} | 容量${wh.capacity} | 质检率${wh.qualityRate}% | 上架${wh.reshelfDays}天</div>
+                            <div class="inventory-type-selector">
+                                <label class="${selectedTypes.includes('defect') ? 'selected' : ''}"><input type="checkbox" class="type-defect" data-id="${wh.id}" ${selectedTypes.includes('defect') ? 'checked' : ''}> 残品货位</label>
+                                <label class="${selectedTypes.includes('substandard') ? 'selected' : ''}"><input type="checkbox" class="type-substandard" data-id="${wh.id}" ${selectedTypes.includes('substandard') ? 'checked' : ''}> 次品货位</label>
+                            </div>
+                            </div>
+                            <input type="checkbox" ${checked ? 'checked' : ''} class="wh-selector" data-wh-id="${wh.id}" style="width:20px;height:20px;">
+                          </div>`;
+        });
+        itemsHtml += `</div><div class="helper-note">✅ 勾选仓库加入退货池；每个仓库独立选择参与退货库存管理的货位类型（残品/次品可多选），用于退货质检后分类。</div>`;
+        overlay.innerHTML = `<div class="dialog-card" style="width:860px;"><h3>🏭 配置退货仓池 + 货位类型 — ${escapeHtml(region.name)}</h3>${itemsHtml}<div class="dialog-buttons"><button class="btn-outline" id="whDialogCancel">取消</button><button class="btn-primary" id="whDialogConfirm">确认保存</button></div></div>`;
+        document.body.appendChild(overlay);
+        
+        const updateLabels = () => {
+            overlay.querySelectorAll('.inventory-type-selector label').forEach(lbl => {
+                const cb = lbl.querySelector('input');
+                if(cb && cb.checked) lbl.classList.add('selected');
+                else lbl.classList.remove('selected');
+            });
+        };
+        overlay.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.addEventListener('change', updateLabels));
+        updateLabels();
+
+        document.getElementById("whDialogCancel")?.addEventListener("click",()=>overlay.remove());
+        document.getElementById("whDialogConfirm")?.addEventListener("click",()=>{
+            const selectedWhIds = Array.from(overlay.querySelectorAll('.wh-selector:checked')).map(cb => cb.dataset.whId);
+            warehouses.forEach(wh => {
+                const defectChk = overlay.querySelector(`.type-defect[data-id="${wh.id}"]`);
+                const subChk = overlay.querySelector(`.type-substandard[data-id="${wh.id}"]`);
+                const types = [];
+                if(defectChk && defectChk.checked) types.push("defect");
+                if(subChk && subChk.checked) types.push("substandard");
+                wh.inventoryTypes = types;
+            });
+            region.warehouseIds = selectedWhIds;
+            overlay.remove();
+            renderReturnRegions();
+            updateFallbackSelect();
+            showToast(`${region.name} 退货仓池及货位类型已更新`);
+        });
+    }
+
+    function openReturnCitiesDialog(regionId) {
+        const region = returnConfig.returnRegionStrategies.find(r => r.id === regionId);
+        if (!region) return;
+        const overlay = document.createElement("div"); overlay.className = "dialog-overlay";
+        let treeHtml = `<div class="region-tree">`;
+        for (let [province, cities] of Object.entries(provinceCitiesMap)) {
+            treeHtml += `<div class="province-item"><div class="province-header">📌 ${province}</div><div class="city-list">`;
+            cities.forEach(city => {
+                const checked = region.cities.includes(city);
+                treeHtml += `<label class="city-check"><input type="checkbox" value="${escapeHtml(city)}" ${checked ? 'checked' : ''}> ${escapeHtml(city)}</label>`;
+            });
+            treeHtml += `</div></div>`;
+        }
+        treeHtml += `</div><div class="helper-note">选择退货地址覆盖的城市范围</div>`;
+        overlay.innerHTML = `<div class="dialog-card"><h3>🏙️ 管理退货围栏城市 — ${escapeHtml(region.name)}</h3>${treeHtml}<div class="dialog-buttons"><button class="btn-outline" id="cityDialogCancel">取消</button><button class="btn-primary" id="cityDialogConfirm">保存城市</button></div></div>`;
+        document.body.appendChild(overlay);
+        document.getElementById("cityDialogCancel")?.addEventListener("click",()=>overlay.remove());
+        document.getElementById("cityDialogConfirm")?.addEventListener("click",()=>{
+            const selected = Array.from(overlay.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+            region.cities = selected;
+            overlay.remove();
+            renderReturnRegions();
+            showToast(`${region.name} 围栏城市已更新`);
+        });
+    }
+
+    function openReturnRegionForm(region = null) {
+        const isEdit = !!region;
+        const title = isEdit ? "✏️ 编辑退货区域" : "➕ 新增退货区域策略";
+        let cityCheckHtml = `<div class="region-tree" style="max-height:280px;">`;
+        for (let [province, cities] of Object.entries(provinceCitiesMap)) {
+            cityCheckHtml += `<div class="province-item"><div class="province-header">📌 ${province}</div><div class="city-list">`;
+            cities.forEach(city => {
+                const checked = isEdit ? (region.cities?.includes(city) || false) : false;
+                cityCheckHtml += `<label class="city-check"><input type="checkbox" value="${escapeHtml(city)}" ${checked ? 'checked' : ''}> ${escapeHtml(city)}</label>`;
+            });
+            cityCheckHtml += `</div></div>`;
+        }
+        cityCheckHtml += `</div>`;
+        const overlay = document.createElement("div"); overlay.className = "dialog-overlay";
+        overlay.innerHTML = `<div class="dialog-card"><h3>${title}</h3>
+            <div class="field"><label>区域名称</label><input type="text" id="formRegionName" value="${isEdit ? escapeHtml(region.name) : ''}" placeholder="例如: 北部退货区"></div>
+            <div class="field"><label>覆盖城市（退货地址围栏）</label>${cityCheckHtml}</div>
+            <div class="dialog-buttons"><button class="btn-outline" id="formCancelBtn">取消</button><button class="btn-primary" id="formConfirmBtn">${isEdit ? '保存修改' : '创建区域'}</button></div></div>`;
+        document.body.appendChild(overlay);
+        const close = () => overlay.remove();
+        document.getElementById("formCancelBtn")?.addEventListener("click", close);
+        document.getElementById("formConfirmBtn")?.addEventListener("click", () => {
+            const name = document.getElementById("formRegionName")?.value.trim();
+            if (!name) { showToast("请填写区域名称"); return; }
+            const selectedCities = Array.from(overlay.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+            if (isEdit) {
+                region.name = name;
+                region.cities = selectedCities;
+                showToast(`退货区域 "${name}" 已更新`);
+            } else {
+                const newId = `ret_region_${Date.now()}`;
+                returnConfig.returnRegionStrategies.push({ id: newId, name, cities: selectedCities, warehouseIds: [], enabled: true });
+                showToast(`退货区域 "${name}" 已创建`);
+            }
+            close();
+            renderReturnRegions();
+        });
+    }
+
+    function renderReturnRegions() {
+        const container = document.getElementById("returnRegionContainer");
+        if(!container) return;
+        if(!returnConfig.returnRegionStrategies.length){
+            container.innerHTML = `<div style="background:#fefaf5; border-radius:20px; padding:36px; text-align:center; color:#b8865b;">暂无退货区域策略，点击「新增退货区域策略」配置</div>`;
+            return;
+        }
+        container.innerHTML = "";
+        returnConfig.returnRegionStrategies.forEach((region, idx) => {
+            const card = document.createElement("div");
+            card.className = `return-region-card ${region.enabled === false ? 'disabled' : ''}`;
+            const previewWarehouses = region.warehouseIds.map(wid => {
+                const wh = returnConfig.returnWarehouses.find(w=>w.id===wid);
+                if(!wh) return wid;
+                const types = (wh.inventoryTypes || []).map(t => t === 'defect' ? '残品' : '次品').join('/');
+                return `${wh.name} (${types || '未配置货位'})`;
+            }).join(', ') || '未配置退货仓';
+            card.innerHTML = `
+                <div class="region-head">
+                    <div class="region-name">
+                        <span class="region-index">退货区 ${idx+1}</span>
+                        ${escapeHtml(region.name)}
+                        <span class="city-badge">${region.cities.length} 城市</span>
+                        <label class="toggle-switch"><input type="checkbox" class="toggle-enabled" data-id="${region.id}" ${region.enabled !== false ? 'checked' : ''}><span class="slider"></span></label>
+                    </div>
+                    <div><button class="btn-icon edit-region-full" data-id="${region.id}" title="编辑区域">✏️</button><button class="btn-icon btn-danger-icon delete-region" data-id="${region.id}" title="删除区域">🗑️</button></div>
+                </div>
+                <div class="city-tags-container">${region.cities.map(c => `<span class="city-tag">${escapeHtml(c)}</span>`).join('')}</div>
+                <div class="action-buttons">
+                    <button class="small-btn" data-action="cities" data-id="${region.id}">🏙️ 管理城市</button>
+                    <button class="small-btn" data-action="warehouse" data-id="${region.id}">🏭 配置退货仓池+货位类型</button>
+                </div>
+                <div class="warehouse-info-row">
+                    <span style="font-size:0.7rem; font-weight:500;">退货仓池：</span>
+                    <div class="warehouse-list-preview">${previewWarehouses}</div>
+                </div>
+            `;
+            container.appendChild(card);
+            card.querySelector("[data-action='cities']")?.addEventListener("click",()=> openReturnCitiesDialog(region.id));
+            card.querySelector("[data-action='warehouse']")?.addEventListener("click",()=> openReturnWarehouseDialog(region.id));
+            card.querySelector(".edit-region-full")?.addEventListener("click",()=> openReturnRegionForm(region));
+            card.querySelector(".delete-region")?.addEventListener("click",()=>{
+                if(confirm(`删除退货区域「${region.name}」?`)){
+                    returnConfig.returnRegionStrategies = returnConfig.returnRegionStrategies.filter(r=>r.id !== region.id);
+                    renderReturnRegions();
+                    showToast("退货区域已删除");
+                }
+            });
+            const toggle = card.querySelector(".toggle-enabled");
+            toggle?.addEventListener("change",(e)=>{ region.enabled = e.target.checked; renderReturnRegions(); showToast(`${region.name} 已${region.enabled ? '启用' : '禁用'}`); });
+        });
+    }
+
+    function showToast(msg) {
+        const exist = document.querySelector(".toast-message");
+        if(exist) exist.remove();
+        const toast = document.createElement("div");
+        toast.className = "toast-message";
+        toast.innerText = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2200);
+    }
+
+    function escapeHtml(str) { return String(str).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+    document.getElementById("addReturnRegionBtn")?.addEventListener("click",()=> openReturnRegionForm(null));
+    document.getElementById("fallbackWarehouse")?.addEventListener("change", (e) => {
+        returnConfig.fallbackWarehouseId = e.target.value || null;
+        updateFallbackSelect();
+        showToast("兜底退货仓已更新");
+    });
+    document.getElementById("confirmBtn")?.addEventListener("click",()=>{ saveReturnToLocal(); showToast("✅ 退货仓策略已保存"); });
+    document.getElementById("cancelBtn")?.addEventListener("click",()=>{ loadReturnFromLocal(); renderReturnFactors(); renderReturnRegions(); updateFallbackSelect(); showToast("已撤销更改"); });
+    document.getElementById("weightHelpBtn")?.addEventListener("click", showFormulaDialog);
+
+    loadReturnFromLocal();
+    renderReturnFactors();
+    renderReturnRegions();
+</script>
+</body>
+</html>

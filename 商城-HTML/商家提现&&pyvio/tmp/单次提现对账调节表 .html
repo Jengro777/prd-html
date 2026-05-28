@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>亚马逊卖家钱包 · 单次提现对账调节表 | FIFO自动匹配演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #eef2f5;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 2rem 1.5rem;
+            color: #0f172a;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        /* 头部卡片 */
+        .hero-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 1.8rem;
+            padding: 1.8rem 2rem;
+            margin-bottom: 2rem;
+            color: white;
+            box-shadow: 0 12px 24px -12px rgba(0,0,0,0.2);
+        }
+        .hero-card h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .hero-card h1 small {
+            font-size: 0.8rem;
+            background: #ff9900;
+            color: #0f172a;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-weight: 500;
+        }
+        .hero-card p {
+            margin-top: 0.75rem;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        .badge-fifo {
+            background: #ff990020;
+            border: 1px solid #ff9900;
+            border-radius: 40px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.7rem;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+
+        /* 网格布局 */
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e9edf2;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        .card-header {
+            padding: 1.2rem 1.8rem;
+            border-bottom: 1px solid #eff3f8;
+            font-weight: 600;
+            font-size: 1.2rem;
+            background: #fafcff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-content {
+            padding: 1.5rem 1.8rem;
+        }
+
+        .wallet-balance {
+            background: #f1f5f9;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .balance-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed #cbd5e1;
+            font-size: 0.9rem;
+        }
+        .settlement-tag {
+            background: #eef2ff;
+            padding: 0.2rem 0.6rem;
+            border-radius: 30px;
+            font-family: monospace;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .amount-number {
+            font-weight: 700;
+            font-family: monospace;
+        }
+        .positive { color: #15803d; }
+        .negative { color: #b91c1c; }
+
+        .withdraw-input-area {
+            background: #fff7ed;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ff9900;
+        }
+        .input-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .input-group input {
+            padding: 0.7rem 1rem;
+            border-radius: 60px;
+            border: 1px solid #cbd5e1;
+            font-size: 1rem;
+            width: 180px;
+            font-weight: 500;
+        }
+        .btn-primary {
+            background: #ff9900;
+            border: none;
+            padding: 0.7rem 1.6rem;
+            border-radius: 60px;
+            font-weight: 600;
+            color: #1e293b;
+            cursor: pointer;
+            transition: 0.1s;
+            font-size: 0.85rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .btn-primary:hover {
+            background: #e88a00;
+            transform: scale(0.98);
+        }
+
+        .match-result {
+            background: #f0fdf4;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            border: 1px solid #bbf7d0;
+        }
+
+        .reconciliation-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+        .reconciliation-table td, .reconciliation-table th {
+            padding: 0.7rem 0.3rem;
+            border-bottom: 1px solid #e9edf2;
+            vertical-align: top;
+        }
+        .file-list {
+            background: #f8fafc;
+            border-radius: 1rem;
+            padding: 0.8rem 1rem;
+            font-size: 0.75rem;
+            font-family: monospace;
+        }
+
+        hr {
+            margin: 1rem 0;
+            border: none;
+            border-top: 1px solid #eef2f8;
+        }
+
+        .footer-note {
+            background: #fef9e6;
+            border-radius: 1rem;
+            padding: 1rem 1.5rem;
+            font-size: 0.75rem;
+            color: #7a5d2c;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 780px) {
+            .grid-2col {
+                grid-template-columns: 1fr;
+            }
+            body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 头部说明 -->
+    <div class="hero-card">
+        <h1>
+            📄 单次提现对账调节表 · FIFO匹配演示
+            <small>亚马逊卖家钱包合规对账</small>
+        </h1>
+        <p>基于先进先出原则，系统自动匹配提现金额对应的结算周期。每次提现后生成完整的对账调节表及证据链清单。</p>
+        <div class="badge-fifo">⚡ 先进先出 (FIFO) · 自动匹配 · 无需手动拆分周期</div>
+    </div>
+
+    <div class="grid-2col">
+        <!-- 左侧：钱包余额构成 + 提现操作模拟 -->
+        <div class="card">
+            <div class="card-header">
+                💰 当前卖家钱包余额构成
+            </div>
+            <div class="card-content">
+                <div class="wallet-balance" id="walletBalancePanel">
+                    <!-- 动态JS渲染余额列表 -->
+                </div>
+                <div class="withdraw-input-area">
+                    <div style="font-weight: 600;">🏦 发起提现 (模拟)</div>
+                    <div class="input-group">
+                        <input type="number" id="withdrawAmount" placeholder="输入提现金额 USD" step="0.01" value="5000.00">
+                        <button class="btn-primary" id="simulateWithdrawBtn">🔁 按FIFO匹配并生成对账表</button>
+                    </div>
+                    <div style="font-size: 0.7rem; color: #4b5563; margin-top: 6px;">系统将根据先进先出原则自动匹配结算周期，提现记录自动标注关联的Settlement ID。</div>
+                </div>
+
+                <!-- 匹配结果预览 -->
+                <div id="matchResultPanel" class="match-result" style="display: none;">
+                    <!-- 动态显示匹配明细 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧：本次提现对账调节表 + 归档文件清单 -->
+        <div class="card">
+            <div class="card-header">
+                🧾 本次提现 · 对账调节表
+            </div>
+            <div class="card-content" id="reconciliationPanel">
+                <div style="color: #6c757d; text-align: center; padding: 2rem 0;">
+                    请先在左侧模拟提现操作，生成调节表
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第三块：单次提现归档文件清单（动态） -->
+    <div class="card">
+        <div class="card-header">
+            📁 单次提现 · 合规证据链清单
+        </div>
+        <div class="card-content" id="fileListPanel">
+            <div style="color: #6c757d; text-align: center; padding: 1rem 0;">
+                等待提现操作后自动生成完整归档列表
+            </div>
+        </div>
+        <div class="footer-note">
+            ✅ <strong>合规要点：</strong> 每次提现后保存此调节表 + 关联结算单(日期范围报告) + 钱包交易记录 + 银行流水 → 形成“提现金额 = Σ(各周期被提现部分)”的证据闭环。
+            <br>📌 依据亚马逊先进先出(FIFO)规则，系统自动标注提现记录中的 Settlement ID 及金额，无需手动计算混合余额。
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---------- 模拟钱包余额数据 (先进先出 FIFO) ----------
+    // 每个结算周期对象：id, 周期名称, 原始净收入, 已支出(广告/VAT等), 剩余可提余额
+    let settlementPeriods = [
+        { id: "STL-20260315-001", periodName: "2026/3/1 - 2026/3/14", netIncome: 5000.00, spent: 1000.00, remaining: 4000.00, expensesList: [{ type: "广告费", amount: 1000.00, bill: "广告账单_20260320.pdf" }] },
+        { id: "STL-20260330-002", periodName: "2026/3/15 - 2026/3/28", netIncome: 3000.00, spent: 0, remaining: 3000.00, expensesList: [] },
+        { id: "STL-20260413-003", periodName: "2026/3/29 - 2026/4/11", netIncome: 4000.00, spent: 500.00, remaining: 3500.00, expensesList: [{ type: "VAT税费", amount: 500.00, bill: "VAT_20260410.pdf" }] }
+    ];
+
+    // 全局存储当前提现匹配结果
+    let currentWithdrawMatch = null;
+
+    // 渲染钱包余额UI
+    function renderWalletBalance() {
+        const container = document.getElementById("walletBalancePanel");
+        let totalRemaining = settlementPeriods.reduce((sum, p) => sum + p.remaining, 0);
+        let html = `<div style="font-size:0.85rem; font-weight:500; margin-bottom:8px;">💰 总可用余额: <strong style="font-size:1.2rem;">$${totalRemaining.toFixed(2)} USD</strong></div>`;
+        settlementPeriods.forEach(p => {
+            html += `
+                <div class="balance-row">
+                    <div><span class="settlement-tag">${p.id}</span> ${p.periodName}</div>
+                    <div><strong>$${p.remaining.toFixed(2)}</strong> <span style="font-size:0.7rem; color:#5b6e8c;">(净收入 $${p.netIncome} - 支出 $${p.spent})</span></div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    // 先进先出匹配提现金额，返回 { matchedDetails: [{settlement, withdrawAmount, remainingAfter}], totalMatched, leftoverRequest, insufficient }
+    function fifoMatchWithdraw(requestAmount) {
+        let remainingRequest = requestAmount;
+        let matched = [];
+        // 深拷贝剩余余额用于计算
+        let periodsCopy = settlementPeriods.map(p => ({ ...p, remaining: p.remaining }));
+        for (let i = 0; i < periodsCopy.length; i++) {
+            let period = periodsCopy[i];
+            if (remainingRequest <= 0) break;
+            if (period.remaining <= 0) continue;
+            let take = Math.min(period.remaining, remainingRequest);
+            matched.push({
+                settlementId: period.id,
+                periodName: period.periodName,
+                netIncome: period.netIncome,
+                spent: period.spent,
+                expensesList: period.expensesList || [],
+                withdrawAmount: take,
+                remainingOriginal: period.remaining,
+                remainingAfter: period.remaining - take
+            });
+            remainingRequest -= take;
+        }
+        let insufficient = remainingRequest > 0;
+        return {
+            matchedDetails: matched,
+            totalMatched: requestAmount - remainingRequest,
+            leftoverRequest: remainingRequest,
+            insufficient: insufficient
+        };
+    }
+
+    // 生成对账调节表HTML (针对本次提现)
+    function generateReconciliationHTML(matchResult, withdrawAmount) {
+        if (!matchResult || matchResult.matchedDetails.length === 0) {
+            return `<div style="color:#b91c1c;">⚠️ 无可匹配的结算周期，请检查提现金额或余额是否足够。</div>`;
+        }
+        let totalWithdraw = matchResult.totalMatched;
+        let html = `
+            <div style="background:#f8fafc; border-radius:1rem; padding:0.2rem 0;">
+                <div style="display:flex; justify-content:space-between; font-weight:700; border-bottom:1px solid #e2e8f0; padding-bottom:8px; margin-bottom:12px;">
+                    <span>📌 本次提现金额</span>
+                    <span style="font-size:1.2rem;">$${totalWithdraw.toFixed(2)} USD</span>
+                </div>
+                <table class="reconciliation-table">
+                    <thead>
+                        <tr><th>结算周期 (Settlement ID)</th><th>周期净收入</th><th>钱包内支出</th><th>本次提现金额</th><th>剩余余额(周期内)</th></tr>
+                    </thead>
+                    <tbody>
+        `;
+        matchResult.matchedDetails.forEach(d => {
+            let expenseDesc = d.expensesList.map(ex => `${ex.type} $${ex.amount}`).join(', ') || '无';
+            html += `
+                <tr>
+                    <td><span class="settlement-tag">${d.settlementId}</span><br><span style="font-size:0.7rem;">${d.periodName}</span></td>
+                    <td>+$${d.netIncome.toFixed(2)}</td>
+                    <td>-$${d.spent.toFixed(2)} (${expenseDesc})</td>
+                    <td style="color:#15803d; font-weight:700;">-$${d.withdrawAmount.toFixed(2)}</td>
+                    <td>$${d.remainingAfter.toFixed(2)}</td>
+                </tr>
+            `;
+        });
+        html += `
+                    </tbody>
+                </table>
+                <hr>
+                <div class="flex-between" style="display:flex; justify-content:space-between; margin-top:8px;">
+                    <strong>校验公式</strong>
+                    <span>提现金额 = Σ(各周期被提现部分) = $${totalWithdraw.toFixed(2)} ✅</span>
+                </div>
+                <div style="background:#eef2ff; border-radius:12px; padding:10px; margin-top:12px; font-size:0.75rem;">
+                    🔗 关联凭证：各周期「日期范围报告」 + 钱包交易记录 + 广告/VAT账单 → 证明提现与支出均来自结算净收入。
+                </div>
+            </div>
+        `;
+        return html;
+    }
+
+    // 生成证据链清单（单次提现归档结构）
+    function generateFileList(matchResult, withdrawAmount) {
+        if (!matchResult || matchResult.matchedDetails.length === 0) {
+            return `<div style="color:#6c757d;">暂无提现记录，请先模拟提现。</div>`;
+        }
+        let now = new Date();
+        let dateStr = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+        let folderName = `Withdraw_${dateStr}_$${withdrawAmount.toFixed(2)}`;
+        let filesHtml = `
+            <div style="font-family: monospace; font-size:0.75rem;">
+                <div style="background:#f1f5f9; padding:8px 12px; border-radius:12px; margin-bottom:8px;">
+                    📂 归档根目录: <strong>${folderName}</strong>
+                </div>
+                <div class="file-list">
+                    ✅ 1_提现记录_亚马逊钱包.pdf &nbsp;&nbsp;<span style="color:#2b6e3b;">(显示关联 Settlement ID: ${matchResult.matchedDetails.map(d=>d.settlementId).join(', ')})</span><br>
+                    ✅ 2_对账调节表_本次提现.xlsx &nbsp;&nbsp;<span style="color:#2b6e3b;">(自动生成上述调节表)</span><br>
+                    ✅ 3_结算周期报告/ <br>
+        `;
+        matchResult.matchedDetails.forEach(d => {
+            filesHtml += `&nbsp;&nbsp;&nbsp;&nbsp;├── 日期范围报告_${d.settlementId}.csv &nbsp;(净收入 $${d.netIncome.toFixed(2)})<br>`;
+        });
+        filesHtml += `✅ 4_支出凭证/<br>`;
+        let hasExp = false;
+        matchResult.matchedDetails.forEach(d => {
+            if (d.expensesList && d.expensesList.length) {
+                hasExp = true;
+                d.expensesList.forEach(exp => {
+                    filesHtml += `&nbsp;&nbsp;&nbsp;&nbsp;├── ${exp.bill} &nbsp;(${exp.type} $${exp.amount})<br>`;
+                });
+            }
+        });
+        if (!hasExp) filesHtml += `&nbsp;&nbsp;&nbsp;&nbsp;└── (该周期无直接钱包支出)<br>`;
+        filesHtml += `✅ 5_银行流水_本次到账.pdf &nbsp;(到账金额 $${withdrawAmount.toFixed(2)})<br>`;
+        filesHtml += `<hr style="margin:8px 0;">📌 证据链说明：结算单(日期范围报告)证明收入源头，钱包交易记录证明支出与提现，银行流水证明资金到账。符合FIFO先进先出匹配原则。</div>`;
+        return filesHtml;
+    }
+
+    // 更新右侧调节表和文件清单
+    function updateWithdrawResult(withdrawAmount) {
+        if (isNaN(withdrawAmount) || withdrawAmount <= 0) {
+            document.getElementById("reconciliationPanel").innerHTML = `<div style="color:#b91c1c;">⚠️ 请输入有效的提现金额（大于0）</div>`;
+            document.getElementById("fileListPanel").innerHTML = `<div style="color:#6c757d;">等待有效提现操作</div>`;
+            document.getElementById("matchResultPanel").style.display = "none";
+            return;
+        }
+        let match = fifoMatchWithdraw(withdrawAmount);
+        if (match.insufficient) {
+            let totalBalance = settlementPeriods.reduce((s,p)=>s+p.remaining,0);
+            document.getElementById("reconciliationPanel").innerHTML = `<div style="background:#fee2e2; padding:1rem; border-radius:1rem; color:#b91c1c;">
+                ❌ 余额不足！当前钱包总余额 $${totalBalance.toFixed(2)}，请求提现 $${withdrawAmount.toFixed(2)}，缺口 $${match.leftoverRequest.toFixed(2)}。<br>
+                请减少提现金额或等待后续结算。
+            </div>`;
+            document.getElementById("fileListPanel").innerHTML = `<div style="color:#6c757d;">余额不足，无法生成完整对账链</div>`;
+            document.getElementById("matchResultPanel").style.display = "none";
+            return;
+        }
+        currentWithdrawMatch = match;
+        // 显示匹配明细卡片
+        let matchHtml = `<div style="font-weight:600;">✅ 先进先出匹配结果</div>`;
+        match.matchedDetails.forEach(d => {
+            matchHtml += `<div style="font-size:0.8rem; margin-top:6px;">• ${d.settlementId} (${d.periodName}): 提现 <strong>$${d.withdrawAmount.toFixed(2)}</strong> (该周期剩余 $${d.remainingAfter.toFixed(2)})</div>`;
+        });
+        matchHtml += `<div style="margin-top:8px; font-size:0.7rem; color:#2c5a7a;">📌 系统已按FIFO原则自动标记本次提现对应的结算周期，提现记录关联Settlement ID。</div>`;
+        document.getElementById("matchResultPanel").innerHTML = matchHtml;
+        document.getElementById("matchResultPanel").style.display = "block";
+
+        // 生成调节表和文件清单
+        let reconHtml = generateReconciliationHTML(match, withdrawAmount);
+        document.getElementById("reconciliationPanel").innerHTML = reconHtml;
+        let fileHtml = generateFileList(match, withdrawAmount);
+        document.getElementById("fileListPanel").innerHTML = fileHtml;
+    }
+
+    // 处理提现模拟按钮
+    function onSimulateWithdraw() {
+        let amountInput = document.getElementById("withdrawAmount").value;
+        let amount = parseFloat(amountInput);
+        if (isNaN(amount) || amount <= 0) {
+            alert("请输入正数的提现金额 (USD)");
+            return;
+        }
+        updateWithdrawResult(amount);
+    }
+
+    // 初始化渲染钱包余额，绑定事件
+    function init() {
+        renderWalletBalance();
+        document.getElementById("simulateWithdrawBtn").addEventListener("click", onSimulateWithdraw);
+        // 默认展示一个默认提现示例（5000演示）
+        setTimeout(() => {
+            updateWithdrawResult(5000.00);
+            document.getElementById("withdrawAmount").value = "5000.00";
+        }, 100);
+    }
+    init();
+</script>
+</body>
+</html>

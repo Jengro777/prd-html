@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>账号注销 · 状态分页</title>
+    <!-- Font Awesome 5 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f8fe;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* 网格容器 - 支持垂直和水平排列 */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            max-width: 1600px;
+            width: 100%;
+            align-items: start;
+        }
+
+        /* 通用卡片样式 */
+        .status-column {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 15px 30px -10px rgba(0, 32, 64, 0.08);
+            overflow: hidden;
+            height: fit-content;
+            transition: 0.2s;
+        }
+
+        .column-header {
+            padding: 18px 18px;
+            border-bottom: 1px solid #eef3f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .column-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2d445b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .column-header h3 i {
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+
+        .column-header .count-badge {
+            background: #edf3f8;
+            color: #4f6f8c;
+            padding: 3px 10px;
+            border-radius: 30px;
+            font-size: 0.65rem;
+            font-weight: 500;
+        }
+
+        .column-content {
+            padding: 16px 14px 20px;
+            max-height: 700px;
+            overflow-y: auto;
+        }
+
+        /* 卡片样式 */
+        .history-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 14px;
+            border: 1px solid #eaf1fa;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+        }
+
+        .history-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .history-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .history-icon {
+            width: 40px;
+            height: 40px;
+            background: #edf4fa;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4f6f8c;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .history-info h4 {
+            font-size: 0.95rem;
+            color: #2d445b;
+            margin-bottom: 3px;
+            font-weight: 500;
+        }
+
+        .history-info p {
+            font-size: 0.68rem;
+            color: #7b98b5;
+        }
+
+        .asset-normal {
+            color: #6f8a9c;
+            background: #f0f7fa;
+            padding: 6px 12px;
+            border-radius: 30px;
+            display: inline-block;
+            font-size: 0.75rem;
+            margin-bottom: 10px;
+            border: 1px solid #dae9f0;
+        }
+
+        .asset-warning {
+            color: #b18b7a;
+            background: #faf3ef;
+            padding: 10px 12px;
+            border-radius: 14px;
+            margin: 10px 0;
+            font-size: 0.8rem;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            border: 1px solid #f0e0d8;
+        }
+
+        .recover-reason {
+            background: #f4f9f7;
+            padding: 10px 12px;
+            border-radius: 12px;
+            color: #547a7a;
+            margin: 10px 0;
+            font-size: 0.8rem;
+            display: flex;
+            gap: 8px;
+            border: 1px solid #d0e8e3;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+        }
+
+        .detail-label {
+            width: 65px;
+            color: #7c98b5;
+        }
+
+        .detail-value {
+            color: #3c5a77;
+            font-weight: 400;
+        }
+
+        /* 按钮样式 - 弱化处理 */
+        .btn {
+            width: 100%;
+            padding: 10px;
+            border-radius: 40px;
+            font-weight: 400;
+            font-size: 0.8rem;
+            border: 1px solid #d8e5f0;
+            background: white;
+            color: #5f7d9c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: 0.1s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: #f5faff;
+        }
+
+        .btn i {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .btn-primary {
+            background: #f0f7fc;
+            border-color: #cde0f0;
+            color: #4f7395;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .button-group .btn {
+            margin-top: 0;
+        }
+
+        /* 进度卡片 */
+        .progress-card {
+            background: #f8fcff;
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 14px;
+            border: 1px solid #e1f0f5;
+        }
+
+        .progress-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            background: #e8f0fd;
+            color: #4f7a9c;
+            gap: 4px;
+        }
+
+        .progress-days {
+            font-size: 0.8rem;
+            color: #6d8aa8;
+        }
+        .progress-days strong {
+            font-size: 1.1rem;
+            color: #6d8aa8;
+            font-weight: 500;
+            margin-right: 2px;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #e0ecf5;
+            border-radius: 10px;
+            margin: 12px 0 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #9bb9d4;
+            border-radius: 10px;
+        }
+
+        /* 已注销卡片 */
+        .closed-card {
+            background: #f8fafd;
+            border: 1px solid #e3ecf5;
+        }
+
+        .closed-card .history-icon {
+            background: #e3ecf5;
+            color: #7c94b0;
+        }
+
+        .lock-icon {
+            color: #9bb3cc;
+            font-size: 0.75rem;
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            padding: 8px 0 0;
+            border-top: 1px dashed #d9e6f2;
+            margin-top: 10px;
+        }
+
+        /* 弹窗样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 50, 70, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.2s;
+            backdrop-filter: blur(3px);
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 28px;
+            width: 360px;
+            max-width: 90%;
+            padding: 24px 22px 22px;
+            box-shadow: 0 20px 40px rgba(0, 20, 40, 0.15);
+        }
+
+        .modal-icon {
+            width: 56px;
+            height: 56px;
+            background: #f4fafd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7f9bb9;
+            font-size: 26px;
+            margin: 0 auto 16px;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #3a5978;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .modal-desc {
+            color: #6b8baa;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .modal-input {
+            width: 100%;
+            border: 1px solid #dae6f2;
+            border-radius: 16px;
+            padding: 14px;
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+            outline: none;
+        }
+
+        .modal-input:focus {
+            border-color: #9bb9d4;
+        }
+
+        .modal-input-group {
+            margin-bottom: 16px;
+        }
+
+        .modal-input-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: #5f7d9c;
+            margin-bottom: 6px;
+        }
+
+        .sms-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .sms-row .modal-input {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .sms-btn {
+            width: 100px;
+            padding: 14px 0;
+            border-radius: 16px;
+            border: 1px solid #dae6f2;
+            background: #f0f7fc;
+            color: #4f7395;
+            font-size: 0.85rem;
+            cursor: pointer;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .sms-btn.disabled {
+            background: #f0f5fc;
+            color: #99b1cc;
+            cursor: not-allowed;
+        }
+
+        .warning-box {
+            background: #faf6f2;
+            border-left: 3px solid #d4b8a8;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 0.85rem;
+            color: #7a6a5c;
+        }
+
+        .warning-box.success {
+            background: #f0f7fc;
+            border-left-color: #9bb9d4;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 16px 0;
+        }
+
+        .checkbox-item input {
+            width: 18px;
+            height: 18px;
+        }
+
+        .checkbox-item label {
+            font-size: 0.85rem;
+            color: #5b7797;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 50px;
+            font-weight: 400;
+            border: 1px solid #dae6f2;
+            background: white;
+            color: #5f7d9c;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.1s;
+        }
+
+        .modal-btn.confirm {
+            background: #f2f8fd;
+            border-color: #c4d8ec;
+        }
+
+        .modal-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1200px) {
+            .grid-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        @media (max-width: 800px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 500px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-container">
+        <!-- 第1列：注销账号 -->
+        <div class="status-column">
+            <div class="column-header">
+                <h3><i class="fas fa-user-slash" style="color:#8ba3c0;"></i> 注销账号</h3>
+                <span class="count-badge">当前账号</span>
+            </div>
+            <div class="column-content">
+                <!-- 当前登录账号卡片 -->
+                <div class="history-card">
+                    <div class="history-header">
+                        <div class="history-icon">我</div>
+                        <div class="history-info">
+                            <h4>当前登录账号</h4>
+                            <p>ID: 1083684999745</p>
+                        </div>
+                    </div>
+                    <div class="asset-normal">
+                        <i class="fas fa-check-circle"></i> 资产正常，可注销
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">手机号</span>
+                        <span class="detail-value">138****1234</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">注册时间</span>
+                        <span class="detail-value">2022-03-10</span>
+                    </div>
+                    <button class="btn btn-primary" onclick="showApplyModal()">
+                        <i class="fas fa-user-slash"></i> 申请注销
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第2列：待审核 -->
+        <div class="status-column">
+            <div class="column-header">
+                <h3><i class="fas fa-hourglass-half" style="color:#b89b80;"></i> 待审核</h3>
+                <span class="count-badge">2</span>
+            </div>
+            <div class="column-content">
+                <!-- 待审核1：有资产阻拦 -->
+                <div class="history-card">
+                    <div class="history-header">
+                        <div class="history-icon">张</div>
+                        <div class="history-info">
+                            <h4>张明华</h4>
+                            <p>申请：2026-03-10 14:23</p>
+                        </div>
+                    </div>
+                    <div class="asset-warning">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>2笔未完成订单 · 余额¥126.50</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">设备</span>
+                        <span class="detail-value">iOS 14.2.1 · 北京</span>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn" style="flex:1;" onclick="showContactModal()">客服</button>
+                        <button class="btn" style="flex:1;" onclick="showReapplyModal()">重新申请</button>
+                    </div>
+                </div>
+
+                <!-- 待审核2：无资产正常 -->
+                <div class="history-card">
+                    <div class="history-header">
+                        <div class="history-icon">陈</div>
+                        <div class="history-info">
+                            <h4>陈丽</h4>
+                            <p>申请：2026-03-10 09:47</p>
+                        </div>
+                    </div>
+                    <div class="asset-normal">
+                        <i class="fas fa-check-circle"></i> 资产正常
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">设备</span>
+                        <span class="detail-value">Android 13 · 上海</span>
+                    </div>
+                    <div style="background:#f0f7fc; padding:8px; border-radius:10px; font-size:0.75rem; color:#6d8aa8; margin:8px 0;">
+                        ⏳ 审核中，预计1-2个工作日
+                    </div>
+                    <button class="btn" onclick="showProgressModal()">查看进度</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第3列：冻结中 -->
+        <div class="status-column">
+            <div class="column-header">
+                <h3><i class="fas fa-snowflake" style="color:#8aa9c2;"></i> 冻结中</h3>
+                <span class="count-badge">2</span>
+            </div>
+            <div class="column-content">
+                <!-- 冻结中1 -->
+                <div class="progress-card">
+                    <div class="progress-status">
+                        <span class="status-badge"><i class="fas fa-snowflake"></i> 后悔期</span>
+                        <span class="progress-days"><strong>25</strong>/30天</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 83%"></div>
+                    </div>
+                    <div class="history-header" style="margin-top:12px;">
+                        <div class="history-icon">李</div>
+                        <div class="history-info">
+                            <h4>李冠杰</h4>
+                            <p>申请：2026-03-09</p>
+                        </div>
+                    </div>
+                    <div class="button-group" style="margin-top:12px;">
+                        <button class="btn" style="flex:1;" onclick="showRecoverModal('李冠杰')"><i class="fas fa-undo-alt"></i> 恢复</button>
+                        <button class="btn" style="flex:1;" onclick="showDetailModal('李冠杰', 'frozen')">查看</button>
+                    </div>
+                </div>
+
+                <!-- 冻结中2 -->
+                <div class="progress-card">
+                    <div class="progress-status">
+                        <span class="status-badge"><i class="fas fa-snowflake"></i> 后悔期</span>
+                        <span class="progress-days"><strong>3</strong>/30天</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 90%"></div>
+                    </div>
+                    <div class="history-header" style="margin-top:12px;">
+                        <div class="history-icon">周</div>
+                        <div class="history-info">
+                            <h4>周若云</h4>
+                            <p>申请：2026-03-08</p>
+                        </div>
+                    </div>
+                    <div class="button-group" style="margin-top:12px;">
+                        <button class="btn" style="flex:1;" onclick="showRecoverModal('周若云')"><i class="fas fa-undo-alt"></i> 恢复</button>
+                        <button class="btn" style="flex:1;" onclick="showDetailModal('周若云', 'frozen')">查看</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第4列：已恢复 -->
+        <div class="status-column">
+            <div class="column-header">
+                <h3><i class="fas fa-undo-alt" style="color:#8fa8b5;"></i> 已恢复</h3>
+                <span class="count-badge">1</span>
+            </div>
+            <div class="column-content">
+                <div class="history-card">
+                    <div class="history-header">
+                        <div class="history-icon">王</div>
+                        <div class="history-info">
+                            <h4>王静怡</h4>
+                            <p>恢复时间：2026-03-08</p>
+                        </div>
+                    </div>
+                    <div class="recover-reason">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>恢复原因：误申请注销，账户还在使用</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">原申请</span>
+                        <span class="detail-value">2026-03-05</span>
+                    </div>
+                    <div class="asset-normal" style="margin-top:8px;">
+                        <i class="fas fa-check-circle"></i> 当前资产正常
+                    </div>
+                    <button class="btn btn-primary" style="margin-top:14px;" onclick="showApplyModal()">
+                        <i class="fas fa-user-slash"></i> 重新申请注销
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第5列：已注销 -->
+        <div class="status-column">
+            <div class="column-header">
+                <h3><i class="fas fa-ban" style="color:#9cb1c9;"></i> 已注销</h3>
+                <span class="count-badge">1</span>
+            </div>
+            <div class="column-content">
+                <div style="background:#f2f6fc; border-radius:14px; padding:12px; margin-bottom:16px; display:flex; gap:8px; align-items:center;">
+                    <i class="fas fa-info-circle" style="color:#8fa8c0;"></i>
+                    <div style="font-size:0.8rem; color:#5f7c9a;">已注销账号无法登录</div>
+                </div>
+
+                <div class="history-card closed-card">
+                    <div class="history-header">
+                        <div class="history-icon">吴</div>
+                        <div class="history-info">
+                            <h4>吴建国</h4>
+                            <p>永久注销：2026-03-04</p>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">申请时间</span>
+                        <span class="detail-value">2026-02-01</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">后悔期</span>
+                        <span class="detail-value">2026-02-02 ~ 03-04</span>
+                    </div>
+                    <div class="lock-icon">
+                        <i class="fas fa-lock"></i>
+                        <span>账号已永久注销</span>
+                    </div>
+                    <button class="btn" style="margin-top:12px;" onclick="showDetailModal('吴建国', 'closed')">查看详情</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 申请注销弹窗（保留注销流程说明） -->
+    <div class="modal-overlay" id="applyModal">
+        <div class="modal-box">
+            <div class="modal-icon">
+                <i class="fas fa-user-slash"></i>
+            </div>
+            <div class="modal-title">申请注销账号</div>
+            
+            <div class="warning-box success">
+                <i class="fas fa-check-circle" style="color:#7f9bb9; margin-right:6px;"></i>
+                当前账户无余额、无未完成订单，符合注销条件。
+            </div>
+
+            <!-- 保留的注销流程说明 -->
+            <div style="background:#f8fcff; border-radius:12px; padding:16px; margin-bottom:16px;">
+                <p style="margin-bottom:10px; color:#2d4d6e;"><i class="fas fa-clock" style="color:#42b7ae;"></i> 注销流程：</p>
+                <ul style="list-style:none; color:#54758f; font-size:0.9rem; line-height:1.8;">
+                    <li><i class="fas fa-check-circle" style="color:#42b7ae; width:20px;"></i> 提交申请后进入审核</li>
+                    <li><i class="fas fa-check-circle" style="color:#42b7ae; width:20px;"></i> 审核通过后进入30天后悔期（可恢复）</li>
+                    <li><i class="fas fa-check-circle" style="color:#42b7ae; width:20px;"></i> 期满后账号永久注销，无法登录</li>
+                </ul>
+            </div>
+
+            <div class="modal-input-group">
+                <label>请输入账号名称以确认</label>
+                <input type="text" class="modal-input" id="accountName" placeholder="请输入您的账号名称">
+            </div>
+
+            <div class="modal-input-group">
+                <label>手机号码</label>
+                <input type="tel" class="modal-input" id="phoneNumber" value="138****1234" readonly disabled style="background:#f5f9ff;">
+            </div>
+
+            <div class="modal-input-group">
+                <label>短信验证码</label>
+                <div class="sms-row">
+                    <input type="text" class="modal-input" id="smsCode" placeholder="请输入验证码">
+                    <button class="sms-btn" id="smsBtn" onclick="sendSms()">获取验证码</button>
+                </div>
+            </div>
+
+            <div class="checkbox-item">
+                <input type="checkbox" id="agreeCheck">
+                <label for="agreeCheck">我已阅读并知悉注销流程及后果</label>
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn" onclick="hideApplyModal()">取消</button>
+                <button class="modal-btn confirm" id="confirmApplyBtn" disabled onclick="confirmApply()">确认申请</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 联系客服弹窗 -->
+    <div class="modal-overlay" id="contactModal">
+        <div class="modal-box">
+            <div class="modal-icon">
+                <i class="fas fa-headset"></i>
+            </div>
+            <div class="modal-title">联系客服</div>
+            <div class="modal-desc">
+                您可以通过以下方式联系客服处理订单问题：
+            </div>
+            <div style="background:#f8fcff; border-radius:12px; padding:16px; margin-bottom:16px;">
+                <p style="margin-bottom:10px;">📞 客服电话：400-123-4567</p>
+                <p style="margin-bottom:10px;">💬 在线客服：9:00-21:00</p>
+                <p>📧 客服邮箱：kefu@example.com</p>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn confirm" onclick="hideContactModal()">知道了</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 重新申请弹窗 -->
+    <div class="modal-overlay" id="reapplyModal">
+        <div class="modal-box">
+            <div class="modal-icon">
+                <i class="fas fa-redo-alt"></i>
+            </div>
+            <div class="modal-title">重新申请注销</div>
+            <div class="warning-box">
+                <i class="fas fa-exclamation-triangle" style="color:#b18b7a; margin-right:6px;"></i>
+                当前账户存在未完成订单或余额，请先处理后再申请。
+            </div>
+            <div style="background:#f8fcff; border-radius:12px; padding:14px; margin:16px 0;">
+                <p style="color:#5f7d9c;">待处理项：</p>
+                <p style="margin-top:8px;">• 2笔未完成订单</p>
+                <p>• 余额¥126.50</p>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn" onclick="hideReapplyModal()">稍后处理</button>
+                <button class="modal-btn confirm" onclick="handleAssets()">去处理</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 查看进度弹窗 -->
+    <div class="modal-overlay" id="progressModal">
+        <div class="modal-box">
+            <div class="modal-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="modal-title">审核进度</div>
+            <div style="background:#f8fcff; border-radius:12px; padding:16px; margin-bottom:16px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                    <span style="color:#5f7d9c;">申请时间</span>
+                    <span style="color:#3c5a77;">2026-03-10 09:47</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                    <span style="color:#5f7d9c;">当前状态</span>
+                    <span style="color:#3c5a77;">审核中</span>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span style="color:#5f7d9c;">预计完成</span>
+                    <span style="color:#3c5a77;">1-2个工作日</span>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn confirm" onclick="hideProgressModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 恢复账号弹窗 -->
+    <div class="modal-overlay" id="recoverModal">
+        <div class="modal-box">
+            <div class="modal-icon" style="background:#f0f7fa;">
+                <i class="fas fa-undo-alt"></i>
+            </div>
+            <div class="modal-title">恢复账号</div>
+            <div class="modal-desc">
+                正在为 <strong id="recoverUserName">李冠杰</strong> 恢复账号
+            </div>
+            <textarea class="modal-input" id="recoverReason" placeholder="请输入恢复原因（必填）" style="min-height:90px;"></textarea>
+            <div class="modal-actions">
+                <button class="modal-btn" onclick="hideRecoverModal()">取消</button>
+                <button class="modal-btn confirm" onclick="confirmRecover()">确认恢复</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 查看详情弹窗 -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-box">
+            <div class="modal-icon">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <div class="modal-title" id="detailTitle">详情</div>
+            <div style="text-align:left; margin-bottom:16px;" id="detailContent"></div>
+            <button class="modal-btn confirm" onclick="hideDetailModal()">关 闭</button>
+        </div>
+    </div>
+
+    <script>
+        // 申请注销弹窗
+        const applyModal = document.getElementById('applyModal');
+        const accountName = document.getElementById('accountName');
+        const smsCode = document.getElementById('smsCode');
+        const agreeCheck = document.getElementById('agreeCheck');
+        const confirmApplyBtn = document.getElementById('confirmApplyBtn');
+        const smsBtn = document.getElementById('smsBtn');
+
+        let smsTimer = null;
+        let countdown = 60;
+
+        function showApplyModal() {
+            applyModal.classList.add('show');
+            accountName.value = '';
+            smsCode.value = '';
+            agreeCheck.checked = false;
+            updateConfirmButton();
+        }
+
+        function hideApplyModal() {
+            applyModal.classList.remove('show');
+            if (smsTimer) {
+                clearInterval(smsTimer);
+                smsBtn.innerText = '获取验证码';
+                smsBtn.classList.remove('disabled');
+                countdown = 60;
+            }
+        }
+
+        function sendSms() {
+            if (smsBtn.classList.contains('disabled')) return;
+            
+            // 模拟发送验证码
+            alert('验证码已发送至 138****1234');
+            
+            smsBtn.classList.add('disabled');
+            smsBtn.innerText = `${countdown}秒后重试`;
+            
+            smsTimer = setInterval(() => {
+                countdown--;
+                if (countdown <= 0) {
+                    clearInterval(smsTimer);
+                    smsBtn.innerText = '获取验证码';
+                    smsBtn.classList.remove('disabled');
+                    countdown = 60;
+                } else {
+                    smsBtn.innerText = `${countdown}秒后重试`;
+                }
+            }, 1000);
+        }
+
+        function validateForm() {
+            const nameValid = accountName.value.trim() !== '';
+            const codeValid = smsCode.value.trim() !== '';
+            const agreeValid = agreeCheck.checked;
+            return nameValid && codeValid && agreeValid;
+        }
+
+        function updateConfirmButton() {
+            confirmApplyBtn.disabled = !validateForm();
+        }
+
+        accountName.addEventListener('input', updateConfirmButton);
+        smsCode.addEventListener('input', updateConfirmButton);
+        agreeCheck.addEventListener('change', updateConfirmButton);
+
+        function confirmApply() {
+            const name = accountName.value.trim();
+            const code = smsCode.value.trim();
+            
+            if (name !== '当前登录账号' && name !== '1083684999745') {
+                alert('❌ 账号名称验证失败，请确认输入正确的账号名称');
+                return;
+            }
+            
+            if (code !== '123456') {
+                alert('❌ 验证码错误');
+                return;
+            }
+            
+            alert('✅ 注销申请已提交，请等待审核');
+            hideApplyModal();
+        }
+
+        // 联系客服弹窗
+        const contactModal = document.getElementById('contactModal');
+        function showContactModal() {
+            contactModal.classList.add('show');
+        }
+        function hideContactModal() {
+            contactModal.classList.remove('show');
+        }
+
+        // 重新申请弹窗
+        const reapplyModal = document.getElementById('reapplyModal');
+        function showReapplyModal() {
+            reapplyModal.classList.add('show');
+        }
+        function hideReapplyModal() {
+            reapplyModal.classList.remove('show');
+        }
+        function handleAssets() {
+            alert('跳转至订单页面处理资产');
+            hideReapplyModal();
+        }
+
+        // 查看进度弹窗
+        const progressModal = document.getElementById('progressModal');
+        function showProgressModal() {
+            progressModal.classList.add('show');
+        }
+        function hideProgressModal() {
+            progressModal.classList.remove('show');
+        }
+
+        // 恢复弹窗
+        const recoverModal = document.getElementById('recoverModal');
+        const recoverUserName = document.getElementById('recoverUserName');
+        const recoverReason = document.getElementById('recoverReason');
+
+        function showRecoverModal(userName) {
+            recoverUserName.innerText = userName;
+            recoverReason.value = '';
+            recoverModal.classList.add('show');
+        }
+
+        function hideRecoverModal() {
+            recoverModal.classList.remove('show');
+        }
+
+        function confirmRecover() {
+            const reason = recoverReason.value.trim();
+            if (!reason) {
+                alert('请填写恢复原因');
+                return;
+            }
+            alert(`✅ 账号已恢复，原因：${reason}`);
+            hideRecoverModal();
+        }
+
+        // 详情弹窗
+        const detailModal = document.getElementById('detailModal');
+        const detailTitle = document.getElementById('detailTitle');
+        const detailContent = document.getElementById('detailContent');
+
+        function showDetailModal(userName, type) {
+            detailTitle.innerText = userName + ' · 详情';
+            if (type === 'frozen') {
+                detailContent.innerHTML = `
+                    <div style="background:#f8fcff; border-radius:14px; padding:14px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span style="color:#6b8aa8;">申请时间</span>
+                            <span style="color:#3c5a77;">2026-03-09 16:12</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span style="color:#6b8aa8;">设备信息</span>
+                            <span style="color:#3c5a77;">iOS 14.5 · 广州</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="color:#6b8aa8;">后悔期截止</span>
+                            <span style="color:#3c5a77;">2026-04-08</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                detailContent.innerHTML = `
+                    <div style="background:#f8fcff; border-radius:14px; padding:14px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span style="color:#6b8aa8;">申请时间</span>
+                            <span style="color:#3c5a77;">2026-02-01 10:22</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span style="color:#6b8aa8;">审核人</span>
+                            <span style="color:#3c5a77;">赵欣 · 2026-02-02</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="color:#6b8aa8;">永久注销</span>
+                            <span style="color:#3c5a77;">2026-03-04</span>
+                        </div>
+                    </div>
+                `;
+            }
+            detailModal.classList.add('show');
+        }
+
+        function hideDetailModal() {
+            detailModal.classList.remove('show');
+        }
+
+        // 点击遮罩关闭
+        [applyModal, contactModal, reapplyModal, progressModal, recoverModal, detailModal].forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    if (modal === applyModal) hideApplyModal();
+                    if (modal === contactModal) hideContactModal();
+                    if (modal === reapplyModal) hideReapplyModal();
+                    if (modal === progressModal) hideProgressModal();
+                    if (modal === recoverModal) hideRecoverModal();
+                    if (modal === detailModal) hideDetailModal();
+                }
+            });
+        });
+
+        // 阻止弹窗内部点击关闭
+        document.querySelectorAll('.modal-box').forEach(box => {
+            box.addEventListener('click', e => e.stopPropagation());
+        });
+    </script>
+</body>
+</html>

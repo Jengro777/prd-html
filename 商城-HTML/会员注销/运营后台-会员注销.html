@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会员注销 · 后台管理（完整状态）</title>
+    <!-- Font Awesome 5 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f8fe;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        /* 主管理容器 */
+        .admin-container {
+            width: 100%;
+            max-width: 1440px;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -12px rgba(0, 32, 64, 0.12);
+            overflow: hidden;
+        }
+
+        /* 头部导航 */
+        .header-bar {
+            padding: 20px 28px;
+            border-bottom: 1px solid #eef3f9;
+            display: flex;
+            align-items: center;
+            background: white;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .title-section h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #1a3248;
+            letter-spacing: -0.02em;
+        }
+
+        .title-section .badge {
+            background: #ecf6f4;
+            color: #2b7b72;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* 提示条 */
+        .hint-bubble {
+            background: #f0f9f8;
+            border-radius: 16px;
+            padding: 16px 28px;
+            margin: 20px 28px 16px 28px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #1d6c63;
+            font-size: 0.95rem;
+            border-left: 4px solid #42b7ae;
+            box-shadow: 0 2px 8px rgba(66, 183, 174, 0.08);
+        }
+        .hint-bubble i {
+            font-size: 1.3rem;
+            color: #42b7ae;
+        }
+
+        /* 筛选区域 */
+        .filter-section {
+            padding: 20px 28px 16px 28px;
+            background: #ffffff;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(6, auto);
+            gap: 18px 24px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 140px;
+        }
+
+        .filter-item label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #5b7395;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .filter-item input, .filter-item .fake-select {
+            background: white;
+            border: 1px solid #e0e9f2;
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            color: #1f3145;
+            outline: none;
+            transition: 0.2s;
+            width: 100%;
+        }
+
+        .filter-item input:focus, .filter-item .fake-select:focus {
+            border-color: #42b7ae;
+            box-shadow: 0 0 0 3px rgba(66, 183, 174, 0.1);
+        }
+
+        .filter-item .fake-select {
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #334e6e;
+            cursor: default;
+        }
+
+        .filter-item .fake-select i {
+            color: #a6bbd6;
+            font-size: 0.8rem;
+        }
+
+        .date-range {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .date-range input {
+            width: 130px;
+        }
+
+        .date-range span {
+            color: #a1b6d1;
+            font-weight: 500;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-left: auto;
+            grid-column: span 2;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border: 1px solid transparent;
+            background: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .btn-primary {
+            background: #42b7ae;
+            border-color: #42b7ae;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #38a39b;
+        }
+
+        .btn-outline {
+            border: 1px solid #d5e2f0;
+            background: white;
+            color: #3d5a7c;
+        }
+        .btn-outline:hover {
+            background: #f5faff;
+            border-color: #b8cee8;
+        }
+
+        .btn-excel {
+            border: 1px solid #d5e2f0;
+            background: white;
+            color: #3d5a7c;
+        }
+        .btn-excel:hover {
+            background: #f5faff;
+            border-color: #b8cee8;
+        }
+
+        /* 导出按钮行 */
+        .export-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 8px 28px 16px 28px;
+        }
+
+        .export-btn {
+            background: white;
+            border: 1px solid #d5e2f0;
+            border-radius: 40px;
+            padding: 8px 24px;
+            font-size: 0.9rem;
+            color: #3d5a7c;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .export-btn:hover {
+            background: #f5faff;
+            border-color: #b8cee8;
+        }
+
+        /* 表格区域 - 减小列表高度 */
+        .table-wrapper {
+            padding: 0 28px 24px 28px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+        }
+
+        th {
+            text-align: left;
+            padding: 16px 16px;  /* 稍微减小头部高度 */
+            background-color: #f9fcff;
+            color: #3a6182;
+            font-weight: 600;
+            font-size: 0.8rem;
+            border-bottom: 1px solid #e2ecf7;
+            white-space: nowrap;
+            letter-spacing: 0.3px;
+        }
+
+        td {
+            padding: 12px 16px;  /* 减小行高，从16px/16px改为12px/16px */
+            border-bottom: 1px solid #ecf3fa;
+            color: #1f334a;
+            font-size: 0.9rem;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: #f9fdff;
+        }
+
+        /* 会员信息组合 - 减小高度 */
+        .member-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .member-avatar {
+            width: 36px;  /* 稍微减小头像尺寸 */
+            height: 36px;
+            background: #e2f0f5;
+            border-radius: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #307066;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .member-detail {
+            line-height: 1.3;
+        }
+        .member-name {
+            font-weight: 600;
+            color: #1a3a4a;
+            font-size: 0.95rem;
+        }
+        .member-account {
+            font-size: 0.7rem;  /* 略微减小 */
+            color: #708aac;
+        }
+
+        .text-mono {
+            font-family: 'SF Mono', monospace;
+            color: #3b6280;
+            font-size: 0.85rem;  /* 略微减小 */
+        }
+
+        /* 状态徽章 - 更紧凑 */
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;  /* 减小内边距 */
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.7rem;  /* 稍微减小字体 */
+            background: #f0f7fc;
+            color: #386a89;
+            gap: 6px;
+            line-height: 1.2;
+        }
+        .badge-status.warning {
+            background: #fff5e8;
+            color: #9e7a4a;
+        }
+        .badge-status.rejected {
+            background: #fef1ef;
+            color: #b15e4f;
+        }
+        .badge-status.frozen {
+            background: #e8f2fd;
+            color: #3173a5;
+        }
+        .badge-status.completed {
+            background: #e2e8f0;  /* 中性灰色，表示彻底注销 */
+            color: #4b5f73;
+        }
+        .badge-status.recovered {
+            background: #e4f3e8;
+            color: #2a7a5c;
+        }
+
+        /* 资产提示 */
+        .asset-warning {
+            color: #b65f4a;
+            font-size: 0.7rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #fff2ef;
+            padding: 2px 10px;
+            border-radius: 30px;
+            white-space: nowrap;
+        }
+
+        /* 操作组 - 更紧凑 */
+        .action-group {
+            display: flex;
+            gap: 14px;  /* 略微减小间距 */
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .action-text {
+            font-size: 0.85rem;  /* 稍微减小 */
+            color: #6082a5;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 0;
+            background: none;
+            border: none;
+            transition: 0.1s;
+            border-bottom: 1px solid transparent;
+        }
+        .action-text:hover {
+            color: #32577a;
+            border-bottom-color: #cbdae9;
+        }
+
+        .action-text.approve {
+            color: #42b7ae;
+            font-weight: 500;
+        }
+        .action-text.approve:hover {
+            color: #2f918a;
+        }
+
+        .action-text.recover {
+            color: #5f8b4b;
+            font-weight: 500;
+        }
+        .action-text.recover:hover {
+            color: #3f6a2f;
+        }
+
+        .action-divider {
+            color: #d5e4f0;
+            font-weight: 300;
+            font-size: 0.85rem;
+        }
+
+        /* 底部分页 */
+        .pagination-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 28px 28px 28px;
+            border-top: 1px solid #eaf2fa;
+            color: #51718e;
+        }
+
+        .total-info {
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .rows-per-page {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f5fafd;
+            padding: 6px 16px;
+            border-radius: 40px;
+        }
+
+        .page-control {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .page-numbers {
+            display: flex;
+            gap: 6px;
+        }
+
+        .page-num {
+            width: 36px;  /* 略微减小 */
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: white;
+            border: 1px solid #deeaf5;
+            color: #3b6385;
+            font-weight: 500;
+            cursor: default;
+            transition: 0.1s;
+            font-size: 0.9rem;
+        }
+        .page-num.active {
+            background: #42b7ae;
+            border-color: #42b7ae;
+            color: white;
+        }
+
+        /* 弹窗基础 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 30, 40, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.2s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 28px;
+            width: 460px;
+            max-width: 90%;
+            padding: 28px 28px 24px;
+            box-shadow: 0 30px 60px rgba(0, 35, 45, 0.2);
+            transform: scale(0.96);
+            transition: 0.2s;
+        }
+
+        .modal-overlay.show .modal-box {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #edf4fc;
+        }
+
+        .modal-icon {
+            width: 48px;
+            height: 48px;
+            background: #f0faf9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #42b7ae;
+            font-size: 24px;
+        }
+
+        .modal-header h3 {
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: #1e3f54;
+        }
+
+        .modal-content {
+            margin-bottom: 24px;
+            color: #385973;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .modal-textarea {
+            width: 100%;
+            border: 1px solid #dae6f2;
+            border-radius: 16px;
+            padding: 14px 18px;
+            font-size: 0.95rem;
+            color: #1e364f;
+            resize: vertical;
+            min-height: 100px;
+            margin: 16px 0 8px;
+            outline: none;
+            transition: 0.15s;
+        }
+        .modal-textarea:focus {
+            border-color: #42b7ae;
+            box-shadow: 0 0 0 3px rgba(66, 183, 174, 0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 16px;
+        }
+
+        .modal-btn {
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .modal-btn.cancel {
+            background: white;
+            border-color: #d5e2f0;
+            color: #466586;
+        }
+        .modal-btn.cancel:hover {
+            background: #f5faff;
+        }
+
+        .modal-btn.confirm {
+            background: #42b7ae;
+            color: white;
+        }
+        .modal-btn.confirm:hover {
+            background: #38a39b;
+        }
+
+        .modal-btn.confirm.recover {
+            background: #5f8b4b;
+        }
+        .modal-btn.confirm.recover:hover {
+            background: #4d733c;
+        }
+
+        /* 详情弹窗网格 */
+        .info-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .info-section {
+            background: #f8fcff;
+            border-radius: 18px;
+            padding: 18px;
+        }
+
+        .info-section h4 {
+            font-size: 1rem;
+            color: #2b5672;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .info-label {
+            width: 100px;
+            color: #6382a3;
+            flex-shrink: 0;
+        }
+
+        .info-value {
+            color: #1e3d58;
+            font-weight: 500;
+        }
+
+        hr {
+            border: 0.5px solid #e3edf7;
+            margin: 0 28px;
+        }
+
+        .footer-note {
+            padding: 16px 28px 24px 28px;
+            font-size:0.85rem;
+            color: #6c8aaa;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .footer-note i {
+            color: #9bb6d4;
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body>
+<div class="admin-container">
+    <!-- 头部 -->
+    <div class="header-bar">
+        <div class="title-section">
+            <h2>会员注销</h2>
+            <span class="badge"><i class="fas fa-user-slash"></i> 注销审核</span>
+        </div>
+    </div>
+
+    <!-- 业务流程提示条 (增加注销完成说明) -->
+    <div class="hint-bubble">
+        <i class="fas fa-info-circle"></i>
+        <span><strong>注销流程：</strong> 审核通过 → <strong>30天冻结后悔期</strong>（可恢复）→ 期满后自动变为 <strong>注销完成</strong>（永久注销）</span>
+    </div>
+
+    <!-- 筛选区块 -->
+    <div class="filter-section">
+        <div class="filter-grid">
+            <div class="filter-item">
+                <label>会员信息</label>
+                <input type="text" placeholder="会员ID/昵称" value="张明">
+            </div>
+            <div class="filter-item">
+                <label>会员账号</label>
+                <input type="text" placeholder="请输入" value="1M5B7e40">
+            </div>
+            <div class="filter-item">
+                <label>手机号</label>
+                <input type="text" placeholder="请输入" value="534779374">
+            </div>
+            <div class="filter-item" style="min-width:260px;">
+                <label>注册日期</label>
+                <div class="date-range">
+                    <input type="text" placeholder="开始日期" value="2026-03-01">
+                    <span>—</span>
+                    <input type="text" placeholder="结束日期" value="2026-03-10">
+                </div>
+            </div>
+            <div class="filter-item">
+                <label>注册平台</label>
+                <div class="fake-select">全部平台 <i class="fas fa-angle-down"></i></div>
+            </div>
+            <div class="action-buttons">
+                <span class="btn btn-primary"><i class="fas fa-search"></i> 查询</span>
+                <span class="btn btn-outline"><i class="fas fa-redo-alt"></i> 重置</span>
+                <span class="btn btn-excel"><i class="fas fa-file-excel"></i> 导出Excel</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导出按钮行 -->
+    <div class="export-bar">
+        <div class="export-btn">
+            <i class="fas fa-download"></i> 导出Excel
+        </div>
+    </div>
+
+    <!-- 表格主体 - 增加"注销完成"状态行，列表高度减小 -->
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>会员信息</th>
+                    <th>会员账号</th>
+                    <th>手机号</th>
+                    <th>资产/订单</th>
+                    <th>注册平台</th>
+                    <th>注销申请时间</th>
+                    <th>状态</th>
+                    <th>剩余后悔期</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 行1 待审核 · 有未完成订单 -->
+                <tr>
+                    <td>
+                        <div class="member-info">
+                            <div class="member-avatar">张</div>
+                            <div class="member-detail">
+                                <div class="member-name">张明华</div>
+                                <div class="member-account">ID:1083684999745503232</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-mono">1M5B7e40</td>
+                    <td>534****74</td>
+                    <td><span class="asset-warning"><i class="fas fa-exclamation-circle"></i> 2笔订单+¥126.5</span></td>
+                    <td>ios</td>
+                    <td>2026-03-10 14:23</td>
+                    <td><span class="badge-status warning"><i class="fas fa-hourglass-half"></i> 待审核</span></td>
+                    <td>—</td>
+                    <td>
+                        <div class="action-group">
+                            <button class="action-text approve" onclick="showApproveModal(this, true)"><i class="fas fa-check-circle"></i> 通过</button>
+                            <span class="action-divider">|</span>
+                            <button class="action-text" onclick="showRejectModal(this)"><i class="fas fa-times-circle"></i> 驳回</button>
+                            <span class="action-divider">|</span>
+                            <button class="action-text" onclick="showDetailModal('张明华', '1083684999745503232', 'ios', '14.2.1', '北京 · 朝阳', '2026-03-10 14:23', '待审核', null, null, null, '有未完成订单', '2笔订单，余额¥126.50')"><i class="fas fa-eye"></i> 查看</button>
+                        </div>
+                    </td>
+                </tr>
+                <!-- 行2 待审核 · 资产正常 -->
+                <tr>
+                    <td>
+                        <div class="member-info">
+                            <div class="member-avatar">陈</div>
+                            <div class="member-detail">
+                                <div class="member-name">陈丽</div>
+                                <div class="member-account">ID:1083682182599278592</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-mono">9f4436W1</td>
+                    <td>544****20</td>
+                    <td><span style="color:#388072;">✓ 资产0</span></td>
+                    <td>android</td>
+                    <td>2026-03-10 09:47</td>
+                    <td><span class="badge-status warning">待审核</span></td>
+                    <td>—</td>
+                    <td>
+                        <div class="action-group">
+                            <button class="action-text approve" onclick="showApproveModal(this, false)"><i class="fas fa-check-circle"></i> 通过</button>
+                            <span class="action-divider">|</span>
+                            <button class="action-text" onclick="showRejectModal(this)"><i class="fas fa-times-circle"></i> 驳回</button>
+                            <span class="action-divider">|</span>
+                            <button class="action-text" onclick="showDetailModal('陈丽', '1083682182599278592', 'android', '13.5', '上海 · 浦东', '2026-03-10 09:47', '待审核', null, null, null, '正常', '无资产')"><i class="fas fa-eye"></i> 查看</button>
+                        </div>
+                    </td>
+                </tr>
+                <!-- 行3 30天后悔期内 (冻结) 剩余25天 - 增加恢复账号操作 -->
+                <tr>
+                    <td>
+                        <div class="member-info">
+                            <div class="member-avatar">李</div>
+                            <div class="member-detail">
+                                <div class="member-name">李冠杰</div>
+                                <div class="member-account">ID:1083673768846426112</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-mono">Su8775QY</td>
+                    <td>203****20</td>
+                    <td>冻结中</td>
+                    <td>ios</td>
+                    <td>2026-03-09 16:12</td>
+                    <td><span class="badge-status frozen"><i class="fas fa-snowflake"></i> 冻结(后悔期)</span></td>
+                    <td><span style="color:#1d7e6b;">25天</span></td>
+                    <td>
+                        <div class="action-group">
+                            <button class="action-text recover" onclick="showRecoverModal(this, '李冠杰')"><i class="fas fa-undo-alt"></i> 恢复</button>
+                            <span class="action-divider">|</span>
+                            <button class="action-text" onclick="showDetailModal('李冠杰', '1083673768846426112', 'ios', '14.5', '广州 · 天河', '2026-03-09 16:12', '冻结(后悔期)', '张梅', '2026-03-09 17:30', '系统自动计算', '已通过审核', '进入30天后悔期，剩余25天')"><i class="fas fa-eye"></i> 查看</button>
+                        </div>
+                    </td>
+                </tr>
+                <!-- 行4 已驳回 -->
+                <tr>
+                    <td>
+                        <div class="member-info">
+                            <div class="member-avatar">王</div>
+                            <div class="member-detail">
+                                <div class="member-name">王静怡</div>
+                                <div class="member-account">ID:1083670815649562624</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-mono">999X7id2</td>
+                    <td>547****05</td>
+                    <td><span class="asset-warning"><i class="fas fa-coins"></i> 余额 ¥890</span></td>
+                    <td>ios</td>
+                    <td>2026-03-09 11:05</td>
+                    <td><span class="badge-status rejected">已驳回</span></td>
+                    <td>—</td>
+                    <td>
+                        <div class="action-group">
+                            <button class="action-text" onclick="showDetailModal('王静怡', '1083670815649562624', 'ios', '14.2', '深圳 · 南山', '2026-03-09 11:05', '已驳回', '李志远', '2026-03-09 14:20', null, '资产未清空', '账户余额890元')"><i class="fas fa-eye"></i> 查看</button>
+                        </div>
+                    </td>
+                </tr>
+                <!-- 行5 30天后悔期最后3天 -->
+                <tr>
+                    <td>
+                        <div class="member-info">
+                            <div class="member-avatar">周</div>
+                            <div class="member-detail">
+                                <div class="member-name">周若云</div>
+                                <div class="member-account">ID:1083649938115526656</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-mono">xC6DV3VD</td>
+                    <td>596****25</td>
+                    <td>冻结中</td>
+                    <td>ios</td>
+                    <td>2026-03-08 09:18</td>
+                    <td><span class="badge-status frozen">冻结(后悔期)</span></td>
+                    <td><span style="color:#b45f3a;">3天</span></td>
+                    <td>
+                        <div class="action-group">
+                            <button class="action-text recover" onclick="showRecoverModal(this, '周若云')"><i class="fas fa-undo-alt"></i> 恢复</button>
+                            <span class="action-divider">|</span>
+                            <button class="action-text" onclick="showDetailModal('周若云', '1083649938115526656', 'ios', '15.1', '成都 · 高新区', '2026-03-08 09:18', '冻结(后悔期)', '张梅', '2026-03-08 10:45', '系统自动计算', '已通过审核', '即将到期，剩余3天')"><i class="fas fa-eye"></i> 查看</button>
+                        </div>
+                    </td>
+                </tr>
+                <!-- 行6 注销完成 (已过后悔期) - 新增状态 -->
+                <tr>
+                    <td>
+                        <div class="member-info">
+                            <div class="member-avatar">吴</div>
+                            <div class="member-detail">
+                                <div class="member-name">吴建国</div>
+                                <div class="member-account">ID:1083623110697025536</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-mono">9p0FLD49</td>
+                    <td>537****26</td>
+                    <td>已注销</td>
+                    <td>android</td>
+                    <td>2026-02-01 10:22</td>
+                    <td><span class="badge-status completed"><i class="fas fa-ban"></i> 注销完成</span></td>
+                    <td>已过期</td>
+                    <td>
+                        <div class="action-group">
+                            <button class="action-text" onclick="showDetailModal('吴建国', '1083623110697025536', 'android', '11.0', '南京 · 鼓楼', '2026-02-01 10:22', '注销完成', '赵欣', '2026-02-02 09:15', '2026-03-04已过期', '已清空', '30天后悔期已过，账号永久注销')"><i class="fas fa-eye"></i> 查看</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 底部 分页 -->
+    <div class="pagination-bar">
+        <div class="total-info">
+            <span>共 <strong>476,614</strong> 条</span>
+            <span class="rows-per-page">
+                <i class="fas fa-list-ul"></i> 10条/页 <i class="fas fa-angle-down" style="margin-left:6px;"></i>
+            </span>
+        </div>
+        <div class="page-control">
+            <div class="page-numbers">
+                <span class="page-num"><i class="fas fa-chevron-left"></i></span>
+                <span class="page-num active">1</span>
+                <span class="page-num">2</span>
+                <span class="page-num">3</span>
+                <span class="page-num">4</span>
+                <span class="page-num">5</span>
+                <span class="page-num">...</span>
+                <span class="page-num">10</span>
+                <span class="page-num"><i class="fas fa-chevron-right"></i></span>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+    <div class="footer-note">
+        <span><i class="far fa-clock"></i> 注销申请需在3个工作日内处理</span>
+        <span><i class="fas fa-database"></i> 当前待审核: 12 件</span>
+        <span><i class="fas fa-undo-alt" style="color:#5f8b4b;"></i> 后悔期内可恢复</span>
+        <span><i class="fas fa-ban" style="color:#6f8a9f;"></i> 已过后悔期: 注销完成</span>
+    </div>
+</div>
+
+<!-- 通过/驳回确认弹窗 -->
+<div class="modal-overlay" id="confirmModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-icon" id="modalIcon"><i class="fas fa-check-circle"></i></div>
+            <h3 id="modalTitle">确认通过</h3>
+        </div>
+        <div class="modal-content" id="modalMessage">
+            确定要通过该会员的注销申请吗？
+        </div>
+        <div id="assetWarningBlock" style="background:#fff1f0; border-radius:12px; padding:12px 16px; margin-bottom:16px; display:none; color:#852818; border-left:4px solid #d94a38;">
+            <i class="fas fa-exclamation-triangle" style="margin-right:8px;"></i>
+            <span id="assetWarningText">该会员账户存在资产或未完成订单，无法进入注销流程。</span>
+        </div>
+        <div class="modal-actions">
+            <button class="modal-btn cancel" onclick="hideConfirmModal()">取消</button>
+            <button class="modal-btn confirm" id="modalConfirmBtn" onclick="confirmAction()">确定通过</button>
+        </div>
+    </div>
+</div>
+
+<!-- 恢复账号弹窗 (带备注) -->
+<div class="modal-overlay" id="recoverModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-icon" style="background:#e9f3e6; color:#5f8b4b;"><i class="fas fa-undo-alt"></i></div>
+            <h3>恢复账号</h3>
+        </div>
+        <div class="modal-content">
+            <p style="margin-bottom:12px;">正在为 <strong id="recoverUserName">李冠杰</strong> 恢复账号，请填写恢复原因：</p>
+            <textarea class="modal-textarea" id="recoverReason" placeholder="请输入恢复原因（必填）"></textarea>
+        </div>
+        <div class="modal-actions">
+            <button class="modal-btn cancel" onclick="hideRecoverModal()">取消</button>
+            <button class="modal-btn confirm recover" onclick="confirmRecover()">确认恢复</button>
+        </div>
+    </div>
+</div>
+
+<!-- 查看详情弹窗 -->
+<div class="modal-overlay" id="detailModal">
+    <div class="modal-box" style="width:540px;">
+        <div class="modal-header">
+            <div class="modal-icon"><i class="fas fa-user-slash"></i></div>
+            <h3>注销申请详情</h3>
+        </div>
+        <div class="info-grid">
+            <div class="info-section">
+                <h4><i class="fas fa-user-circle"></i> 会员信息</h4>
+                <div class="info-row"><span class="info-label">姓名：</span><span class="info-value" id="detailName">张明华</span></div>
+                <div class="info-row"><span class="info-label">会员ID：</span><span class="info-value" id="detailMemberId">1083684999745503232</span></div>
+                <div class="info-row"><span class="info-label">手机号：</span><span class="info-value" id="detailPhone">534****74</span></div>
+            </div>
+            <div class="info-section">
+                <h4><i class="fas fa-calendar-alt"></i> 注销申请信息</h4>
+                <div class="info-row"><span class="info-label">申请时间：</span><span class="info-value" id="detailApplyTime">2026-03-10 14:23</span></div>
+                <div class="info-row"><span class="info-label">设备信息：</span><span class="info-value" id="detailDevice">iOS 14.2.1 · 北京 朝阳</span></div>
+                <div class="info-row"><span class="info-label">注册平台：</span><span class="info-value" id="detailPlatform">ios</span></div>
+                <div class="info-row"><span class="info-label">注销原因：</span><span class="info-value" id="detailReason">不再使用平台</span></div>
+            </div>
+            <div class="info-section" id="assetSection">
+                <h4><i class="fas fa-wallet"></i> 资产/订单校验</h4>
+                <div class="info-row"><span class="info-label">状态：</span><span class="info-value" id="detailAssetStatus">有未完成订单，余额¥126.50</span></div>
+            </div>
+            <div class="info-section" id="auditSection">
+                <h4><i class="fas fa-clipboard-check"></i> 审核信息</h4>
+                <div class="info-row"><span class="info-label">审核人：</span><span class="info-value" id="detailAuditor">—</span></div>
+                <div class="info-row"><span class="info-label">审核时间：</span><span class="info-value" id="detailAuditTime">—</span></div>
+                <div class="info-row"><span class="info-label">审核结果：</span><span class="info-value" id="detailResult">待审核</span></div>
+                <div class="info-row" id="repentanceRow"><span class="info-label">后悔期截止：</span><span class="info-value" id="detailRepentance">—</span></div>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="modal-btn close" onclick="hideDetailModal()">关 闭</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 通过/驳回弹窗
+    const confirmModal = document.getElementById('confirmModal');
+    const modalIcon = document.getElementById('modalIcon');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+    const assetWarningBlock = document.getElementById('assetWarningBlock');
+    const assetWarningText = document.getElementById('assetWarningText');
+
+    let currentResolve = null;
+
+    function showApproveModal(btn, hasAsset) {
+        if (hasAsset) {
+            modalIcon.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
+            modalIcon.style.color = '#c0392b';
+            modalTitle.innerText = '无法通过审核';
+            modalMessage.innerText = '该会员账户存在以下问题：';
+            assetWarningBlock.style.display = 'block';
+            assetWarningText.innerText = '账户有未完成订单或余额，请通知用户处理后再提交注销。';
+            modalConfirmBtn.style.display = 'none';
+        } else {
+            modalIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+            modalIcon.style.color = '#42b7ae';
+            modalTitle.innerText = '确认通过';
+            modalMessage.innerText = '通过后，账号将进入30天冻结后悔期。期间用户可登录恢复账号，期满将彻底注销。';
+            assetWarningBlock.style.display = 'none';
+            modalConfirmBtn.style.display = 'inline-block';
+            modalConfirmBtn.className = 'modal-btn confirm';
+            modalConfirmBtn.innerText = '确定通过';
+        }
+        confirmModal.classList.add('show');
+        currentResolve = (confirmed) => {
+            if (confirmed && !hasAsset) {
+                alert('✅ 已通过审核，账号进入30天冻结后悔期。');
+            }
+        };
+    }
+
+    function showRejectModal(btn) {
+        modalIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
+        modalIcon.style.color = '#b0b0b0';
+        modalTitle.innerText = '确认驳回';
+        modalMessage.innerText = '确定要驳回该会员的注销申请吗？驳回后会员可重新提交。';
+        assetWarningBlock.style.display = 'none';
+        modalConfirmBtn.style.display = 'inline-block';
+        modalConfirmBtn.className = 'modal-btn confirm reject-style';
+        modalConfirmBtn.innerText = '确定驳回';
+        confirmModal.classList.add('show');
+        currentResolve = (confirmed) => {
+            if (confirmed) {
+                alert('⛔ 已驳回 (会员可重新提交)');
+            }
+        };
+    }
+
+    function hideConfirmModal() {
+        confirmModal.classList.remove('show');
+        if (currentResolve) {
+            currentResolve(false);
+            currentResolve = null;
+        }
+    }
+
+    function confirmAction() {
+        confirmModal.classList.remove('show');
+        if (currentResolve) {
+            currentResolve(true);
+            currentResolve = null;
+        }
+    }
+
+    confirmModal.addEventListener('click', function(e) {
+        if (e.target === confirmModal) hideConfirmModal();
+    });
+
+    // 恢复账号弹窗
+    const recoverModal = document.getElementById('recoverModal');
+    const recoverUserName = document.getElementById('recoverUserName');
+    const recoverReason = document.getElementById('recoverReason');
+
+    function showRecoverModal(btn, userName) {
+        recoverUserName.innerText = userName;
+        recoverReason.value = '';
+        recoverModal.classList.add('show');
+    }
+
+    function hideRecoverModal() {
+        recoverModal.classList.remove('show');
+    }
+
+    function confirmRecover() {
+        const reason = recoverReason.value.trim();
+        if (!reason) {
+            alert('请填写恢复原因');
+            return;
+        }
+        alert(`✅ 账号已恢复，原因：${reason}`);
+        hideRecoverModal();
+    }
+
+    recoverModal.addEventListener('click', function(e) {
+        if (e.target === recoverModal) hideRecoverModal();
+    });
+
+    // 查看详情弹窗
+    const detailModal = document.getElementById('detailModal');
+    function showDetailModal(name, memberId, platform, osVersion, location, applyTime, status, auditor, auditTime, repentance, assetStatus, reason) {
+        document.getElementById('detailName').innerText = name;
+        document.getElementById('detailMemberId').innerText = memberId;
+        document.getElementById('detailPhone').innerText = memberId.slice(-4) + '****';
+        document.getElementById('detailApplyTime').innerText = applyTime;
+        document.getElementById('detailDevice').innerText = platform === 'ios' ? 'iOS ' + osVersion + ' · ' + location : 'Android ' + osVersion + ' · ' + location;
+        document.getElementById('detailPlatform').innerText = platform;
+        document.getElementById('detailReason').innerText = reason || '不再使用平台';
+        document.getElementById('detailAssetStatus').innerText = assetStatus || '正常';
+        document.getElementById('detailAuditor').innerText = auditor || '—';
+        document.getElementById('detailAuditTime').innerText = auditTime || '—';
+        document.getElementById('detailResult').innerText = status;
+        document.getElementById('detailRepentance').innerText = repentance || '—';
+        detailModal.classList.add('show');
+    }
+
+    function hideDetailModal() {
+        detailModal.classList.remove('show');
+    }
+
+    detailModal.addEventListener('click', function(e) {
+        if (e.target === detailModal) hideDetailModal();
+    });
+</script>
+</body>
+</html>

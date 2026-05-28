@@ -1,0 +1,747 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>商品审核台 - AI商品发布系统</title>
+        <link rel="stylesheet" href="shared.css" />
+        <style>
+            #searchInput {
+                width: 180px;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Toast container -->
+        <div class="toast-container" id="toastContainer"></div>
+
+        <header class="header">
+            <div class="header-inner">
+                <div class="logo">
+                    <div class="logo-icon">&#9670;</div>
+                    <span>AI 智能商品发布</span>
+                </div>
+                <div class="header-right">
+                    <span class="user-info">管理员 · 张三</span>
+                </div>
+            </div>
+            <div class="nav-bar">
+                <div class="nav-inner">
+                    <a href="../商品发布/智能商品发布.html" class="nav-item"
+                        >&#9889; 智能发布</a
+                    >
+
+                    <a href="../商品发布/商品草稿箱.html" class="nav-item"
+                        >&#128221; 草稿箱</a
+                    >
+                    <a
+                        href="../商品发布/商品审核台.html"
+                        class="nav-item active"
+                        >&#9989; 审核台</a
+                    >
+                    <a href="../商品发布/发布记录.html" class="nav-item"
+                        >&#128203; 发布记录</a
+                    >
+                    <a href="../商品发布/批量导入.html" class="nav-item"
+                        >&#128230; 批量导入</a
+                    >
+                    <a href="../商品发布/AI设置中心.html" class="nav-item"
+                        >&#9881;&#65039; AI设置</a
+                    >
+                </div>
+            </div>
+        </header>
+
+        <div class="app-container">
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-value">23</div>
+                    <div class="stat-label">待审核</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">18</div>
+                    <div class="stat-label">今日已审</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">87%</div>
+                    <div class="stat-label">通过率</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2.3min</div>
+                    <div class="stat-label">平均审核用时</div>
+                </div>
+            </div>
+
+            <div class="filter-bar">
+                <label
+                    >审核状态:
+                    <select id="filterStatus">
+                        <option value="all">全部</option>
+                        <option value="pending">待审核</option>
+                        <option value="approved">已通过</option>
+                        <option value="rejected">已驳回</option>
+                    </select>
+                </label>
+                <label
+                    >AI置信度:
+                    <select id="filterConfidence">
+                        <option value="all">全部</option>
+                        <option value="high">高 (90%+)</option>
+                        <option value="mid">中 (70-90%)</option>
+                        <option value="low">低 (&lt;70%)</option>
+                    </select>
+                </label>
+                <label
+                    >类目:
+                    <select>
+                        <option>全部分类</option>
+                        <option>电子产品</option>
+                        <option>服装鞋帽</option>
+                        <option>家居用品</option>
+                        <option>食品饮料</option>
+                    </select>
+                </label>
+                <label
+                    >日期:
+                    <input type="date" />
+                </label>
+                <div class="input-group">
+                    <input
+                        type="text"
+                        placeholder="搜索商品名称..."
+                        id="searchInput"
+                    />
+                </div>
+                <button
+                    class="btn btn-primary btn-sm"
+                    onclick="showToast('info', '筛选条件已更新')"
+                >
+                    筛选
+                </button>
+            </div>
+
+            <div class="review-layout">
+                <div class="review-list">
+                    <div class="review-list-header">
+                        <span>审核列表</span>
+                        <span class="review-list-count">共 23 条</span>
+                    </div>
+                    <div class="review-items" id="reviewItems"></div>
+                </div>
+
+                <div class="detail-panel" id="detailPanel">
+                    <div class="detail-empty" id="emptyState">
+                        <div class="empty-icon">&#128269;</div>
+                        <div class="empty-text">选择左侧商品进行审核</div>
+                    </div>
+                    <div class="detail-content" id="detailContent">
+                        <div class="detail-header">
+                            <div>
+                                <div
+                                    class="detail-title"
+                                    id="detailTitle"
+                                ></div>
+                                <div class="detail-meta" id="detailMeta"></div>
+                            </div>
+                            <span
+                                class="badge badge-warning"
+                                id="detailStatusBadge"
+                                >待审核</span
+                            >
+                        </div>
+
+                        <div class="field-group">
+                            <div class="field-label">商品标题</div>
+                            <div
+                                class="field-value ai-field"
+                                id="detailFieldTitle"
+                            ></div>
+                        </div>
+                        <div class="field-group">
+                            <div class="field-label">售价</div>
+                            <div
+                                class="field-value"
+                                id="detailFieldPrice"
+                            ></div>
+                        </div>
+                        <div class="field-group">
+                            <div class="field-label">商品描述</div>
+                            <div
+                                class="field-value ai-field"
+                                id="detailFieldDesc"
+                            ></div>
+                        </div>
+                        <div class="field-group">
+                            <div class="field-label">核心卖点</div>
+                            <div
+                                class="field-value ai-field"
+                                id="detailFieldSelling"
+                            ></div>
+                        </div>
+
+                        <div class="checklist" id="checklistContainer">
+                            <div class="checklist-title">质量检查清单</div>
+                        </div>
+
+                        <div class="detail-actions">
+                            <button
+                                class="btn btn-success"
+                                onclick="approveItem()"
+                            >
+                                &#10003; 通过
+                            </button>
+                            <button
+                                class="btn btn-danger"
+                                onclick="showRejectModal()"
+                            >
+                                &#10007; 驳回并备注
+                            </button>
+                            <button
+                                class="btn btn-outline"
+                                onclick="editItem()"
+                            >
+                                &#9998; 编辑
+                            </button>
+                            <button
+                                class="btn btn-outline"
+                                onclick="regenerateItem(event)"
+                            >
+                                &#8635; 重新生成
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="rejectModal">
+            <div class="modal">
+                <div class="modal-title">驳回原因</div>
+                <textarea
+                    id="rejectReason"
+                    placeholder="请输入驳回原因或备注信息..."
+                ></textarea>
+                <div class="modal-actions">
+                    <button
+                        class="btn btn-outline"
+                        onclick="closeRejectModal()"
+                    >
+                        取消
+                    </button>
+                    <button class="btn btn-danger" onclick="confirmReject()">
+                        确认驳回
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const mockItems = [
+                {
+                    id: 1,
+                    name: "无线蓝牙耳机 Pro Max",
+                    category: "电子产品",
+                    confidence: 96,
+                    confidenceLevel: "high",
+                    status: "pending",
+                    time: "10:32",
+                    date: "2026-05-25",
+                    price: "¥299.00",
+                    desc: "采用最新蓝牙5.3技术，支持主动降噪，续航长达40小时。高品质音质，舒适佩戴体验，适用于运动、通勤等多种场景。",
+                    selling: "蓝牙5.3 · 主动降噪 · 40h续航 · 舒适佩戴",
+                    checklist: [
+                        true,
+                        true,
+                        true,
+                        true,
+                        true,
+                        false,
+                        true,
+                        true,
+                    ],
+                },
+                {
+                    id: 2,
+                    name: "轻奢真丝连衣裙",
+                    category: "服装鞋帽",
+                    confidence: 88,
+                    confidenceLevel: "mid",
+                    status: "pending",
+                    time: "10:15",
+                    date: "2026-05-25",
+                    price: "¥599.00",
+                    desc: "100%桑蚕丝面料，优雅法式设计，适合多种正式场合穿着。轻盈飘逸，触感柔滑。",
+                    selling: "100%桑蚕丝 · 法式设计 · 轻盈飘逸",
+                    checklist: [
+                        true,
+                        true,
+                        false,
+                        true,
+                        true,
+                        true,
+                        true,
+                        false,
+                    ],
+                },
+                {
+                    id: 3,
+                    name: "智能扫地机器人 X20",
+                    category: "电子产品",
+                    confidence: 45,
+                    confidenceLevel: "low",
+                    status: "pending",
+                    time: "09:50",
+                    date: "2026-05-25",
+                    price: "¥1,899.00",
+                    desc: "激光导航智能规划路线，5000Pa大吸力，支持APP远程控制。自清洁基站，自动集尘。",
+                    selling: "激光导航 · 5000Pa吸力 · APP控制 · 自动集尘",
+                    checklist: [
+                        true,
+                        false,
+                        true,
+                        false,
+                        true,
+                        true,
+                        false,
+                        true,
+                    ],
+                },
+                {
+                    id: 4,
+                    name: "北欧简约落地灯",
+                    category: "家居用品",
+                    confidence: 92,
+                    confidenceLevel: "high",
+                    status: "pending",
+                    time: "09:20",
+                    date: "2026-05-25",
+                    price: "¥259.00",
+                    desc: "北欧设计风格，三档调光，LED护眼光源。实木灯杆，布艺灯罩，温馨居家氛围。",
+                    selling: "北欧设计 · 三档调光 · LED护眼 · 实木灯杆",
+                    checklist: [true, true, true, true, true, true, true, true],
+                },
+                {
+                    id: 5,
+                    name: "有机红枣礼盒装",
+                    category: "食品饮料",
+                    confidence: 75,
+                    confidenceLevel: "mid",
+                    status: "pending",
+                    time: "08:55",
+                    date: "2026-05-25",
+                    price: "¥88.00",
+                    desc: "精选新疆优质红枣，有机认证，颗颗饱满。精美礼盒包装，适合送礼或自用。",
+                    selling: "有机认证 · 新疆优质 · 精美礼盒 · 颗颗饱满",
+                    checklist: [
+                        true,
+                        true,
+                        true,
+                        false,
+                        true,
+                        true,
+                        true,
+                        true,
+                    ],
+                },
+                {
+                    id: 6,
+                    name: "专业运动跑鞋 AirFlow",
+                    category: "服装鞋帽",
+                    confidence: 82,
+                    confidenceLevel: "mid",
+                    status: "pending",
+                    time: "08:30",
+                    date: "2026-05-25",
+                    price: "¥459.00",
+                    desc: "透气网面鞋面，缓震中底科技，轻量化设计。适合日常跑步和健身训练。",
+                    selling: "透气网面 · 缓震科技 · 轻量化 · 多色可选",
+                    checklist: [
+                        true,
+                        true,
+                        true,
+                        true,
+                        false,
+                        true,
+                        true,
+                        true,
+                    ],
+                },
+                {
+                    id: 7,
+                    name: "智能手表 Ultra S3",
+                    category: "电子产品",
+                    confidence: 67,
+                    confidenceLevel: "low",
+                    status: "pending",
+                    time: "08:10",
+                    date: "2026-05-25",
+                    price: "¥1,299.00",
+                    desc: "AMOLED高清屏幕，支持血氧/心率/睡眠监测，GPS运动追踪，7天超长续航。",
+                    selling: "AMOLED屏 · 健康监测 · GPS · 7天续航",
+                    checklist: [
+                        true,
+                        false,
+                        true,
+                        false,
+                        false,
+                        true,
+                        true,
+                        false,
+                    ],
+                },
+                {
+                    id: 8,
+                    name: "手工陶瓷茶具套装",
+                    category: "家居用品",
+                    confidence: 94,
+                    confidenceLevel: "high",
+                    status: "pending",
+                    time: "07:45",
+                    date: "2026-05-25",
+                    price: "¥168.00",
+                    desc: "景德镇手工制作，优质高岭土，釉面光滑细腻。一壶四杯，送礼佳品。",
+                    selling: "景德镇手工 · 优质高岭土 · 一壶四杯 · 送礼佳品",
+                    checklist: [true, true, true, true, true, true, true, true],
+                },
+                {
+                    id: 9,
+                    name: "超薄快充移动电源",
+                    category: "电子产品",
+                    confidence: 91,
+                    confidenceLevel: "high",
+                    status: "pending",
+                    time: "07:20",
+                    date: "2026-05-25",
+                    price: "¥149.00",
+                    desc: "20000mAh大容量，支持65W快充，可同时充3台设备。轻薄便携，飞机可带。",
+                    selling: "20000mAh · 65W快充 · 三设备同充 · 便携",
+                    checklist: [
+                        true,
+                        true,
+                        true,
+                        true,
+                        true,
+                        false,
+                        true,
+                        true,
+                    ],
+                },
+                {
+                    id: 10,
+                    name: "纯棉简约四件套",
+                    category: "家居用品",
+                    confidence: 72,
+                    confidenceLevel: "mid",
+                    status: "pending",
+                    time: "06:50",
+                    date: "2026-05-25",
+                    price: "¥239.00",
+                    desc: "100%新疆长绒棉，60支高支高密。简约纯色设计，柔软亲肤透气。",
+                    selling: "100%长绒棉 · 60支高密 · 简约纯色 · 亲肤透气",
+                    checklist: [
+                        true,
+                        true,
+                        true,
+                        false,
+                        true,
+                        true,
+                        false,
+                        true,
+                    ],
+                },
+                {
+                    id: 11,
+                    name: "即食燕窝礼盒",
+                    category: "食品饮料",
+                    confidence: 58,
+                    confidenceLevel: "low",
+                    status: "pending",
+                    time: "06:30",
+                    date: "2026-05-25",
+                    price: "¥388.00",
+                    desc: "印尼进口燕窝，古法手工挑毛，0添加。开盖即食，营养滋补。",
+                    selling: "印尼进口 · 手工挑毛 · 0添加 · 开盖即食",
+                    checklist: [
+                        true,
+                        false,
+                        false,
+                        true,
+                        true,
+                        false,
+                        true,
+                        false,
+                    ],
+                },
+                {
+                    id: 12,
+                    name: "无线机械键盘 K8",
+                    category: "电子产品",
+                    confidence: 95,
+                    confidenceLevel: "high",
+                    status: "pending",
+                    time: "06:00",
+                    date: "2026-05-25",
+                    price: "¥379.00",
+                    desc: "87键紧凑布局，Gateron轴体可选，RGB背光。蓝牙5.0/有线双模，续航持久。",
+                    selling: "87键 · Gateron轴 · RGB背光 · 双模连接",
+                    checklist: [true, true, true, true, true, true, true, true],
+                },
+            ];
+
+            const checklistLabels = [
+                "标题合规性检查",
+                "价格合理性校验",
+                "描述完整性检查",
+                "图片ALT文本检查",
+                "违禁词过滤检查",
+                "广告法合规检查",
+                "类目匹配度检查",
+                "SEO关键词检查",
+            ];
+
+            let selectedId = null;
+            let currentItems = [...mockItems];
+
+            function renderList(items) {
+                const container = document.getElementById("reviewItems");
+                container.innerHTML = "";
+                items.forEach((item) => {
+                    const badgeClass =
+                        item.confidenceLevel === "high"
+                            ? "badge-high"
+                            : item.confidenceLevel === "mid"
+                              ? "badge-mid"
+                              : "badge-low";
+                    const badgeText =
+                        item.confidenceLevel === "high"
+                            ? "高置信度"
+                            : item.confidenceLevel === "mid"
+                              ? "中置信度"
+                              : "低置信度";
+                    const div = document.createElement("div");
+                    div.className = `review-item ${selectedId === item.id ? "active" : ""}`;
+                    div.dataset.id = item.id;
+                    div.innerHTML = `
+      <div class="item-name">${item.name}</div>
+      <div class="item-category">${item.category}</div>
+      <div class="item-meta">
+        <span class="badge ${badgeClass}">${item.confidence}%</span>
+        <span>${item.date} ${item.time}</span>
+      </div>
+    `;
+                    div.addEventListener("click", () => selectItem(item.id));
+                    container.appendChild(div);
+                });
+            }
+
+            function selectItem(id) {
+                selectedId = id;
+                const item = currentItems.find((i) => i.id === id);
+                if (!item) return;
+                renderList(currentItems);
+                document.getElementById("emptyState").style.display = "none";
+                const content = document.getElementById("detailContent");
+                content.style.display = "block";
+                content.style.animation = "none";
+                setTimeout(() => {
+                    content.style.animation = "fadeIn 0.3s ease";
+                }, 10);
+
+                document.getElementById("detailTitle").textContent = item.name;
+                const badgeMap = {
+                    pending: "badge-warning",
+                    low: "badge-danger",
+                };
+                const textMap = {
+                    pending: "待审核",
+                    approved: "已通过",
+                    rejected: "已驳回",
+                };
+                document.getElementById("detailStatusBadge").className =
+                    `badge ${item.status === "pending" ? "badge-warning" : "badge-success"}`;
+                document.getElementById("detailStatusBadge").textContent =
+                    textMap[item.status] || "待审核";
+                document.getElementById("detailMeta").innerHTML =
+                    `<span>${item.category}</span><span>|</span><span>提交时间: ${item.date} ${item.time}</span><span>|</span><span class="badge ${item.confidenceLevel === "high" ? "badge-high" : item.confidenceLevel === "mid" ? "badge-mid" : "badge-low"}">AI置信度 ${item.confidence}%</span>`;
+
+                document.getElementById("detailFieldTitle").textContent =
+                    item.name;
+                document.getElementById("detailFieldPrice").textContent =
+                    item.price;
+                document.getElementById("detailFieldDesc").textContent =
+                    item.desc;
+                document.getElementById("detailFieldSelling").textContent =
+                    item.selling;
+
+                const checklistContainer =
+                    document.getElementById("checklistContainer");
+                let html = '<div class="checklist-title">质量检查清单</div>';
+                item.checklist.forEach((pass, idx) => {
+                    html += `<div class="checklist-item"><span class="checklist-icon ${pass ? "pass" : "fail"}">${pass ? "&#10003;" : "&#10007;"}</span>${checklistLabels[idx]}</div>`;
+                });
+                checklistContainer.innerHTML = html;
+
+                const actions = document.querySelector(".detail-actions");
+                actions.style.display = "flex";
+            }
+
+            function showToast(type, msg) {
+                const container = document.getElementById("toastContainer");
+                const colors = {
+                    success: "toast-success",
+                    error: "toast-error",
+                    info: "toast-info",
+                };
+                const icons = {
+                    success: "&#10003;",
+                    error: "&#10007;",
+                    info: "&#8505;",
+                };
+                const toast = document.createElement("div");
+                toast.className = `toast ${colors[type] || "toast-info"}`;
+                toast.innerHTML = `<span>${icons[type] || "&#8505;"}</span> ${msg}`;
+                container.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
+
+            function approveItem() {
+                const item = currentItems.find((i) => i.id === selectedId);
+                if (!item) return;
+                item.status = "approved";
+                showToast("success", `"${item.name}" 已通过审核`);
+                document.getElementById("detailStatusBadge").className =
+                    "badge badge-success";
+                document.getElementById("detailStatusBadge").textContent =
+                    "已通过";
+            }
+
+            function showRejectModal() {
+                document.getElementById("rejectModal").classList.add("show");
+                document.getElementById("rejectReason").value = "";
+            }
+
+            function closeRejectModal() {
+                document.getElementById("rejectModal").classList.remove("show");
+            }
+
+            function confirmReject() {
+                const reason = document
+                    .getElementById("rejectReason")
+                    .value.trim();
+                if (!reason) {
+                    showToast("error", "请输入驳回原因");
+                    return;
+                }
+                const item = currentItems.find((i) => i.id === selectedId);
+                if (item) {
+                    item.status = "rejected";
+                    showToast(
+                        "error",
+                        `"${item.name}" 已驳回，原因: ${reason}`,
+                    );
+                    document.getElementById("detailStatusBadge").className =
+                        "badge badge-danger";
+                    document.getElementById("detailStatusBadge").textContent =
+                        "已驳回";
+                }
+                closeRejectModal();
+            }
+
+            function editItem() {
+                showToast("info", "已打开编辑页面，可修改商品信息");
+            }
+
+            function regenerateItem(event) {
+                const btn = event.currentTarget;
+                btn.innerHTML =
+                    '<span class="loading-spinner"></span> 生成中...';
+                btn.disabled = true;
+                setTimeout(() => {
+                    btn.innerHTML = "&#8635; 重新生成";
+                    btn.disabled = false;
+                    const item = currentItems.find((i) => i.id === selectedId);
+                    if (item) {
+                        const newConf = Math.floor(Math.random() * 20) + 80;
+                        item.confidence = newConf;
+                        item.confidenceLevel =
+                            newConf >= 90
+                                ? "high"
+                                : newConf >= 70
+                                  ? "mid"
+                                  : "low";
+                        item.desc = item.desc + "（已优化）";
+                        showToast(
+                            "success",
+                            `"${item.name}" AI已重新生成内容，请重新审核`,
+                        );
+                        const metaEl = document.getElementById("detailMeta");
+                        metaEl.innerHTML = metaEl.innerHTML.replace(
+                            /AI置信度 \d+%/,
+                            `AI置信度 ${item.confidence}%`,
+                        );
+                    }
+                }, 1500);
+            }
+
+            document
+                .getElementById("searchInput")
+                .addEventListener("input", function () {
+                    const q = this.value.toLowerCase();
+                    currentItems = mockItems.filter((i) =>
+                        i.name.toLowerCase().includes(q),
+                    );
+                    renderList(currentItems);
+                    if (selectedId) {
+                        const stillExists = currentItems.find(
+                            (i) => i.id === selectedId,
+                        );
+                        if (!stillExists) {
+                            selectedId = null;
+                            document.getElementById(
+                                "emptyState",
+                            ).style.display = "flex";
+                            document.getElementById(
+                                "detailContent",
+                            ).style.display = "none";
+                        }
+                    }
+                });
+
+            document
+                .getElementById("filterStatus")
+                .addEventListener("change", function () {
+                    const val = this.value;
+                    currentItems =
+                        val === "all"
+                            ? [...mockItems]
+                            : mockItems.filter((i) => i.status === val);
+                    renderList(currentItems);
+                    selectedId = null;
+                    document.getElementById("emptyState").style.display =
+                        "flex";
+                    document.getElementById("detailContent").style.display =
+                        "none";
+                });
+
+            document
+                .getElementById("filterConfidence")
+                .addEventListener("change", function () {
+                    const val = this.value;
+                    currentItems =
+                        val === "all"
+                            ? [...mockItems]
+                            : mockItems.filter(
+                                  (i) => i.confidenceLevel === val,
+                              );
+                    renderList(currentItems);
+                    selectedId = null;
+                    document.getElementById("emptyState").style.display =
+                        "flex";
+                    document.getElementById("detailContent").style.display =
+                        "none";
+                });
+
+            renderList(mockItems);
+        </script>
+    </body>
+</html>

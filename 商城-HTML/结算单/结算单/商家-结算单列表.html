@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>结算单列表 · 财务对账版</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+        .primary-color {
+            color: #42b7ae;
+        }
+        .primary-bg {
+            background: #42b7ae;
+        }
+        .card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+            margin-bottom: 20px;
+            border: 1px solid #ebedf0;
+        }
+        .search-box {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 16px;
+            border: 1px solid #ebedf0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.1s;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #42b7ae;
+            box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.2);
+        }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid #ebedf0;
+            background: white;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.1s;
+        }
+        .btn:hover {
+            background: #f5f7fa;
+            border-color: #42b7ae;
+        }
+        .btn-primary {
+            background: #42b7ae;
+            border-color: #42b7ae;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #3a9d95;
+            border-color: #3a9d95;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 20px;
+            border: 1px solid #ebedf0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        th {
+            text-align: left;
+            padding: 16px;
+            background: #fff;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #ebedf0;
+        }
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #ebedf0;
+            vertical-align: middle;
+        }
+        tr:hover td {
+            background: #fafafa;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .status-settled {
+            background: #e3ecf5;
+            color: #2b5f7a;
+        }
+        .status-pending {
+            background: #fffbe6;
+            color: #d48806;
+        }
+        .status-failed {
+            background: #fff1f0;
+            color: #cf1322;
+        }
+        .amount-positive {
+            color: #52c41a;
+            font-weight: 600;
+        }
+        .amount-negative {
+            color: #f5222d;
+            font-weight: 600;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .page-btn {
+            padding: 8px 16px;
+            border: 1px solid #ebedf0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+        .page-btn:hover {
+            border-color: #42b7ae;
+            color: #42b7ae;
+        }
+        .page-btn.active {
+            background: #42b7ae;
+            color: white;
+            border-color: #42b7ae;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+            .card {
+                padding: 16px;
+            }
+            .search-box {
+                flex-direction: column;
+            }
+            .search-input {
+                width: 100%;
+            }
+            .table-wrapper {
+                border-radius: 12px;
+            }
+            th, td {
+                padding: 12px 8px;
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 页面标题 -->
+        <div class="card">
+            <h1 class="text-2xl font-semibold mb-6">结算单列表</h1>
+            
+            <!-- 搜索区域 -->
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="输入结算单号或商家名称搜索">
+                <input type="text" class="search-input" placeholder="选择结算周期">
+                <select class="search-input" style="flex: 0 0 auto;">
+                    <option>全部状态</option>
+                    <option>已结算</option>
+                    <option>处理中</option>
+                    <option>失败</option>
+                </select>
+                <button class="btn btn-primary">🔍 搜索</button>
+                <button class="btn">📊 导出</button>
+            </div>
+        </div>
+
+        <!-- 结算单表格 -->
+        <div class="card">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-medium">结算记录</h2>
+                <div class="text-sm text-gray-600">共 24 条记录</div>
+            </div>
+            
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>结算单号</th>
+                            <th>商家名称</th>
+                            <th>结算周期</th>
+                            <th>结算金额</th>
+                            <th>结算时间</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="商家-结算单详情.html" class="text-blue-500 hover:underline">ST-20260315-022</a></td>
+                            <td>XX商贸有限公司</td>
+                            <td>2026-03-15 ~ 2026-03-21</td>
+                            <td class="amount-positive">+¥5,296.00</td>
+                            <td>2026-03-13 16:20</td>
+                            <td><span class="status-badge status-settled">已结算</span></td>
+                            <td>
+                                <button class="text-blue-500 hover:text-blue-700 mr-3">查看</button>
+                                <button class="text-green-500 hover:text-green-700">导出</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="#" class="text-blue-500 hover:underline">ST-20260315-021</a></td>
+                            <td>YY科技有限公司</td>
+                            <td>2026-03-08 ~ 2026-03-14</td>
+                            <td class="amount-negative">-¥1,234.50</td>
+                            <td>2026-03-07 10:30</td>
+                            <td><span class="status-badge status-pending">处理中</span></td>
+                            <td>
+                                <button class="text-blue-500 hover:text-blue-700 mr-3">查看</button>
+                                <button class="text-gray-500 hover:text-gray-700">重试</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="#" class="text-blue-500 hover:underline">ST-20260315-020</a></td>
+                            <td>ZZ电商有限公司</td>
+                            <td>2026-03-01 ~ 2026-03-07</td>
+                            <td class="amount-positive">+¥8,956.20</td>
+                            <td>2026-03-01 09:15</td>
+                            <td><span class="status-badge status-settled">已结算</span></td>
+                            <td>
+                                <button class="text-blue-500 hover:text-blue-700 mr-3">查看</button>
+                                <button class="text-green-500 hover:text-green-700">导出</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="#" class="text-blue-500 hover:underline">ST-20260315-019</a></td>
+                            <td>AA贸易有限公司</td>
+                            <td>2026-02-22 ~ 2026-02-28</td>
+                            <td class="amount-negative">-¥567.80</td>
+                            <td>2026-02-22 14:45</td>
+                            <td><span class="status-badge status-failed">失败</span></td>
+                            <td>
+                                <button class="text-blue-500 hover:text-blue-700 mr-3">查看</button>
+                                <button class="text-red-500 hover:text-red-700">重试</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="#" class="text-blue-500 hover:underline">ST-20260315-018</a></td>
+                            <td>BB家居有限公司</td>
+                            <td>2026-02-15 ~ 2026-02-21</td>
+                            <td class="amount-positive">+¥3,456.70</td>
+                            <td>2026-02-15 11:20</td>
+                            <td><span class="status-badge status-settled">已结算</span></td>
+                            <td>
+                                <button class="text-blue-500 hover:text-blue-700 mr-3">查看</button>
+                                <button class="text-green-500 hover:text-green-700">导出</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分页 -->
+            <div class="pagination">
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">4</button>
+                <button class="page-btn">5</button>
+                <button class="page-btn">下一页</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 表格行点击事件
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('click', function(e) {
+                if (!e.target.closest('button')) {
+                    const link = this.querySelector('a');
+                    if (link) {
+                        window.location.href = link.href;
+                    }
+                }
+            });
+        });
+
+        // 分页按钮事件
+        document.querySelectorAll('.page-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // 搜索功能
+        document.querySelector('.btn-primary').addEventListener('click', function() {
+            alert('搜索功能：' + 
+                document.querySelector('.search-input').value + ' | ' +
+                document.querySelector('select').value);
+        });
+    </script>
+</body>
+</html>

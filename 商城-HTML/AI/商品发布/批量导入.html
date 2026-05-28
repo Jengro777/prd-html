@@ -1,0 +1,3526 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>批量导入 - AI商品发布系统</title>
+        <style>
+            /* === 公共样式内嵌 === */
+            /* ==========================================================
+   AI 商品发布系统 - 统一样式 (优化版)
+   ========================================================== */
+
+            /* ===== CSS Variables ===== */
+            :root {
+                --primary: #4f46e5;
+                --primary-light: #818cf8;
+                --primary-dark: #3730a3;
+                --success: #10b981;
+                --warning: #f59e0b;
+                --danger: #ef4444;
+                --gray-50: #f9fafb;
+                --gray-100: #f3f4f6;
+                --gray-200: #e5e7eb;
+                --gray-300: #d1d5db;
+                --gray-400: #9ca3af;
+                --gray-500: #6b7280;
+                --gray-600: #4b5563;
+                --gray-700: #374151;
+                --gray-800: #1f2937;
+                --gray-900: #111827;
+                --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+                --shadow:
+                    0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+                --shadow-md:
+                    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                    0 2px 4px -2px rgba(0, 0, 0, 0.1);
+                --shadow-lg:
+                    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                    0 4px 6px -4px rgba(0, 0, 0, 0.1);
+                --shadow-xl:
+                    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+                --radius: 12px;
+                --radius-sm: 8px;
+                --radius-lg: 16px;
+            }
+
+            /* ===== Reset & Base ===== */
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI",
+                    "PingFang SC", "Microsoft YaHei", sans-serif;
+                background: #f0f2f5;
+                color: #1a1a2e;
+                line-height: 1.6;
+            }
+
+            /* ===== Scrollbar ===== */
+            ::-webkit-scrollbar {
+                width: 6px;
+            }
+            ::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: var(--gray-300);
+                border-radius: 3px;
+            }
+
+            /* ===== Header ===== */
+            .header {
+                background: linear-gradient(
+                    135deg,
+                    var(--primary) 0%,
+                    #7c3aed 100%
+                );
+                padding: 0;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                box-shadow: var(--shadow-lg);
+            }
+            .header-inner {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 0 32px;
+                height: 64px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .logo {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                color: #fff;
+                font-size: 20px;
+                font-weight: 700;
+                letter-spacing: -0.3px;
+            }
+            .logo-icon {
+                width: 36px;
+                height: 36px;
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 20px;
+                backdrop-filter: blur(4px);
+            }
+            .logo-sub {
+                opacity: 0.85;
+                font-weight: 400;
+                font-size: 18px;
+            }
+            .header-stats {
+                display: flex;
+                gap: 24px;
+                color: rgba(255, 255, 255, 0.85);
+                font-size: 13px;
+            }
+            .header-stats span {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .header-stats strong {
+                color: #fff;
+                font-size: 15px;
+            }
+            .header-right {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                color: rgba(255, 255, 255, 0.9);
+                font-size: 14px;
+            }
+            .header-right .user-info {
+                opacity: 0.9;
+            }
+
+            /* ===== Navigation Bar ===== */
+            .nav-bar {
+                background: rgba(0, 0, 0, 0.12);
+                backdrop-filter: blur(8px);
+                border-top: 1px solid rgba(255, 255, 255, 0.08);
+            }
+            .nav-inner {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 0 32px;
+                display: flex;
+                gap: 4px;
+                height: 44px;
+                align-items: center;
+            }
+            .nav-item {
+                padding: 0 18px;
+                height: 44px;
+                display: flex;
+                align-items: center;
+                font-size: 13px;
+                font-weight: 500;
+                color: rgba(255, 255, 255, 0.65);
+                text-decoration: none;
+                transition: all 0.2s;
+                border-bottom: 2px solid transparent;
+                position: relative;
+                white-space: nowrap;
+            }
+            .nav-item:hover {
+                color: #fff;
+                background: rgba(255, 255, 255, 0.06);
+            }
+            .nav-item.active {
+                color: #fff;
+                border-bottom-color: #fff;
+                background: rgba(255, 255, 255, 0.08);
+            }
+            .nav-item .nav-badge {
+                font-size: 10px;
+                background: var(--danger);
+                color: #fff;
+                padding: 0 6px;
+                border-radius: 8px;
+                margin-left: 5px;
+                line-height: 16px;
+            }
+
+            /* ===== Layout ===== */
+            .app-container,
+            .container {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 24px 32px 48px;
+            }
+
+            /* ===== Grid Layouts ===== */
+            .main-grid {
+                display: grid;
+                grid-template-columns: 1fr 360px;
+                gap: 20px;
+                align-items: start;
+            }
+            .side-panel {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            /* Action Bar */
+            .action-bar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 24px;
+                gap: 16px;
+                flex-wrap: wrap;
+            }
+            .action-bar h1 {
+                font-size: 22px;
+                font-weight: 700;
+                color: var(--gray-900);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .action-bar h1 .badge {
+                font-size: 12px;
+                font-weight: 500;
+                background: var(--success);
+                color: #fff;
+                padding: 2px 10px;
+                border-radius: 20px;
+            }
+            .action-buttons {
+                display: flex;
+                gap: 10px;
+            }
+
+            /* ===== Buttons ===== */
+            .btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 8px 18px;
+                border-radius: var(--radius-sm);
+                font-size: 14px;
+                font-weight: 500;
+                border: none;
+                cursor: pointer;
+                transition: all 0.2s;
+                text-decoration: none;
+                white-space: nowrap;
+            }
+            .btn:hover {
+                transform: translateY(-1px);
+            }
+            .btn:active {
+                transform: translateY(0);
+            }
+            .btn-primary {
+                background: var(--primary);
+                color: #fff;
+            }
+            .btn-primary:hover {
+                background: var(--primary-dark);
+                box-shadow: var(--shadow-md);
+            }
+            .btn-success {
+                background: var(--success);
+                color: #fff;
+            }
+            .btn-success:hover {
+                background: #059669;
+                box-shadow: var(--shadow-md);
+            }
+            .btn-warning {
+                background: var(--warning);
+                color: #fff;
+            }
+            .btn-warning:hover {
+                background: #d97706;
+                box-shadow: var(--shadow-md);
+            }
+            .btn-danger {
+                background: var(--danger);
+                color: #fff;
+            }
+            .btn-danger:hover {
+                background: #dc2626;
+                box-shadow: var(--shadow-md);
+            }
+            .btn-outline {
+                background: transparent;
+                color: var(--gray-700);
+                border: 1px solid var(--gray-300);
+            }
+            .btn-outline:hover {
+                background: var(--gray-50);
+                border-color: var(--gray-400);
+                box-shadow: none;
+            }
+            .btn-ghost {
+                background: transparent;
+                border: none;
+                color: var(--primary);
+                padding: 4px 8px;
+                font-size: 13px;
+                cursor: pointer;
+                border-radius: var(--radius-sm);
+            }
+            .btn-ghost:hover {
+                background: rgba(79, 70, 229, 0.08);
+            }
+            .btn-danger-ghost {
+                background: transparent;
+                border: none;
+                color: var(--danger);
+                padding: 4px 8px;
+                font-size: 13px;
+                cursor: pointer;
+                border-radius: var(--radius-sm);
+            }
+            .btn-danger-ghost:hover {
+                background: rgba(239, 68, 68, 0.08);
+            }
+            .btn-sm {
+                padding: 5px 12px;
+                font-size: 12px;
+            }
+            .btn-lg {
+                padding: 12px 28px;
+                font-size: 16px;
+            }
+
+            /* ===== Cards ===== */
+            .card {
+                background: #fff;
+                border-radius: var(--radius);
+                box-shadow: var(--shadow);
+                border: 1px solid var(--gray-200);
+                overflow: hidden;
+                transition: box-shadow 0.2s;
+            }
+            .card:hover {
+                box-shadow: var(--shadow-md);
+            }
+            .card-header {
+                padding: 16px 20px;
+                border-bottom: 1px solid var(--gray-100);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                font-weight: 600;
+                font-size: 15px;
+                color: var(--gray-800);
+            }
+            .card-header h3 {
+                font-size: 15px;
+                font-weight: 600;
+                color: var(--gray-800);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .card-body {
+                padding: 20px;
+            }
+            .card-footer {
+                padding: 12px 20px;
+                border-top: 1px solid var(--gray-100);
+                background: var(--gray-50);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            /* ===== Badges ===== */
+            .badge {
+                display: inline-flex;
+                align-items: center;
+                padding: 2px 10px;
+                border-radius: 20px;
+                font-size: 11px;
+                font-weight: 500;
+            }
+            .badge-success,
+            .badge-green,
+            .badge-high {
+                background: #d1fae5;
+                color: #065f46;
+            }
+            .badge-warning,
+            .badge-yellow,
+            .badge-mid {
+                background: #fef3c7;
+                color: #92400e;
+            }
+            .badge-danger,
+            .badge-red,
+            .badge-low {
+                background: #fee2e2;
+                color: #991b1b;
+            }
+            .badge-info,
+            .badge-blue {
+                background: #dbeafe;
+                color: #1e40af;
+            }
+            .badge-gray {
+                background: var(--gray-100);
+                color: var(--gray-600);
+            }
+            .badge-purple {
+                background: #ede9fe;
+                color: #5b21b6;
+            }
+
+            /* ===== Stats ===== */
+            .stats-grid,
+            .stats-row {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+            .stat-card {
+                background: #fff;
+                border-radius: var(--radius-sm);
+                padding: 16px;
+                box-shadow: var(--shadow);
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            .stat-card:hover {
+                box-shadow: var(--shadow-md);
+                transform: translateY(-2px);
+            }
+            .stat-card .num,
+            .stat-value {
+                font-size: 28px;
+                font-weight: 700;
+                color: var(--gray-900);
+                line-height: 1.2;
+            }
+            .stat-card .label,
+            .stat-label {
+                font-size: 12px;
+                color: var(--gray-500);
+                margin-top: 4px;
+            }
+            .stat-card .trend {
+                font-size: 12px;
+                font-weight: 500;
+                margin-top: 4px;
+            }
+            .trend.up {
+                color: var(--success);
+            }
+            .trend.down {
+                color: var(--danger);
+            }
+            .stat-blue .num {
+                color: var(--primary);
+            }
+            .stat-green .num {
+                color: var(--success);
+            }
+            .stat-yellow .num {
+                color: var(--warning);
+            }
+            .stat-purple .num {
+                color: #7c3aed;
+            }
+            .stat-card:nth-child(1) .stat-value {
+                color: var(--primary);
+            }
+            .stat-card:nth-child(2) .stat-value {
+                color: var(--success);
+            }
+            .stat-card:nth-child(3) .stat-value {
+                color: var(--warning);
+            }
+            .stat-card:nth-child(4) .stat-value {
+                color: var(--gray-600);
+            }
+
+            /* ===== Filter Bar ===== */
+            .filter-bar {
+                background: #fff;
+                border-radius: var(--radius-sm);
+                padding: 14px 18px;
+                box-shadow: var(--shadow);
+                margin-bottom: 20px;
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 12px;
+            }
+            .filter-bar select,
+            .filter-bar input {
+                padding: 7px 12px;
+                border: 1px solid var(--gray-200);
+                border-radius: 6px;
+                font-size: 13px;
+                outline: none;
+                font-family: inherit;
+                background: #fff;
+                color: var(--gray-700);
+            }
+            .filter-bar select:focus,
+            .filter-bar input:focus {
+                border-color: var(--primary-light);
+                box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            }
+            .filter-bar label {
+                font-size: 13px;
+                color: var(--gray-600);
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                white-space: nowrap;
+            }
+            .filter-bar .search-input {
+                flex: 1;
+                min-width: 160px;
+            }
+            .filter-bar .filter-right {
+                margin-left: auto;
+                display: flex;
+                gap: 8px;
+                align-items: center;
+            }
+
+            /* ===== Inputs ===== */
+            .input-group {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 16px;
+            }
+            .input-group label {
+                display: block;
+                font-size: 13px;
+                font-weight: 500;
+                color: var(--gray-700);
+                margin-bottom: 6px;
+            }
+            .input-group label .required {
+                color: var(--danger);
+                margin-left: 2px;
+            }
+            .input-group .hint {
+                font-size: 12px;
+                color: var(--gray-400);
+                margin-top: 4px;
+            }
+            input[type="text"],
+            input[type="number"],
+            input[type="date"],
+            input[type="url"],
+            textarea,
+            select {
+                width: 100%;
+                padding: 10px 14px;
+                border: 1px solid var(--gray-200);
+                border-radius: var(--radius-sm);
+                font-size: 14px;
+                font-family: inherit;
+                transition:
+                    border-color 0.2s,
+                    box-shadow 0.2s;
+                background: #fff;
+                color: var(--gray-800);
+            }
+            input:focus,
+            textarea:focus,
+            select:focus {
+                outline: none;
+                border-color: var(--primary-light);
+                box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+            }
+            textarea {
+                resize: vertical;
+                min-height: 80px;
+            }
+            .input-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            select {
+                cursor: pointer;
+            }
+
+            /* ===== Table ===== */
+            .table-wrapper {
+                overflow-x: auto;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            table th {
+                background: var(--gray-50);
+                padding: 12px 16px;
+                text-align: left;
+                font-size: 13px;
+                font-weight: 600;
+                color: var(--gray-600);
+                border-bottom: 2px solid var(--gray-200);
+                white-space: nowrap;
+            }
+            table td {
+                padding: 12px 16px;
+                font-size: 14px;
+                color: var(--gray-700);
+                border-bottom: 1px solid var(--gray-100);
+            }
+            table tr:hover td {
+                background: var(--gray-50);
+            }
+            table .product-name {
+                font-weight: 600;
+                color: var(--gray-800);
+            }
+
+            /* ===== Batch Bar ===== */
+            .batch-bar {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 18px;
+                background: #eef2ff;
+                border-radius: 0 0 var(--radius) var(--radius);
+                border-top: 1px solid var(--gray-200);
+                flex-wrap: wrap;
+            }
+            .batch-bar .selected-count {
+                font-size: 14px;
+                color: var(--gray-600);
+            }
+            .batch-left {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-size: 13px;
+                color: var(--gray-600);
+            }
+            .batch-left input[type="checkbox"] {
+                width: 16px;
+                height: 16px;
+                accent-color: var(--primary);
+            }
+            .batch-left .count span {
+                color: var(--primary);
+                font-weight: 600;
+            }
+            .batch-actions {
+                display: flex;
+                gap: 8px;
+            }
+
+            /* ===== Pagination ===== */
+            .pagination {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                margin-top: 20px;
+            }
+            .page-btn,
+            .pagination button {
+                width: 34px;
+                height: 34px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid var(--gray-200);
+                border-radius: 6px;
+                background: #fff;
+                color: var(--gray-600);
+                font-size: 13px;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            .page-btn:hover,
+            .pagination button:hover {
+                border-color: var(--primary);
+                color: var(--primary);
+                background: #eef2ff;
+            }
+            .page-btn.active,
+            .pagination button.active {
+                background: var(--primary);
+                color: #fff;
+                border-color: var(--primary);
+            }
+            .page-btn.disabled,
+            .pagination button:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+            }
+            .page-btn.disabled:hover,
+            .pagination button:disabled:hover {
+                border-color: var(--gray-200);
+                color: var(--gray-600);
+                background: #fff;
+            }
+            .page-info {
+                font-size: 13px;
+                color: var(--gray-400);
+                margin-left: 10px;
+            }
+
+            /* ===== Toast ===== */
+            .toast-container {
+                position: fixed;
+                top: 80px;
+                right: 24px;
+                z-index: 9999;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .toast {
+                background: #fff;
+                border-radius: var(--radius-sm);
+                padding: 14px 20px;
+                box-shadow: var(--shadow-lg);
+                font-size: 14px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                animation: slideInRight 0.3s ease;
+                max-width: 380px;
+                border-left: 4px solid var(--primary);
+            }
+            .toast-success {
+                border-left-color: var(--success);
+                background: #d1fae5;
+                color: #065f46;
+            }
+            .toast-warning {
+                border-left-color: var(--warning);
+                background: #fef3c7;
+                color: #92400e;
+            }
+            .toast-error {
+                border-left-color: var(--danger);
+                background: #fee2e2;
+                color: #991b1b;
+            }
+            .toast-info {
+                border-left-color: #3b82f6;
+                background: #dbeafe;
+                color: #1e40af;
+            }
+
+            @keyframes slideInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(40px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            /* ===== Modal / Dialog ===== */
+            .modal-overlay,
+            .dialog-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.4);
+                backdrop-filter: blur(4px);
+                z-index: 999;
+                display: none;
+                align-items: center;
+                justify-content: center;
+            }
+            .modal-overlay.show,
+            .dialog-overlay.show {
+                display: flex;
+            }
+            .modal,
+            .dialog-box {
+                background: #fff;
+                border-radius: var(--radius-lg);
+                padding: 28px 32px 24px;
+                max-width: 440px;
+                width: 90%;
+                box-shadow: var(--shadow-xl);
+                text-align: center;
+                animation: fadeInUp 0.2s ease;
+            }
+            .dialog-box .icon {
+                font-size: 40px;
+                margin-bottom: 10px;
+            }
+            .modal-title,
+            .dialog-box h3 {
+                font-size: 17px;
+                font-weight: 600;
+                margin-bottom: 8px;
+            }
+            .modal-text,
+            .dialog-box p {
+                font-size: 14px;
+                color: var(--gray-500);
+                margin-bottom: 20px;
+            }
+            .modal-actions,
+            .dialog-box .actions {
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+            }
+            .modal textarea {
+                width: 100%;
+                min-height: 120px;
+                padding: 12px;
+                border: 1px solid var(--gray-300);
+                border-radius: var(--radius-sm);
+                font-size: 14px;
+                resize: vertical;
+                outline: none;
+                font-family: inherit;
+            }
+            .modal textarea:focus {
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            }
+
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(12px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            /* ===== Loading Spinner ===== */
+            .loading-spinner,
+            .spinner {
+                display: inline-block;
+                width: 20px;
+                height: 20px;
+                border: 2px solid var(--gray-200);
+                border-top-color: var(--primary);
+                border-radius: 50%;
+                animation: spin 0.8s linear infinite;
+            }
+            .loading-spinner.white {
+                border-color: rgba(255, 255, 255, 0.3);
+                border-top-color: #fff;
+            }
+
+            /* ===== Fade In ===== */
+            .fade-in {
+                animation: fadeIn 0.5s ease;
+            }
+            .fade-in-delay-1 {
+                animation-delay: 0.1s;
+            }
+            .fade-in-delay-2 {
+                animation-delay: 0.2s;
+            }
+            .fade-in-delay-3 {
+                animation-delay: 0.3s;
+            }
+
+            /* ===== Toggle Switch ===== */
+            .toggle {
+                position: relative;
+                width: 44px;
+                height: 24px;
+                cursor: pointer;
+                display: inline-block;
+            }
+            .toggle input {
+                display: none;
+            }
+            .toggle-slider {
+                position: absolute;
+                inset: 0;
+                background: var(--gray-300);
+                border-radius: 12px;
+                transition: all 0.3s;
+            }
+            .toggle-slider::before {
+                content: "";
+                position: absolute;
+                top: 2px;
+                left: 2px;
+                width: 20px;
+                height: 20px;
+                background: #fff;
+                border-radius: 50%;
+                transition: all 0.3s;
+                box-shadow: var(--shadow-sm);
+            }
+            .toggle input:checked + .toggle-slider {
+                background: var(--primary);
+            }
+            .toggle input:checked + .toggle-slider::before {
+                transform: translateX(20px);
+            }
+
+            /* ===== Range Slider ===== */
+            .range-wrapper {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .range-wrapper input[type="range"] {
+                -webkit-appearance: none;
+                width: 240px;
+                height: 6px;
+                border-radius: 3px;
+                background: var(--gray-200);
+                outline: none;
+                padding: 0;
+            }
+            .range-wrapper input[type="range"]::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background: var(--primary);
+                cursor: pointer;
+                box-shadow: var(--shadow-sm);
+            }
+            .range-value {
+                font-size: 16px;
+                font-weight: 700;
+                color: var(--primary);
+                min-width: 40px;
+            }
+
+            /* ===== Radio Group ===== */
+            .radio-group {
+                display: flex;
+                gap: 20px;
+            }
+            .radio-group label {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 14px;
+                color: var(--gray-700);
+                cursor: pointer;
+            }
+            .radio-group input[type="radio"] {
+                accent-color: var(--primary);
+                width: 16px;
+                height: 16px;
+            }
+
+            /* ===== Checkbox ===== */
+            .checkbox-wrapper {
+                width: 18px;
+                height: 18px;
+            }
+            .checkbox-wrapper input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+                cursor: pointer;
+                accent-color: var(--primary);
+            }
+
+            /* ===== Upload Zone ===== */
+            .upload-zone {
+                border: 2px dashed var(--gray-300);
+                border-radius: var(--radius);
+                padding: 40px 20px;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.25s;
+                background: var(--gray-50);
+            }
+            .upload-zone:hover,
+            .upload-zone.dragover {
+                border-color: var(--primary-light);
+                background: #eef2ff;
+            }
+            .upload-zone .icon,
+            .upload-zone .upload-icon {
+                font-size: 48px;
+                margin-bottom: 12px;
+                display: block;
+            }
+            .upload-zone .title,
+            .upload-zone .upload-title {
+                font-size: 16px;
+                font-weight: 600;
+                color: var(--gray-700);
+                margin-bottom: 4px;
+            }
+            .upload-zone .sub,
+            .upload-zone .upload-subtitle {
+                font-size: 13px;
+                color: var(--gray-500);
+            }
+            .upload-zone .sub a {
+                color: var(--primary);
+                text-decoration: none;
+                font-weight: 500;
+            }
+            .upload-zone .upload-hint {
+                font-size: 12px;
+                color: var(--gray-400);
+                margin-top: 16px;
+            }
+
+            /* ===== Spacer ===== */
+            .spacer {
+                height: 20px;
+            }
+
+            /* ===== Empty State ===== */
+            .empty-state {
+                text-align: center;
+                padding: 60px 20px;
+                color: var(--gray-400);
+            }
+            .empty-state .icon,
+            .empty-state .empty-icon {
+                font-size: 48px;
+                margin-bottom: 12px;
+                opacity: 0.5;
+            }
+            .empty-state .title,
+            .empty-state .empty-text {
+                font-size: 16px;
+                color: var(--gray-500);
+            }
+            .empty-state .sub {
+                font-size: 13px;
+                color: var(--gray-400);
+                margin-top: 6px;
+            }
+
+            /* ===== Form Help ===== */
+            .form-help {
+                font-size: 12px;
+                color: var(--gray-400);
+                margin-top: 4px;
+            }
+
+            /* ===== Settings Layout ===== */
+            .settings-layout {
+                display: grid;
+                grid-template-columns: 220px 1fr;
+                gap: 24px;
+                align-items: start;
+            }
+            .sidebar {
+                background: #fff;
+                border-radius: var(--radius);
+                box-shadow: var(--shadow);
+                border: 1px solid var(--gray-200);
+                overflow: hidden;
+            }
+            .sidebar-item {
+                padding: 14px 20px;
+                cursor: pointer;
+                font-size: 14px;
+                color: var(--gray-700);
+                border-bottom: 1px solid var(--gray-100);
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .sidebar-item:last-child {
+                border-bottom: none;
+            }
+            .sidebar-item:hover {
+                background: var(--gray-50);
+                color: var(--primary);
+            }
+            .sidebar-item.active {
+                background: #eef2ff;
+                color: var(--primary);
+                font-weight: 600;
+                border-right: 3px solid var(--primary);
+            }
+            .sidebar-item .sidebar-icon {
+                font-size: 16px;
+                width: 20px;
+                text-align: center;
+            }
+            .content-panel {
+                min-height: 500px;
+            }
+            .tab-content {
+                display: none;
+                animation: tabFadeIn 0.3s ease;
+            }
+            .tab-content.active {
+                display: block;
+            }
+
+            @keyframes tabFadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(8px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* ===== Form Section (Settings) ===== */
+            .form-section {
+                margin-bottom: 24px;
+            }
+            .form-section:last-child {
+                margin-bottom: 0;
+            }
+            .form-section-title {
+                font-size: 15px;
+                font-weight: 600;
+                color: var(--gray-800);
+                margin-bottom: 16px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid var(--gray-100);
+            }
+            .form-row {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                margin-bottom: 16px;
+            }
+            .form-row:last-child {
+                margin-bottom: 0;
+            }
+            .form-label {
+                font-size: 14px;
+                color: var(--gray-700);
+                font-weight: 500;
+                min-width: 130px;
+            }
+            .form-label-desc {
+                font-size: 12px;
+                color: var(--gray-400);
+                margin-left: 4px;
+                font-weight: 400;
+            }
+            .form-control {
+                padding: 8px 12px;
+                border: 1px solid var(--gray-300);
+                border-radius: var(--radius-sm);
+                font-size: 14px;
+                background: #fff;
+                color: var(--gray-700);
+                outline: none;
+                transition: border-color 0.2s;
+            }
+            .form-control:focus {
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            }
+            .form-control-sm {
+                width: 120px;
+            }
+            .form-control-md {
+                width: 200px;
+            }
+            .form-control-lg {
+                width: 320px;
+            }
+
+            /* ===== Compliance Row ===== */
+            .compliance-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 12px 0;
+                border-bottom: 1px solid var(--gray-100);
+            }
+            .compliance-row:last-child {
+                border-bottom: none;
+            }
+            .compliance-row .compliance-label {
+                font-size: 14px;
+                color: var(--gray-700);
+            }
+            .compliance-row .compliance-desc {
+                font-size: 12px;
+                color: var(--gray-400);
+                margin-top: 2px;
+            }
+
+            /* ===== Review Layout ===== */
+            .review-layout {
+                display: grid;
+                grid-template-columns: 380px 1fr;
+                gap: 20px;
+                min-height: 600px;
+            }
+            .review-list {
+                background: #fff;
+                border-radius: var(--radius);
+                box-shadow: var(--shadow);
+                border: 1px solid var(--gray-200);
+                overflow: hidden;
+            }
+            .review-list-header {
+                padding: 14px 16px;
+                border-bottom: 1px solid var(--gray-100);
+                font-weight: 600;
+                font-size: 14px;
+                color: var(--gray-700);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .review-list-count {
+                font-size: 13px;
+                color: var(--gray-500);
+                font-weight: 400;
+            }
+            .review-items {
+                overflow-y: auto;
+                max-height: 600px;
+            }
+            .review-item {
+                padding: 14px 16px;
+                border-bottom: 1px solid var(--gray-100);
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            .review-item:hover {
+                background: var(--gray-50);
+            }
+            .review-item.active {
+                background: #eef2ff;
+                border-left: 3px solid var(--primary);
+            }
+            .review-item .item-name {
+                font-size: 14px;
+                font-weight: 600;
+                color: var(--gray-800);
+                margin-bottom: 4px;
+            }
+            .review-item .item-meta {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 12px;
+                color: var(--gray-500);
+            }
+            .review-item .item-category {
+                font-size: 12px;
+                color: var(--gray-400);
+                margin-top: 2px;
+            }
+
+            /* Detail Panel */
+            .detail-panel {
+                background: #fff;
+                border-radius: var(--radius);
+                box-shadow: var(--shadow);
+                border: 1px solid var(--gray-200);
+                min-height: 600px;
+                position: relative;
+            }
+            .detail-empty {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 600px;
+                color: var(--gray-400);
+            }
+            .detail-empty .empty-icon {
+                font-size: 64px;
+                margin-bottom: 16px;
+                opacity: 0.5;
+            }
+            .detail-empty .empty-text {
+                font-size: 16px;
+            }
+            .detail-content {
+                padding: 24px;
+                animation: fadeIn 0.3s ease;
+            }
+            .detail-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 20px;
+            }
+            .detail-title {
+                font-size: 20px;
+                font-weight: 700;
+                color: var(--gray-900);
+            }
+            .detail-meta {
+                display: flex;
+                gap: 12px;
+                margin-top: 6px;
+                font-size: 13px;
+                color: var(--gray-500);
+                flex-wrap: wrap;
+            }
+
+            /* Field Group */
+            .field-group {
+                margin-bottom: 16px;
+            }
+            .field-label {
+                font-size: 12px;
+                font-weight: 600;
+                color: var(--gray-500);
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 4px;
+            }
+            .field-value {
+                font-size: 14px;
+                color: var(--gray-800);
+                line-height: 1.6;
+            }
+            .field-value.ai-field {
+                background: #f0fdf4;
+                padding: 8px 12px;
+                border-radius: var(--radius-sm);
+                border: 1px solid #bbf7d0;
+                position: relative;
+            }
+            .field-value.ai-field::before {
+                content: "AI";
+                position: absolute;
+                top: -8px;
+                right: 8px;
+                font-size: 10px;
+                background: var(--success);
+                color: #fff;
+                padding: 0 6px;
+                border-radius: 4px;
+                font-weight: 600;
+            }
+            .detail-actions {
+                display: flex;
+                gap: 10px;
+                margin-top: 24px;
+                flex-wrap: wrap;
+                padding-top: 20px;
+                border-top: 1px solid var(--gray-200);
+            }
+
+            /* ===== Draft Grid ===== */
+            .draft-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 16px;
+                margin-bottom: 20px;
+            }
+            .draft-card {
+                background: #fff;
+                border-radius: var(--radius);
+                box-shadow: var(--shadow);
+                overflow: hidden;
+                transition: all 0.25s;
+                position: relative;
+                border: 1px solid transparent;
+            }
+            .draft-card:hover {
+                box-shadow: var(--shadow-lg);
+                transform: translateY(-3px);
+                border-color: var(--primary-light);
+            }
+            .draft-card .card-checkbox {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                z-index: 2;
+                width: 18px;
+                height: 18px;
+                accent-color: var(--primary);
+                cursor: pointer;
+                opacity: 0;
+                transition: opacity 0.2s;
+            }
+            .draft-card:hover .card-checkbox,
+            .card-checkbox:checked {
+                opacity: 1;
+            }
+            .draft-card .thumb {
+                height: 160px;
+                background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 48px;
+            }
+            .draft-card .body {
+                padding: 14px 16px 16px;
+            }
+            .draft-card .name {
+                font-size: 15px;
+                font-weight: 600;
+                color: var(--gray-800);
+                margin-bottom: 8px;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+            .badge-row {
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+                margin-bottom: 10px;
+            }
+            .draft-card .attrs {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 4px;
+                padding: 8px 10px;
+                background: var(--gray-50);
+                border-radius: 6px;
+                margin-bottom: 10px;
+                font-size: 12px;
+                color: var(--gray-600);
+            }
+            .draft-card .attrs .al {
+                color: var(--gray-400);
+            }
+            .draft-card .foot {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding-top: 10px;
+                border-top: 1px solid var(--gray-100);
+            }
+            .draft-card .time {
+                font-size: 11px;
+                color: var(--gray-400);
+            }
+            .draft-card .actions {
+                display: flex;
+                gap: 4px;
+            }
+            .draft-card .actions .btn {
+                padding: 4px 10px;
+                font-size: 12px;
+            }
+
+            /* ===== Chart ===== */
+            .chart-section {
+                background: #fff;
+                border-radius: var(--radius);
+                padding: 24px;
+                box-shadow: var(--shadow);
+                border: 1px solid var(--gray-200);
+                margin-bottom: 20px;
+            }
+            .chart-title {
+                font-size: 15px;
+                font-weight: 600;
+                color: var(--gray-700);
+                margin-bottom: 20px;
+            }
+            .chart-bars {
+                display: flex;
+                align-items: flex-end;
+                gap: 24px;
+                height: 160px;
+                padding: 0 20px;
+            }
+            .chart-bar-wrapper {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                height: 100%;
+                justify-content: flex-end;
+            }
+            .chart-bar {
+                width: 100%;
+                max-width: 48px;
+                border-radius: 6px 6px 0 0;
+                background: linear-gradient(
+                    180deg,
+                    var(--primary-light),
+                    var(--primary)
+                );
+                transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+                min-height: 4px;
+                position: relative;
+            }
+            .chart-bar:hover {
+                opacity: 0.8;
+            }
+            .chart-bar .bar-value {
+                position: absolute;
+                top: -22px;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 12px;
+                font-weight: 600;
+                color: var(--gray-700);
+                white-space: nowrap;
+            }
+            .chart-bar-label {
+                margin-top: 10px;
+                font-size: 12px;
+                color: var(--gray-500);
+            }
+
+            /* ===== Template Grid & Card ===== */
+            .template-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 16px;
+            }
+            .template-card {
+                border: 1px solid var(--gray-200);
+                border-radius: var(--radius);
+                padding: 20px;
+                position: relative;
+                transition: all 0.2s;
+            }
+            .template-card:hover {
+                box-shadow: var(--shadow-md);
+            }
+            .template-card.active {
+                border-color: var(--primary);
+                background: #f8f7ff;
+            }
+            .template-card .template-name {
+                font-size: 15px;
+                font-weight: 600;
+                color: var(--gray-800);
+                margin-bottom: 6px;
+            }
+            .template-card .template-desc {
+                font-size: 13px;
+                color: var(--gray-500);
+                margin-bottom: 12px;
+                line-height: 1.5;
+            }
+            .template-card .template-preview {
+                font-size: 12px;
+                color: var(--gray-400);
+                background: var(--gray-50);
+                padding: 8px 12px;
+                border-radius: var(--radius-sm);
+                margin-bottom: 12px;
+            }
+            .template-card .template-actions {
+                display: flex;
+                gap: 8px;
+            }
+            .template-card .active-badge {
+                position: absolute;
+                top: 12px;
+                right: 12px;
+            }
+
+            /* ===== Upload Zone (large variant) ===== */
+            .upload-zone-lg {
+                border: 2px dashed var(--gray-300);
+                border-radius: var(--radius);
+                padding: 60px 40px;
+                text-align: center;
+                transition: all 0.3s;
+                cursor: pointer;
+                background: #fff;
+            }
+            .upload-zone-lg:hover {
+                border-color: var(--primary-light);
+                background: #f8f7ff;
+            }
+            .upload-zone-lg.dragover {
+                border-color: var(--primary);
+                background: #eef2ff;
+            }
+            .upload-zone-lg .upload-icon {
+                font-size: 56px;
+                color: var(--gray-300);
+                margin-bottom: 16px;
+            }
+            .upload-zone-lg .upload-title {
+                font-size: 18px;
+                font-weight: 600;
+                color: var(--gray-800);
+                margin-bottom: 8px;
+            }
+            .upload-zone-lg .upload-subtitle {
+                font-size: 14px;
+                color: var(--gray-500);
+                margin-bottom: 20px;
+            }
+            .upload-zone-lg .upload-hint {
+                font-size: 12px;
+                color: var(--gray-400);
+                margin-top: 16px;
+            }
+
+            /* ===== Mapping Table ===== */
+            .mapping-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .mapping-table td {
+                padding: 10px 14px;
+                border-bottom: 1px solid var(--gray-100);
+                font-size: 14px;
+                color: var(--gray-700);
+            }
+            .mapping-table td:first-child {
+                font-weight: 500;
+                color: var(--gray-800);
+                width: 140px;
+            }
+            .mapping-table select {
+                padding: 6px 10px;
+                border: 1px solid var(--gray-300);
+                border-radius: var(--radius-sm);
+                font-size: 13px;
+                background: #fff;
+                color: var(--gray-700);
+                outline: none;
+                min-width: 180px;
+            }
+            .mapping-table select:focus {
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            }
+            .mapping-table .mapping-arrow {
+                color: var(--gray-400);
+                font-size: 16px;
+                padding: 0 8px;
+            }
+
+            /* ===== Progress ===== */
+            .progress-card {
+                text-align: center;
+                padding: 40px;
+            }
+            .progress-bar-wrapper {
+                width: 100%;
+                max-width: 500px;
+                height: 12px;
+                background: var(--gray-100);
+                border-radius: 6px;
+                margin: 0 auto 24px;
+                overflow: hidden;
+            }
+            .progress-bar-fill {
+                height: 100%;
+                background: linear-gradient(
+                    90deg,
+                    var(--primary),
+                    var(--primary-light)
+                );
+                border-radius: 6px;
+                width: 0%;
+                transition: width 0.3s;
+                position: relative;
+            }
+            .progress-bar-fill::after {
+                content: attr(data-label);
+                position: absolute;
+                right: -30px;
+                top: -18px;
+                font-size: 12px;
+                font-weight: 600;
+                color: var(--primary);
+            }
+            .progress-stats {
+                display: flex;
+                justify-content: center;
+                gap: 40px;
+                margin-bottom: 20px;
+            }
+            .progress-stat {
+                text-align: center;
+            }
+            .progress-stat .stat-num {
+                font-size: 28px;
+                font-weight: 700;
+                color: var(--gray-800);
+            }
+            .progress-stat .stat-label {
+                font-size: 13px;
+                color: var(--gray-500);
+            }
+            .progress-stat .stat-num.success {
+                color: var(--success);
+            }
+            .progress-stat .stat-num.fail {
+                color: var(--danger);
+            }
+            .progress-stat .stat-num.processing {
+                color: var(--primary);
+            }
+            .progress-status {
+                font-size: 14px;
+                color: var(--gray-600);
+            }
+            .result-summary {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 16px 20px;
+                background: var(--gray-50);
+                border-radius: var(--radius);
+                margin-bottom: 16px;
+            }
+            .result-summary .summary-text {
+                font-size: 14px;
+                color: var(--gray-700);
+                font-weight: 500;
+            }
+            .result-summary .summary-actions {
+                display: flex;
+                gap: 10px;
+            }
+            .hidden-section {
+                display: none;
+            }
+            .hidden-section.visible {
+                display: block;
+            }
+
+            /* ===== Checklist (Review) ===== */
+            .checklist {
+                margin: 20px 0;
+            }
+            .checklist-title {
+                font-size: 14px;
+                font-weight: 600;
+                color: var(--gray-700);
+                margin-bottom: 12px;
+            }
+            .checklist-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 8px 0;
+                border-bottom: 1px solid var(--gray-100);
+                font-size: 14px;
+                color: var(--gray-700);
+            }
+            .checklist-item:last-child {
+                border-bottom: none;
+            }
+            .checklist-icon {
+                font-size: 16px;
+                width: 20px;
+                text-align: center;
+            }
+            .checklist-icon.pass {
+                color: var(--success);
+            }
+            .checklist-icon.fail {
+                color: var(--danger);
+            }
+
+            /* ===== Wizard Steps ===== */
+            .wizard-steps {
+                display: flex;
+                gap: 0;
+                margin-bottom: 24px;
+                background: var(--gray-100);
+                border-radius: var(--radius-sm);
+                overflow: hidden;
+            }
+            .wizard-step {
+                flex: 1;
+                padding: 12px 16px;
+                text-align: center;
+                font-size: 13px;
+                font-weight: 500;
+                color: var(--gray-400);
+                position: relative;
+                transition: all 0.3s;
+                cursor: default;
+            }
+            .wizard-step .step-num {
+                display: inline-flex;
+                width: 22px;
+                height: 22px;
+                border-radius: 50%;
+                background: var(--gray-300);
+                color: #fff;
+                align-items: center;
+                justify-content: center;
+                font-size: 11px;
+                font-weight: 600;
+                margin-right: 6px;
+                transition: all 0.3s;
+            }
+            .wizard-step.active {
+                color: var(--primary);
+                background: rgba(79, 70, 229, 0.08);
+            }
+            .wizard-step.active .step-num {
+                background: var(--primary);
+            }
+            .wizard-step.done {
+                color: var(--success);
+            }
+            .wizard-step.done .step-num {
+                background: var(--success);
+            }
+
+            /* ===== AI Result Block ===== */
+            .ai-result {
+                border: 1px solid var(--gray-200);
+                border-radius: var(--radius-sm);
+                padding: 16px;
+                margin-bottom: 12px;
+                position: relative;
+            }
+            .ai-result .badge-ai {
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                font-size: 10px;
+                background: linear-gradient(135deg, var(--primary), #7c3aed);
+                color: #fff;
+                padding: 2px 8px;
+                border-radius: 10px;
+                font-weight: 500;
+            }
+            .ai-result .field-label {
+                font-size: 12px;
+                color: var(--gray-500);
+                margin-bottom: 4px;
+            }
+            .ai-result .field-value {
+                font-size: 14px;
+                color: var(--gray-800);
+                font-weight: 500;
+            }
+            .ai-result .confidence-bar {
+                height: 4px;
+                border-radius: 2px;
+                background: var(--gray-200);
+                margin-top: 8px;
+                overflow: hidden;
+            }
+            .ai-result .confidence-bar .fill {
+                height: 100%;
+                border-radius: 2px;
+                transition: width 1s ease;
+            }
+            .fill-high {
+                background: var(--success);
+            }
+            .fill-mid {
+                background: var(--warning);
+            }
+            .fill-low {
+                background: var(--danger);
+            }
+
+            /* ===== Process Visual ===== */
+            .process-visual {
+                background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%);
+                border-radius: var(--radius);
+                padding: 24px;
+                margin-bottom: 20px;
+            }
+            .process-flow {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                position: relative;
+            }
+            .process-flow::before {
+                content: "";
+                position: absolute;
+                top: 24px;
+                left: 40px;
+                right: 40px;
+                height: 2px;
+                background: var(--gray-200);
+                z-index: 0;
+            }
+            .process-flow .flow-step {
+                text-align: center;
+                position: relative;
+                z-index: 1;
+                flex: 1;
+            }
+            .process-flow .flow-icon {
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                background: #fff;
+                border: 2px solid var(--gray-200);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 20px;
+                margin: 0 auto 8px;
+                transition: all 0.5s;
+            }
+            .process-flow .flow-step.active .flow-icon {
+                border-color: var(--primary);
+                background: var(--primary);
+                color: #fff;
+                box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+                animation: pulse-glow 2s infinite;
+            }
+            .process-flow .flow-step.done .flow-icon {
+                border-color: var(--success);
+                background: var(--success);
+                color: #fff;
+            }
+            .process-flow .flow-label {
+                font-size: 11px;
+                color: var(--gray-500);
+                font-weight: 500;
+            }
+            .process-flow .flow-step.active .flow-label {
+                color: var(--primary);
+            }
+            .process-flow .flow-step.done .flow-label {
+                color: var(--success);
+            }
+
+            @keyframes pulse-glow {
+                0%,
+                100% {
+                    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+                }
+                50% {
+                    box-shadow: 0 0 0 8px rgba(79, 70, 229, 0.08);
+                }
+            }
+
+            /* ===== AI Thinking ===== */
+            .ai-thinking {
+                display: none;
+                align-items: center;
+                gap: 10px;
+                padding: 12px 16px;
+                background: #eef2ff;
+                border-radius: var(--radius-sm);
+                margin-bottom: 12px;
+            }
+            .ai-thinking.show {
+                display: flex;
+            }
+            .ai-thinking .text {
+                font-size: 13px;
+                color: var(--gray-600);
+            }
+
+            /* ===== Progress Ring ===== */
+            .progress-ring {
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+                font-weight: 700;
+                position: relative;
+            }
+
+            /* ===== Confidence Pill ===== */
+            .conf-pill {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                padding: 2px 10px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 600;
+            }
+            .conf-pill-sm {
+                font-size: 10px;
+                padding: 0 6px;
+            }
+            .conf-high {
+                background: #d1fae5;
+                color: #065f46;
+            }
+            .conf-mid {
+                background: #fef3c7;
+                color: #92400e;
+            }
+            .conf-low {
+                background: #fee2e2;
+                color: #991b1b;
+            }
+
+            /* ===== Tag Pills ===== */
+            .tag-pill {
+                padding: 3px 10px;
+                background: #eef2ff;
+                color: var(--primary);
+                border-radius: 4px;
+                font-size: 12px;
+                display: inline-block;
+            }
+            .tag-gray {
+                padding: 2px 8px;
+                background: var(--gray-100);
+                border-radius: 4px;
+                font-size: 11px;
+                color: var(--gray-600);
+                display: inline-block;
+            }
+
+            /* ===== Price Display ===== */
+            .price-lg {
+                font-size: 22px;
+                font-weight: 700;
+                color: var(--danger);
+            }
+            .original-price {
+                font-size: 13px;
+                font-weight: 400;
+                color: var(--gray-400);
+                text-decoration: line-through;
+                margin-left: 6px;
+            }
+
+            /* ===== Text Hint ===== */
+            .text-hint {
+                font-size: 13px;
+                color: var(--gray-400);
+            }
+
+            /* ===== Editable Field ===== */
+            .editable-field {
+                cursor: pointer;
+                transition: background 0.15s;
+                border-radius: 4px;
+                padding: 2px 6px;
+                margin: -2px -6px;
+            }
+            .editable-field:hover {
+                background: var(--gray-100);
+            }
+            .editable-field::after {
+                content: "\270E";
+                font-size: 12px;
+                margin-left: 6px;
+                color: var(--gray-400);
+                opacity: 0;
+                transition: opacity 0.15s;
+            }
+            .editable-field:hover::after {
+                opacity: 1;
+            }
+
+            /* ===== Mini Tabs ===== */
+            .mini-tabs {
+                display: flex;
+                border-bottom: 1px solid var(--gray-200);
+                margin-bottom: 12px;
+            }
+            .mini-tabs .tab {
+                padding: 8px 16px;
+                font-size: 13px;
+                color: var(--gray-500);
+                cursor: pointer;
+                border-bottom: 2px solid transparent;
+                transition: all 0.2s;
+                font-weight: 500;
+            }
+            .mini-tabs .tab.active {
+                color: var(--primary);
+                border-bottom-color: var(--primary);
+            }
+            .mini-tabs .tab:hover {
+                color: var(--gray-700);
+            }
+
+            /* ===== Log List ===== */
+            .log-list {
+                max-height: 280px;
+                overflow-y: auto;
+            }
+            .log-item {
+                display: flex;
+                gap: 10px;
+                padding: 8px 0;
+                border-bottom: 1px solid var(--gray-100);
+                font-size: 13px;
+            }
+            .log-item:last-child {
+                border-bottom: none;
+            }
+            .log-item .time {
+                color: var(--gray-400);
+                flex-shrink: 0;
+                font-size: 12px;
+                width: 50px;
+            }
+            .log-item .log-text {
+                color: var(--gray-600);
+            }
+            .log-item .log-text strong {
+                color: var(--gray-800);
+            }
+            .log-item .status-dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                margin-top: 7px;
+                flex-shrink: 0;
+            }
+            .dot-success {
+                background: var(--success);
+            }
+            .dot-warning {
+                background: var(--warning);
+            }
+            .dot-primary {
+                background: var(--primary);
+            }
+
+            /* ===== Tip Item ===== */
+            .tip-item {
+                display: flex;
+                gap: 10px;
+                padding: 10px 0;
+                border-bottom: 1px solid var(--gray-100);
+            }
+            .tip-item:last-child {
+                border-bottom: none;
+            }
+            .tip-item .tip-icon {
+                width: 28px;
+                height: 28px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 14px;
+                flex-shrink: 0;
+            }
+            .tip-item .tip-text {
+                font-size: 13px;
+                color: var(--gray-600);
+                line-height: 1.5;
+            }
+
+            /* ===== Compare Table ===== */
+            .compare-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 13px;
+                margin-top: 8px;
+            }
+            .compare-table th {
+                text-align: left;
+                padding: 10px 12px;
+                background: var(--gray-50);
+                color: var(--gray-600);
+                font-weight: 500;
+                border-bottom: 1px solid var(--gray-200);
+            }
+            .compare-table td {
+                padding: 10px 12px;
+                border-bottom: 1px solid var(--gray-100);
+                color: var(--gray-700);
+            }
+            .compare-table tr:last-child td {
+                border-bottom: none;
+            }
+
+            /* ===== Checklist (this page variant) ===== */
+            .checklist-list {
+                list-style: none;
+            }
+            .checklist-list li {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 6px 0;
+                font-size: 13px;
+                color: var(--gray-600);
+            }
+            .checklist-list li .check {
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 10px;
+                flex-shrink: 0;
+            }
+            .check-pass {
+                background: #d1fae5;
+                color: var(--success);
+            }
+            .check-fail {
+                background: #fee2e2;
+                color: var(--danger);
+            }
+            .check-pending {
+                background: var(--gray-200);
+                color: var(--gray-400);
+            }
+
+            /* ===== Product Preview ===== */
+            .product-preview {
+                border: 1px solid var(--gray-200);
+                border-radius: var(--radius);
+                overflow: hidden;
+            }
+            .product-preview .preview-img {
+                width: 100%;
+                height: 200px;
+                background: linear-gradient(135deg, #e0e7ff, #f3e8ff);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 56px;
+                color: var(--primary-light);
+            }
+            .product-preview .preview-body {
+                padding: 16px;
+            }
+            .product-preview .preview-title {
+                font-size: 16px;
+                font-weight: 600;
+                color: var(--gray-800);
+                margin-bottom: 8px;
+                line-height: 1.4;
+            }
+            .product-preview .preview-price {
+                font-size: 24px;
+                font-weight: 700;
+                color: var(--danger);
+                margin-bottom: 8px;
+            }
+            .product-preview .preview-price .original {
+                font-size: 14px;
+                font-weight: 400;
+                color: var(--gray-400);
+                text-decoration: line-through;
+                margin-left: 8px;
+            }
+            .product-preview .preview-tags {
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+                margin-bottom: 8px;
+            }
+            .product-preview .preview-tags span {
+                font-size: 11px;
+                padding: 2px 8px;
+                border-radius: 4px;
+                background: var(--gray-100);
+                color: var(--gray-600);
+            }
+            .product-preview .preview-desc {
+                font-size: 13px;
+                color: var(--gray-500);
+                line-height: 1.6;
+            }
+
+            /* ===== Checklist Section ===== */
+            .checklist-section {
+                margin-top: 16px;
+                padding: 16px;
+                background: var(--gray-50);
+                border-radius: var(--radius-sm);
+            }
+
+            /* ===== Check Status ===== */
+            .check-status {
+                margin-left: auto;
+                font-size: 11px;
+            }
+            .check-pass-text {
+                color: var(--success);
+            }
+            .check-pending-text {
+                color: var(--warning);
+            }
+
+            /* ===== Utility Classes ===== */
+            .flex {
+                display: flex;
+            }
+            .flex-col {
+                flex-direction: column;
+            }
+            .flex-wrap {
+                flex-wrap: wrap;
+            }
+            .items-center {
+                align-items: center;
+            }
+            .items-start {
+                align-items: flex-start;
+            }
+            .justify-between {
+                justify-content: space-between;
+            }
+            .justify-center {
+                justify-content: center;
+            }
+            .gap-4 {
+                gap: 4px;
+            }
+            .gap-6 {
+                gap: 6px;
+            }
+            .gap-8 {
+                gap: 8px;
+            }
+            .gap-10 {
+                gap: 10px;
+            }
+            .gap-12 {
+                gap: 12px;
+            }
+            .gap-16 {
+                gap: 16px;
+            }
+            .gap-20 {
+                gap: 20px;
+            }
+            .gap-24 {
+                gap: 24px;
+            }
+            .text-xs {
+                font-size: 12px;
+            }
+            .text-sm {
+                font-size: 13px;
+            }
+            .text-base {
+                font-size: 14px;
+            }
+            .text-lg {
+                font-size: 16px;
+            }
+            .text-muted {
+                color: var(--gray-400);
+            }
+            .text-muted-500 {
+                color: var(--gray-500);
+            }
+            .text-muted-600 {
+                color: var(--gray-600);
+            }
+            .text-primary {
+                color: var(--primary);
+            }
+            .text-success {
+                color: var(--success);
+            }
+            .text-warning {
+                color: var(--warning);
+            }
+            .text-danger {
+                color: var(--danger);
+            }
+            .font-medium {
+                font-weight: 500;
+            }
+            .font-semibold {
+                font-weight: 600;
+            }
+            .font-bold {
+                font-weight: 700;
+            }
+            .text-center {
+                text-align: center;
+            }
+            .text-right {
+                text-align: right;
+            }
+            .text-left {
+                text-align: left;
+            }
+            .w-full {
+                width: 100%;
+            }
+            .mt-4 {
+                margin-top: 4px;
+            }
+            .mt-6 {
+                margin-top: 6px;
+            }
+            .mt-8 {
+                margin-top: 8px;
+            }
+            .mt-10 {
+                margin-top: 10px;
+            }
+            .mt-12 {
+                margin-top: 12px;
+            }
+            .mt-16 {
+                margin-top: 16px;
+            }
+            .mt-20 {
+                margin-top: 20px;
+            }
+            .mb-8 {
+                margin-bottom: 8px;
+            }
+            .mb-10 {
+                margin-bottom: 10px;
+            }
+            .mb-12 {
+                margin-bottom: 12px;
+            }
+            .mb-16 {
+                margin-bottom: 16px;
+            }
+            .mb-20 {
+                margin-bottom: 20px;
+            }
+            .ml-auto {
+                margin-left: auto;
+            }
+            .mr-auto {
+                margin-right: auto;
+            }
+            .p-16 {
+                padding: 16px;
+            }
+            .p-20 {
+                padding: 20px;
+            }
+            .p-24 {
+                padding: 24px;
+            }
+            .truncate {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            /* ===== Upload Footer ===== */
+            .upload-footer {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-top: 16px;
+                padding: 0 4px;
+            }
+            .format-hint {
+                font-size: 13px;
+                color: var(--gray-400);
+            }
+            .batch-spacer {
+                height: 20px;
+            }
+
+            /* ===== Filter Card Body ===== */
+            .filter-card-body {
+                padding: 0;
+            }
+
+            /* ===== Card Body Variants ===== */
+            .card-body-nopad {
+                padding: 0;
+            }
+            .card-body-tight {
+                padding: 12px 16px;
+            }
+            .card-body-xtight {
+                padding: 8px 12px;
+            }
+
+            /* ===== Flex Utility Extras ===== */
+            .flex-1 {
+                flex: 1;
+            }
+            .fixed-width {
+                width: 130px;
+                flex-shrink: 0;
+            }
+            .textarea-full {
+                width: 100%;
+                min-height: 160px;
+            }
+
+            /* ===== Auto Publish Label ===== */
+            .auto-publish-label {
+                font-size: 13px;
+                color: var(--gray-500);
+            }
+
+            /* ===== Range Slider Progress ===== */
+            .range-slider-progress {
+                -webkit-appearance: none;
+                width: 240px;
+                height: 6px;
+                border-radius: 3px;
+                outline: none;
+                padding: 0;
+                background: linear-gradient(
+                    to right,
+                    var(--primary) 0%,
+                    var(--primary) var(--range-progress, 50%),
+                    var(--gray-200) var(--range-progress, 50%),
+                    var(--gray-200) 100%
+                );
+            }
+
+            /* ===== Batch Bar Hidden ===== */
+            .batch-bar-hidden {
+                display: none;
+            }
+
+            /* ===== Result Row Fail (批量导入) ===== */
+            tr.result-row-fail {
+                background: #fef2f2;
+            }
+            tr.result-row-fail:hover td {
+                background: #fef2f2;
+            }
+
+            /* ===== Conf Overview Pills ===== */
+            .conf-overview-pills {
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+                margin-left: auto;
+            }
+            .conf-pill.conf-high {
+                background: #d1fae5;
+                color: #065f46;
+            }
+            .conf-pill.conf-mid {
+                background: #fef3c7;
+                color: #92400e;
+            }
+
+            /* ===== Tag Pill Enhanced ===== */
+            .tag-pill-enhanced {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                padding: 4px 10px;
+                background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+                color: var(--primary);
+                border-radius: 6px;
+                font-size: 12px;
+                font-weight: 500;
+                border: 1px solid #e0e7ff;
+            }
+
+            /* ===== Card Subtitle ===== */
+            .card-subtitle {
+                font-size: 12px;
+                color: var(--gray-400);
+                font-weight: 400;
+            }
+
+            /* ===== Footer Text ===== */
+            .footer-text {
+                font-size: 12px;
+                color: var(--gray-500);
+            }
+            .footer-time {
+                font-size: 12px;
+                color: var(--gray-400);
+            }
+
+            /* ===== Checklist Section Title ===== */
+            .checklist-section-title {
+                font-size: 14px;
+                font-weight: 600;
+                color: var(--gray-700);
+                margin-bottom: 12px;
+            }
+
+            /* ===== Conf Result Value ===== */
+            .conf-result-value {
+                font-weight: 700;
+            }
+
+            /* ===== Responsive ===== */
+            @media (max-width: 1024px) {
+                .stats-grid,
+                .stats-row {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                .main-grid {
+                    grid-template-columns: 1fr;
+                }
+                .review-layout {
+                    grid-template-columns: 1fr;
+                }
+                .settings-layout {
+                    grid-template-columns: 1fr;
+                }
+                .draft-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                .template-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+            @media (max-width: 640px) {
+                .app-container,
+                .container {
+                    padding: 16px;
+                }
+                .header-inner {
+                    padding: 0 16px;
+                }
+                .nav-inner {
+                    padding: 0 12px;
+                    overflow-x: auto;
+                }
+                .header-stats {
+                    display: none;
+                }
+                .stats-grid,
+                .stats-row {
+                    grid-template-columns: 1fr 1fr;
+                }
+                .input-row {
+                    grid-template-columns: 1fr;
+                }
+                .action-bar h1 {
+                    font-size: 18px;
+                }
+                .filter-bar {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+                .filter-bar .filter-right {
+                    margin-left: 0;
+                }
+                .draft-grid {
+                    grid-template-columns: 1fr;
+                }
+                .draft-card .card-checkbox {
+                    opacity: 1;
+                }
+                .template-grid {
+                    grid-template-columns: 1fr;
+                }
+                .process-flow {
+                    flex-wrap: wrap;
+                    gap: 12px;
+                }
+                .process-flow::before {
+                    display: none;
+                }
+            }
+
+            /* === 页面私有样式 === */
+        </style>
+    </head>
+    <body>
+        <header class="header">
+            <div class="header-inner">
+                <div class="logo">
+                    <div class="logo-icon">&#9670;</div>
+                    <span>AI 智能商品发布</span>
+                </div>
+                <div class="header-right">
+                    <span class="user-info">管理员 &#183; 张三</span>
+                </div>
+            </div>
+            <div class="nav-bar">
+                <div class="nav-inner">
+                    <a href="../商品发布/智能商品发布.html" class="nav-item"
+                        >&#9889; 智能发布</a
+                    >
+
+                    <a href="../商品发布/商品草稿箱.html" class="nav-item"
+                        >&#128221; 草稿箱</a
+                    >
+                    <a href="../商品发布/商品审核台.html" class="nav-item"
+                        >&#9989; 审核台</a
+                    >
+                    <a href="../商品发布/发布记录.html" class="nav-item"
+                        >&#128203; 发布记录</a
+                    >
+                    <a href="../商品发布/批量导入.html" class="nav-item active"
+                        >&#128230; 批量导入</a
+                    >
+                    <a href="../商品发布/AI设置中心.html" class="nav-item"
+                        >&#9881;&#65039; AI设置</a
+                    >
+                </div>
+            </div>
+        </header>
+
+        <div class="app-container">
+            <!-- Section 1: Upload Zone -->
+            <div class="card">
+                <div class="card-header">上传文件</div>
+                <div class="card-body">
+                    <div
+                        class="upload-zone-lg"
+                        id="uploadZone"
+                        onclick="uploadFile()"
+                    >
+                        <div class="upload-icon">&#128196;</div>
+                        <div class="upload-title">上传批量商品文件</div>
+                        <div class="upload-subtitle">
+                            支持 CSV / Excel，最大 50MB
+                        </div>
+                        <button
+                            class="btn btn-primary"
+                            onclick="
+                                event.stopPropagation();
+                                uploadFile();
+                            "
+                        >
+                            选择文件
+                        </button>
+                        <div class="upload-hint">或直接将文件拖拽到此区域</div>
+                    </div>
+                    <div class="upload-footer">
+                        <span class="format-hint"
+                            >支持格式：.csv, .xlsx, .xls</span
+                        >
+                        <button
+                            class="btn btn-outline btn-sm"
+                            onclick="downloadTemplate()"
+                        >
+                            &#128229; 下载导入模板
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Field Mapping (hidden) -->
+            <div class="hidden-section" id="mappingSection">
+                <div class="batch-spacer"></div>
+                <div class="card">
+                    <div class="card-header">
+                        <span>字段映射配置</span>
+                        <button
+                            class="btn btn-outline btn-sm"
+                            onclick="autoMatch()"
+                        >
+                            &#9889; 自动匹配
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <table class="mapping-table">
+                            <tr>
+                                <td>商品名称</td>
+                                <td>
+                                    <span class="mapping-arrow">&#8594;</span>
+                                </td>
+                                <td>
+                                    <select>
+                                        <option selected>商品名称</option>
+                                        <option>产品名</option>
+                                        <option>名称</option>
+                                        <option>标题</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>商品描述</td>
+                                <td>
+                                    <span class="mapping-arrow">&#8594;</span>
+                                </td>
+                                <td>
+                                    <select>
+                                        <option selected>描述</option>
+                                        <option>产品描述</option>
+                                        <option>详情</option>
+                                        <option>介绍</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>售价</td>
+                                <td>
+                                    <span class="mapping-arrow">&#8594;</span>
+                                </td>
+                                <td>
+                                    <select>
+                                        <option selected>价格</option>
+                                        <option>售价</option>
+                                        <option>金额</option>
+                                        <option>单价</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>类目</td>
+                                <td>
+                                    <span class="mapping-arrow">&#8594;</span>
+                                </td>
+                                <td>
+                                    <select>
+                                        <option selected>类目路径</option>
+                                        <option>类目</option>
+                                        <option>分类</option>
+                                        <option>品类</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>品牌</td>
+                                <td>
+                                    <span class="mapping-arrow">&#8594;</span>
+                                </td>
+                                <td>
+                                    <select>
+                                        <option selected>品牌</option>
+                                        <option>商标</option>
+                                        <option>厂商</option>
+                                        <option>供应商</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>库存</td>
+                                <td>
+                                    <span class="mapping-arrow">&#8594;</span>
+                                </td>
+                                <td>
+                                    <select>
+                                        <option selected>库存</option>
+                                        <option>数量</option>
+                                        <option>存量</option>
+                                        <option>库存量</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>SKU</td>
+                                <td>
+                                    <span class="mapping-arrow">&#8594;</span>
+                                </td>
+                                <td>
+                                    <select>
+                                        <option selected>规格</option>
+                                        <option>SKU</option>
+                                        <option>规格描述</option>
+                                        <option>属性</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>图片链接</td>
+                                <td>
+                                    <span class="mapping-arrow">&#8594;</span>
+                                </td>
+                                <td>
+                                    <select>
+                                        <option selected>图片</option>
+                                        <option>图片链接</option>
+                                        <option>图片URL</option>
+                                        <option>主图</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="mapping-actions">
+                            <button
+                                class="btn btn-primary btn-lg"
+                                onclick="startImport()"
+                            >
+                                &#9654; 开始导入
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Progress & Results (hidden) -->
+            <div class="hidden-section" id="progressSection">
+                <div class="batch-spacer"></div>
+                <div class="card">
+                    <div class="card-header">导入进度</div>
+                    <div class="card-body">
+                        <div class="progress-card" id="progressCard">
+                            <div class="progress-bar-wrapper">
+                                <div
+                                    class="progress-bar-fill"
+                                    id="progressFill"
+                                    data-label="0%"
+                                ></div>
+                            </div>
+                            <div class="progress-stats" id="progressStats">
+                                <div class="progress-stat">
+                                    <div class="stat-num" id="totalNum">50</div>
+                                    <div class="stat-label">总数</div>
+                                </div>
+                                <div class="progress-stat">
+                                    <div
+                                        class="stat-num success"
+                                        id="successNum"
+                                    >
+                                        0
+                                    </div>
+                                    <div class="stat-label">成功</div>
+                                </div>
+                                <div class="progress-stat">
+                                    <div class="stat-num fail" id="failNum">
+                                        0
+                                    </div>
+                                    <div class="stat-label">失败</div>
+                                </div>
+                                <div class="progress-stat">
+                                    <div
+                                        class="stat-num processing"
+                                        id="processingNum"
+                                    >
+                                        50
+                                    </div>
+                                    <div class="stat-label">处理中</div>
+                                </div>
+                            </div>
+                            <div class="progress-status" id="progressStatus">
+                                AI正在处理第 0/50 条...
+                            </div>
+                        </div>
+
+                        <!-- Results (hidden until done) -->
+                        <div id="resultsSection" class="hidden-section">
+                            <div class="result-summary">
+                                <div class="summary-text" id="summaryText">
+                                    成功 42 条 / 失败 3 条 / 耗时 4分32秒
+                                </div>
+                                <div class="summary-actions">
+                                    <button
+                                        class="btn btn-primary btn-sm"
+                                        onclick="submitForReview()"
+                                    >
+                                        提交审核
+                                    </button>
+                                    <button
+                                        class="btn btn-outline btn-sm"
+                                        onclick="exportFailed()"
+                                    >
+                                        导出失败记录
+                                    </button>
+                                    <button
+                                        class="btn btn-outline btn-sm"
+                                        onclick="reImport()"
+                                    >
+                                        重新导入
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="table-wrapper">
+                                <table id="resultTable">
+                                    <thead>
+                                        <tr>
+                                            <th>商品名称</th>
+                                            <th>类目</th>
+                                            <th>AI置信度</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="resultBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="toast-container" id="toastContainer"></div>
+
+        <script>
+            const mockResults = [
+                {
+                    name: "无线蓝牙耳机 Pro Max",
+                    category: "电子产品",
+                    confidence: 96,
+                    status: "success",
+                },
+                {
+                    name: "轻奢真丝连衣裙",
+                    category: "服装鞋帽",
+                    confidence: 88,
+                    status: "success",
+                },
+                {
+                    name: "智能扫地机器人 X20",
+                    category: "电子产品",
+                    confidence: 45,
+                    status: "fail",
+                },
+                {
+                    name: "北欧简约落地灯",
+                    category: "家居用品",
+                    confidence: 92,
+                    status: "success",
+                },
+                {
+                    name: "有机红枣礼盒装",
+                    category: "食品饮料",
+                    confidence: 75,
+                    status: "success",
+                },
+                {
+                    name: "专业运动跑鞋 AirFlow",
+                    category: "服装鞋帽",
+                    confidence: 82,
+                    status: "success",
+                },
+                {
+                    name: "智能手表 Ultra S3",
+                    category: "电子产品",
+                    confidence: 67,
+                    status: "success",
+                },
+                {
+                    name: "手工陶瓷茶具套装",
+                    category: "家居用品",
+                    confidence: 94,
+                    status: "success",
+                },
+                {
+                    name: "超薄快充移动电源",
+                    category: "电子产品",
+                    confidence: 91,
+                    status: "success",
+                },
+                {
+                    name: "纯棉简约四件套",
+                    category: "家居用品",
+                    confidence: 72,
+                    status: "success",
+                },
+                {
+                    name: "即食燕窝礼盒",
+                    category: "食品饮料",
+                    confidence: 58,
+                    status: "fail",
+                },
+                {
+                    name: "无线机械键盘 K8",
+                    category: "电子产品",
+                    confidence: 95,
+                    status: "success",
+                },
+                {
+                    name: "进口咖啡豆礼盒",
+                    category: "食品饮料",
+                    confidence: 63,
+                    status: "fail",
+                },
+                {
+                    name: "便携蓝牙音箱",
+                    category: "电子产品",
+                    confidence: 87,
+                    status: "success",
+                },
+                {
+                    name: "运动速干T恤",
+                    category: "服装鞋帽",
+                    confidence: 90,
+                    status: "success",
+                },
+                {
+                    name: "智能体脂秤",
+                    category: "电子产品",
+                    confidence: 78,
+                    status: "success",
+                },
+                {
+                    name: "竹纤维毛巾套装",
+                    category: "家居用品",
+                    confidence: 85,
+                    status: "success",
+                },
+                {
+                    name: "天然蜂花粉",
+                    category: "食品饮料",
+                    confidence: 71,
+                    status: "success",
+                },
+                {
+                    name: "真皮商务腰带",
+                    category: "服装鞋帽",
+                    confidence: 55,
+                    status: "fail",
+                },
+                {
+                    name: "桌面收纳盒套装",
+                    category: "家居用品",
+                    confidence: 83,
+                    status: "success",
+                },
+                {
+                    name: "儿童益智拼图",
+                    category: "家居用品",
+                    confidence: 79,
+                    status: "success",
+                },
+                {
+                    name: "氮化镓充电器",
+                    category: "电子产品",
+                    confidence: 93,
+                    status: "success",
+                },
+                {
+                    name: "真丝眼罩睡眠",
+                    category: "家居用品",
+                    confidence: 76,
+                    status: "success",
+                },
+                {
+                    name: "户外登山杖",
+                    category: "服装鞋帽",
+                    confidence: 68,
+                    status: "success",
+                },
+                {
+                    name: "冷萃咖啡壶",
+                    category: "家居用品",
+                    confidence: 81,
+                    status: "success",
+                },
+                {
+                    name: "智能门锁E30",
+                    category: "电子产品",
+                    confidence: 86,
+                    status: "success",
+                },
+                {
+                    name: "乳胶枕护颈",
+                    category: "家居用品",
+                    confidence: 74,
+                    status: "success",
+                },
+                {
+                    name: "羊毛围巾礼盒",
+                    category: "服装鞋帽",
+                    confidence: 69,
+                    status: "success",
+                },
+                {
+                    name: "骨传导耳机",
+                    category: "电子产品",
+                    confidence: 42,
+                    status: "fail",
+                },
+                {
+                    name: "真空压缩袋套装",
+                    category: "家居用品",
+                    confidence: 77,
+                    status: "success",
+                },
+                {
+                    name: "智能台灯 L1",
+                    category: "电子产品",
+                    confidence: 89,
+                    status: "success",
+                },
+                {
+                    name: "瑜伽垫加厚",
+                    category: "服装鞋帽",
+                    confidence: 80,
+                    status: "success",
+                },
+                {
+                    name: "陶瓷水果刀",
+                    category: "家居用品",
+                    confidence: 73,
+                    status: "success",
+                },
+                {
+                    name: "男士休闲皮鞋",
+                    category: "服装鞋帽",
+                    confidence: 84,
+                    status: "success",
+                },
+                {
+                    name: "胶囊咖啡机",
+                    category: "电子产品",
+                    confidence: 91,
+                    status: "success",
+                },
+                {
+                    name: "藤编收纳篮",
+                    category: "家居用品",
+                    confidence: 76,
+                    status: "success",
+                },
+                {
+                    name: "运动水壶500ml",
+                    category: "服装鞋帽",
+                    confidence: 82,
+                    status: "success",
+                },
+                {
+                    name: "蓝牙自拍杆",
+                    category: "电子产品",
+                    confidence: 70,
+                    status: "success",
+                },
+                {
+                    name: "保暖内衣套装",
+                    category: "服装鞋帽",
+                    confidence: 78,
+                    status: "success",
+                },
+                {
+                    name: "香薰加湿器",
+                    category: "家居用品",
+                    confidence: 85,
+                    status: "success",
+                },
+                {
+                    name: "电竞耳机G1",
+                    category: "电子产品",
+                    confidence: 87,
+                    status: "success",
+                },
+                {
+                    name: "帆布双肩包",
+                    category: "服装鞋帽",
+                    confidence: 74,
+                    status: "success",
+                },
+                {
+                    name: "不锈钢保温杯",
+                    category: "家居用品",
+                    confidence: 79,
+                    status: "success",
+                },
+                {
+                    name: "机械手表简约",
+                    category: "电子产品",
+                    confidence: 62,
+                    status: "success",
+                },
+                {
+                    name: "休闲帆布鞋",
+                    category: "服装鞋帽",
+                    confidence: 80,
+                    status: "success",
+                },
+                {
+                    name: "磁吸充电宝",
+                    category: "电子产品",
+                    confidence: 88,
+                    status: "success",
+                },
+                {
+                    name: "亚麻沙发垫",
+                    category: "家居用品",
+                    confidence: 75,
+                    status: "success",
+                },
+                {
+                    name: "速干浴巾",
+                    category: "家居用品",
+                    confidence: 81,
+                    status: "success",
+                },
+                {
+                    name: "降噪耳塞",
+                    category: "电子产品",
+                    confidence: 73,
+                    status: "success",
+                },
+                {
+                    name: "护眼台灯pro",
+                    category: "电子产品",
+                    confidence: 66,
+                    status: "success",
+                },
+            ];
+
+            let importRunning = false;
+
+            function uploadFile() {
+                showToast(
+                    "success",
+                    "文件上传成功：批量商品数据.xlsx（45条记录）",
+                );
+                document
+                    .getElementById("mappingSection")
+                    .classList.add("visible");
+                setTimeout(() => {
+                    document.getElementById("mappingSection").scrollIntoView({
+                        behavior: "smooth",
+                        block: "center",
+                    });
+                }, 100);
+            }
+
+            function downloadTemplate() {
+                showToast("info", "模板下载中...");
+                setTimeout(
+                    () =>
+                        showToast(
+                            "success",
+                            "导入模板已下载：商品导入模板.xlsx",
+                        ),
+                    800,
+                );
+            }
+
+            function autoMatch() {
+                showToast("success", "字段自动匹配完成，共匹配 8/8 个字段");
+            }
+
+            function startImport() {
+                if (importRunning) return;
+                importRunning = true;
+                document
+                    .getElementById("progressSection")
+                    .classList.add("visible");
+                document
+                    .getElementById("resultsSection")
+                    .classList.remove("visible");
+                document.getElementById("progressCard").style.display = "block";
+
+                setTimeout(() => {
+                    document.getElementById("progressSection").scrollIntoView({
+                        behavior: "smooth",
+                        block: "center",
+                    });
+                }, 100);
+
+                const total = 50;
+                const progressFill = document.getElementById("progressFill");
+                const successNum = document.getElementById("successNum");
+                const failNum = document.getElementById("failNum");
+                const processingNum = document.getElementById("processingNum");
+                const progressStatus =
+                    document.getElementById("progressStatus");
+                const totalNum = document.getElementById("totalNum");
+                totalNum.textContent = total;
+                processingNum.textContent = total;
+                successNum.textContent = "0";
+                failNum.textContent = "0";
+
+                let current = 0;
+                const speed = 80;
+                const interval = setInterval(() => {
+                    current++;
+                    const pct = Math.round((current / total) * 100);
+                    progressFill.style.width = pct + "%";
+                    progressFill.setAttribute("data-label", pct + "%");
+
+                    let success = 0,
+                        fail = 0;
+                    for (
+                        let i = 0;
+                        i < current && i < mockResults.length;
+                        i++
+                    ) {
+                        if (mockResults[i].status === "success") success++;
+                        else fail++;
+                    }
+                    successNum.textContent = success;
+                    failNum.textContent = fail;
+                    processingNum.textContent = total - current;
+                    progressStatus.textContent = `AI正在处理第 ${current}/${total} 条...`;
+
+                    if (current >= total) {
+                        clearInterval(interval);
+                        importRunning = false;
+                        progressStatus.textContent = "导入完成";
+                        document
+                            .getElementById("resultsSection")
+                            .classList.add("visible");
+                        document.getElementById("summaryText").textContent =
+                            `成功 ${success} 条 / 失败 ${fail} 条 / 耗时 4分32秒`;
+                        renderResults();
+                    }
+                }, speed);
+            }
+
+            function renderResults() {
+                const tbody = document.getElementById("resultBody");
+                tbody.innerHTML = "";
+                mockResults.forEach((r) => {
+                    const badgeClass =
+                        r.status === "success"
+                            ? "badge-success"
+                            : "badge-danger";
+                    const badgeText = r.status === "success" ? "成功" : "失败";
+                    const confClass =
+                        r.confidence >= 90
+                            ? "badge-success"
+                            : r.confidence >= 70
+                              ? "badge-warning"
+                              : "badge-danger";
+                    const tr = document.createElement("tr");
+                    const rowClass =
+                        r.status === "fail" ? "result-row-fail" : "";
+                    tr.innerHTML = `
+      <td class="product-name">${r.name}</td>
+      <td>${r.category}</td>
+      <td><span class="badge ${confClass}">${r.confidence}%</span></td>
+      <td><span class="badge ${badgeClass}">${badgeText}</span></td>
+      <td>
+        <button class="btn-ghost" onclick="viewResult('${r.name}')">查看</button>
+        ${r.status === "fail" ? `<button class="btn-danger-ghost" onclick="retryResult('${r.name}')">重试</button>` : ""}
+      </td>
+    `;
+                    if (r.status === "fail") {
+                        tr.classList.add("result-row-fail");
+                    }
+                    tbody.appendChild(tr);
+                });
+            }
+
+            function viewResult(name) {
+                showToast("info", "查看商品详情：" + name);
+            }
+
+            function retryResult(name) {
+                showToast("info", "正在重试导入：" + name);
+                setTimeout(
+                    () => showToast("success", name + " 重试成功"),
+                    1000,
+                );
+            }
+
+            function submitForReview() {
+                showToast("success", "已提交 42 条商品进入审核流程");
+            }
+
+            function exportFailed() {
+                showToast("info", "正在导出失败记录...");
+                setTimeout(
+                    () =>
+                        showToast(
+                            "success",
+                            "失败记录已导出：导入失败记录.csv",
+                        ),
+                    1000,
+                );
+            }
+
+            function reImport() {
+                showToast("info", "已重置，请重新选择文件");
+                document
+                    .getElementById("mappingSection")
+                    .classList.remove("visible");
+                document
+                    .getElementById("progressSection")
+                    .classList.remove("visible");
+            }
+
+            // Drag and drop support
+            const uploadZone = document.getElementById("uploadZone");
+            uploadZone.addEventListener("dragover", function (e) {
+                e.preventDefault();
+                this.classList.add("dragover");
+            });
+            uploadZone.addEventListener("dragleave", function (e) {
+                e.preventDefault();
+                this.classList.remove("dragover");
+            });
+            uploadZone.addEventListener("drop", function (e) {
+                e.preventDefault();
+                this.classList.remove("dragover");
+                uploadFile();
+            });
+
+            function showToast(type, msg) {
+                const container = document.getElementById("toastContainer");
+                if (!container) return;
+                const colors = {
+                    success: "toast-success",
+                    error: "toast-error",
+                    info: "toast-info",
+                };
+                const icons = {
+                    success: "&#10003;",
+                    error: "&#10007;",
+                    info: "&#8505;",
+                };
+                const toast = document.createElement("div");
+                toast.className = "toast " + (colors[type] || "toast-info");
+                toast.innerHTML =
+                    "<span>" + (icons[type] || "&#8505;") + "</span> " + msg;
+                container.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
+        </script>
+    </body>
+</html>

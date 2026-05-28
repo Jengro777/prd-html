@@ -1,0 +1,1500 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>快递派件反库清单 - 优化版</title>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+                margin: 0;
+                padding: 20px;
+                background-color: #f8fafc;
+                color: #334155;
+                min-height: 100vh;
+            }
+
+            .container {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .card {
+                background-color: white;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                padding: 20px;
+                transition: all 0.3s ease;
+            }
+
+            .card:hover {
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+            }
+
+            .tabs {
+                display: flex;
+                border-bottom: 1px solid #e2e8f0;
+                margin-bottom: 20px;
+            }
+
+            .tab {
+                padding: 14px 28px;
+                cursor: pointer;
+                border: 1px solid transparent;
+                border-bottom: none;
+                border-radius: 8px 8px 0 0;
+                margin-right: 5px;
+                transition: all 0.2s ease;
+                font-weight: 500;
+                color: #64748b;
+                position: relative;
+                font-size: 1.05rem;
+            }
+
+            .tab:hover {
+                background-color: #f1f5f9;
+                color: #2563eb;
+            }
+
+            .tab.active {
+                border-color: #e2e8f0;
+                border-bottom-color: white;
+                background-color: white;
+                font-weight: 600;
+                color: #2563eb;
+            }
+
+            .tab.active::after {
+                content: "";
+                position: absolute;
+                bottom: -1px;
+                left: 0;
+                width: 100%;
+                height: 3px;
+                background: #2563eb;
+                border-radius: 3px;
+            }
+
+            .search-bar {
+                display: flex;
+                margin-bottom: 20px;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 2px 6px rgba(30, 64, 175, 0.08);
+                border: 1px solid #e2e8f0;
+            }
+
+            .search-bar input {
+                flex: 1;
+                padding: 14px 18px;
+                border: none;
+                font-size: 1rem;
+                background: #f8fafc;
+            }
+
+            .search-bar input:focus {
+                outline: none;
+                background: white;
+            }
+
+            .search-bar button {
+                padding: 0 22px;
+                background: #2563eb;
+                color: white;
+                border: none;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .search-bar button:hover {
+                background: #1d4ed8;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.95rem;
+            }
+
+            th,
+            td {
+                padding: 14px 16px;
+                text-align: left;
+                border-bottom: 1px solid #f1f5f9;
+            }
+
+            th {
+                background-color: #f8fafc;
+                font-weight: 600;
+                color: #1e293b;
+                position: sticky;
+                top: 0;
+            }
+
+            tr:hover {
+                background-color: #f8fafc;
+            }
+
+            .status-badge {
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-size: 0.85rem;
+                font-weight: 500;
+                display: inline-block;
+                min-width: 80px;
+                text-align: center;
+            }
+
+            .status-rejected {
+                background-color: #fee2e2;
+                color: #dc2626;
+            }
+
+            .status-undelivered {
+                background-color: #dbeafe;
+                color: #2563eb;
+            }
+
+            .status-failed {
+                background-color: #fef3c7;
+                color: #d97706;
+            }
+
+            .status-returned {
+                background-color: #dcfce7;
+                color: #16a34a;
+            }
+
+            .action-buttons {
+                display: flex;
+                gap: 12px;
+                margin-bottom: 20px;
+                flex-wrap: wrap;
+            }
+
+            .btn {
+                padding: 10px 18px;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                font-weight: 500;
+                font-size: 0.95rem;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+            }
+
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+            }
+
+            .btn-primary {
+                background: #2563eb;
+                color: white;
+            }
+
+            .btn-primary:hover {
+                background: #1d4ed8;
+            }
+
+            .btn-danger {
+                background: #dc2626;
+                color: white;
+            }
+
+            .btn-danger:hover {
+                background: #b91c1c;
+            }
+
+            .btn-warning {
+                background: #d97706;
+                color: white;
+            }
+
+            .btn-warning:hover {
+                background: #b45309;
+            }
+
+            .btn-success {
+                background: #16a34a;
+                color: white;
+            }
+
+            .btn-success:hover {
+                background: #15803d;
+            }
+
+            .btn-light {
+                background: #f1f5f9;
+                color: #334155;
+            }
+
+            .btn-light:hover {
+                background: #e2e8f0;
+            }
+
+            .pagination {
+                display: flex;
+                justify-content: center;
+                margin-top: 25px;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .pagination button {
+                padding: 8px 14px;
+                border: 1px solid #e2e8f0;
+                background-color: white;
+                cursor: pointer;
+                border-radius: 6px;
+                transition: all 0.2s;
+            }
+
+            .pagination button:hover {
+                background-color: #f1f5f9;
+            }
+
+            .pagination button.active {
+                background-color: #2563eb;
+                color: white;
+                border-color: #2563eb;
+            }
+
+            .no-data {
+                color: #94a3b8;
+                text-align: center;
+                padding: 40px;
+                font-size: 1.05rem;
+                background: #f8fafc;
+                border-radius: 10px;
+                margin: 20px 0;
+            }
+
+            .summary-card {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+
+            .summary-item {
+                background: white;
+                border-radius: 10px;
+                padding: 15px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+                display: flex;
+                flex-direction: column;
+                border-left: 4px solid #2563eb;
+                transition: transform 0.3s ease;
+            }
+
+            .summary-item:hover {
+                transform: translateY(-3px);
+            }
+
+            .summary-item .title {
+                font-size: 0.95rem;
+                color: #64748b;
+                margin-bottom: 8px;
+            }
+
+            .summary-item .value {
+                font-size: 1.5rem;
+                font-weight: bold;
+                color: #1e293b;
+            }
+
+            .summary-item .subtext {
+                font-size: 0.85rem;
+                color: #94a3b8;
+                margin-top: 6px;
+            }
+
+            .table-container {
+                flex: 1;
+                overflow-y: auto;
+                border: 1px solid #e2e8f0;
+                border-radius: 10px;
+                padding: 5px;
+                max-height: 500px;
+            }
+
+            .filter-section {
+                display: flex;
+                gap: 15px;
+                margin-bottom: 20px;
+                flex-wrap: wrap;
+            }
+
+            .filter-group {
+                flex: 1;
+                min-width: 200px;
+            }
+
+            .filter-group label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 500;
+                color: #334155;
+                font-size: 0.95rem;
+            }
+
+            .filter-input {
+                width: 100%;
+                padding: 12px 15px;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                background: #f8fafc;
+                font-size: 0.95rem;
+                transition: all 0.3s;
+            }
+
+            .filter-input:focus {
+                outline: none;
+                border-color: #2563eb;
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            }
+
+            .date-filter {
+                display: flex;
+                gap: 15px;
+                margin-bottom: 20px;
+                flex-wrap: wrap;
+            }
+
+            .date-filter-btn {
+                padding: 10px 16px;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                background-color: white;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                font-size: 0.95rem;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .date-filter-btn:hover {
+                background-color: #f1f5f9;
+            }
+
+            .date-filter-btn.active {
+                background: #2563eb;
+                color: white;
+                border-color: #2563eb;
+            }
+
+            .card-title {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .card-title h2 {
+                font-size: 1.4rem;
+                color: #1e293b;
+                font-weight: 600;
+            }
+
+            .card-title .actions {
+                display: flex;
+                gap: 12px;
+            }
+
+            .system-info {
+                display: flex;
+                gap: 20px;
+                margin-bottom: 15px;
+                color: #64748b;
+                font-size: 0.95rem;
+                padding: 10px 15px;
+                background: #f1f5f9;
+                border-radius: 8px;
+                justify-content: flex-end;
+            }
+
+            .system-info span {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            @media (max-width: 768px) {
+                .container {
+                    padding: 10px;
+                }
+
+                .card {
+                    padding: 15px;
+                }
+
+                .tabs {
+                    overflow-x: auto;
+                }
+
+                .tab {
+                    padding: 12px 20px;
+                    font-size: 0.95rem;
+                }
+
+                .filter-section {
+                    flex-direction: column;
+                    gap: 12px;
+                }
+
+                .action-buttons {
+                    gap: 8px;
+                }
+
+                .btn {
+                    padding: 8px 12px;
+                    font-size: 0.9rem;
+                }
+
+                .summary-item {
+                    padding: 12px;
+                }
+
+                .summary-item .value {
+                    font-size: 1.3rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+            <div class="container">
+                <div class="card">
+                    <div class="summary-card">
+                        <div class="summary-item">
+                            <div class="title">今日反库件数</div>
+                            <div class="value">128</div>
+                            <div class="subtext">较昨日 +12件</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="title">待处理反库件</div>
+                            <div class="value">42</div>
+                            <div class="subtext">未扫描确认</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="title">本月反库总数</div>
+                            <div class="value">1,842</div>
+                            <div class="subtext">已完成 96%</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="title">异常反库率</div>
+                            <div class="value">4.2%</div>
+                            <div class="subtext">低于目标值 5%</div>
+                        </div>
+                    </div>
+
+                    <div class="tabs">
+                        <div
+                            class="tab"
+                            :class="{ active: activeTab === 'parcels' }"
+                            @click="activeTab = 'parcels'"
+                        >
+                            <i class="fas fa-boxes"></i> 反库运单
+                        </div>
+                        <div
+                            class="tab"
+                            :class="{ active: activeTab === 'list' }"
+                            @click="activeTab = 'list'"
+                        >
+                            <i class="fas fa-clipboard-list"></i> 反库清单
+                        </div>
+                    </div>
+
+                    <!-- 反库运单标签页 -->
+                    <div v-if="activeTab === 'parcels'">
+                        <div class="search-bar">
+                            <input
+                                type="text"
+                                v-model="searchQuery"
+                                placeholder="输入快递单号、收件人姓名或电话..."
+                            />
+                            <button @click="searchParcels">
+                                <i class="fas fa-search"></i> 查询
+                            </button>
+                        </div>
+                        
+                        <!-- 新增营业部筛选器 -->
+                        <div class="filter-section">
+                            <div class="filter-group">
+                                <label><i class="fas fa-map-marker-alt"></i> 营业部</label>
+                                <select class="filter-input" v-model="branchFilter">
+                                    <option value="">全部营业部</option>
+                                    <option v-for="branch in branches" :value="branch.id">
+                                        {{ branch.name }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label><i class="fas fa-tag"></i> 状态筛选</label>
+                                <select class="filter-input" v-model="statusFilter">
+                                    <option value="">全部状态</option>
+                                    <option value="rejected">拒签</option>
+                                    <option value="undelivered">未投递</option>
+                                    <option value="failed">投递失败</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="date-filter">
+                            <button
+                                class="date-filter-btn"
+                                :class="{ active: dateRange === 'today' }"
+                                @click="setDateRange('today')"
+                            >
+                                <i class="fas fa-calendar-day"></i> 今日
+                            </button>
+                            <button
+                                class="date-filter-btn"
+                                :class="{ active: dateRange === 'yesterday' }"
+                                @click="setDateRange('yesterday')"
+                            >
+                                <i class="fas fa-arrow-left"></i> 昨日
+                            </button>
+                            <button
+                                class="date-filter-btn"
+                                :class="{ active: dateRange === '3days' }"
+                                @click="setDateRange('3days')"
+                            >
+                                近3日
+                            </button>
+                            <button
+                                class="date-filter-btn"
+                                :class="{ active: dateRange === '7days' }"
+                                @click="setDateRange('7days')"
+                            >
+                                <i class="fas fa-calendar-week"></i> 近7日
+                            </button>
+                            <button
+                                class="date-filter-btn"
+                                :class="{ active: dateRange === '30days' }"
+                                @click="setDateRange('30days')"
+                            >
+                                近30日
+                            </button>
+                            <div
+                                style="
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 8px;
+                                "
+                            >
+                                <input
+                                    type="date"
+                                    v-model="customStartDate"
+                                    class="filter-input"
+                                    style="width: 150px"
+                                />
+                                <span style="color: #64748b">至</span>
+                                <input
+                                    type="date"
+                                    v-model="customEndDate"
+                                    class="filter-input"
+                                    style="width: 150px"
+                                />
+                                <button
+                                    class="btn btn-primary"
+                                    @click="setCustomDateRange"
+                                >
+                                    <i class="fas fa-check"></i> 确定
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <!-- 修改为筛选功能 -->
+                            <button class="btn btn-primary" @click="setStatusFilter('')">
+                                <i class="fas fa-box"></i> 全部反库({{ parcels.length }})
+                            </button>
+                            <button
+                                class="btn btn-danger"
+                                @click="setStatusFilter('rejected')"
+                            >
+                                <i class="fas fa-times-circle"></i>
+                                拒签件反库({{ rejectedCount }})
+                            </button>
+                            <button
+                                class="btn btn-warning"
+                                @click="setStatusFilter('undelivered')"
+                            >
+                                <i class="fas fa-clock"></i> 未投递反库({{ undeliveredCount }})
+                            </button>
+                            <button
+                                class="btn btn-warning"
+                                @click="setStatusFilter('failed')"
+                            >
+                                <i class="fas fa-exclamation-triangle"></i>
+                                投递失败反库({{ failedCount }})
+                            </button>
+                            <button class="btn btn-success" @click="exportData">
+                                <i class="fas fa-file-export"></i> 导出数据
+                            </button>
+                            <!-- 移除打印清单按钮 -->
+                        </div>
+
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input
+                                                type="checkbox"
+                                                v-model="selectAll"
+                                                @change="toggleSelectAll"
+                                            />
+                                        </th>
+                                        <th>序号</th>
+                                        <th>快递单号</th>
+                                        <th>收件人</th>
+                                        <th>电话</th>
+                                        <th>地址</th>
+                                        <th>状态</th>
+                                        <th>扫描时间</th>
+                                        <th>扫描人</th>
+                                        <th>营业部</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr
+                                        v-for="(parcel, index) in filteredParcels"
+                                        :key="parcel.id"
+                                    >
+                                        <td>
+                                            <input
+                                                type="checkbox"
+                                                v-model="selectedParcels"
+                                                :value="parcel.id"
+                                            />
+                                        </td>
+                                        <td>{{ index + 1 }}</td>
+                                        <td>{{ parcel.trackingNumber }}</td>
+                                        <td>{{ parcel.recipient }}</td>
+                                        <td>{{ parcel.phone }}</td>
+                                        <td>{{ parcel.address }}</td>
+                                        <td>
+                                            <span
+                                                class="status-badge"
+                                                :class="getStatusClass(parcel.status)"
+                                            >
+                                                {{ getStatusText(parcel) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {{ formatTime(parcel.scanTime) || '-' }}
+                                        </td>
+                                        <td>{{ parcel.scanner || '系统' }}</td>
+                                        <td>
+                                            {{ getBranchName(parcel.branch) }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div
+                                v-if="filteredParcels.length === 0"
+                                class="no-data"
+                            >
+                                <i
+                                    class="fas fa-inbox"
+                                    style="font-size: 3rem; margin-bottom: 15px"
+                                ></i>
+                                <p>没有找到匹配的快递记录</p>
+                            </div>
+                        </div>
+
+                        <div class="pagination">
+                            <button
+                                @click="prevPage"
+                                :disabled="currentPage === 1"
+                            >
+                                <i class="fas fa-chevron-left"></i> 上一页
+                            </button>
+                            <button
+                                v-for="page in totalPages"
+                                :key="page"
+                                @click="goToPage(page)"
+                                :class="{ active: currentPage === page }"
+                            >
+                                {{ page }}
+                            </button>
+                            <button
+                                @click="nextPage"
+                                :disabled="currentPage === totalPages"
+                            >
+                                下一页 <i class="fas fa-chevron-right"></i>
+                            </button>
+                            <span style="margin-left: 15px; color: #64748b"
+                                >当前页: {{ currentPage }} | 总记录: {{
+                                parcels.length }}</span
+                            >
+                        </div>
+                    </div>
+
+                    <!-- 反库清单标签页 -->
+                    <div v-if="activeTab === 'list'">
+                        <div class="card-title">
+                            <h2>
+                                <i class="fas fa-clipboard-list"></i>
+                                反库清单管理
+                            </h2>
+                            <div class="actions">
+                                <button
+                                    class="btn btn-primary"
+                                    @click="refreshData"
+                                >
+                                    <i class="fas fa-sync-alt"></i> 刷新数据
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="filter-section">
+                            <div class="filter-group">
+                                <label
+                                    ><i class="fas fa-barcode"></i>
+                                    快递单号</label
+                                >
+                                <input
+                                    type="text"
+                                    class="filter-input"
+                                    v-model="returnListQuery.trackingNumber"
+                                    placeholder="输入快递单号"
+                                />
+                            </div>
+                            <div class="filter-group">
+                                <label
+                                    ><i class="fas fa-calendar"></i>
+                                    反库日期</label
+                                >
+                                <input
+                                    type="date"
+                                    class="filter-input"
+                                    v-model="returnListQuery.returnDate"
+                                />
+                            </div>
+                            <div class="filter-group">
+                                <label
+                                    ><i class="fas fa-map-marker-alt"></i>
+                                    营业部</label
+                                >
+                                <select
+                                    class="filter-input"
+                                    v-model="returnListQuery.branch"
+                                >
+                                    <option value="">全部营业部</option>
+                                    <option
+                                        v-for="branch in branches"
+                                        :value="branch.id"
+                                    >
+                                        {{ branch.name }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label
+                                    ><i class="fas fa-user"></i> 扫描人</label
+                                >
+                                <input
+                                    type="text"
+                                    class="filter-input"
+                                    v-model="returnListQuery.scanner"
+                                    placeholder="输入扫描人姓名"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button
+                                class="btn btn-primary"
+                                @click="searchReturnList"
+                            >
+                                <i class="fas fa-search"></i> 搜索
+                            </button>
+                            <button
+                                class="btn btn-light"
+                                @click="resetReturnListFilter"
+                            >
+                                <i class="fas fa-redo"></i> 重置筛选
+                            </button>
+                            <!-- 移除导出Excel和删除选中按钮 -->
+                        </div>
+
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input
+                                                type="checkbox"
+                                                v-model="selectAllReturnItems"
+                                                @change="toggleSelectAllReturnItems"
+                                            />
+                                        </th>
+                                        <th>清单编号</th>
+                                        <th>创建时间</th>
+                                        <th>营业部</th>
+                                        <th>扫描人</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr
+                                        v-for="(item, index) in filteredReturnList"
+                                        :key="item.id"
+                                    >
+                                        <td>
+                                            <input
+                                                type="checkbox"
+                                                v-model="selectedReturnItems"
+                                                :value="item.id"
+                                            />
+                                        </td>
+                                        <td>RT{{ 1000 + item.id }}</td>
+                                        <td>
+                                            {{ formatDateTime(item.scanTime) }}
+                                        </td>
+                                        <td>
+                                            {{ getBranchName(item.branch) }}
+                                        </td>
+                                        <td>{{ item.scanner }}</td>
+                                        <td>
+                                            <button
+                                                class="btn btn-primary"
+                                                @click="viewReturnItem(item)"
+                                                style="padding: 8px 12px"
+                                            >
+                                                <i class="fas fa-eye"></i> 查看
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div
+                                v-if="filteredReturnList.length === 0"
+                                class="no-data"
+                            >
+                                <i
+                                    class="fas fa-file-alt"
+                                    style="font-size: 3rem; margin-bottom: 15px"
+                                ></i>
+                                <p>没有找到匹配的反库清单记录</p>
+                                <button
+                                    class="btn btn-primary"
+                                    @click="resetReturnListFilter"
+                                    style="margin-top: 15px"
+                                >
+                                    <i class="fas fa-redo"></i> 重置筛选条件
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="pagination">
+                            <button
+                                @click="prevReturnPage"
+                                :disabled="returnCurrentPage === 1"
+                            >
+                                <i class="fas fa-chevron-left"></i> 上一页
+                            </button>
+                            <button
+                                v-for="page in returnTotalPages"
+                                :key="page"
+                                @click="goToReturnPage(page)"
+                                :class="{ active: returnCurrentPage === page }"
+                            >
+                                {{ page }}
+                            </button>
+                            <button
+                                @click="nextReturnPage"
+                                :disabled="returnCurrentPage === returnTotalPages"
+                            >
+                                下一页 <i class="fas fa-chevron-right"></i>
+                            </button>
+                            <span style="margin-left: 15px; color: #64748b"
+                                >当前页: {{ returnCurrentPage }} | 总记录: {{
+                                returnList.length }}</span
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            new Vue({
+                el: "#app",
+                data() {
+                    return {
+                        currentDate: new Date().toLocaleDateString("zh-CN", {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                        }),
+                        searchQuery: "",
+                        branchFilter: "", // 新增营业部筛选
+                        statusFilter: "", // 新增状态筛选
+                        branches: [
+                            { id: "bj-cy", name: "北京朝阳营业部" },
+                            { id: "bj-hd", name: "北京海淀营业部" },
+                            { id: "bj-xc", name: "北京西城营业部" },
+                            { id: "bj-dc", name: "北京东城营业部" },
+                            { id: "bj-ft", name: "北京丰台营业部" },
+                        ],
+                        parcels: [
+                            {
+                                id: 1,
+                                trackingNumber: "YT1234567890",
+                                recipient: "张三",
+                                phone: "13800138000",
+                                address: "北京市朝阳区建国路88号",
+                                status: "rejected",
+                                failCount: 0,
+                                branch: "bj-cy",
+                                scanner: "李操作员",
+                                scanTime: "2025-07-16 09:30:25",
+                            },
+                            {
+                                id: 2,
+                                trackingNumber: "YT1234567891",
+                                recipient: "李四",
+                                phone: "13900139000",
+                                address: "北京市海淀区中关村大街1号",
+                                status: "failed",
+                                failCount: 2,
+                                branch: "bj-hd",
+                                scanner: "王操作员",
+                                scanTime: "2025-07-16 09:28:12",
+                            },
+                            {
+                                id: 3,
+                                trackingNumber: "YT1234567892",
+                                recipient: "王五",
+                                phone: "13700137000",
+                                address: "北京市西城区西长安街1号",
+                                status: "undelivered",
+                                failCount: 0,
+                                branch: "bj-xc",
+                                scanner: "张操作员",
+                                scanTime: "2025-07-16 09:25:45",
+                            },
+                            {
+                                id: 4,
+                                trackingNumber: "YT1234567893",
+                                recipient: "赵六",
+                                phone: "13600136000",
+                                address: "北京市东城区东长安街1号",
+                                status: "rejected",
+                                failCount: 0,
+                                branch: "bj-dc",
+                                scanner: "刘操作员",
+                                scanTime: "2025-07-15 14:30:22",
+                            },
+                            {
+                                id: 5,
+                                trackingNumber: "YT1234567894",
+                                recipient: "钱七",
+                                phone: "13500135000",
+                                address: "北京市丰台区丰台路1号",
+                                status: "failed",
+                                failCount: 1,
+                                branch: "bj-ft",
+                                scanner: "陈操作员",
+                                scanTime: "2025-07-14 10:15:33",
+                            },
+                            {
+                                id: 6,
+                                trackingNumber: "YT1234567895",
+                                recipient: "孙八",
+                                phone: "13400134000",
+                                address: "北京市朝阳区三里屯路11号",
+                                status: "undelivered",
+                                failCount: 0,
+                                branch: "bj-cy",
+                                scanner: "李操作员",
+                                scanTime: "2025-07-16 10:45:18",
+                            },
+                            {
+                                id: 7,
+                                trackingNumber: "YT1234567896",
+                                recipient: "周九",
+                                phone: "13300133000",
+                                address: "北京市海淀区清华园1号",
+                                status: "rejected",
+                                failCount: 0,
+                                branch: "bj-hd",
+                                scanner: "王操作员",
+                                scanTime: "2025-07-16 11:22:37",
+                            },
+                        ],
+                        selectedParcels: [],
+                        selectAll: false,
+                        currentPage: 1,
+                        itemsPerPage: 5,
+                        activeTab: "parcels",
+                        dateRange: "today",
+                        customStartDate: "",
+                        customEndDate: "",
+
+                        // 反库清单数据
+                        returnList: [
+                            {
+                                id: 1,
+                                trackingNumber: "YT1234567890",
+                                returnType: "rejected",
+                                returnDate: "2025-07-16",
+                                branch: "bj-cy",
+                                scanner: "李操作员",
+                                scanTime: "2025-07-16 09:30:25",
+                                status: "confirmed",
+                            },
+                            {
+                                id: 2,
+                                trackingNumber: "YT1234567891",
+                                returnType: "failed",
+                                returnDate: "2025-07-16",
+                                branch: "bj-hd",
+                                scanner: "王操作员",
+                                scanTime: "2025-07-16 09:28:12",
+                                status: "confirmed",
+                            },
+                            {
+                                id: 3,
+                                trackingNumber: "YT1234567892",
+                                returnType: "undelivered",
+                                returnDate: "2025-07-16",
+                                branch: "bj-xc",
+                                scanner: "张操作员",
+                                scanTime: "2025-07-16 09:25:45",
+                                status: "pending",
+                            },
+                            {
+                                id: 4,
+                                trackingNumber: "YT1234567893",
+                                returnType: "rejected",
+                                returnDate: "2025-07-15",
+                                branch: "bj-dc",
+                                scanner: "刘操作员",
+                                scanTime: "2025-07-15 14:30:22",
+                                status: "confirmed",
+                            },
+                            {
+                                id: 5,
+                                trackingNumber: "YT1234567894",
+                                returnType: "failed",
+                                returnDate: "2025-07-14",
+                                branch: "bj-ft",
+                                scanner: "陈操作员",
+                                scanTime: "2025-07-14 10:15:33",
+                                status: "confirmed",
+                            },
+                            {
+                                id: 6,
+                                trackingNumber: "YT1234567895",
+                                returnType: "undelivered",
+                                returnDate: "2025-07-16",
+                                branch: "bj-cy",
+                                scanner: "李操作员",
+                                scanTime: "2025-07-16 10:45:18",
+                                status: "pending",
+                            },
+                            {
+                                id: 7,
+                                trackingNumber: "YT1234567896",
+                                returnType: "rejected",
+                                returnDate: "2025-07-16",
+                                branch: "bj-hd",
+                                scanner: "王操作员",
+                                scanTime: "2025-07-16 11:22:37",
+                                status: "confirmed",
+                            },
+                        ],
+                        returnListQuery: {
+                            trackingNumber: "",
+                            returnDate: "",
+                            branch: "",
+                            scanner: "",
+                        },
+                        selectedReturnItems: [],
+                        selectAllReturnItems: false,
+                        returnCurrentPage: 1,
+                        returnItemsPerPage: 5,
+                    };
+                },
+                computed: {
+                    filteredParcels() {
+                        let filtered = this.parcels;
+
+                        // 营业部筛选
+                        if (this.branchFilter) {
+                            filtered = filtered.filter(
+                                (p) => p.branch === this.branchFilter,
+                            );
+                        }
+
+                        // 状态筛选
+                        if (this.statusFilter) {
+                            filtered = filtered.filter(
+                                (p) => p.status === this.statusFilter,
+                            );
+                        }
+
+                        if (this.searchQuery) {
+                            const query = this.searchQuery.toLowerCase();
+                            filtered = filtered.filter(
+                                (p) =>
+                                    p.trackingNumber
+                                        .toLowerCase()
+                                        .includes(query) ||
+                                    p.recipient.toLowerCase().includes(query) ||
+                                    p.phone.includes(query),
+                            );
+                        }
+
+                        const now = new Date();
+                        const today = new Date(
+                            now.getFullYear(),
+                            now.getMonth(),
+                            now.getDate(),
+                        );
+
+                        switch (this.dateRange) {
+                            case "today":
+                                filtered = filtered.filter((p) => {
+                                    const scanDate = new Date(p.scanTime);
+                                    return scanDate >= today;
+                                });
+                                break;
+                            case "yesterday":
+                                const yesterday = new Date(today);
+                                yesterday.setDate(yesterday.getDate() - 1);
+                                filtered = filtered.filter((p) => {
+                                    const scanDate = new Date(p.scanTime);
+                                    return (
+                                        scanDate >= yesterday &&
+                                        scanDate < today
+                                    );
+                                });
+                                break;
+                            case "3days":
+                                const threeDaysAgo = new Date(today);
+                                threeDaysAgo.setDate(
+                                    threeDaysAgo.getDate() - 3,
+                                );
+                                filtered = filtered.filter((p) => {
+                                    const scanDate = new Date(p.scanTime);
+                                    return scanDate >= threeDaysAgo;
+                                });
+                                break;
+                            case "7days":
+                                const sevenDaysAgo = new Date(today);
+                                sevenDaysAgo.setDate(
+                                    sevenDaysAgo.getDate() - 7,
+                                );
+                                filtered = filtered.filter((p) => {
+                                    const scanDate = new Date(p.scanTime);
+                                    return scanDate >= sevenDaysAgo;
+                                });
+                                break;
+                            case "30days":
+                                const thirtyDaysAgo = new Date(today);
+                                thirtyDaysAgo.setDate(
+                                    thirtyDaysAgo.getDate() - 30,
+                                );
+                                filtered = filtered.filter((p) => {
+                                    const scanDate = new Date(p.scanTime);
+                                    return scanDate >= thirtyDaysAgo;
+                                });
+                                break;
+                            case "custom":
+                                if (
+                                    this.customStartDate &&
+                                    this.customEndDate
+                                ) {
+                                    const startDate = new Date(
+                                        this.customStartDate,
+                                    );
+                                    const endDate = new Date(
+                                        this.customEndDate,
+                                    );
+                                    endDate.setDate(endDate.getDate() + 1);
+                                    filtered = filtered.filter((p) => {
+                                        const scanDate = new Date(p.scanTime);
+                                        return (
+                                            scanDate >= startDate &&
+                                            scanDate < endDate
+                                        );
+                                    });
+                                }
+                                break;
+                        }
+
+                        const start =
+                            (this.currentPage - 1) * this.itemsPerPage;
+                        const end = start + this.itemsPerPage;
+                        return filtered.slice(start, end);
+                    },
+                    filteredReturnList() {
+                        let filtered = this.returnList;
+
+                        if (this.returnListQuery.trackingNumber) {
+                            const query =
+                                this.returnListQuery.trackingNumber.toLowerCase();
+                            filtered = filtered.filter((item) =>
+                                item.trackingNumber
+                                    .toLowerCase()
+                                    .includes(query),
+                            );
+                        }
+
+                        if (this.returnListQuery.returnDate) {
+                            filtered = filtered.filter(
+                                (item) =>
+                                    item.returnDate ===
+                                    this.returnListQuery.returnDate,
+                            );
+                        }
+
+                        if (this.returnListQuery.branch) {
+                            filtered = filtered.filter(
+                                (item) =>
+                                    item.branch === this.returnListQuery.branch,
+                            );
+                        }
+
+                        if (this.returnListQuery.scanner) {
+                            const query =
+                                this.returnListQuery.scanner.toLowerCase();
+                            filtered = filtered.filter((item) =>
+                                item.scanner.toLowerCase().includes(query),
+                            );
+                        }
+
+                        const start =
+                            (this.returnCurrentPage - 1) *
+                            this.returnItemsPerPage;
+                        const end = start + this.returnItemsPerPage;
+                        return filtered.slice(start, end);
+                    },
+                    totalPages() {
+                        return Math.ceil(
+                            this.parcels.length / this.itemsPerPage,
+                        );
+                    },
+                    returnTotalPages() {
+                        return Math.ceil(
+                            this.returnList.length / this.returnItemsPerPage,
+                        );
+                    },
+                    rejectedCount() {
+                        return this.parcels.filter(
+                            (p) => p.status === "rejected",
+                        ).length;
+                    },
+                    undeliveredCount() {
+                        return this.parcels.filter(
+                            (p) => p.status === "undelivered",
+                        ).length;
+                    },
+                    failedCount() {
+                        return this.parcels.filter((p) => p.status === "failed")
+                            .length;
+                    },
+                    returnedCount() {
+                        return this.returnList.filter(
+                            (item) => item.status === "confirmed",
+                        ).length;
+                    },
+                },
+                methods: {
+                    getStatusClass(status) {
+                        return {
+                            "status-rejected": status === "rejected",
+                            "status-undelivered": status === "undelivered",
+                            "status-failed": status === "failed",
+                        };
+                    },
+                    getStatusText(parcel) {
+                        const statusMap = {
+                            rejected: "拒签",
+                            undelivered: "未投递",
+                            failed: `投递失败(${parcel.failCount}次)`,
+                        };
+                        return statusMap[parcel.status] || parcel.status;
+                    },
+                    getReturnTypeText(type) {
+                        const typeMap = {
+                            rejected: "拒签",
+                            undelivered: "未投递",
+                            failed: "投递失败",
+                        };
+                        return typeMap[type] || type;
+                    },
+                    getBranchName(branchId) {
+                        const branch = this.branches.find(
+                            (b) => b.id === branchId,
+                        );
+                        return branch ? branch.name : branchId;
+                    },
+                    formatTime(time) {
+                        if (!time) return "-";
+                        if (time instanceof Date) {
+                            return time.toLocaleTimeString("zh-CN", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                second: "2-digit",
+                            });
+                        }
+                        return time.replace("T", " ").substring(11, 19);
+                    },
+                    formatDate(date) {
+                        if (!date) return "-";
+                        return new Date(date).toLocaleDateString("zh-CN");
+                    },
+                    formatDateTime(datetime) {
+                        if (!datetime) return "-";
+                        const date = new Date(datetime);
+                        return date.toLocaleString("zh-CN", {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            hour12: false
+                        }).replace(/\//g, '-').replace(',', '');
+                    },
+                    searchParcels() {
+                        this.currentPage = 1;
+                    },
+                    toggleSelectAll() {
+                        if (this.selectAll) {
+                            this.selectedParcels = this.filteredParcels.map(
+                                (p) => p.id,
+                            );
+                        } else {
+                            this.selectedParcels = [];
+                        }
+                    },
+                    toggleSelectAllReturnItems() {
+                        if (this.selectAllReturnItems) {
+                            this.selectedReturnItems =
+                                this.filteredReturnList.map((item) => item.id);
+                        } else {
+                            this.selectedReturnItems = [];
+                        }
+                    },
+                    // 修改为筛选功能
+                    setStatusFilter(status) {
+                        this.statusFilter = status;
+                        this.currentPage = 1;
+                    },
+                    prevPage() {
+                        if (this.currentPage > 1) {
+                            this.currentPage--;
+                        }
+                    },
+                    nextPage() {
+                        if (this.currentPage < this.totalPages) {
+                            this.currentPage++;
+                        }
+                    },
+                    goToPage(page) {
+                        this.currentPage = page;
+                    },
+                    prevReturnPage() {
+                        if (this.returnCurrentPage > 1) {
+                            this.returnCurrentPage--;
+                        }
+                    },
+                    nextReturnPage() {
+                        if (this.returnCurrentPage < this.returnTotalPages) {
+                            this.returnCurrentPage++;
+                        }
+                    },
+                    goToReturnPage(page) {
+                        this.returnCurrentPage = page;
+                    },
+                    exportData() {
+                        alert("导出数据功能已触发");
+                    },
+                    setDateRange(range) {
+                        this.dateRange = range;
+                    },
+                    setCustomDateRange() {
+                        if (!this.customStartDate || !this.customEndDate) {
+                            alert("请选择开始和结束日期");
+                            return;
+                        }
+                        if (
+                            new Date(this.customStartDate) >
+                            new Date(this.customEndDate)
+                        ) {
+                            alert("开始日期不能晚于结束日期");
+                            return;
+                        }
+                        this.dateRange = "custom";
+                    },
+                    addReturnList() {
+                        alert("新建反库清单功能已触发");
+                    },
+                    searchReturnList() {
+                        this.returnCurrentPage = 1;
+                    },
+                    resetReturnListFilter() {
+                        this.returnListQuery = {
+                            trackingNumber: "",
+                            returnDate: "",
+                            branch: "",
+                            scanner: "",
+                        };
+                        this.returnCurrentPage = 1;
+                    },
+                    viewReturnItem(item) {
+                        this.activeTab = "parcels";
+                        this.searchQuery = item.trackingNumber;
+                        this.searchParcels();
+                        setTimeout(() => {
+                            alert(`已筛选快递单号: ${item.trackingNumber}`);
+                        }, 300);
+                    },
+                    refreshData() {
+                        alert("数据已刷新");
+                    },
+                },
+                mounted() {
+                    const now = new Date();
+                    this.customEndDate = now.toISOString().slice(0, 10);
+                    const sevenDaysAgo = new Date(now);
+                    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+                    this.customStartDate = sevenDaysAgo
+                        .toISOString()
+                        .slice(0, 10);
+                },
+            });
+        </script>
+    </body>
+</html>

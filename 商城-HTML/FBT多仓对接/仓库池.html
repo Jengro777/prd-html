@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>仓库池管理 | 商城后台 · 统一弹窗优化</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f5f7fb;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 32px 24px;
+            color: #1a2c3e;
+        }
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+        .header {
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .header h1 {
+            font-size: 1.7rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #1a6d8f, #0f4c6b);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .header p {
+            color: #5c6f87;
+            margin-top: 6px;
+            font-size: 0.85rem;
+        }
+        .card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #e9edf4;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid #eff3f8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .card-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f3b4c;
+        }
+        .card-body {
+            padding: 0 24px 16px 24px;
+        }
+        
+        /* 表格 - 移除横向滚动条，改用响应式/自动换行 */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: visible;
+            border-radius: 16px;
+            margin-bottom: 12px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: auto;
+        }
+        th {
+            text-align: left;
+            padding: 14px 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #4b5e7a;
+            border-bottom: 1px solid #eef2f8;
+            white-space: nowrap;
+        }
+        td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #f3f6fc;
+            vertical-align: middle;
+            font-size: 0.8rem;
+            word-break: break-word;
+        }
+        /* 针对小屏幕让表格单元格内容自动换行，避免横向滚动 */
+        @media (max-width: 1100px) {
+            th, td {
+                white-space: normal;
+                word-break: break-word;
+            }
+            th {
+                white-space: nowrap;
+            }
+        }
+        .warehouse-id-badge {
+            font-family: monospace;
+            background: #f0f4fa;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #2c5a74;
+            display: inline-block;
+        }
+        .status-tag {
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            display: inline-block;
+            min-width: 58px;
+        }
+        .status-active { background: #e0f2e9; color: #1f6e43; }
+        .status-inactive { background: #fee9e6; color: #bc3f2e; }
+        .mark-tag {
+            background: #eef2fa;
+            padding: 3px 10px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight:500;
+            display: inline-block;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #cfdfed;
+            padding: 6px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: 0.2s;
+            color: #2c6282;
+        }
+        .btn-outline:hover { background: #f4f9fe; border-color: #9bb7cf; }
+        .btn-primary {
+            background: #1a6d8f;
+            color: white;
+            border: none;
+            padding: 8px 22px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .btn-primary:hover { background: #0f5a7a; transform: translateY(-1px); }
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 6px 8px;
+            color: #7c93ab;
+            border-radius: 40px;
+            transition: 0.15s;
+            margin: 0 2px;
+        }
+        .btn-icon:hover { background: #eef3fc; color: #1f6b8c; }
+        
+        /* 分页器 */
+        .pagination-container {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 18px 0 8px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .page-btn {
+            background: white;
+            border: 1px solid #dde5ef;
+            border-radius: 30px;
+            padding: 6px 14px;
+            font-size: 0.75rem;
+            color: #2c5a74;
+            cursor: pointer;
+            transition: 0.15s;
+            min-width: 36px;
+            text-align: center;
+        }
+        .page-btn:hover { background: #f0f6fc; }
+        .page-btn.active {
+            background: #1a6d8f;
+            border-color: #1a6d8f;
+            color: white;
+        }
+        .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .page-info { font-size: 0.75rem; color: #4b6589; margin: 0 8px; }
+        
+        /* Dialog 样式 */
+        .dialog-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.2s ease;
+        }
+        .dialog {
+            background: white;
+            border-radius: 32px;
+            width: 980px;
+            max-width: 96%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 24px 28px 32px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.2);
+        }
+        .dialog h3 {
+            margin-bottom: 18px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #153e54;
+            border-left: 4px solid #1a6d8f;
+            padding-left: 14px;
+        }
+        
+        /* 信息展示卡片 */
+        .info-section {
+            background: #f8fafd;
+            border-radius: 24px;
+            padding: 20px 24px;
+            margin: 16px 0 20px;
+            border: 1px solid #eef2f8;
+white-space: pre-wrap;
+        }
+        .info-section-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1f6b8c;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.3px;
+	     white-space: pre-wrap;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px 24px;
+white-space: pre-wrap;
+        }
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            border-bottom: 1px dashed #d9e2ec;
+            padding-bottom: 10px;
+white-space: pre-wrap;
+        }
+        .info-item:last-child {
+            border-bottom: none;
+white-space: pre-wrap;
+        }
+        .info-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #5b7a9a;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            min-width: 100px;
+            padding-top: 2px;
+white-space: pre-wrap;
+        }
+        .info-value {
+            font-size: 0.9rem;
+            color: #1f3b4c;
+            font-weight: 500;
+            word-break: break-word;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+white-space: pre-wrap;
+        }
+        .sorting-tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .sorting-badge {
+            background: #eef2fa;
+            padding: 4px 12px;
+            border-radius: 24px;
+            font-size: 0.75rem;
+            color: #2c5a74;
+            font-weight: 500;
+        }
+        
+        .meta-card {
+            background: white;
+            border-radius: 20px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            border: 1px solid #e9edf4;
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .meta-label {
+            font-size: 0.75rem;
+            color: #5b7a9a;
+            font-weight: 600;
+        }
+        .meta-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1a3a4e;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .form-field {
+            flex: 1;
+            min-width: 200px;
+        }
+        .form-field label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #2c4e6e;
+        }
+        .form-field input, .form-field select {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid #cfdfed;
+            border-radius: 14px;
+            font-size: 0.8rem;
+            background: #fff;
+        }
+        .form-field input:disabled {
+            background: #f4f7fc;
+            color: #4b6a8a;
+        }
+        .tag-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 6px;
+        }
+        .tag-option {
+            background: #f0f4fa;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.15s;
+        }
+        .tag-option.selected {
+            background: #1a6d8f;
+            color: white;
+        }
+        .dialog-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 14px;
+            margin-top: 24px;
+        }
+        .toast {
+            position: fixed;
+            bottom: 28px; right: 28px;
+            background: #1f3b4cee;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 60px;
+            z-index: 1002;
+        }
+        .wms-badge { 
+            background: #eef2fc; 
+            padding: 4px 12px; 
+            border-radius: 30px; 
+            font-size: 0.7rem; 
+            font-weight: 500; 
+            display: inline-block;
+            line-height: 1.4;
+white-space: pre-wrap;
+        }
+        
+        .search-select-wrapper { position: relative; }
+        .search-select-input {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid #cfdfed;
+            border-radius: 14px;
+            background: white;
+        }
+        .dropdown-options {
+            position: absolute;
+            top: 100%;
+            left: 0; right: 0;
+            background: white;
+            border: 1px solid #cfdfed;
+            border-radius: 16px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            margin-top: 4px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+        }
+        .dropdown-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            border-bottom: 1px solid #f0f4fa;
+        }
+        .dropdown-item:hover { background: #eef5fc; }
+        
+        .empty-row td { text-align: center; color: #8ea3bd; padding: 40px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        hr { margin: 12px 0; border: none; border-top: 1px solid #e2eaf2; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div><h1>🏚️ 仓库池管理</h1><p></p></div>
+        <button class="btn-primary" id="addWarehouseBtn">+ 新增仓库</button>
+    </div>
+    <div class="card">
+        <div class="card-header"><h3>📦 仓库列表</h3><span style="font-size:0.7rem; color:#7f95b5;">支持详情/编辑/删除 | 编辑时可重新选择仓库模板</span></div>
+        <div class="card-body">
+            <div class="table-wrapper">
+                <table id="warehouseTable">
+                    <thead>
+                        <tr><th>仓库ID</th><th>仓库名称</th><th>所属WMS</th><th>仓库类型</th><th>属性</th><th>温层</th><th>仓库状态</th><th>标记</th><th>联系人/手机</th><th>操作</th></tr>
+                    </thead>
+                    <tbody id="warehouseTableBody"></tbody>
+                </table>
+            </div>
+            <div class="pagination-container" id="paginationWrapper"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        "use strict";
+
+        // ---------- 租户定义：要求展示租户ID（2-000001 / 2-000002）并且列表中同时展示平台名称和租户ID ----------
+        // 租户列表: 内部id + 显示名称 + 租户ID展示字符串
+        const tenantList = [
+            { id: "tospino_original", displayName: "Tospino Original WMS", tenantIdLabel: "" },
+            { id: "delzoa_tospino_partner", displayName: "Delzoa_Tospino Partner Tenant", tenantIdLabel: "2-000000" }
+        ];
+        
+        // 历史数据wmsId映射 (兼容老数据 wms_self, wms_delzoa, delzoa_tos)
+        function migrateWmsId(oldId) {
+            if(oldId === "wms_self") return "tospino_original";
+            if(oldId === "wms_delzoa" || oldId === "delzoa_tos") return "delzoa_tospino_partner";
+            if(oldId === "tospino_original" || oldId === "delzoa_tospino_partner") return oldId;
+            return "tospino_original";
+        }
+        
+        // 获取租户展示信息 (平台名称 + 租户ID) 用于列表
+        function getTenantFullDisplay(tenantInternalId) {
+            const tenant = tenantList.find(t => t.id === tenantInternalId);
+            if(tenant) {
+                return `${tenant.displayName}\n${tenant.tenantIdLabel}`;
+            }
+            return tenantInternalId;
+        }
+        
+        // 获取租户ID标签 (仅ID)
+        function getTenantIdLabel(tenantInternalId) {
+            const tenant = tenantList.find(t => t.id === tenantInternalId);
+            return tenant ? tenant.tenantIdLabel : tenantInternalId;
+        }
+        
+        // 获取下拉选项完整文案 (展示名称 + 租户ID)
+        function getTenantOptionText(tenant) {
+            return `${tenant.displayName}\n${tenant.tenantIdLabel}`;
+        }
+        
+        // ---------- 仓库模板池 (基于租户internal id) ----------
+        const warehouseTemplatePool = {
+            tospino_original: [
+                { id: "WH-ORI-101", name: "Tospino中央自营仓A", address:"阿克拉A区", type:"存储仓", property:"自营", tempLayer:"常温", status:"active", contactPerson:"赵岩", contactPhone:"233-55112233", remark:"主仓", sn:"SN-ORI101", coordinate:"5.61°N,0.19°W", sortingTypes:["标准货位","大件"] },
+                { id: "WH-ORI-102", name: "Tospino北部备件仓", address:"库马西", type:"备件仓", property:"自营", tempLayer:"恒温", status:"active", contactPerson:"孙丽", contactPhone:"233-55223344", remark:"备件", sn:"SN-ORI102", coordinate:"6.68°N,1.62°W", sortingTypes:["备件货位"] },
+                { id: "WH-ORI-103", name: "Tospino南部快消仓", address:"海岸角", type:"存储仓", property:"自营", tempLayer:"常温", status:"active", contactPerson:"林晨", contactPhone:"233-55667788", remark:"快消品", sn:"SN-ORI103", coordinate:"5.12°N,1.22°W", sortingTypes:["标准货位","地堆货位"] }
+            ],
+            delzoa_tospino_partner: [
+                { id: "WH-DEL-201", name: "Delzoa特马合作仓", address:"特马港", type:"分拨仓", property:"租赁", tempLayer:"常温", status:"active", contactPerson:"周舟", contactPhone:"233-55334455", remark:"分拨", sn:"SN-DEL201", coordinate:"5.67°N,0.02°E", sortingTypes:["标准"] },
+                { id: "WH-DEL-202", name: "Delzoa冷链合作仓", address:"阿克拉", type:"冷链仓", property:"租赁", tempLayer:"冷藏", status:"active", contactPerson:"吴迪", contactPhone:"233-55445566", remark:"冷链", sn:"SN-DEL202", coordinate:"5.60°N,0.18°W", sortingTypes:["冷藏货位"] },
+                { id: "WH-DEL-203", name: "Delzoa退货合作中心", address:"特马工业园", type:"退货仓", property:"租赁", tempLayer:"常温", status:"active", contactPerson:"郑爽", contactPhone:"233-55778899", remark:"逆向", sn:"SN-DEL203", coordinate:"5.68°N,0.03°E", sortingTypes:["退货货位","质检区"] }
+            ]
+        };
+        
+        // 历史数据，迁移租户ID
+        let rawWarehouses = [
+            { id: "WH-ACC-001", name: "阿克拉中央仓", wmsId: "wms_self", type: "存储仓", property: "自营", tempLayer: "常温", status: "active", mark: "storage", contactPerson: "李明", contactPhone: "233-241234567", remark: "主仓，高周转", sn: "SN-ACC-001", address: "阿克拉工业区解放路15号", coordinate: "5.6037°N,0.1870°W", sortingTypes: ["标准货位", "大件货位"] },
+            { id: "WH-TEM-002", name: "特马分拨仓", wmsId: "wms_self", type: "存储仓", property: "租赁", tempLayer: "恒温", status: "active", mark: "storage", contactPerson: "王芳", contactPhone: "233-245678901", remark: "港口附近", sn: "SN-TEM-002", address: "特马港口路88号", coordinate: "5.6698°N,0.0167°E", sortingTypes: ["标准货位"] },
+            { id: "WH-TKD-003", name: "塔科拉迪港仓", wmsId: "wms_delzoa", type: "退货仓", property: "自营", tempLayer: "常温", status: "active", mark: "returns", contactPerson: "张强", contactPhone: "233-249876543", remark: "逆向处理中心", sn: "SN-TKD-003", address: "塔科拉迪海滨大道7号", coordinate: "4.8938°N,1.7586°W", sortingTypes: ["退货货位", "质检货位"] },
+            { id: "WH-SKD-004", name: "塞康第仓", wmsId: "wms_delzoa", type: "存储仓", property: "租赁", tempLayer: "冷藏", status: "inactive", mark: "storage", contactPerson: "赵敏", contactPhone: "233-242233445", remark: "生鲜品类", sn: "SN-SKD-004", address: "塞康第物流园B区", coordinate: "4.9269°N,1.7132°W", sortingTypes: ["冷藏货位"] },
+            { id: "WH-KMS-005", name: "库马西仓", wmsId: "delzoa_tos", type: "退货仓", property: "自营", tempLayer: "常温", status: "active", mark: "returns", contactPerson: "陈龙", contactPhone: "233-247788990", remark: "逆向退货", sn: "SN-KMS-005", address: "库马西北部仓储中心", coordinate: "6.6666°N,1.6163°W", sortingTypes: ["退货货位", "残次货位"] }
+        ];
+        
+        let warehouseData = {
+            wmsList: tenantList,
+            warehouses: rawWarehouses.map(wh => ({ ...wh, wmsId: migrateWmsId(wh.wmsId) }))
+        };
+        
+        function escapeHtml(str){ if(!str) return ''; return str.replace(/[&<>]/g, m=> m==='&'?'&amp;':m==='<'?'&lt;':'>'); }
+        function escapeAttr(str){ if(!str) return ''; return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+        
+        function showToast(msg){ const e=document.querySelector(".toast"); if(e)e.remove(); const d=document.createElement("div"); d.className="toast"; d.innerText=msg; document.body.appendChild(d); setTimeout(()=>d.remove(),2500); }
+        
+        function loadFromLocal(){ const s=localStorage.getItem("warehouse_pool_card_v4"); if(s){ try{ const p=JSON.parse(s); if(p.warehouses) warehouseData.warehouses=p.warehouses; if(p.wmsList) warehouseData.wmsList=p.wmsList; }catch(e){} } }
+        function saveToLocal(){ localStorage.setItem("warehouse_pool_card_v4", JSON.stringify({ wmsList: warehouseData.wmsList, warehouses: warehouseData.warehouses })); }
+        
+        let currentPage = 1;
+        const pageSize = 3;
+        
+        function getPaginatedData() {
+            const sorted = [...warehouseData.warehouses].sort((a,b)=>a.id.localeCompare(b.id));
+            const start = (currentPage - 1) * pageSize;
+            return sorted.slice(start, start + pageSize);
+        }
+        
+        function renderTable() {
+            const tbody = document.getElementById("warehouseTableBody");
+            if(!tbody) return;
+            const pageData = getPaginatedData();
+            tbody.innerHTML = "";
+            if(pageData.length === 0){
+                const row = tbody.insertRow(); row.className="empty-row";
+                const cell = row.insertCell(0); cell.colSpan=10; cell.textContent="暂无仓库数据";
+                renderPagination();
+                return;
+            }
+            pageData.forEach(wh=>{
+                const row = tbody.insertRow();
+                row.insertCell(0).innerHTML = `<span class="warehouse-id-badge">${escapeHtml(wh.id)}</span>`;
+                row.insertCell(1).innerHTML = `<strong>${escapeHtml(wh.name)}</strong>`;
+                // 列表所属WMS字段展示 平台名称 + 租户ID (完全按照需求)
+                const wmsFullDisplay = getTenantFullDisplay(wh.wmsId);
+                row.insertCell(2).innerHTML = `<span class="wms-badge">${escapeHtml(wmsFullDisplay)}</span>`;
+                row.insertCell(3).innerHTML = escapeHtml(wh.type||'-');
+                row.insertCell(4).innerHTML = escapeHtml(wh.property||'-');
+                row.insertCell(5).innerHTML = escapeHtml(wh.tempLayer||'-');
+                row.insertCell(6).innerHTML = `<span class="status-tag ${wh.status==='active'?'status-active':'status-inactive'}">${wh.status==='active'?'启用':'停用'}</span>`;
+                const markLabel = wh.mark === 'storage' ? '📦 存储仓' : '🔄 退货仓';
+                row.insertCell(7).innerHTML = `<span class="mark-tag">${markLabel}</span>`;
+                row.insertCell(8).innerHTML = `${escapeHtml(wh.contactPerson||'')}<br><small>${escapeHtml(wh.contactPhone||'')}</small>`;
+                const actionCell = row.insertCell(9);
+                actionCell.innerHTML = `
+                    <button class="btn-icon detail-wh" data-id="${escapeAttr(wh.id)}" title="查看详情">👁️</button>
+                    <button class="btn-icon edit-full-wh" data-id="${escapeAttr(wh.id)}" title="编辑仓库">✏️</button>
+                    <button class="btn-icon delete-wh" data-id="${escapeAttr(wh.id)}" title="删除">🗑️</button>
+                `;
+            });
+            document.querySelectorAll(".delete-wh").forEach(btn=>btn.addEventListener("click",()=>{
+                const id=btn.getAttribute("data-id");
+                const wh=warehouseData.warehouses.find(w=>w.id===id);
+                if(wh && confirm(`删除仓库 ${wh.name} ?`)){
+                    warehouseData.warehouses = warehouseData.warehouses.filter(w=>w.id!==id);
+                    saveToLocal();
+                    if (currentPage > Math.ceil(warehouseData.warehouses.length / pageSize)) currentPage = Math.max(1, Math.ceil(warehouseData.warehouses.length / pageSize));
+                    renderTable();
+                    showToast("已删除");
+                }
+            }));
+            document.querySelectorAll(".detail-wh").forEach(btn=>btn.addEventListener("click",()=>{
+                const id=btn.getAttribute("data-id"); const wh=warehouseData.warehouses.find(w=>w.id===id); if(wh) showDetailDialog(wh);
+            }));
+            document.querySelectorAll(".edit-full-wh").forEach(btn=>btn.addEventListener("click",()=>{
+                const id=btn.getAttribute("data-id"); const wh=warehouseData.warehouses.find(w=>w.id===id); if(wh) showUnifiedDialog(wh);
+            }));
+            renderPagination();
+        }
+        
+        function renderPagination() {
+            const total = warehouseData.warehouses.length;
+            const totalPages = Math.ceil(total / pageSize) || 1;
+            const wrapper = document.getElementById("paginationWrapper");
+            if(!wrapper) return;
+            let html = `<div style="display:flex; gap:6px; align-items:center;">`;
+            html += `<button class="page-btn" data-page="prev" ${currentPage===1?'disabled':''}>‹ 上一页</button>`;
+            for(let i=1; i<=totalPages; i++){
+                html += `<button class="page-btn ${i===currentPage?'active':''}" data-page="${i}">${i}</button>`;
+            }
+            html += `<button class="page-btn" data-page="next" ${currentPage===totalPages?'disabled':''}>下一页 ›</button>`;
+            html += `<span class="page-info">第 ${currentPage} / ${totalPages} 页 (共${total}条)</span></div>`;
+            wrapper.innerHTML = html;
+            wrapper.querySelectorAll('[data-page]').forEach(btn=>{
+                btn.addEventListener('click', ()=>{
+                    const page = btn.getAttribute('data-page');
+                    if(page === 'prev' && currentPage>1) currentPage--;
+                    else if(page === 'next' && currentPage<totalPages) currentPage++;
+                    else if(!isNaN(page)) currentPage = parseInt(page);
+                    renderTable();
+                });
+            });
+        }
+        
+        function renderInfoBlockCard(wh) {
+            if(!wh) return `<div class="info-section"><div class="info-section-title">📋 仓库信息</div><div class="info-grid"><div class="info-item"><span class="info-label">请选择仓库</span><span class="info-value">—</span></div></div></div>`;
+            const sortingHtml = (wh.sortingTypes || []).map(s => `<span class="sorting-badge">${escapeHtml(s)}</span>`).join('');
+            const statusText = wh.status === 'active' ? '启用' : '停用';
+            const statusClass = wh.status === 'active' ? 'status-active' : 'status-inactive';
+            const markText = wh.mark === 'storage' ? '📦 存储仓(正向)' : '🔄 退货仓(逆向)';
+            const tenantFullInfo = tenantList.find(t => t.id === wh.wmsId);
+            const tenantDisplay = tenantFullInfo ? `${tenantFullInfo.displayName} (租户ID: ${tenantFullInfo.tenantIdLabel})` : wh.wmsId;
+            return `
+                <div class="info-section">
+                    <div class="info-section-title">📋 仓库完整信息</div>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">仓库ID</span><span class="info-value">${escapeHtml(wh.id) || '—'}</span></div>
+                        <div class="info-item"><span class="info-label">仓库名称</span><span class="info-value">${escapeHtml(wh.name) || '—'}</span></div>
+                        <div class="info-item"><span class="info-label">仓库地址</span><span class="info-value">${escapeHtml(wh.address || '—')}</span></div>
+                        <div class="info-item"><span class="info-label">仓库坐标</span><span class="info-value">${escapeHtml(wh.coordinate || '—')}</span></div>
+                        <div class="info-item"><span class="info-label">仓库类型</span><span class="info-value">${escapeHtml(wh.type || '—')}</span></div>
+                        <div class="info-item"><span class="info-label">仓库属性</span><span class="info-value">${escapeHtml(wh.property || '—')}</span></div>
+                        <div class="info-item"><span class="info-label">温层</span><span class="info-value">${escapeHtml(wh.tempLayer || '—')}</span></div>
+                        <div class="info-item"><span class="info-label">仓库状态</span><span class="info-value"><span class="status-tag ${statusClass}">${statusText}</span></span></div>
+                        <div class="info-item"><span class="info-label">联系人</span><span class="info-value">${escapeHtml(wh.contactPerson || '—')}</span></div>
+                        <div class="info-item"><span class="info-label">手机号</span><span class="info-value">${escapeHtml(wh.contactPhone || '—')}</span></div>
+                        <div class="info-item"><span class="info-label">备注</span><span class="info-value">${escapeHtml(wh.remark || '—')}</span></div>
+                        <div class="info-item"><span class="info-label">SN编码</span><span class="info-value">${escapeHtml(wh.sn || '—')}</span></div>
+                        <div class="info-item"><span class="info-label">分拣货位类型</span><span class="info-value"><div class="sorting-tag-list">${sortingHtml || '—'}</div></span></div>
+                    </div>
+                </div>
+                <div class="meta-card">
+                    <div class="meta-item"><span class="meta-label">所属WMS平台(租户)</span><span class="meta-value">${escapeHtml(tenantDisplay)}</span></div>
+                    <div class="meta-item"><span class="meta-label">仓库标记</span><span class="meta-value">${markText}</span></div>
+                </div>
+            `;
+        }
+        
+        function showDetailDialog(wh) {
+            const overlay = document.createElement("div"); overlay.className = "dialog-overlay";
+            overlay.innerHTML = `<div class="dialog"><h3>📄 仓库详情</h3>${renderInfoBlockCard(wh)}<div class="dialog-actions"><button class="btn-outline close-dialog">关闭</button></div></div>`;
+            document.body.appendChild(overlay);
+            overlay.querySelector(".close-dialog").addEventListener("click", ()=> overlay.remove());
+        }
+        
+        // 统一弹窗: 新增/编辑，下拉选项中包含租户ID展示
+        function showUnifiedDialog(editWh = null) {
+            const isEdit = editWh !== null;
+            const title = isEdit ? "✏️ 编辑仓库" : "➕ 新增仓库";
+            let selectedTemplate = isEdit ? { ...editWh } : null;
+            let currentMark = isEdit ? (editWh.mark || "storage") : "storage";
+            let currentWmsId = isEdit ? editWh.wmsId : "tospino_original";
+            
+            const overlay = document.createElement("div"); overlay.className = "dialog-overlay";
+            function refreshInfoDisplay() {
+                const container = document.getElementById("unifiedInfoContainer");
+                if(container) container.innerHTML = renderInfoBlockCard(selectedTemplate);
+            }
+            // 构建下拉选项 (展示名称 + 租户ID)
+            const wmsOptionsHtml = tenantList.map(t => `<option value="${escapeAttr(t.id)}" ${t.id===currentWmsId?'selected':''}>${getTenantOptionText(t)}</option>`).join('');
+            overlay.innerHTML = `
+                <div class="dialog" id="unifiedDialogRoot">
+                    <h3>${title}</h3>
+                    <div class="form-row">
+                        <div class="form-field"><label>所属WMS平台（租户）</label><select id="unifiedWmsSelect">${wmsOptionsHtml}</select></div>
+                        <div class="form-field"><label>${isEdit ? '重新选择仓库 (可选)' : '选择仓库 (搜索)'}</label>
+                            <div class="search-select-wrapper">
+                                <input type="text" id="warehouseSearchInput" class="search-select-input" placeholder="输入关键词搜索仓库模板" autocomplete="off" value="${isEdit && selectedTemplate ? `${selectedTemplate.id} - ${selectedTemplate.name}` : ''}">
+                                <div class="dropdown-options" id="warehouseDropdown" style="display:none;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row"><div class="form-field"><label>仓库标记</label><div class="tag-group" id="unifiedMarkGroup">
+                        <div class="tag-option ${currentMark==='storage'?'selected':''}" data-mark="storage">📦 存储仓</div>
+                        <div class="tag-option ${currentMark==='returns'?'selected':''}" data-mark="returns">🔄 退货仓</div>
+                    </div></div></div>
+                    <div id="unifiedInfoContainer">${renderInfoBlockCard(selectedTemplate)}</div>
+                    <div class="dialog-actions"><button class="btn-outline cancel-unified">取消</button><button class="btn-primary confirm-unified">${isEdit ? '保存修改' : '确认新增'}</button></div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            const root = document.getElementById("unifiedDialogRoot");
+            const wmsSelect = document.getElementById("unifiedWmsSelect");
+            const searchInput = document.getElementById("warehouseSearchInput");
+            const dropdown = document.getElementById("warehouseDropdown");
+            const infoContainer = document.getElementById("unifiedInfoContainer");
+            const markGroup = document.getElementById("unifiedMarkGroup");
+            
+            let selectedMark = currentMark;
+            markGroup.querySelectorAll(".tag-option").forEach(opt=>{
+                opt.addEventListener("click", ()=>{
+                    markGroup.querySelectorAll(".tag-option").forEach(o=>o.classList.remove("selected"));
+                    opt.classList.add("selected");
+                    selectedMark = opt.dataset.mark;
+                    if(selectedTemplate) {
+                        selectedTemplate.mark = selectedMark;
+                        infoContainer.innerHTML = renderInfoBlockCard(selectedTemplate);
+                    }
+                });
+            });
+            
+            function updateDropdown(filterText = '') {
+                const wmsId = wmsSelect.value;
+                const candidates = warehouseTemplatePool[wmsId] || [];
+                const filtered = candidates.filter(c => c.name.toLowerCase().includes(filterText.toLowerCase()) || c.id.toLowerCase().includes(filterText.toLowerCase()));
+                dropdown.innerHTML = '';
+                if(filtered.length===0) dropdown.innerHTML = '<div class="dropdown-item">无匹配模板</div>';
+                else filtered.forEach(tmpl => {
+                    const item = document.createElement('div'); item.className='dropdown-item';
+                    item.textContent = `${tmpl.id} - ${tmpl.name}`;
+                    item.addEventListener('click', ()=>{
+                        selectedTemplate = { ...tmpl, sortingTypes: tmpl.sortingTypes || ['标准货位'], status: tmpl.status || 'active', mark: selectedMark, wmsId: wmsSelect.value };
+                        searchInput.value = `${tmpl.id} - ${tmpl.name}`;
+                        dropdown.style.display = 'none';
+                        infoContainer.innerHTML = renderInfoBlockCard(selectedTemplate);
+                    });
+                    dropdown.appendChild(item);
+                });
+                dropdown.style.display = 'block';
+            }
+            wmsSelect.addEventListener('change', ()=>{
+                if(!isEdit) { selectedTemplate = null; infoContainer.innerHTML = renderInfoBlockCard(null); searchInput.value = ''; }
+                else if(selectedTemplate) { selectedTemplate.wmsId = wmsSelect.value; infoContainer.innerHTML = renderInfoBlockCard(selectedTemplate); }
+                updateDropdown(searchInput.value);
+            });
+            searchInput.addEventListener('focus', ()=>updateDropdown(searchInput.value));
+            searchInput.addEventListener('input', ()=>updateDropdown(searchInput.value));
+            document.addEventListener('click', (e) => { if(!overlay.contains(e.target)) dropdown.style.display='none'; });
+            if(!isEdit) updateDropdown('');
+            
+            root.querySelector(".confirm-unified").addEventListener("click", ()=>{
+                if(isEdit) {
+                    if(!selectedTemplate) { showToast("请选择一个仓库模板或保留原数据"); return; }
+                    const idx = warehouseData.warehouses.findIndex(w => w.id === editWh.id);
+                    if(idx === -1) { showToast("数据异常"); overlay.remove(); return; }
+                    const updated = { ...selectedTemplate, wmsId: wmsSelect.value, mark: selectedMark, id: editWh.id };
+                    warehouseData.warehouses[idx] = updated;
+                    saveToLocal(); renderTable(); overlay.remove(); showToast("仓库已更新");
+                } else {
+                    if(!selectedTemplate) { showToast("请从下拉列表中选择一个仓库模板"); return; }
+                    if(warehouseData.warehouses.some(w=>w.id===selectedTemplate.id)){ showToast("仓库ID已存在，无法重复添加"); return; }
+                    const newWh = { ...selectedTemplate, wmsId: wmsSelect.value, mark: selectedMark };
+                    warehouseData.warehouses.push(newWh);
+                    saveToLocal(); renderTable(); overlay.remove(); showToast(`仓库 ${newWh.name} 添加成功`);
+                }
+            });
+            root.querySelector(".cancel-unified").addEventListener("click", ()=> overlay.remove());
+        }
+        
+        loadFromLocal();
+        renderTable();
+        document.getElementById("addWarehouseBtn").addEventListener("click", ()=> showUnifiedDialog(null));
+        window.addEventListener('beforeunload', ()=> saveToLocal());
+    })();
+</script>
+</body>
+</html>

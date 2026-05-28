@@ -1,0 +1,2014 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快递调度系统 - 循环路线任务管理</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        /* 基础样式保持不变 */
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --gray: #95a5a6;
+            
+            --trunk: #3498db;
+            --branch: #2ecc71;
+            --shuttle: #9b59b6;
+            --direct: #e67e22;
+            --loop: #f1c40f;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            grid-template-rows: 70px 1fr 40px;
+            grid-template-areas:
+                "header header"
+                "sidebar main"
+                "footer footer";
+            min-height: 100vh;
+        }
+        
+        /* 头部样式 */
+        header {
+            grid-area: header;
+            background: linear-gradient(135deg, var(--secondary), #1a2530);
+            color: white;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+            z-index: 100;
+            position: sticky;
+            top: 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        
+        .header-controls {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .header-controls button {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .header-controls button:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        /* 侧边栏样式 */
+        .sidebar {
+            grid-area: sidebar;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 25px;
+        }
+        
+        .sidebar-section h3 {
+            padding: 0 20px 10px;
+            font-size: 1rem;
+            color: var(--gray);
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+        
+        .nav-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--dark);
+            text-decoration: none;
+        }
+        
+        .nav-item:hover {
+            background: #f5f7fa;
+            color: var(--primary);
+        }
+        
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .nav-item i {
+            width: 24px;
+            text-align: center;
+        }
+        
+        .badge {
+            background: var(--light);
+            color: var(--dark);
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+            margin-left: auto;
+        }
+        
+        /* 页面容器 */
+        .page {
+            display: none;
+            grid-area: main;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f0f4f8;
+        }
+        
+        .page.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .dashboard-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .back-btn {
+            background: transparent;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+            padding: 8px 15px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .back-btn:hover {
+            background: #e1f5fe;
+        }
+        
+        .page-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* 任务详情布局 */
+        .task-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 25px;
+        }
+        
+        .task-detail-main {
+            flex: 1;
+        }
+        
+        .task-detail-sidebar {
+            width: 350px;
+        }
+        
+        /* 任务时间线样式 */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 20px;
+            width: 4px;
+            background: #e0e0e0;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 30px;
+        }
+        
+        .timeline-icon {
+            position: absolute;
+            left: 10px;
+            top: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+        
+        .timeline-content {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .timeline-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .timeline-time {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        /* 任务进度条 */
+        .progress-container {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 10px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: var(--success);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        /* 任务操作面板 */
+        .task-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        /* 任务统计卡片 */
+        .task-stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .task-stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+        
+        .task-stat-label {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        /* 站点状态指示器 */
+        .status-indicator {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background: #e0f2fe;
+            color: #0284c7;
+        }
+        
+        .status-in-progress {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+        
+        .status-completed {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        
+        .status-late {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        
+        .status-skipped {
+            background: #f5f5f5;
+            color: #737373;
+        }
+        
+        .route-detail-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        
+        .route-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .route-info-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .route-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-top: 15px;
+        }
+        
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            min-width: 150px;
+        }
+        
+        .meta-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 6px;
+        }
+        
+        .meta-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .route-status-badge {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            background: #e8f5e9;
+            color: var(--success);
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin: 25px 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: #e1f5fe;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.9rem;
+        }
+        
+        /* 地图容器样式 */
+        .map-container {
+            height: 400px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            background: #f8fafc;
+        }
+        
+        .tasks-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        
+        .detail-item {
+            margin-bottom: 15px;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            color: var(--gray);
+        }
+        
+        .task-priority {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .priority-high {
+            background: #ffebee;
+            color: var(--danger);
+        }
+        
+        .priority-medium {
+            background: #fff8e1;
+            color: #ff8f00;
+        }
+        
+        .priority-low {
+            background: #e8f5e9;
+            color: var(--success);
+        }
+        
+        /* 页脚样式 */
+        footer {
+            grid-area: footer;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "header"
+                    "main"
+                    "footer";
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .task-detail-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .task-detail-sidebar {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .task-actions {
+                flex-direction: column;
+            }
+            
+            .route-meta {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+        
+        /* 状态点样式 */
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        
+        .status-active { background: var(--success); }
+        .status-pending { background: var(--warning); }
+        .status-completed { background: var(--primary); }
+        
+        /* 新添加的样式 - 任务卡片 */
+        .task-card {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            border-left: 3px solid;
+        }
+        
+        .task-card.unloading {
+            border-left-color: #3498db;
+        }
+        
+        .task-card.loading {
+            border-left-color: #9b59b6;
+        }
+        
+        .task-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .task-type {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .task-details {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        /* 任务操作按钮 */
+        .task-actions-btn {
+            background: rgba(0,0,0,0.05);
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .task-actions-btn:hover {
+            background: rgba(0,0,0,0.1);
+        }
+        
+        /* 创建任务表单 */
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .station-list {
+            margin-top: 15px;
+        }
+        
+        .station-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f9fafb;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+        
+        .station-handle {
+            cursor: move;
+            color: var(--gray);
+        }
+        
+        .station-info {
+            flex-grow: 1;
+        }
+        
+        .station-name {
+            font-weight: 600;
+        }
+        
+        .station-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .station-tasks {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+        
+        /* 新增样式 - 绑定运单按钮 */
+        .waybill-binding {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .bound-waybills {
+            margin-top: 5px;
+            font-size: 0.85rem;
+            color: #3498db;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .waybill-badge {
+            background: #e1f5fe;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .waybill-badge i {
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+        
+        /* 模态框样式 */
+        #waybill-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow: auto;
+            padding: 20px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .modal-header h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+            transition: color 0.2s;
+        }
+        
+        .close-modal:hover {
+            color: var(--dark);
+        }
+        
+        .waybill-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .waybill-table th {
+            text-align: left;
+            padding: 12px 10px;
+            border-bottom: 2px solid #eee;
+            font-weight: 600;
+            color: var(--dark);
+            background: #f8fafc;
+        }
+        
+        .waybill-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #f0f4f8;
+        }
+        
+        .waybill-table tbody tr {
+            transition: background 0.2s;
+        }
+        
+        .waybill-table tbody tr:hover {
+            background: #f8fafc;
+        }
+        
+        .waybill-table tbody tr.selected {
+            background: #e1f5fe;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .bind-waybill-action {
+            padding: 5px 10px;
+            font-size: 0.85rem;
+        }
+        
+        /* 新增任务操作区域 */
+        .task-operations {
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <header>
+            <div class="logo" id="dashboard-btn">
+                <i class="fas fa-route"></i>
+                <span>快递路线调度系统</span>
+            </div>
+            <div class="header-controls">
+                <button><i class="fas fa-sync-alt"></i> 刷新</button>
+                <button><i class="fas fa-bell"></i> 通知 <span class="badge">3</span></button>
+                <button><i class="fas fa-user"></i> 管理员</button>
+            </div>
+        </header>
+        
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="nav-item active" data-page="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>控制台</span>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>路线管理</h3>
+                <a class="nav-item" data-page="route-list">
+                    <i class="fas fa-list"></i>
+                    <span>路线列表</span>
+                    <span class="badge">25</span>
+                </a>
+                <a class="nav-item" data-page="new-route">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>创建路线</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>路线类型</h3>
+                <a class="nav-item">
+                    <i class="fas fa-truck"></i>
+                    <span>干线路线</span>
+                    <span class="badge">4</span>
+                </a>
+                <a class="nav-item">
+                    <i class="fas fa-road"></i>
+                    <span>支线路线</span>
+                    <span class="badge">8</span>
+                </a>
+                <a class="nav-item">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>接驳路线</span>
+                    <span class="badge">6</span>
+                </a>
+                <a class="nav-item">
+                    <i class="fas fa-arrow-right"></i>
+                    <span>直达路线</span>
+                    <span class="badge">3</span>
+                </a>
+                <a class="nav-item active">
+                    <i class="fas fa-redo"></i>
+                    <span>循环接驳</span>
+                    <span class="badge">4</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>任务管理</h3>
+                <a class="nav-item" data-page="task-list">
+                    <i class="fas fa-tasks"></i>
+                    <span>任务列表</span>
+                    <span class="badge">42</span>
+                </a>
+                <a class="nav-item" data-page="new-task">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>创建任务</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 - 页面容器 -->
+        <main>
+            <!-- 任务列表页面 -->
+            <div class="page active" id="task-list-page">
+                <div class="dashboard-header">
+                    <h1 class="dashboard-title">
+                        <i class="fas fa-tasks"></i> 任务管理
+                    </h1>
+                    <div class="page-actions">
+                        <button class="btn" data-page="new-task">
+                            <i class="fas fa-plus"></i> 创建任务
+                        </button>
+                        <button class="btn btn-outline">
+                            <i class="fas fa-filter"></i> 筛选
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="filter-bar" style="display: flex; gap: 15px; margin-bottom: 25px; padding: 15px; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                    <div class="filter-group" style="display: flex; flex-direction: column; min-width: 180px;">
+                        <div class="filter-label" style="font-size: 0.9rem; color: var(--gray); margin-bottom: 8px;">任务状态</div>
+                        <select class="filter-select" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: white;">
+                            <option>全部状态</option>
+                            <option>待分配</option>
+                            <option>进行中</option>
+                            <option>已完成</option>
+                            <option>已取消</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group" style="display: flex; flex-direction: column; min-width: 180px;">
+                        <div class="filter-label" style="font-size: 0.9rem; color: var(--gray); margin-bottom: 8px;">负责人</div>
+                        <select class="filter-select" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: white;">
+                            <option>全部负责人</option>
+                            <option>王主管</option>
+                            <option>李队长</option>
+                            <option>张经理</option>
+                            <option>陈主管</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group" style="flex-grow: 1;">
+                        <div class="filter-label" style="font-size: 0.9rem; color: var(--gray); margin-bottom: 8px;">搜索任务</div>
+                        <input type="text" class="filter-select" placeholder="输入任务名称或编号..." style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: white; width: 100%;">
+                    </div>
+                </div>
+                
+                <div class="tasks-section">
+                    <table class="task-table" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left; padding: 15px; font-weight: 600; color: var(--gray); border-bottom: 2px solid #eee; font-size: 0.95rem;">任务编号</th>
+                                <th style="text-align: left; padding: 15px; font-weight: 600; color: var(--gray); border-bottom: 2px solid #eee; font-size: 0.95rem;">任务内容</th>
+                                <th style="text-align: left; padding: 15px; font-weight: 600; color: var(--gray); border-bottom: 2px solid #eee; font-size: 0.95rem;">关联路线</th>
+                                <th style="text-align: left; padding: 15px; font-weight: 600; color: var(--gray); border-bottom: 2px solid #eee; font-size: 0.95rem;">负责人</th>
+                                <th style="text-align: left; padding: 15px; font-weight: 600; color: var(--gray); border-bottom: 2px solid #eee; font-size: 0.95rem;">优先级</th>
+                                <th style="text-align: left; padding: 15px; font-weight: 600; color: var(--gray); border-bottom: 2px solid #eee; font-size: 0.95rem;">状态</th>
+                                <th style="text-align: left; padding: 15px; font-weight: 600; color: var(--gray); border-bottom: 2px solid #eee; font-size: 0.95rem;">截止时间</th>
+                                <th style="text-align: left; padding: 15px; font-weight: 600; color: var(--gray); border-bottom: 2px solid #eee; font-size: 0.95rem;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="cursor: pointer; transition: background 0.2s;">
+                                <td style="padding: 15px; border-bottom: 1px solid #f5f7fa; font-size: 0.95rem;">TSK-2023-1101</td>
+                                <td style="padding: 15px; border-bottom: 1px solid #f5f7fa; font-size: 0.95rem;">双十一货物运输</td>
+                                <td style="padding: 15px; border-bottom: 1px solid #f5f7fa; font-size: 0.95rem;">浦东分拣中心循环配送 (LP-2023-11)</td>
+                                <td style="padding: 15px; border-bottom: 1px solid #f5f7fa; font-size: 0.95rem;">张司机</td>
+                                <td style="padding: 15px; border-bottom: 1px solid #f5f7fa; font-size: 0.95rem;"><span class="task-priority priority-high">高</span></td>
+                                <td style="padding: 15px; border-bottom: 1px solid #f5f7fa; font-size: 0.95rem;">进行中</td>
+                                <td style="padding: 15px; border-bottom: 1px solid #f5f7fa; font-size: 0.95rem;">2023-11-11 12:00</td>
+                                <td style="padding: 15px; border-bottom: 1px solid #f5f7fa; font-size: 0.95rem;">
+                                    <button class="btn-sm btn-outline task-detail-btn" data-task-id="1101">详情</button>
+                                </td>
+                            </tr>
+                            <tr style="cursor: pointer; transition: background 0.2s;">
+                                <td style="padding: 15px; border-bottom: 1px solid #f5f7fa; font-size: 0.95rem;">TSK-2023-1102</td>
+                                <td style="padding: 15px; border-bottom: 1px solid #f5f7fa; font-size: 0.95rem;">日常配送</td>
+                                <td style="padding: 15px; border-bottom: 1px solid #f5f7fa; font-size: 0.95rem;">浦东分拣中心循环配送 (LP-2023-11)</td>
+                                <td style="padding: 15px; border-bottom: 1px solid #f5f7fa; font-size: 0.95rem;">李司机</td>
+                                <td style="padding: 15px; border-bottom: 1px solid #f5f7fa; font-size: 0.95rem;"><span class="task-priority priority-medium">中</span></td>
+                                <td style="padding: 15px; border-bottom: 1px solid #f5f7fa; font-size: 0.95rem;">已完成</td>
+                                <td style="padding: 15px; border-bottom: 1px solid #f5f7fa; font-size: 0.95rem;">2023-11-10 18:00</td>
+                                <td style="padding: 15px; border-bottom: 1px solid #f5f7fa; font-size: 0.95rem;">
+                                    <button class="btn-sm btn-outline task-detail-btn" data-task-id="1102">详情</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 循环线路任务详情页面 -->
+            <div class="page" id="task-detail-page">
+                <div class="dashboard-header">
+                    <button class="back-btn" id="back-to-task-list">
+                        <i class="fas fa-arrow-left"></i> 返回列表
+                    </button>
+                    <h1 class="dashboard-title">
+                        <i class="fas fa-tasks"></i> 任务详情
+                    </h1>
+                    <div class="page-actions">
+                        <button class="btn">
+                            <i class="fas fa-print"></i> 打印
+                        </button>
+                        <button class="btn">
+                            <i class="fas fa-edit"></i> 编辑
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="task-detail-grid">
+                    <div class="task-detail-main">
+                        <div class="route-detail-card">
+                            <div class="route-detail-header">
+                                <div>
+                                    <h2 class="route-info-title">
+                                        <i class="fas fa-redo"></i>
+                                        双十一货物运输 - 循环配送任务
+                                    </h2>
+                                    <div class="route-meta">
+                                        <div class="meta-item">
+                                            <div class="meta-label">任务编号</div>
+                                            <div class="meta-value">TSK-2023-1101</div>
+                                        </div>
+                                        <div class="meta-item">
+                                            <div class="meta-label">关联路线</div>
+                                            <div class="meta-value">浦东分拣中心循环配送 (LP-2023-11)</div>
+                                        </div>
+                                        <div class="meta-item">
+                                            <div class="meta-label">负责人</div>
+                                            <div class="meta-value">张司机</div>
+                                        </div>
+                                        <div class="meta-item">
+                                            <div class="meta-label">状态</div>
+                                            <div class="route-status-badge">
+                                                <span class="status-dot status-active"></span> 进行中
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="section-title">
+                                <i class="fas fa-road"></i> 任务进度
+                            </div>
+                            
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: 60%;"></div>
+                            </div>
+                            <div class="progress-info">
+                                <span>开始时间: 2023-11-11 08:00</span>
+                                <span>已完成: 3/5 站点</span>
+                                <span>截止时间: 2023-11-11 12:00</span>
+                            </div>
+                            
+                            <div class="section-title">
+                                <i class="fas fa-map-marker-alt"></i> 站点任务状态
+                                <span style="font-size: 0.9rem; font-weight: normal; margin-left: 10px; color: var(--gray);">(每个站点包含卸货和装货任务)</span>
+                            </div>
+                            
+                            <div class="timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-icon" style="background: var(--success);">
+                                        <i class="fas fa-warehouse"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">
+                                            浦东分拣中心
+                                            <span class="status-indicator status-completed">已完成</span>
+                                        </div>
+                                        <div class="timeline-time">2023-11-11 08:15</div>
+                                        
+                                        <div class="task-card unloading">
+                                            <div class="task-card-header">
+                                                <div class="task-type">
+                                                    <i class="fas fa-download"></i> 卸货任务
+                                                </div>
+                                                <span class="status-indicator status-completed">已完成</span>
+                                            </div>
+                                            <div class="task-details">
+                                                卸下返回包裹: 12件 | 耗时: 25分钟
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="task-card loading">
+                                            <div class="task-card-header">
+                                                <div class="task-type">
+                                                    <i class="fas fa-upload"></i> 装货任务
+                                                </div>
+                                                <span class="status-indicator status-completed">已完成</span>
+                                            </div>
+                                            <div class="task-details">
+                                                装载新包裹: 35件 | 耗时: 30分钟
+                                            </div>
+                                            <div class="bound-waybills">
+                                                <span class="waybill-badge">WB20231111001 <i class="fas fa-times" onclick="removeWaybill(this)"></i></span>
+                                                <span class="waybill-badge">WB20231111002 <i class="fas fa-times" onclick="removeWaybill(this)"></i></span>
+                                            </div>
+                                            <div class="waybill-binding">
+                                                <button class="btn-sm btn-outline bind-waybill-btn">
+                                                    <i class="fas fa-link"></i> 绑定运单
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item">
+                                    <div class="timeline-icon" style="background: var(--success);">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">
+                                            世纪大道营业部
+                                            <span class="status-indicator status-completed">已完成</span>
+                                        </div>
+                                        <div class="timeline-time">2023-11-11 09:30</div>
+                                        
+                                        <div class="task-card unloading">
+                                            <div class="task-card-header">
+                                                <div class="task-type">
+                                                    <i class="fas fa-download"></i> 卸货任务
+                                                </div>
+                                                <span class="status-indicator status-completed">已完成</span>
+                                            </div>
+                                            <div class="task-details">
+                                                卸下包裹: 15件 | 耗时: 20分钟
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="task-card loading">
+                                            <div class="task-card-header">
+                                                <div class="task-type">
+                                                    <i class="fas fa-upload"></i> 装货任务
+                                                </div>
+                                                <span class="status-indicator status-completed">已完成</span>
+                                            </div>
+                                            <div class="task-details">
+                                                装载返回包裹: 10件 | 耗时: 15分钟
+                                            </div>
+                                            <div class="bound-waybills">
+                                                <span class="waybill-badge">WB20231111005 <i class="fas fa-times" onclick="removeWaybill(this)"></i></span>
+                                            </div>
+                                            <div class="waybill-binding">
+                                                <button class="btn-sm btn-outline bind-waybill-btn">
+                                                    <i class="fas fa-link"></i> 绑定运单
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item">
+                                    <div class="timeline-icon" style="background: var(--primary);">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">
+                                            陆家嘴营业部
+                                            <span class="status-indicator status-in-progress">配送中</span>
+                                        </div>
+                                        <div class="timeline-time">预计到达: 10:45</div>
+                                        
+                                        <div class="task-card unloading">
+                                            <div class="task-card-header">
+                                                <div class="task-type">
+                                                    <i class="fas fa-download"></i> 卸货任务
+                                                </div>
+                                                <span class="status-indicator status-in-progress">进行中</span>
+                                            </div>
+                                            <div class="task-details">
+                                                正在卸货: 8/15件 | 已用时间: 15分钟
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="task-card loading">
+                                            <div class="task-card-header">
+                                                <div class="task-type">
+                                                    <i class="fas fa-upload"></i> 装货任务
+                                                </div>
+                                                <span class="status-indicator status-pending">待处理</span>
+                                            </div>
+                                            <div class="task-details">
+                                                待装载返回包裹: 5件
+                                            </div>
+                                            <div class="bound-waybills">
+                                                <span class="waybill-badge">WB20231111008 <i class="fas fa-times" onclick="removeWaybill(this)"></i></span>
+                                            </div>
+                                            <div class="waybill-binding">
+                                                <button class="btn-sm btn-outline bind-waybill-btn">
+                                                    <i class="fas fa-link"></i> 绑定运单
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item">
+                                    <div class="timeline-icon" style="background: var(--warning);">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">
+                                            八佰伴营业部
+                                            <span class="status-indicator status-pending">待处理</span>
+                                        </div>
+                                        <div class="timeline-time">预计到达: 11:30</div>
+                                        
+                                        <div class="task-card unloading">
+                                            <div class="task-card-header">
+                                                <div class="task-type">
+                                                    <i class="fas fa-download"></i> 卸货任务
+                                                </div>
+                                                <span class="status-indicator status-pending">待处理</span>
+                                            </div>
+                                            <div class="task-details">
+                                                待卸包裹: 12件
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="task-card loading">
+                                            <div class="task-card-header">
+                                                <div class="task-type">
+                                                    <i class="fas fa-upload"></i> 装货任务
+                                                </div>
+                                                <span class="status-indicator status-pending">待处理</span>
+                                            </div>
+                                            <div class="task-details">
+                                                待装载返回包裹: 8件
+                                            </div>
+                                            <div class="waybill-binding">
+                                                <button class="btn-sm btn-outline bind-waybill-btn">
+                                                    <i class="fas fa-link"></i> 绑定运单
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item">
+                                    <div class="timeline-icon" style="background: var(--warning);">
+                                        <i class="fas fa-warehouse"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">
+                                            浦东分拣中心
+                                            <span class="status-indicator status-pending">待返回</span>
+                                        </div>
+                                        <div class="timeline-time">预计返回: 12:00</div>
+                                        
+                                        <div class="task-card unloading">
+                                            <div class="task-card-header">
+                                                <div class="task-type">
+                                                    <i class="fas fa-download"></i> 卸货任务
+                                                </div>
+                                                <span class="status-indicator status-pending">待处理</span>
+                                            </div>
+                                            <div class="task-details">
+                                                待卸下所有返回包裹
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="task-card loading">
+                                            <div class="task-card-header">
+                                                <div class="task-type">
+                                                    <i class="fas fa-upload"></i> 装货任务
+                                                </div>
+                                                <span class="status-indicator status-pending">待处理</span>
+                                            </div>
+                                            <div class="task-details">
+                                                下一轮装载准备
+                                            </div>
+                                            <div class="waybill-binding">
+                                                <button class="btn-sm btn-outline bind-waybill-btn">
+                                                    <i class="fas fa-link"></i> 绑定运单
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="task-actions">
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-pause"></i> 暂停任务
+                                </button>
+                                <button class="btn">
+                                    <i class="fas fa-check-circle"></i> 标记为完成
+                                </button>
+                                <button class="btn">
+                                    <i class="fas fa-map-marked-alt"></i> 查看实时位置
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="tasks-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-truck"></i> 任务路线地图
+                            </h3>
+                            <div class="map-container" id="task-map"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="task-detail-sidebar">
+                        <div class="stats-grid">
+                            <div class="task-stat-card">
+                                <div class="task-stat-value">3/5</div>
+                                <div class="task-stat-label">已完成站点</div>
+                            </div>
+                            
+                            <div class="task-stat-card">
+                                <div class="task-stat-value">23/35</div>
+                                <div class="task-stat-label">已配送包裹</div>
+                            </div>
+                            
+                            <div class="task-stat-card">
+                                <div class="task-stat-value">2.8h</div>
+                                <div class="task-stat-label">已用时间</div>
+                            </div>
+                            
+                            <div class="task-stat-card">
+                                <div class="task-stat-value">1.2h</div>
+                                <div class="task-stat-label">剩余时间</div>
+                            </div>
+                        </div>
+                        
+                        <div class="tasks-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-info-circle"></i> 任务信息
+                            </h3>
+                            
+                            <div class="detail-item">
+                                <div class="detail-label">任务类型</div>
+                                <div class="detail-value">循环配送任务</div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <div class="detail-label">优先级</div>
+                                <div class="detail-value"><span class="task-priority priority-high">高</span></div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <div class="detail-label">创建时间</div>
+                                <div class="detail-value">2023-11-10 14:30</div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <div class="detail-label">最后更新</div>
+                                <div class="detail-value">2023-11-11 09:45</div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <div class="detail-label">车辆信息</div>
+                                <div class="detail-value">沪A-12345 (新能源货车)</div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <div class="detail-label">货物总量</div>
+                                <div class="detail-value">35件 (约450公斤)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="tasks-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-user"></i> 负责人信息
+                            </h3>
+                            
+                            <div class="detail-item">
+                                <div class="detail-label">姓名</div>
+                                <div class="detail-value">张司机</div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <div class="detail-label">联系方式</div>
+                                <div class="detail-value">138****5678</div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <div class="detail-label">当前状态</div>
+                                <div class="detail-value">工作中</div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <div class="detail-label">今日任务</div>
+                                <div class="detail-value">2/3 完成</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 创建新任务页面 -->
+            <div class="page" id="new-task-page">
+                <div class="dashboard-header">
+                    <button class="back-btn" id="back-to-task-list-new">
+                        <i class="fas fa-arrow-left"></i> 返回列表
+                    </button>
+                    <h1 class="dashboard-title">
+                        <i class="fas fa-plus-circle"></i> 创建循环路线任务
+                    </h1>
+                </div>
+                
+                <div class="form-container">
+                    <div class="form-group">
+                        <label class="form-label">任务名称</label>
+                        <input type="text" class="form-control" placeholder="输入任务名称">
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">关联路线</label>
+                            <select class="form-control">
+                                <option>浦东分拣中心循环配送 (LP-2023-11)</option>
+                                <option>浦西循环配送 (LP-2023-12)</option>
+                                <option>松江区域循环配送 (LP-2023-10)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">负责人</label>
+                            <select class="form-control">
+                                <option>张司机</option>
+                                <option>李司机</option>
+                                <option>王司机</option>
+                                <option>陈司机</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">开始时间</label>
+                            <input type="datetime-local" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">截止时间</label>
+                            <input type="datetime-local" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">优先级</label>
+                        <select class="form-control">
+                            <option>高</option>
+                            <option>中</option>
+                            <option>低</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">车辆信息</label>
+                        <select class="form-control">
+                            <option>沪A-12345 (新能源货车)</option>
+                            <option>沪B-67890 (箱式货车)</option>
+                            <option>沪C-54321 (冷藏车)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">货物信息</label>
+                        <textarea class="form-control" rows="3" placeholder="输入货物描述..."></textarea>
+                    </div>
+                    
+                    <div class="section-title">
+                        <i class="fas fa-map-marker-alt"></i> 循环网点任务设置
+                    </div>
+                    
+                    <div class="station-list">
+                        <div class="station-item">
+                            <div class="station-handle">
+                                <i class="fas fa-bars"></i>
+                            </div>
+                            <div class="station-info">
+                                <div class="station-name">浦东分拣中心</div>
+                                <div class="station-address">浦东新区张江路123号</div>
+                            </div>
+                            <div class="station-tasks">
+                                <div class="task-card unloading">
+                                    <div class="task-card-header">
+                                        <div class="task-type">
+                                            <i class="fas fa-download"></i> 卸货任务
+                                        </div>
+                                        <div>
+                                            <span class="task-priority priority-high">高</span>
+                                        </div>
+                                    </div>
+                                    <div class="task-details">
+                                        预计包裹: 待定 | 预计时间: 30分钟
+                                    </div>
+                                </div>
+                                
+                                <div class="task-card loading">
+                                    <div class="task-card-header">
+                                        <div class="task-type">
+                                            <i class="fas fa-upload"></i> 装货任务
+                                        </div>
+                                        <div>
+                                            <span class="task-priority priority-high">高</span>
+                                        </div>
+                                    </div>
+                                    <div class="task-details">
+                                        预计包裹: 待定 | 预计时间: 30分钟
+                                    </div>
+                                    <div class="waybill-binding">
+                                        <button class="btn-sm btn-outline bind-waybill-btn">
+                                            <i class="fas fa-link"></i> 绑定运单
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="station-item">
+                            <div class="station-handle">
+                                <i class="fas fa-bars"></i>
+                            </div>
+                            <div class="station-info">
+                                <div class="station-name">世纪大道营业部</div>
+                                <div class="station-address">浦东新区世纪大道88号</div>
+                            </div>
+                            <div class="station-tasks">
+                                <div class="task-card unloading">
+                                    <div class="task-card-header">
+                                        <div class="task-type">
+                                            <i class="fas fa-download"></i> 卸货任务
+                                        </div>
+                                        <div>
+                                            <span class="task-priority priority-medium">中</span>
+                                        </div>
+                                    </div>
+                                    <div class="task-details">
+                                        预计包裹: 15件 | 预计时间: 25分钟
+                                    </div>
+                                </div>
+                                
+                                <div class="task-card loading">
+                                    <div class="task-card-header">
+                                        <div class="task-type">
+                                            <i class="fas fa-upload"></i> 装货任务
+                                        </div>
+                                        <div>
+                                            <span class="task-priority priority-medium">中</span>
+                                        </div>
+                                    </div>
+                                    <div class="task-details">
+                                        预计包裹: 10件 | 预计时间: 20分钟
+                                    </div>
+                                    <div class="waybill-binding">
+                                        <button class="btn-sm btn-outline bind-waybill-btn">
+                                            <i class="fas fa-link"></i> 绑定运单
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="station-item">
+                            <div class="station-handle">
+                                <i class="fas fa-bars"></i>
+                            </div>
+                            <div class="station-info">
+                                <div class="station-name">陆家嘴营业部</div>
+                                <div class="station-address">浦东新区陆家嘴环路100号</div>
+                            </div>
+                            <div class="station-tasks">
+                                <div class="task-card unloading">
+                                    <div class="task-card-header">
+                                        <div class="task-type">
+                                            <i class="fas fa-download"></i> 卸货任务
+                                        </div>
+                                        <div>
+                                            <span class="task-priority priority-high">高</span>
+                                        </div>
+                                    </div>
+                                    <div class="task-details">
+                                        预计包裹: 15件 | 预计时间: 30分钟
+                                    </div>
+                                </div>
+                                
+                                <div class="task-card loading">
+                                    <div class="task-card-header">
+                                        <div class="task-type">
+                                            <i class="fas fa-upload"></i> 装货任务
+                                        </div>
+                                        <div>
+                                            <span class="task-priority priority-medium">中</span>
+                                        </div>
+                                    </div>
+                                    <div class="task-details">
+                                        预计包裹: 5件 | 预计时间: 15分钟
+                                    </div>
+                                    <div class="waybill-binding">
+                                        <button class="btn-sm btn-outline bind-waybill-btn">
+                                            <i class="fas fa-link"></i> 绑定运单
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="station-item">
+                            <div class="station-handle">
+                                <i class="fas fa-bars"></i>
+                            </div>
+                            <div class="station-info">
+                                <div class="station-name">八佰伴营业部</div>
+                                <div class="station-address">浦东新区张杨路501号</div>
+                            </div>
+                            <div class="station-tasks">
+                                <div class="task-card unloading">
+                                    <div class="task-card-header">
+                                        <div class="task-type">
+                                            <i class="fas fa-download"></i> 卸货任务
+                                        </div>
+                                        <div>
+                                            <span class="task-priority priority-medium">中</span>
+                                        </div>
+                                    </div>
+                                    <div class="task-details">
+                                        预计包裹: 12件 | 预计时间: 25分钟
+                                    </div>
+                                </div>
+                                
+                                <div class="task-card loading">
+                                    <div class="task-card-header">
+                                        <div class="task-type">
+                                            <i class="fas fa-upload"></i> 装货任务
+                                        </div>
+                                        <div>
+                                            <span class="task-priority priority-medium">中</span>
+                                        </div>
+                                    </div>
+                                    <div class="task-details">
+                                        预计包裹: 8件 | 预计时间: 20分钟
+                                    </div>
+                                    <div class="waybill-binding">
+                                        <button class="btn-sm btn-outline bind-waybill-btn">
+                                            <i class="fas fa-link"></i> 绑定运单
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button class="btn btn-outline">
+                            取消
+                        </button>
+                        <button class="btn">
+                            <i class="fas fa-save"></i> 保存并发布任务
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- 页脚 -->
+        <footer>
+            <p>快递路线调度管理系统 &copy; 2023 | 版本 3.1.0 | 最后更新: 2023-12-15</p>
+        </footer>
+    </div>
+    
+    <!-- 绑定运单模态框 -->
+    <div id="waybill-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>绑定运单</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <table class="waybill-table">
+                    <thead>
+                        <tr>
+                            <th>运单号</th>
+                            <th>寄件人</th>
+                            <th>收件人</th>
+                            <th>重量(kg)</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>WB20231111001</td>
+                            <td>张三</td>
+                            <td>李四</td>
+                            <td>5.2</td>
+                            <td><span class="status-indicator status-pending">待揽收</span></td>
+                            <td><button class="btn-sm btn-outline bind-waybill-action" data-waybill-id="WB20231111001">选择</button></td>
+                        </tr>
+                        <tr>
+                            <td>WB20231111002</td>
+                            <td>王五</td>
+                            <td>赵六</td>
+                            <td>3.8</td>
+                            <td><span class="status-indicator status-pending">待揽收</span></td>
+                            <td><button class="btn-sm btn-outline bind-waybill-action" data-waybill-id="WB20231111002">选择</button></td>
+                        </tr>
+                        <tr>
+                            <td>WB20231111003</td>
+                            <td>钱七</td>
+                            <td>孙八</td>
+                            <td>7.5</td>
+                            <td><span class="status-indicator status-pending">待揽收</span></td>
+                            <td><button class="btn-sm btn-outline bind-waybill-action" data-waybill-id="WB20231111003">选择</button></td>
+                        </tr>
+                        <tr>
+                            <td>WB20231111004</td>
+                            <td>周九</td>
+                            <td>吴十</td>
+                            <td>2.1</td>
+                            <td><span class="status-indicator status-pending">待揽收</span></td>
+                            <td><button class="btn-sm btn-outline bind-waybill-action" data-waybill-id="WB20231111004">选择</button></td>
+                        </tr>
+                        <tr>
+                            <td>WB20231111005</td>
+                            <td>郑一</td>
+                            <td>王二</td>
+                            <td>6.3</td>
+                            <td><span class="status-indicator status-pending">待揽收</span></td>
+                            <td><button class="btn-sm btn-outline bind-waybill-action" data-waybill-id="WB20231111005">选择</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline close-modal">取消</button>
+                <button class="btn" id="confirm-bind">确认绑定</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const pages = document.querySelectorAll('.page');
+            const navItems = document.querySelectorAll('.nav-item');
+            const dashboardBtn = document.getElementById('dashboard-btn');
+            
+            // 显示指定页面
+            function showPage(pageId) {
+                pages.forEach(page => {
+                    page.classList.remove('active');
+                    if (page.id === pageId) {
+                        page.classList.add('active');
+                    }
+                });
+            }
+            
+            // 导航项点击事件
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const targetPage = this.getAttribute('data-page');
+                    if (targetPage) {
+                        showPage(targetPage + '-page');
+                        this.classList.add('active');
+                    }
+                });
+            });
+            
+            // 仪表盘按钮
+            dashboardBtn.addEventListener('click', function() {
+                showPage('dashboard-page');
+                document.querySelector('.nav-item[data-page="dashboard"]').classList.add('active');
+            });
+            
+            // 任务详情按钮事件
+            document.querySelectorAll('.task-detail-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const taskId = this.getAttribute('data-task-id');
+                    showPage('task-detail-page');
+                    
+                    // 这里可以根据taskId加载具体任务数据
+                    // 目前使用静态数据演示
+                    initTaskMap();
+                });
+            });
+            
+            // 返回任务列表按钮
+            const backToTaskListBtn = document.getElementById('back-to-task-list');
+            if (backToTaskListBtn) {
+                backToTaskListBtn.addEventListener('click', function() {
+                    showPage('task-list-page');
+                });
+            }
+            
+            // 返回任务列表按钮（新建任务页面）
+            const backToTaskListNewBtn = document.getElementById('back-to-task-list-new');
+            if (backToTaskListNewBtn) {
+                backToTaskListNewBtn.addEventListener('click', function() {
+                    showPage('task-list-page');
+                });
+            }
+            
+            // 创建新任务按钮
+            document.querySelector('[data-page="new-task"]').addEventListener('click', function() {
+                showPage('new-task-page');
+            });
+            
+            // 初始化任务地图
+            function initTaskMap() {
+                const mapElement = document.getElementById('task-map');
+                if (!mapElement) return;
+                
+                // 清除已有地图
+                mapElement.innerHTML = '';
+                
+                // 初始化地图
+                const map = L.map(mapElement).setView([31.2304, 121.4737], 13);
+                
+                // 添加地图图层
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+                
+                // 循环线路的各个站点
+                const stations = [
+                    {lat: 31.2104, lng: 121.5937, title: '浦东分拣中心', status: 'completed'},
+                    {lat: 31.2404, lng: 121.4937, title: '世纪大道营业部', status: 'completed'},
+                    {lat: 31.2354, lng: 121.5037, title: '陆家嘴营业部', status: 'in-progress'},
+                    {lat: 31.2204, lng: 121.5837, title: '八佰伴营业部', status: 'pending'},
+                    {lat: 31.2104, lng: 121.5937, title: '浦东分拣中心', status: 'pending'}
+                ];
+                
+                // 添加路线标记
+                stations.forEach((station, index) => {
+                    let iconColor;
+                    switch(station.status) {
+                        case 'completed': iconColor = 'green'; break;
+                        case 'in-progress': iconColor = 'blue'; break;
+                        case 'pending': iconColor = 'orange'; break;
+                        default: iconColor = 'gray';
+                    }
+                    
+                    const marker = L.marker([station.lat, station.lng]).addTo(map);
+                    
+                    marker.bindPopup(`
+                        <div style="font-weight:bold;">${station.title}</div>
+                        <div>状态: <span class="status-indicator status-${station.status}">
+                            ${station.status === 'completed' ? '已完成' : 
+                             station.status === 'in-progress' ? '进行中' : 
+                             '未开始'}
+                        </span></div>
+                    `);
+                });
+                
+                // 创建路线
+                const routePoints = stations.map(s => [s.lat, s.lng]);
+                L.polyline(routePoints, {
+                    color: '#9b59b6',
+                    weight: 4,
+                    opacity: 0.7
+                }).addTo(map);
+                
+                // 添加当前位置标记
+                const currentLocation = L.marker([31.232, 121.49]).addTo(map);
+                
+                currentLocation.bindPopup(`
+                    <div style="font-weight:bold;">当前位置</div>
+                    <div>张司机 | 沪A-12345</div>
+                    <div>速度: 45km/h</div>
+                    <div>下一站: 陆家嘴营业部</div>
+                `);
+                
+                // 自动打开当前位置的弹窗
+                currentLocation.openPopup();
+            }
+            
+            // 初始化任务地图
+            if (document.getElementById('task-detail-page').classList.contains('active')) {
+                initTaskMap();
+            }
+            
+            // 绑定运单功能
+            let currentLoadingTaskCard = null;
+            let selectedWaybillId = null;
+            
+            // 绑定运单按钮事件
+            document.querySelectorAll('.bind-waybill-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    currentLoadingTaskCard = this.closest('.task-card');
+                    selectedWaybillId = null;
+                    
+                    // 重置选择状态
+                    document.querySelectorAll('.waybill-table tbody tr').forEach(row => {
+                        row.classList.remove('selected');
+                    });
+                    
+                    // 显示模态框
+                    document.getElementById('waybill-modal').style.display = 'flex';
+                });
+            });
+            
+            // 运单选择按钮事件
+            document.querySelectorAll('.bind-waybill-action').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 移除之前的选择
+                    document.querySelectorAll('.waybill-table tbody tr').forEach(row => {
+                        row.classList.remove('selected');
+                    });
+                    
+                    // 设置当前选择
+                    this.closest('tr').classList.add('selected');
+                    selectedWaybillId = this.getAttribute('data-waybill-id');
+                });
+            });
+            
+            // 确认绑定按钮
+            document.getElementById('confirm-bind').addEventListener('click', function() {
+                if (selectedWaybillId && currentLoadingTaskCard) {
+                    const boundWaybillsElement = currentLoadingTaskCard.querySelector('.bound-waybills');
+                    
+                    // 创建运单标签
+                    const waybillBadge = document.createElement('span');
+                    waybillBadge.className = 'waybill-badge';
+                    waybillBadge.innerHTML = `
+                        ${selectedWaybillId} 
+                        <i class="fas fa-times" onclick="removeWaybill(this)"></i>
+                    `;
+                    
+                    // 添加运单
+                    boundWaybillsElement.appendChild(waybillBadge);
+                    
+                    // 关闭模态框
+                    document.getElementById('waybill-modal').style.display = 'none';
+                }
+            });
+            
+            // 关闭模态框
+            document.querySelectorAll('.close-modal').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.getElementById('waybill-modal').style.display = 'none';
+                });
+            });
+            
+            // 点击模态框外部关闭
+            document.getElementById('waybill-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.style.display = 'none';
+                }
+            });
+        });
+        
+        // 移除运单
+        function removeWaybill(element) {
+            element.closest('.waybill-badge').remove();
+        }
+    </script>
+</body>
+</html>

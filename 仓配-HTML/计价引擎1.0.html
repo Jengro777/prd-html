@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>极速通 · 标快智能计费引擎 | 专业版 · 省市二级计费</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      background: linear-gradient(145deg, #f0f5fa 0%, #e9f0f6 100%);
+      color: #0b2b44;
+      padding: 24px 28px;
+      line-height: 1.5;
+    }
+    .app-container {
+      max-width: 1640px;
+      margin: 0 auto;
+    }
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 32px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      padding: 16px 32px;
+      border-radius: 80px;
+      border: 1px solid rgba(227, 95, 33, 0.2);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    }
+    .logo h1 {
+      font-weight: 800;
+      font-size: 1.85rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(135deg, #0f3a5c, #1e6a8f);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .logo i {
+      background: linear-gradient(135deg, #e35f21, #f57c3c);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-size: 1.9rem;
+    }
+    .product-badge {
+      background: linear-gradient(135deg, #e35f21, #f57c3c);
+      color: white;
+      font-weight: 700;
+      padding: 6px 18px;
+      border-radius: 40px;
+      margin-left: 12px;
+      font-size: 0.8rem;
+      box-shadow: 0 2px 8px rgba(227, 95, 33, 0.2);
+    }
+    .btn {
+      padding: 8px 20px;
+      border-radius: 44px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+      background: white;
+      border-color: #cfddee;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .btn-sm {
+      padding: 6px 14px;
+      font-size: 0.75rem;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #e35f21, #f57c3c);
+      color: white;
+      border: none;
+      box-shadow: 0 2px 8px rgba(227, 95, 33, 0.25);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(227, 95, 33, 0.3);
+    }
+    .btn-outline {
+      background: white;
+      border-color: #dce5f0;
+      color: #2c6e92;
+    }
+    .btn-outline:hover {
+      background: #f8fafd;
+      border-color: #e35f21;
+      color: #e35f21;
+    }
+    .product-switcher {
+      display: flex;
+      gap: 8px;
+      background: white;
+      border-radius: 60px;
+      padding: 6px;
+      border: 1px solid #e2ebf5;
+    }
+    .product-option {
+      padding: 8px 22px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      background: transparent;
+      color: #3c6182;
+      transition: all 0.2s;
+      border: none;
+      font-family: inherit;
+    }
+    .product-option.active {
+      background: linear-gradient(135deg, #e35f21, #f57c3c);
+      color: white;
+      box-shadow: 0 2px 6px rgba(227, 95, 33, 0.2);
+    }
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 28px;
+      align-items: start;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 32px;
+      padding: 24px 28px;
+      box-shadow: 0 12px 28px -8px rgba(0, 32, 64, 0.08);
+      border: 1px solid rgba(233, 240, 248, 0.9);
+      margin-bottom: 28px;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: #153e60;
+      border-bottom: 2px solid #eef3fc;
+      padding-bottom: 14px;
+      margin-bottom: 22px;
+    }
+    .card-header i {
+      background: linear-gradient(135deg, #fff5ed, #feefe6);
+      padding: 8px;
+      border-radius: 16px;
+      color: #e35f21;
+    }
+    .priority-note {
+      background: #fef7e0;
+      border-left: 4px solid #e35f21;
+      padding: 12px 16px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+      font-size: 0.8rem;
+      color: #8a6e2e;
+    }
+    .region-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .region-block {
+      background: #ffffff;
+      border-radius: 28px;
+      padding: 20px;
+      border: 1px solid #eef3fc;
+      transition: box-shadow 0.2s;
+    }
+    .region-block:hover {
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+    }
+    .region-title {
+      font-weight: 800;
+      font-size: 1.05rem;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      color: #1c5a7a;
+      padding: 0 4px;
+    }
+    .size-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #eef3fc;
+    }
+    .size-tab {
+      padding: 8px 28px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      background: #f4f9fe;
+      color: #2c6e92;
+      cursor: pointer;
+      border: 1px solid #e2edf9;
+      transition: all 0.2s ease;
+    }
+    .size-tab:hover {
+      background: #e8f0f8;
+      border-color: #e35f21;
+    }
+    .size-tab.active {
+      background: linear-gradient(135deg, #e35f21, #f57c3c);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(227, 95, 33, 0.25);
+    }
+    .tab-content {
+      display: none;
+      animation: fadeInScale 0.25s ease-out;
+    }
+    .tab-content.active-tab {
+      display: block;
+    }
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .param-mini {
+      width: 95px;
+      padding: 8px 12px;
+      border: 1.5px solid #e2ecf5;
+      border-radius: 24px;
+      background: white;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+    .param-mini:focus {
+      outline: none;
+      border-color: #e35f21;
+      box-shadow: 0 0 0 3px rgba(227, 95, 33, 0.1);
+    }
+    .helper-badge {
+      background: #f0f5fb;
+      padding: 5px 14px;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      color: #4c7b9c;
+      font-weight: 500;
+    }
+    .distance-inner-block {
+      margin-top: 20px;
+      background: #ffffff;
+      border-radius: 24px;
+      border: 1px solid #e3eefa;
+      overflow: hidden;
+    }
+    .distance-header-sm {
+      background: #f9fcff;
+      padding: 14px 20px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e2edf9;
+      color: #1c5a7a;
+    }
+    .distance-list {
+      padding: 16px;
+      background: #fafdff;
+    }
+    .distance-tier-item {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.4fr 1fr 40px;
+      gap: 12px;
+      align-items: center;
+      background: white;
+      margin-bottom: 12px;
+      padding: 12px 16px;
+      border-radius: 24px;
+      border: 1px solid #e9f0f8;
+      transition: all 0.2s;
+    }
+    .surcharge-row {
+      display: grid;
+      grid-template-columns: 1.5fr 0.8fr 1.2fr 1.2fr 1.8fr;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+    }
+    .toggle-switch {
+      width: 48px;
+      height: 26px;
+      background: #cbdbe2;
+      border-radius: 40px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .toggle-switch.active {
+      background: linear-gradient(135deg, #e35f21, #f57c3c);
+    }
+    .toggle-switch::after {
+      content: '';
+      width: 22px;
+      height: 22px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: all 0.2s;
+    }
+    .toggle-switch.active::after {
+      left: 24px;
+    }
+    .calculator {
+      background: white;
+      border-radius: 32px;
+      padding: 28px;
+      box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.12);
+      position: sticky;
+      top: 20px;
+    }
+    .calc-header {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #153e60;
+    }
+    .calc-header i {
+      color: #e35f21;
+    }
+    .calc-field {
+      margin-bottom: 20px;
+    }
+    .calc-field label {
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: #4f7c9e;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    select, input {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 28px;
+      border: 1.5px solid #e2ecf5;
+      background: #f9fcff;
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+    select:focus, input:focus {
+      outline: none;
+      border-color: #e35f21;
+      box-shadow: 0 0 0 3px rgba(227, 95, 33, 0.08);
+    }
+    .result-area {
+      background: linear-gradient(145deg, #0b2b44, #113a55);
+      border-radius: 28px;
+      padding: 24px;
+      color: white;
+      margin-top: 24px;
+    }
+    .result-area div {
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+    }
+    .total-amount {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .total-amount .value {
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffaa77, #ff9966);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .dialog-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(11, 43, 68, 0.6);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1200;
+    }
+    .dialog-card {
+      background: white;
+      border-radius: 48px;
+      width: 800px;
+      max-width: 92vw;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 32px;
+      box-shadow: 0 40px 60px rgba(0, 0, 0, 0.25);
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .province-group {
+      margin-bottom: 24px;
+      border: 1px solid #eef3fc;
+      border-radius: 28px;
+      padding: 16px 20px;
+      background: #fefefe;
+    }
+    .province-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      color: #1c5a7a;
+    }
+    .province-header input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #e35f21;
+    }
+    .province-select-all {
+      margin-left: auto;
+      font-size: 0.7rem;
+      background: #f0f5fa;
+      padding: 5px 14px;
+      border-radius: 30px;
+      cursor: pointer;
+    }
+    .province-select-all:hover {
+      background: #e35f21;
+      color: white;
+    }
+    .city-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-left: 30px;
+    }
+    .city-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #f8fafd;
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border: 1px solid #e2ebf5;
+    }
+    .city-check:hover {
+      background: #fef2ea;
+      border-color: #e35f21;
+    }
+    .city-check input {
+      width: auto;
+      accent-color: #e35f21;
+    }
+    .dialog-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid #eef3fc;
+    }
+    .form-group {
+      margin-bottom: 24px;
+    }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #4f7c9e;
+      margin-bottom: 8px;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 28px;
+      border: 1.5px solid #e2ecf5;
+    }
+    .radio-group {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .radio-group label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: normal;
+      margin-bottom: 0;
+      cursor: pointer;
+    }
+    @media (max-width: 1200px) {
+      .dashboard { grid-template-columns: 1fr; }
+      .calculator { position: static; }
+      body { padding: 16px; }
+      .distance-tier-item { grid-template-columns: 1fr; gap: 8px; }
+    }
+    .text-muted { color: #6c8eaa; font-size: 0.7rem; }
+    i.fa-trash-alt { color: #dc3545; cursor: pointer; }
+    i.fa-trash-alt:hover { color: #bb2d3b; }
+    .size-badge { display: inline-block; background: #f0f5fb; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; color: #4c7b9c; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="app-header">
+    <div class="logo">
+      <h1><i class="fas fa-bolt"></i> 极速通·标快引擎<span class="product-badge" id="headerBadge"><i class="fas fa-box"></i> 标快</span></h1>
+      <div class="meta-info" style="display:flex;gap:12px;margin-top:6px;">
+        <span><i class="far fa-calendar-alt"></i> 2026-04-01 ~ 2026-06-30</span>
+        <span><i class="fas fa-chart-line"></i> 省市二级阶梯计费</span>
+      </div>
+    </div>
+    <div class="header-actions" style="display:flex; gap:12px;">
+      <div class="product-switcher" id="productSwitcher">
+        <button class="product-option active" data-prod="biaokuai">标快</button>
+        <button class="product-option" data-prod="tekuai">特快</button>
+        <button class="product-option" data-prod="kahang">卡航</button>
+        <button class="product-option" data-prod="cold">冷链</button>
+      </div>
+      <button class="btn btn-outline" id="resetDefaultsBtn"><i class="fas fa-sync-alt"></i> 重置</button>
+    </div>
+  </div>
+
+  <div class="dashboard">
+    <div>
+      <div class="card">
+        <div class="card-header"><i class="fas fa-map-marked-alt"></i> 区域费率 & 距离计费区间 <div style="margin-left:auto;"><button class="btn btn-outline btn-sm" id="addRegionBtn"><i class="fas fa-plus-circle"></i> 新建区域</button></div></div>
+        <div class="priority-note">
+          <i class="fas fa-info-circle"></i> <strong>匹配优先级说明：</strong> 自定义区域 > 省外 > 省内 > 同城。当发货地和目的地同时匹配多个区域配置时，系统按最精细匹配原则（区域覆盖城市范围越小优先级越高）自动选择最优计费规则。
+        </div>
+        <div id="regionContainer" class="region-grid"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><i class="fas fa-ban"></i> 不配送区域管理 <button style="margin-left:auto;" class="btn btn-outline btn-sm" id="addExcludedBtn"><i class="fas fa-plus"></i> 添加不配送区域</button></div>
+        <div id="excludedPanelContainer"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><i class="fas fa-mountain"></i> 偏远地区附加费 <button style="margin-left:auto;" class="btn btn-outline btn-sm" id="addRemoteBtn"><i class="fas fa-plus"></i> 添加偏远地区</button></div>
+        <div id="remotePanelContainer"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><i class="fas fa-percent"></i> 特殊附加费</div>
+        <div class="surcharge-row"><span>⛽ 燃油附加费</span><span><div class="toggle-switch active" id="fuelToggle"></div></span><select id="fuelType" class="param-mini"><option value="percent">百分比%</option><option value="fixed">固定元/票</option></select><span><input id="fuelVal" type="number" value="28.5" step="0.5" class="param-mini"></span><span class="helper-badge">基于基础运费</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><i class="fas fa-cubes"></i> 全局件型配置 <button style="margin-left:auto;" class="btn btn-outline btn-sm" id="addSizeTypeBtn"><i class="fas fa-plus"></i> 新增件型</button></div>
+        <div id="sizeTypeGlobalContainer"></div>
+        <div class="helper-badge" style="margin-top:12px; display:inline-block;"><i class="fas fa-info-circle"></i> 标件为系统核心件型，始终启用且不可禁用/删除。</div>
+      </div>
+    </div>
+
+    <div class="calculator">
+      <div class="calc-header"><i class="fas fa-calculator"></i> 即时运费试算 · <span id="calcProductLabel">标快</span></div>
+      <div class="calc-field"><label><i class="fas fa-shipping-fast"></i> 发货地</label>
+        <select id="originProvince"></select>
+        <select id="originCity" style="margin-top:6px;"></select>
+      </div>
+      <div class="calc-field"><label><i class="fas fa-flag-checkered"></i> 目的地</label>
+        <select id="destProvince"></select>
+        <select id="destCity" style="margin-top:6px;"></select>
+      </div>
+      <div class="calc-field"><label><i class="fas fa-arrows-alt-h"></i> 运输距离 (km) <span class="helper-badge">自动匹配/可调整</span></label><input id="calcDistance" type="number"></div>
+      <div class="calc-field"><label><i class="fas fa-box"></i> 件型</label><select id="calcSize"></select></div>
+      <div class="calc-field"><label><i class="fas fa-weight-hanging"></i> 重量 (kg)</label><input id="calcWeight" type="number" value="8.5"></div>
+      <div class="calc-field"><label><i class="fas fa-cube"></i> 尺寸 (cm)</label><div style="display:flex; gap:8px;"><input id="calcLength" placeholder="长" value="45"><input id="calcWidth" placeholder="宽" value="32"><input id="calcHeight" placeholder="高" value="28"></div></div>
+      <button class="btn btn-primary" style="width:100%; justify-content:center;" id="calcBtn"><i class="fas fa-charging-station"></i> 计算运费</button>
+      <div class="result-area">
+        <div><span>📦 匹配区域</span> <strong id="matchedRegion">-</strong></div>
+        <div><span>⚖️ 计费重量</span> <strong id="resBillWeight">-</strong></div>
+        <div><span>💰 基础运费</span> <strong id="resBase">-</strong></div>
+        <div><span>📏 距离附加费</span> <strong id="resDistanceFee">-</strong></div>
+        <div><span>⛽ 燃油附加费</span> <strong id="resFuel">-</strong></div>
+        <div><span>🏔️ 偏远附加费</span> <strong id="resRemoteFee">-</strong></div>
+        <div class="total-amount"><span>💰 合计运费</span><span class="value" id="resTotal">0.00</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const provinceCities = {
+    "广东省": ["广州市","深圳市","东莞市","佛山市","珠海市","惠州市","中山市"],
+    "江苏省": ["南京市","苏州市","无锡市","常州市","徐州市"],
+    "浙江省": ["杭州市","宁波市","温州市","嘉兴市","金华市"],
+    "四川省": ["成都市","绵阳市","宜宾市","泸州市"],
+    "北京市": ["北京市区"],
+    "上海市": ["上海市区"],
+    "湖北省": ["武汉市","宜昌市","襄阳市"],
+    "湖南省": ["长沙市","株洲市","湘潭市"]
+  };
+  const allProvinces = Object.keys(provinceCities);
+  
+  function getDistanceByCity(originProv, originCity, destProv, destCity) {
+    if(originProv === destProv) return 80;
+    const matrix = { "广东省-江苏省":1250, "广东省-浙江省":1180, "广东省-四川省":1520, "广东省-湖北省":980,
+      "江苏省-广东省":1250, "江苏省-浙江省":320, "江苏省-四川省":1680, "江苏省-湖北省":720,
+      "浙江省-广东省":1180, "浙江省-江苏省":320, "浙江省-四川省":1680, "浙江省-湖北省":810,
+      "北京市-广东省":2100, "北京市-江苏省":1050, "北京市-浙江省":1280, "北京市-四川省":1780, "北京市-湖北省":1150,
+      "上海市-广东省":1420, "上海市-江苏省":280, "上海市-浙江省":180, "上海市-四川省":1980, "上海市-湖北省":830,
+      "四川省-广东省":1520, "四川省-江苏省":1680, "四川省-浙江省":1680, "四川省-湖北省":1150,
+      "湖北省-广东省":980, "湖北省-江苏省":720, "湖北省-浙江省":810, "湖北省-四川省":1150 };
+    let key = `${originProv}-${destProv}`;
+    return matrix[key] || 1000;
+  }
+  
+  let currentProduct = 'biaokuai';
+  const NAMES = {tekuai:'特快',biaokuai:'标快',kahang:'卡航',cold:'冷链'};
+  const FIXED_REGIONS = ['intra_city','intra_province','inter_province'];
+  let rateRegions = [
+    { id:'intra_city', name:'同城/市内', cities:[] },
+    { id:'intra_province', name:'省内', cities:[] },
+    { id:'inter_province', name:'省外', cities:[] }
+  ];
+  let excludedOnlyRegions = [], remoteOnlyRegions = [], excludedRegionSet = new Set(), remoteRegionMap = new Map();
+  
+  // 参考顺丰/德邦的件型定义
+  let sizeTypes = [
+    { id:'small', name:'小件', maxWeight:3, maxLength:60, enabled:true, desc:'文件/小物品' },
+    { id:'standard', name:'标件', maxWeight:30, maxLength:120, enabled:true, locked:true, desc:'标准包裹' },
+    { id:'large', name:'大件', maxWeight:100, maxLength:200, enabled:true, desc:'大件货物' },
+    { id:'extra_large', name:'超重/超大件', maxWeight:999, maxLength:350, enabled:true, desc:'超限货物' }
+  ];
+  
+  let regionSizeDistanceMap = new Map();
+  
+  // 距离阶梯 - 参考行业标准：0-100km同城，101-300km短途，301-800km中长途，800km+长途
+  function initDistanceTiers(regionId, sizeId) { 
+    return [ 
+      { id:`d1`, minKm:0, maxKm:100, feeType:'fixed', feeValue:0, desc:'同城/短途' },
+      { id:`d2`, minKm:101, maxKm:300, feeType:'fixed', feeValue:8, desc:'邻近城市' },
+      { id:`d3`, minKm:301, maxKm:800, feeType:'per_kg', feeValue:0.8, desc:'中长途' },
+      { id:`d4`, minKm:801, maxKm:9999, feeType:'fixed', feeValue:35, desc:'长途/偏远' }
+    ]; 
+  }
+  
+  function getDistanceTiers(regionId, sizeId) { 
+    let key=`${regionId}_${sizeId}`; 
+    if(!regionSizeDistanceMap.has(key)) regionSizeDistanceMap.set(key, initDistanceTiers(regionId,sizeId)); 
+    return regionSizeDistanceMap.get(key); 
+  }
+  function updateDistanceTiers(regionId,sizeId,tiers) { regionSizeDistanceMap.set(`${regionId}_${sizeId}`,tiers); }
+  
+  let rateData = {};
+  // 参考顺丰/德邦首续重定价：同城首重10元续重2元，省内首重12元续重3元，省外首重18元续重6元
+  function buildDefaultRates() { 
+    let data={}; 
+    rateRegions.forEach(r=>{ 
+      data[r.id]={}; 
+      sizeTypes.forEach(s=>{ 
+        let div=6000, round='std', first=12, add=5;
+        if(r.id==='intra_city'){ first=10; add=2.5; }
+        else if(r.id==='intra_province'){ first=12; add=3.5; }
+        else { first=18; add=6; }
+        if(s.id==='small'){ div=8000; first=Math.max(8,first-2); add=add*0.8; }
+        else if(s.id==='large'){ div=5000; add=add*1.3; first=first+3; }
+        else if(s.id==='extra_large'){ div=4500; add=add*1.6; first=first+8; }
+        data[r.id][s.id]={ divisor:Math.round(div), rounding:round, firstPrice:Math.round(first*10)/10, addPrice:Math.round(add*10)/10 }; 
+      }); 
+    }); 
+    return data; 
+  }
+  rateData = buildDefaultRates();
+  
+  function renderGlobalSizeTypes() {
+    const container = document.getElementById('sizeTypeGlobalContainer');
+    container.innerHTML = '';
+    sizeTypes.forEach((sz, idx) => {
+      const isStandard = sz.id === 'standard';
+      const div = document.createElement('div'); 
+      div.style.cssText = 'display:flex; gap:12px; align-items:center; background:#fafdff; padding:12px; border-radius:20px; margin-bottom:10px; flex-wrap:wrap;';
+      div.innerHTML = `
+        <label style="display:flex; gap:8px;"><input type="checkbox" class="sz-enabled" data-idx="${idx}" ${sz.enabled!==false?'checked':''} ${isStandard?'disabled':''}> 启用</label>
+        <input class="param-mini" data-szfield="name" data-idx="${idx}" value="${escapeHtml(sz.name)}" style="width:100px;" ${isStandard?'readonly style="background:#f0f5fb;"':''}>
+        <span>≤<input class="param-mini" data-szfield="maxWeight" data-idx="${idx}" value="${sz.maxWeight}" type="number" step="0.5" style="width:70px;" ${isStandard?'disabled':''}>kg</span>
+        <span>长≤<input class="param-mini" data-szfield="maxLength" data-idx="${idx}" value="${sz.maxLength}" type="number" step="1" style="width:70px;" ${isStandard?'disabled':''}>cm</span>
+        <span class="helper-badge">${sz.desc || ''}</span>
+        ${!isStandard ? `<i class="fas fa-trash-alt" style="color:#dc3545; cursor:pointer;" data-del-gsz="${sz.id}"></i>` : '<span class="helper-badge">系统核心</span>'}
+      `;
+      container.appendChild(div);
+    });
+    document.querySelectorAll('[data-szfield]').forEach(inp=>{ if(!inp.disabled) inp.addEventListener('change',function(){ let idx=parseInt(this.dataset.idx), field=this.dataset.szfield, val=this.value; if(['maxWeight','maxLength'].includes(field)) val=parseFloat(val)||0; sizeTypes[idx][field]=val; refreshAll(); }); });
+    document.querySelectorAll('.sz-enabled').forEach(chk=>{ if(!chk.disabled) chk.addEventListener('change',function(){ let idx=parseInt(this.dataset.idx); sizeTypes[idx].enabled=this.checked; refreshAll(); }); });
+    document.querySelectorAll('[data-del-gsz]').forEach(btn=>btn.addEventListener('click',()=>{ let id=btn.dataset.delGsz; sizeTypes=sizeTypes.filter(s=>s.id!==id); for(let rid in rateData) delete rateData[rid][id]; for(let k of regionSizeDistanceMap.keys()) if(k.endsWith(`_${id}`)) regionSizeDistanceMap.delete(k); refreshAll(); }));
+  }
+  
+  function renderRegions() {
+    const container = document.getElementById('regionContainer');
+    container.innerHTML = '';
+    rateRegions.forEach(region => {
+      const block = document.createElement('div'); block.className = 'region-block';
+      block.innerHTML = `<div class="region-title"><span><i class="fas fa-map-pin"></i> ${escapeHtml(region.name)}</span>${!FIXED_REGIONS.includes(region.id)?`<i class="fas fa-trash-alt" style="cursor:pointer;" data-delreg="${region.id}"></i>`:''}</div>
+        <div class="size-tabs" id="tabs-${region.id}"></div>
+        <div id="tab-contents-${region.id}" class="size-config-area"></div>`;
+      container.appendChild(block);
+      buildRegionTabs(region.id);
+    });
+    document.querySelectorAll('[data-delreg]').forEach(btn=>btn.addEventListener('click',(e)=>{ let id=btn.dataset.delreg; rateRegions=rateRegions.filter(r=>r.id!==id); delete rateData[id]; for(let k of regionSizeDistanceMap.keys()) if(k.startsWith(id+'_')) regionSizeDistanceMap.delete(k); refreshAll(); }));
+  }
+  
+  function buildRegionTabs(regionId) {
+    const tabsDiv = document.getElementById(`tabs-${regionId}`);
+    const contentsDiv = document.getElementById(`tab-contents-${regionId}`);
+    if(!tabsDiv) return;
+    tabsDiv.innerHTML = '';
+    contentsDiv.innerHTML = '';
+    const enabled = sizeTypes.filter(s => s.enabled);
+    enabled.forEach((size, idx) => {
+      const tab = document.createElement('div');
+      tab.className = `size-tab ${idx === 0 ? 'active' : ''}`;
+      tab.innerText = size.name;
+      tab.dataset.region = regionId;
+      tab.dataset.sizeid = size.id;
+      tab.addEventListener('click', (e) => {
+        e.preventDefault();
+        const parentTabs = tab.parentElement;
+        const allTabs = parentTabs.querySelectorAll('.size-tab');
+        allTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const allContents = contentsDiv.querySelectorAll('.tab-content');
+        allContents.forEach(c => c.classList.remove('active-tab'));
+        const target = document.getElementById(`content-${regionId}-${size.id}`);
+        if(target) target.classList.add('active-tab');
+      });
+      tabsDiv.appendChild(tab);
+      const contentPane = document.createElement('div');
+      contentPane.className = `tab-content ${idx === 0 ? 'active-tab' : ''}`;
+      contentPane.id = `content-${regionId}-${size.id}`;
+      contentPane.innerHTML = renderRegionSizeContent(regionId, size);
+      contentsDiv.appendChild(contentPane);
+    });
+    attachRegionEvents(regionId);
+  }
+  
+  function renderRegionSizeContent(regionId, size) {
+    const cfg = rateData[regionId]?.[size.id] || { divisor:6000, rounding:'std', firstPrice:15, addPrice:6 };
+    const tiers = getDistanceTiers(regionId, size.id);
+    let tiersHtml = tiers.map((tier,idx)=>`<div class="distance-tier-item">
+      <input class="param-mini" data-r="${regionId}" data-sz="${size.id}" data-tieridx="${idx}" data-field="minKm" value="${tier.minKm}" type="number" placeholder="起" style="width:70px;">
+      <input class="param-mini" data-r="${regionId}" data-sz="${size.id}" data-tieridx="${idx}" data-field="maxKm" value="${tier.maxKm===9999?9999:tier.maxKm}" type="number" placeholder="止" style="width:70px;">
+      <select class="param-mini" data-r="${regionId}" data-sz="${size.id}" data-tieridx="${idx}" data-field="feeType" style="width:130px;">
+        <option value="fixed" ${tier.feeType==='fixed'?'selected':''}>固定(元/票)</option>
+        <option value="per_kg" ${tier.feeType==='per_kg'?'selected':''}>按重量(元/kg)</option>
+        <option value="percentage" ${tier.feeType==='percentage'?'selected':''}>按保费百分比%</option>
+        <option value="per_vol" ${tier.feeType==='per_vol'?'selected':''}>按体积(m³)</option>
+      </select>
+      <input class="param-mini" data-r="${regionId}" data-sz="${size.id}" data-tieridx="${idx}" data-field="feeValue" value="${tier.feeValue}" type="number" step="0.5" placeholder="费率" style="width:80px;">
+      <i class="fas fa-trash-alt" style="cursor:pointer;" data-del-tier-r="${regionId}" data-del-tier-sz="${size.id}" data-tieridx="${idx}"></i>
+    </div>`).join('');
+    return `<div>
+      <div class="size-badge">📦 ${size.name} (限重: ≤${size.maxWeight}kg / 限长: ≤${size.maxLength}cm) ${size.desc?`· ${size.desc}`:''}</div>
+      <div style="display:flex; gap:12px; margin:12px 0; flex-wrap:wrap; align-items:center;">
+        <label style="font-size:0.75rem; color:#4f7c9e;">体积除数</label>
+        <input class="param-mini" data-region="${regionId}" data-size="${size.id}" data-field="divisor" value="${cfg.divisor}" type="number" style="width:80px;">
+        <select class="param-mini" data-region="${regionId}" data-size="${size.id}" data-field="rounding" style="width:110px;">
+          <option value="std" ${cfg.rounding==='std'?'selected':''}>标准进位</option>
+          <option value="ceil_0.5" ${cfg.rounding==='ceil_0.5'?'selected':''}>0.5kg进位</option>
+        </select>
+        <label style="font-size:0.75rem; color:#4f7c9e;">首重(元)</label>
+        <input class="param-mini" data-region="${regionId}" data-size="${size.id}" data-field="firstPrice" value="${cfg.firstPrice}" type="number" step="0.5" style="width:80px;">
+        <label style="font-size:0.75rem; color:#4f7c9e;">续重(元)</label>
+        <input class="param-mini" data-region="${regionId}" data-size="${size.id}" data-field="addPrice" value="${cfg.addPrice}" type="number" step="0.5" style="width:80px;">
+      </div>
+      <div class="distance-inner-block">
+        <div class="distance-header-sm">
+          <span><i class="fas fa-road"></i> 距离区间附加费 (km)</span>
+          <button class="btn-outline btn-sm add-tier-local" data-region="${regionId}" data-size="${size.id}" style="padding:4px 12px;"><i class="fas fa-plus"></i> 新增阶梯</button>
+        </div>
+        <div class="distance-list" id="distList-${regionId}-${size.id}">${tiersHtml}</div>
+      </div>
+    </div>`;
+  }
+  
+  function attachRegionEvents(regionId) {
+    document.querySelectorAll(`[data-region="${regionId}"]`).forEach(el=>el.addEventListener('change',(e)=>{ let r=e.target.dataset.region,sz=e.target.dataset.size,f=e.target.dataset.field,val=e.target.value; if(['divisor','firstPrice','addPrice'].includes(f)) val=parseFloat(val)||0; if(!rateData[r]) rateData[r]={}; if(!rateData[r][sz]) rateData[r][sz]={divisor:6000,rounding:'std',firstPrice:15,addPrice:6}; rateData[r][sz][f]=val; calculate(); }));
+    document.querySelectorAll(`.add-tier-local[data-region="${regionId}"]`).forEach(btn=>btn.addEventListener('click',()=>{ let r=btn.dataset.region,sz=btn.dataset.size; let tiers=getDistanceTiers(r,sz); let newMin=tiers.length?Math.max(...tiers.map(t=>t.maxKm))+1:0; tiers.push({id:`new_${Date.now()}`,minKm:newMin,maxKm:newMin+150,feeType:'fixed',feeValue:8}); tiers.sort((a,b)=>a.minKm-b.minKm); updateDistanceTiers(r,sz,tiers); renderRegions(); calculate(); }));
+    sizeTypes.forEach(size=>{ if(size.enabled) bindDistanceEvents(regionId,size.id); });
+  }
+  
+  function bindDistanceEvents(regionId,sizeId){ 
+    const container=document.getElementById(`distList-${regionId}-${sizeId}`); 
+    if(!container) return; 
+    container.querySelectorAll('input,select').forEach(el=>el.addEventListener('change',(e)=>{ 
+      let r=el.dataset.r,sz=el.dataset.sz,tidx=parseInt(el.dataset.tieridx),field=el.dataset.field; 
+      let tiers=getDistanceTiers(r,sz); 
+      if(tiers[tidx]){ 
+        let val=el.value; 
+        if(field==='minKm'||field==='maxKm') val=parseFloat(val)||0; 
+        if(field==='feeValue') val=parseFloat(val)||0; 
+        tiers[tidx][field]=val; 
+        if(field==='minKm'||field==='maxKm') tiers.sort((a,b)=>a.minKm-b.minKm); 
+        updateDistanceTiers(r,sz,tiers); 
+        renderRegions(); 
+        calculate(); 
+      } 
+    })); 
+    container.querySelectorAll('[data-del-tier-r]').forEach(icon=>icon.addEventListener('click',()=>{ 
+      let r=icon.dataset.delTierR,sz=icon.dataset.delTierSz,tidx=parseInt(icon.dataset.tieridx); 
+      let tiers=getDistanceTiers(r,sz); 
+      tiers.splice(tidx,1); 
+      updateDistanceTiers(r,sz,tiers); 
+      renderRegions(); 
+      calculate(); 
+    })); 
+  }
+  
+  function renderExcludedPanel(){ const p=document.getElementById('excludedPanelContainer'); p.innerHTML=excludedOnlyRegions.map(r=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 8px;border-bottom:1px solid #eef3fc;"><span>🚫 ${escapeHtml(r.name)}</span><button class="btn-outline btn-sm" data-remove-ex="${r.id}">移除</button></div>`).join('')||'<div class="text-muted" style="padding:12px;">暂无不配送区域</div>'; document.querySelectorAll('[data-remove-ex]').forEach(btn=>btn.addEventListener('click',()=>{ let id=btn.dataset.removeEx; excludedOnlyRegions=excludedOnlyRegions.filter(r=>r.id!==id); excludedRegionSet.delete(id); refreshAll(); })); }
+  function renderRemotePanel(){ const p=document.getElementById('remotePanelContainer'); p.innerHTML=remoteOnlyRegions.map(r=>{ let cfg=remoteRegionMap.get(r.id); return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 8px;border-bottom:1px solid #eef3fc;"><span>🏔️ ${escapeHtml(r.name)} ${cfg.type==='fixed'?`+${cfg.value}元/票`:(cfg.type==='per_kg'?`+${cfg.value}元/kg`:`+${cfg.value}%`)}</span><button class="btn-outline btn-sm" data-remove-remote="${r.id}">移除</button></div>`; }).join('')||'<div class="text-muted" style="padding:12px;">暂无偏远地区附加费</div>'; document.querySelectorAll('[data-remove-remote]').forEach(btn=>btn.addEventListener('click',()=>{ let id=btn.dataset.removeRemote; remoteOnlyRegions=remoteOnlyRegions.filter(r=>r.id!==id); remoteRegionMap.delete(id); refreshAll(); })); }
+  
+  function populateCitySelects() {
+    const originProv = document.getElementById('originProvince');
+    const destProv = document.getElementById('destProvince');
+    originProv.innerHTML = allProvinces.map(p=>`<option value="${p}">${p}</option>`).join('');
+    destProv.innerHTML = allProvinces.map(p=>`<option value="${p}">${p}</option>`).join('');
+    function updateCities(provSelect, citySelect) {
+      let prov = provSelect.value;
+      let cities = provinceCities[prov] || [];
+      citySelect.innerHTML = cities.map(c=>`<option value="${c}">${c}</option>`).join('');
+    }
+    const originCity = document.getElementById('originCity');
+    const destCity = document.getElementById('destCity');
+    updateCities(originProv, originCity);
+    updateCities(destProv, destCity);
+    originProv.addEventListener('change',()=>updateCities(originProv, originCity));
+    destProv.addEventListener('change',()=>updateCities(destProv, destCity));
+    originCity.addEventListener('change',updateDistance);
+    destCity.addEventListener('change',updateDistance);
+    originProv.addEventListener('change',updateDistance);
+    destProv.addEventListener('change',updateDistance);
+    function updateDistance() {
+      let oProv=originProv.value, oCity=originCity.value, dProv=destProv.value, dCity=destCity.value;
+      let dist = getDistanceByCity(oProv, oCity, dProv, dCity);
+      document.getElementById('calcDistance').value = dist;
+      calculate();
+    }
+    updateDistance();
+  }
+  
+  function matchRegionByCity(originProv, destProv, originCity, destCity) {
+    // 优先匹配自定义区域 (按城市精确匹配)
+    for(let region of rateRegions) {
+      if(FIXED_REGIONS.includes(region.id)) continue;
+      if(region.cities && region.cities.length > 0) {
+        let matchOrigin = region.cities.includes(originCity);
+        let matchDest = region.cities.includes(destCity);
+        if(matchOrigin && matchDest) return region.id;
+      }
+    }
+    // 默认区域匹配
+    if(originProv === destProv) {
+      if(originCity === destCity) return 'intra_city';
+      return 'intra_province';
+    }
+    return 'inter_province';
+  }
+  
+  function getDistanceFeeByRegionSize(regionId,sizeId,dist,billKg,baseAmount){
+    let tiers=getDistanceTiers(regionId,sizeId);
+    let tier=tiers.find(t=>dist>=t.minKm && dist<=t.maxKm);
+    if(!tier) return 0;
+    if(tier.feeType==='fixed') return tier.feeValue;
+    if(tier.feeType==='per_kg') return tier.feeValue * billKg;
+    if(tier.feeType==='percentage') return baseAmount * (tier.feeValue / 100);
+    if(tier.feeType==='per_vol') return tier.feeValue * ((billKg/200) || 0); // 简化体积计算
+    return 0;
+  }
+  
+  function calculate(){
+    let originProv=document.getElementById('originProvince').value, originCity=document.getElementById('originCity').value;
+    let destProv=document.getElementById('destProvince').value, destCity=document.getElementById('destCity').value;
+    let regionId = matchRegionByCity(originProv, destProv, originCity, destCity);
+    let sizeId=document.getElementById('calcSize').value;
+    let weight=parseFloat(document.getElementById('calcWeight').value)||0;
+    let len=parseFloat(document.getElementById('calcLength').value)||0, wid=parseFloat(document.getElementById('calcWidth').value)||0, hei=parseFloat(document.getElementById('calcHeight').value)||0;
+    let distance=parseFloat(document.getElementById('calcDistance').value)||0;
+    let matchedRegion = rateRegions.find(r=>r.id===regionId);
+    document.getElementById('matchedRegion').innerHTML = matchedRegion?.name || regionId;
+    if(excludedRegionSet.has(regionId) || excludedOnlyRegions.some(r=>r.cities?.includes(originCity) || r.cities?.includes(destCity))){ 
+      document.getElementById('resTotal').innerHTML='<span style="color:#ffaa77;">不支持配送</span>'; 
+      document.getElementById('resBase').innerText='-'; 
+      document.getElementById('resBillWeight').innerText='-';
+      document.getElementById('resDistanceFee').innerText='-';
+      document.getElementById('resFuel').innerText='-';
+      document.getElementById('resRemoteFee').innerText='-';
+      return; 
+    }
+    let sizeObj=sizeTypes.find(s=>s.id===sizeId);
+    if(sizeObj && (weight>sizeObj.maxWeight || len>sizeObj.maxLength)){ 
+      document.getElementById('resTotal').innerHTML='<span style="color:#ffaa77;">超出件型限制</span>'; 
+      return; 
+    }
+    let base=0, billWeight=weight;
+    if(rateData[regionId] && rateData[regionId][sizeId]){
+      let cfg=rateData[regionId][sizeId];
+      let vol=(len*wid*hei)/cfg.divisor;
+      let bill=Math.max(weight,vol);
+      billWeight=cfg.rounding==='ceil_0.5'?Math.ceil(bill*2)/2:Math.round(bill*10)/10;
+      base=cfg.firstPrice + (billWeight>1?(billWeight-1)*cfg.addPrice:0);
+      document.getElementById('resBillWeight').innerText=billWeight.toFixed(2)+' kg';
+    } else { document.getElementById('resBillWeight').innerText=weight+' kg'; base=20; }
+    let fuel=0; if(document.getElementById('fuelToggle').classList.contains('active')){ let fv=parseFloat(document.getElementById('fuelVal').value)||0; fuel=document.getElementById('fuelType').value==='percent'?base*fv/100:fv; }
+    let remoteFee=0; if(remoteRegionMap.has(regionId)){ let rm=remoteRegionMap.get(regionId); remoteFee=rm.type==='fixed'?rm.value:(rm.type==='per_kg'?rm.value*billWeight:base*rm.value/100); }
+    let distanceFee=getDistanceFeeByRegionSize(regionId,sizeId,distance,billWeight,base);
+    let total=base+fuel+remoteFee+distanceFee;
+    document.getElementById('resBase').innerText='¥'+base.toFixed(2); document.getElementById('resDistanceFee').innerText='¥'+distanceFee.toFixed(2);
+    document.getElementById('resFuel').innerText='¥'+fuel.toFixed(2); document.getElementById('resRemoteFee').innerText='¥'+remoteFee.toFixed(2);
+    document.getElementById('resTotal').innerHTML='<span class="value">¥'+total.toFixed(2)+'</span>';
+  }
+  
+  function openDialog(mode){
+    const overlay=document.createElement('div'); overlay.className='dialog-overlay';
+    let title=mode==='region'?'新建费率区域':(mode==='excluded'?'添加不配送区域':'添加偏远地区');
+    let icon = mode==='region'?'<i class="fas fa-map-marker-alt"></i>':(mode==='excluded'?'<i class="fas fa-ban"></i>':'<i class="fas fa-mountain"></i>');
+    let groupsHtml='';
+    for(let [prov,cities] of Object.entries(provinceCities)){
+      groupsHtml+=`<div class="province-group"><div class="province-header"><input type="checkbox" class="province-all-chk" data-prov="${prov}"> <strong>${prov}</strong><span class="province-select-all" data-prov="${prov}">全选/取消</span></div><div class="city-list" id="cities-${prov}">${cities.map(c=>`<label class="city-check"><input type="checkbox" value="${escapeHtml(c)}" data-prov="${prov}"> ${escapeHtml(c)}</label>`).join('')}</div></div>`;
+    }
+    let extra=''; 
+    if(mode==='remote') extra=`<div class="form-group"><label><i class="fas fa-tag"></i> 附加费类型</label><div class="radio-group"><label><input type="radio" name="remoteType" value="fixed" checked> 固定(元/票)</label><label><input type="radio" name="remoteType" value="per_kg"> 按重量(元/kg)</label><label><input type="radio" name="remoteType" value="percentage"> 按基础运费百分比%</label></div></div><div class="form-group"><label><i class="fas fa-dollar-sign"></i> 费率值</label><input id="remoteFeeValue" type="number" value="25" step="0.5" placeholder="请输入金额或百分比"></div>`;
+    overlay.innerHTML=`<div class="dialog-card"><h3>${icon} ${title}</h3><div class="form-group"><label><i class="fas fa-tag"></i> 区域名称</label><input id="dialogName" placeholder="例: 华东区域 / 特殊偏远地区" style="width:100%;"></div>${groupsHtml}${extra}<div class="dialog-actions"><button class="btn-outline" id="cancelDialogBtn"><i class="fas fa-times"></i> 取消</button><button class="btn-primary" id="confirmDialogBtn"><i class="fas fa-check"></i> 确认添加</button></div></div>`;
+    document.body.appendChild(overlay);
+    overlay.querySelectorAll('.province-select-all').forEach(btn=>btn.addEventListener('click',(e)=>{ let prov=btn.dataset.prov; let chks=overlay.querySelectorAll(`#cities-${prov} input[type="checkbox"]`); let allChecked=Array.from(chks).every(c=>c.checked); chks.forEach(c=>c.checked=!allChecked); }));
+    overlay.querySelectorAll('.province-all-chk').forEach(chk=>chk.addEventListener('change',(e)=>{ let prov=chk.dataset.prov; let cityChks=overlay.querySelectorAll(`#cities-${prov} input[type="checkbox"]`); cityChks.forEach(c=>c.checked=chk.checked); }));
+    const close=()=>overlay.remove();
+    document.getElementById('cancelDialogBtn').onclick=close;
+    document.getElementById('confirmDialogBtn').onclick=()=>{
+      let selectedCities=Array.from(overlay.querySelectorAll('.city-check input:checked')).map(c=>c.value);
+      if(selectedCities.length===0){ alert("至少选择一个城市"); return; }
+      let name=document.getElementById('dialogName').value.trim()||selectedCities.slice(0,2).join(',')+'区域';
+      let id=`${mode}_${Date.now()}`;
+      if(mode==='region'){
+        rateRegions.push({ id, name, cities:selectedCities });
+        rateData[id]={}; sizeTypes.forEach(s=>{ rateData[id][s.id]={divisor:6000,rounding:'std',firstPrice:15,addPrice:6}; regionSizeDistanceMap.set(`${id}_${s.id}`,initDistanceTiers(id,s.id)); });
+      } else if(mode==='excluded'){
+        excludedOnlyRegions.push({ id, name, cities:selectedCities });
+        excludedRegionSet.add(id);
+      } else {
+        let feeType=overlay.querySelector('input[name="remoteType"]:checked').value, feeVal=parseFloat(overlay.querySelector('#remoteFeeValue').value)||25;
+        remoteOnlyRegions.push({ id, name, cities:selectedCities });
+        remoteRegionMap.set(id,{ type:feeType, value:feeVal });
+      }
+      close(); refreshAll();
+    };
+  }
+  
+  function refreshAll(){ renderGlobalSizeTypes(); renderRegions(); renderExcludedPanel(); renderRemotePanel(); let sel=document.getElementById('calcSize'); sel.innerHTML=sizeTypes.filter(s=>s.enabled).map(s=>`<option value="${s.id}">${escapeHtml(s.name)} (≤${s.maxWeight}kg)</option>`).join(''); calculate(); }
+  function escapeHtml(s){ return String(s).replace(/[&<>]/g,function(m){return m==='&'?'&amp;':m==='<'?'&lt;':'&gt;';}); }
+  document.getElementById('addRegionBtn')?.addEventListener('click',()=>openDialog('region'));
+  document.getElementById('addExcludedBtn')?.addEventListener('click',()=>openDialog('excluded'));
+  document.getElementById('addRemoteBtn')?.addEventListener('click',()=>openDialog('remote'));
+  document.getElementById('addSizeTypeBtn')?.addEventListener('click',()=>{ let nid='sz_'+Date.now(); sizeTypes.push({id:nid,name:'新件型',maxWeight:50,maxLength:180,enabled:true,desc:'自定义件型'}); rateRegions.forEach(r=>{ if(!rateData[r.id]) rateData[r.id]={}; rateData[r.id][nid]={divisor:6000,rounding:'std',firstPrice:15,addPrice:6}; regionSizeDistanceMap.set(`${r.id}_${nid}`,initDistanceTiers(r.id,nid)); }); refreshAll(); });
+  document.getElementById('resetDefaultsBtn')?.addEventListener('click',()=>{ 
+    rateRegions=[{ id:'intra_city', name:'同城/市内', cities:[] },{ id:'intra_province', name:'省内', cities:[] },{ id:'inter_province', name:'省外', cities:[] }]; 
+    excludedOnlyRegions=[]; remoteOnlyRegions=[]; excludedRegionSet.clear(); remoteRegionMap.clear(); 
+    sizeTypes=[{ id:'small', name:'小件', maxWeight:3, maxLength:60, enabled:true, desc:'文件/小物品' },{ id:'standard', name:'标件', maxWeight:30, maxLength:120, enabled:true, locked:true, desc:'标准包裹' },{ id:'large', name:'大件', maxWeight:100, maxLength:200, enabled:true, desc:'大件货物' },{ id:'extra_large', name:'超重/超大件', maxWeight:999, maxLength:350, enabled:true, desc:'超限货物' }]; 
+    rateData=buildDefaultRates(); regionSizeDistanceMap.clear(); refreshAll(); 
+  });
+  document.getElementById('fuelToggle')?.addEventListener('click',function(){ this.classList.toggle('active'); calculate(); });
+  document.getElementById('calcBtn')?.addEventListener('click',calculate);
+  ['calcWeight','calcLength','calcWidth','calcHeight','calcSize'].forEach(id=>{ let el=document.getElementById(id); if(el) el.addEventListener('input',calculate); if(el&&id==='calcSize') el.addEventListener('change',calculate); });
+  document.getElementById('fuelVal')?.addEventListener('input',calculate); document.getElementById('fuelType')?.addEventListener('change',calculate);
+  document.querySelectorAll('.product-option').forEach(btn=>btn.addEventListener('click',()=>{ document.querySelectorAll('.product-option').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentProduct=btn.dataset.prod; document.getElementById('headerBadge').innerHTML=`<i class="fas fa-box"></i> ${NAMES[currentProduct]}`; document.getElementById('calcProductLabel').innerText=NAMES[currentProduct]; calculate(); }));
+  populateCitySelects();
+  refreshAll();
+</script>
+</body>
+</html>

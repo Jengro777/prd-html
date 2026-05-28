@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商城运营后台 · 收益统计</title>
+    <!-- Font Awesome 5 (图标库) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Chart.js 3 (轻量图表) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        body {
+            background-color: #f3f6f9;
+            display: flex;
+            justify-content: center;
+            padding: 24px;
+        }
+        .dashboard {
+            max-width: 1440px;
+            width: 100%;
+        }
+        /* 顶部导航模拟 */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            margin-bottom: 24px;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-icon {
+            background: #1e3a8a;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+        .logo-text {
+            font-weight: 600;
+            font-size: 18px;
+            color: #0b1c3a;
+        }
+        .badge {
+            background-color: #eef2ff;
+            color: #1e3a8a;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #4b5565;
+        }
+        /* 左侧菜单 + 内容区域 (两列布局) */
+        .main-layout {
+            display: flex;
+            gap: 20px;
+        }
+        .sidebar {
+            width: 260px;
+            background-color: white;
+            border-radius: 20px;
+            padding: 24px 12px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.02);
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            color: #5a6a7c;
+            margin-bottom: 6px;
+            transition: 0.2s;
+            cursor: default;
+            font-weight: 500;
+        }
+        .menu-item i {
+            width: 22px;
+            font-size: 1.1rem;
+        }
+        .menu-item.active {
+            background-color: #eef2ff;
+            color: #1e3a8a;
+            font-weight: 600;
+        }
+        .menu-item:not(.active):hover {
+            background-color: #f8fafd;
+        }
+        .content {
+            flex: 1;
+            background-color: white;
+            border-radius: 24px;
+            padding: 24px 28px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.02);
+        }
+
+        /* 收益统计头部 */
+        .stats-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        .stats-header h1 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            color: #0b1c3a;
+            letter-spacing: -0.02em;
+        }
+        .time-filter {
+            display: flex;
+            gap: 12px;
+            background: #f1f5f9;
+            padding: 6px;
+            border-radius: 40px;
+        }
+        .time-option {
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #475569;
+            cursor: pointer;
+            transition: 0.1s;
+            background: transparent;
+            border: none;
+        }
+        .time-option.active {
+            background: white;
+            color: #1e3a8a;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .selector-group {
+            display: flex;
+            align-items: center;
+            margin-left: 10px;
+            gap: 12px;
+        }
+        .selector-group select,
+        .selector-group input {
+            background: white;
+            border: 1px solid #dbe0e8;
+            border-radius: 30px;
+            padding: 9px 20px;
+            font-size: 0.9rem;
+            color: #1e293b;
+            outline: none;
+            cursor: pointer;
+        }
+        .selector-group input[type="date"] {
+            font-family: inherit;
+            width: 160px;
+        }
+
+        /* 指标卡片 */
+        .kpi-row {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        .kpi-card {
+            flex: 1;
+            background: #fafcff;
+            border-radius: 24px;
+            padding: 24px 28px;
+            border: 1px solid #edf2f7;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+        .kpi-label {
+            font-size: 1rem;
+            color: #566b82;
+            letter-spacing: 0.02em;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .kpi-value {
+            font-size: 2.7rem;
+            font-weight: 700;
+            color: #0b1c3a;
+            margin-bottom: 10px;
+        }
+        .trend {
+            font-size: 1rem;
+            font-weight: 500;
+            background: #e6f7e6;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 30px;
+            color: #1f7b4d;
+        }
+        .trend.down {
+            background: #ffeae9;
+            color: #bc1c1e;
+        }
+        .trend i {
+            font-size: 0.8rem;
+            margin-right: 4px;
+        }
+
+        /* 图表卡片 - 修复高度问题 */
+        .chart-card {
+            background: #ffffff;
+            border: 1px solid #e9eef3;
+            border-radius: 20px;
+            padding: 16px 16px 10px 16px;
+            margin-bottom: 32px;
+        }
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 8px 12px 8px;
+        }
+        .chart-header span {
+            font-weight: 600;
+            color: #2e405b;
+        }
+        .chart-type-toggle {
+            display: flex;
+            gap: 4px;
+            background: #f0f4fa;
+            border-radius: 30px;
+            padding: 3px;
+        }
+        .chart-type-toggle .btn {
+            background: transparent;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #51677d;
+            cursor: pointer;
+        }
+        .chart-type-toggle .btn.active {
+            background: white;
+            color: #1e3a8a;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+        .chart-container {
+            position: relative;
+            height: 280px;
+            width: 100%;
+        }
+
+        /* 表格区域 */
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0 16px 0;
+        }
+        .export-btn {
+            background: white;
+            border: 1px solid #cddae8;
+            border-radius: 30px;
+            padding: 10px 22px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #29445c;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .export-btn:hover {
+            background-color: #f0f5fd;
+            border-color: #8ba0bc;
+        }
+        .export-btn i {
+            margin-right: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            text-align: left;
+            padding: 16px 12px;
+            background: #f8fafd;
+            color: #2b4058;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-bottom: 2px solid #e2eaf2;
+        }
+        td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #e9edf3;
+            color: #1e2f44;
+        }
+        .commission-badge {
+            background: #e4eef9;
+            color: #1557a0;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .detail-link {
+            color: #1e3a8a;
+            font-weight: 500;
+            text-decoration: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .detail-link i {
+            font-size: 0.75rem;
+            margin-left: 4px;
+        }
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 12px;
+            margin-top: 24px;
+            color: #496277;
+        }
+        .pagination span {
+            border: 1px solid #cedaea;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            cursor: default;
+        }
+        .footnote {
+            font-size: 0.8rem;
+            color: #7f95b0;
+            margin-top: 20px;
+            border-top: 1px dashed #d4e0ec;
+            padding-top: 16px;
+        }
+        .footnote i {
+            margin-right: 5px;
+            color: #2f5a93;
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+    <!-- 顶部栏 -->
+    <div class="top-bar">
+        <div class="logo-area">
+            <div class="logo-icon"><i class="fas fa-store"></i></div>
+            <span class="logo-text">商城运营中心</span>
+            <div class="badge"><i class="fas fa-chart-line" style="margin-right: 6px;"></i>收益统计 · 新版</div>
+        </div>
+        <div class="admin-profile">
+            <i class="fas fa-bell" style="color: #7c8b9c;"></i>
+            <i class="fas fa-user-circle" style="font-size: 1.8rem; color: #34597e;"></i>
+            <span>张运营 · 超级管理员</span>
+        </div>
+    </div>
+
+    <div class="main-layout">
+        <!-- 左侧导航（示意） -->
+        <div class="sidebar">
+            <div class="menu-item"><i class="fas fa-tachometer-alt"></i> 工作台</div>
+            <div class="menu-item"><i class="fas fa-shopping-bag"></i> 订单管理</div>
+            <div class="menu-item"><i class="fas fa-users"></i> 商家管理</div>
+            <div class="menu-item active"><i class="fas fa-coins"></i> 收益统计</div>
+            <div class="menu-item"><i class="fas fa-file-invoice"></i> 财务对账</div>
+            <div class="menu-item"><i class="fas fa-cog"></i> 设置</div>
+        </div>
+
+        <!-- 主要内容区 收益统计 -->
+        <div class="content">
+            <!-- 头部 + 时间筛选 -->
+            <div class="stats-header">
+                <h1>收益统计</h1>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <div class="time-filter" id="timeFilter">
+                        <button class="time-option" data-dim="year">年</button>
+                        <button class="time-option" data-dim="quarter">季度</button>
+                        <button class="time-option active" data-dim="month">月</button>
+                        <button class="time-option" data-dim="week">周</button>
+                        <button class="time-option" data-dim="day">日</button>
+                    </div>
+                    <div class="selector-group" id="selectorGroup">
+                        <!-- 动态占位：根据维度显示不同选择器，此处简单展示一个月份选择 -->
+                        <select id="mainSelect">
+                            <option value="2025-03">2025年3月</option>
+                            <option value="2025-02">2025年2月</option>
+                            <option value="2025-01">2025年1月</option>
+                            <option value="2024-12">2024年12月</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI 卡片 -->
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-label"><i class="fas fa-hand-holding-usd" style="color:#1e3a8a;"></i> 平台收益总额</div>
+                    <div class="kpi-value">¥ 1,234,567</div>
+                    <span class="trend"><i class="fas fa-arrow-up"></i> +2.3%</span> 较上一月
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label"><i class="fas fa-chart-pie" style="color:#0f5c4b;"></i> 商家收益总额</div>
+                    <div class="kpi-value">¥ 8,765,432</div>
+                    <span class="trend down"><i class="fas fa-arrow-down"></i> -1.2%</span> 较上一月
+                </div>
+            </div>
+
+            <!-- 趋势图表卡片 - 修复：添加容器并修正高度 -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <span><i class="fas fa-chart-line" style="margin-right: 6px; color:#2563eb;"></i> 平台收益 vs 商家收益趋势（三月）</span>
+                    <div class="chart-type-toggle" id="chartToggle">
+                        <button class="btn active" data-type="line">折线图</button>
+                        <button class="btn" data-type="bar">柱状图</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 表格区域 -->
+            <div class="table-header">
+                <span style="font-weight: 600; color:#1a2e44;"><i class="fas fa-table"></i> 收益明细 · 按日（三月）</span>
+                <button class="export-btn" id="exportBtn"><i class="fas fa-download"></i> 导出 Excel</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>时间</th>
+                        <th>平台收益</th>
+                        <th>商家收益</th>
+                        <th>平台佣金占比</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="revenueTableBody">
+                    <!-- 动态js填充 -->
+                </tbody>
+            </table>
+
+            <!-- 简易分页 -->
+            <div class="pagination">
+                <span><i class="fas fa-chevron-left"></i></span>
+                <span style="background:#f1f5fc; border-color:#3f6eb3;">1</span>
+                <span>2</span>
+                <span>3</span>
+                <span>4</span>
+                <span>...</span>
+                <span>10</span>
+                <span><i class="fas fa-chevron-right"></i></span>
+            </div>
+
+            <!-- 脚注说明(数据口径) -->
+            <div class="footnote">
+                <i class="fas fa-info-circle"></i> 数据口径：按订单完成时间 (已确认收货) 统计，包含佣金、广告费、退款后净额。平台收益含抽成及营销收入。
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // 模拟表格数据 (最近7天)
+        const mockDailyData = [
+            { date: '2025-03-01', platform: 12345, seller: 98765 },
+            { date: '2025-03-02', platform: 13456, seller: 87654 },
+            { date: '2025-03-03', platform: 14280, seller: 91230 },
+            { date: '2025-03-04', platform: 11890, seller: 100120 },
+            { date: '2025-03-05', platform: 15760, seller: 109200 },
+            { date: '2025-03-06', platform: 16900, seller: 99800 },
+            { date: '2025-03-07', platform: 14500, seller: 102400 },
+        ];
+
+        // 填充表格
+        function renderTable(data) {
+            const tbody = document.getElementById('revenueTableBody');
+            tbody.innerHTML = '';
+            data.forEach(row => {
+                const platform = row.platform;
+                const seller = row.seller;
+                const total = platform + seller;
+                const ratio = (platform / total * 100).toFixed(1);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><span style="font-weight:500;">${row.date}</span></td>
+                    <td>¥ ${platform.toLocaleString()}</td>
+                    <td>¥ ${seller.toLocaleString()}</td>
+                    <td><span class="commission-badge">${ratio}%</span></td>
+                    <td><a href="#" class="detail-link" onclick="alert('查看详情 ${row.date} 收益构成'); return false;">查看详情 <i class="fas fa-arrow-right"></i></a></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        renderTable(mockDailyData);
+
+        // ---------- 图表初始化 (Chart.js) ----------
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        
+        // 修复：将图表实例存储在变量中以便更新
+        let chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: mockDailyData.map(d => d.date.slice(5)), // "03-01"形式
+                datasets: [
+                    {
+                        label: '平台收益',
+                        data: mockDailyData.map(d => d.platform),
+                        borderColor: '#1e3a8a',
+                        backgroundColor: 'rgba(30,58,138,0.05)',
+                        tension: 0.2,
+                        pointBackgroundColor: '#1e3a8a',
+                        borderWidth: 3,
+                    },
+                    {
+                        label: '商家收益',
+                        data: mockDailyData.map(d => d.seller),
+                        borderColor: '#0f5c4b',
+                        backgroundColor: 'rgba(15,92,75,0.05)',
+                        tension: 0.2,
+                        borderWidth: 3,
+                        borderDash: [5,3],
+                        pointBackgroundColor: '#0f5c4b',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: { mode: 'index', intersect: false },
+                    legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8 } }
+                },
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { color: '#e7edf4' }, 
+                        ticks: { 
+                            callback: function(value) {
+                                return '¥' + (value / 1000) + 'k';
+                            }
+                        } 
+                    }
+                }
+            }
+        });
+
+        // 切换图表类型 (折线/柱状) - 修复：使用正确的方法更新图表
+        const lineBtn = document.querySelector('[data-type="line"]');
+        const barBtn = document.querySelector('[data-type="bar"]');
+        
+        lineBtn.addEventListener('click', function() {
+            if (!lineBtn.classList.contains('active')) {
+                lineBtn.classList.add('active');
+                barBtn.classList.remove('active');
+                
+                // 修复：正确更新图表类型
+                chart.config.type = 'line';
+                chart.update();
+            }
+        });
+        
+        barBtn.addEventListener('click', function() {
+            if (!barBtn.classList.contains('active')) {
+                barBtn.classList.add('active');
+                lineBtn.classList.remove('active');
+                
+                // 修复：正确更新图表类型
+                chart.config.type = 'bar';
+                chart.update();
+            }
+        });
+
+        // 时间维度切换 (模拟UI变化)
+        const timeOptions = document.querySelectorAll('.time-option');
+        const selectorGroup = document.getElementById('selectorGroup');
+        
+        timeOptions.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                timeOptions.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const dim = this.getAttribute('data-dim');
+                
+                // 动态改变右边的选择器占位（演示用）
+                let selectHtml = '';
+                if (dim === 'year') {
+                    selectHtml = '<select><option>2025年</option><option>2024年</option><option>2023年</option></select>';
+                } else if (dim === 'quarter') {
+                    selectHtml = '<select><option>2025 Q1</option><option>2025 Q2</option><option>2024 Q4</option></select>';
+                } else if (dim === 'month') {
+                    selectHtml = '<select><option>2025年3月</option><option>2025年2月</option><option>2025年1月</option></select>';
+                } else if (dim === 'week') {
+                    selectHtml = '<select><option>2025 第10周</option><option>2025 第9周</option><option>2025 第8周</option></select>';
+                } else if (dim === 'day') {
+                    selectHtml = '<input type="date" value="2025-03-07">';
+                }
+                selectorGroup.innerHTML = selectHtml;
+            });
+        });
+
+        // 导出按钮交互
+        document.getElementById('exportBtn').addEventListener('click', function(){
+            alert('模拟导出：收益明细_20250301-0307.xlsx 已生成');
+        });
+    })();
+</script>
+</body>
+</html>

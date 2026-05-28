@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>拣货分配规则引擎 | 无多余滚动 · 顺滑下拉</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f0f2f6;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 40px 24px;
+            color: #1e293b;
+        }
+
+        .rule-container {
+            max-width: 1360px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+        }
+
+        .form-header {
+            padding: 22px 32px 16px 32px;
+            border-bottom: 1px solid #eef2f8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            background: #fff;
+        }
+
+        .title-section h2 {
+            font-size: 1.65rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #1e466e, #1f6e55);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+
+        .title-section p {
+            font-size: 0.8rem;
+            color: #5b6e8c;
+            margin-top: 4px;
+        }
+
+        .badge-version {
+            font-size: 0.75rem;
+            background: #ecfdf5;
+            color: #1f6e55;
+            padding: 5px 14px;
+            border-radius: 40px;
+            font-weight: 500;
+            border: 1px solid #d1f0e5;
+        }
+
+        .form-section {
+            padding: 24px 32px;
+            border-bottom: 1px solid #eff3f8;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1e466e;
+            border-left: 4px solid #2c8f6e;
+            padding-left: 14px;
+        }
+
+        /* 核心：两栏等高布局 */
+        .equal-height-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 32px;
+            align-items: stretch;
+        }
+        .left-area-box {
+            flex: 1.2;
+            min-width: 280px;
+            display: flex;
+            flex-direction: column;
+        }
+        .right-desc-box {
+            flex: 1.8;
+            min-width: 340px;
+            display: flex;
+            flex-direction: column;
+        }
+        .card-panel {
+            background: #fafcff;
+            border-radius: 20px;
+            padding: 16px 20px;
+            border: 1px solid #eef3fc;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #334155;
+            letter-spacing: 0.2px;
+        }
+
+        .required {
+            color: #e54545;
+            margin-left: 2px;
+        }
+
+        .hint-text {
+            font-size: 0.7rem;
+            color: #7e8b9e;
+            margin-top: 4px;
+        }
+
+        input, select, textarea {
+            background: #fff;
+            border: 1px solid #cfdfed;
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: 0.2s;
+            outline: none;
+            color: #0f172a;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #2c8f6e;
+            box-shadow: 0 0 0 3px rgba(44, 143, 110, 0.1);
+        }
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            padding: 6px 0;
+        }
+
+        .radio-group label, .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: #1f2f46;
+        }
+
+        /* 可搜索仓库下拉组件 */
+        .searchable-select {
+            position: relative;
+            width: 100%;
+        }
+        .searchable-select-input {
+            width: 100%;
+            background: #fff;
+            border: 1px solid #cfdfed;
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .searchable-select-input span {
+            color: #1f2f46;
+        }
+        .searchable-select-input .arrow {
+            font-size: 12px;
+            color: #8aa0b5;
+            transition: transform 0.2s;
+        }
+        .searchable-dropdown {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e2edf7;
+            border-radius: 16px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+            z-index: 200;
+            max-height: 320px;
+            overflow-y: auto;
+            display: none;
+            background: #fff;
+        }
+        .searchable-dropdown.show {
+            display: block;
+        }
+        .dropdown-search {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eef2f8;
+            position: sticky;
+            top: 0;
+            background: white;
+        }
+        .dropdown-search input {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 40px;
+            border: 1px solid #dce5ec;
+            font-size: 0.8rem;
+        }
+        .dropdown-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f4fa;
+            font-size: 0.85rem;
+            transition: background 0.1s;
+        }
+        .dropdown-item:hover {
+            background: #f6fafd;
+        }
+        .dropdown-item .warehouse-code {
+            font-weight: 600;
+            color: #1e466e;
+        }
+        .dropdown-item .warehouse-name {
+            color: #4a627a;
+            margin-left: 8px;
+            font-size: 0.8rem;
+        }
+        .no-result {
+            padding: 16px;
+            text-align: center;
+            color: #8a99aa;
+            font-size: 0.8rem;
+        }
+
+        /* 仓区多选框 */
+        .area-multi-box {
+            background: #fff;
+            border: 1px solid #cfdfed;
+            border-radius: 12px;
+            padding: 10px 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            min-height: 88px;
+            align-items: center;
+        }
+        .area-multi-box label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+        }
+
+        .desc-textarea {
+            width: 100%;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* 默认规则和状态胶囊 */
+        .rule-meta-bar {
+            background: #f8fafd;
+            border-radius: 20px;
+            padding: 12px 20px;
+            margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            border: 1px solid #eef2f9;
+        }
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: white;
+            padding: 6px 18px 6px 16px;
+            border-radius: 40px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            border: 1px solid #e9f0f5;
+        }
+        .meta-label {
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #1e466e;
+        }
+        .meta-value {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .status-badge {
+            display: inline-flex;
+            gap: 8px;
+        }
+
+        /* 拣货员表格 - 无外部滚动容器，表格自然撑开，页面滚动即可 */
+        .picker-section {
+            margin-top: 8px;
+        }
+        .picker-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            table-layout: fixed;
+            background: #fff;
+            border-radius: 18px;
+            border: 1px solid #edf2f9;
+        }
+        .picker-table th, .picker-table td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid #f1f6fc;
+            vertical-align: middle;
+        }
+        .picker-table th {
+            background: #fafcff;
+            font-weight: 600;
+            color: #2c3f4f;
+            border-bottom: 1px solid #e9f0f5;
+        }
+        .picker-table tr:last-child td {
+            border-bottom: none;
+        }
+        /* 固定列宽防止变形 */
+        .picker-table th:nth-child(1) { width: 13%; }
+        .picker-table th:nth-child(2) { width: 18%; }
+        .picker-table th:nth-child(3) { width: 10%; }
+        .picker-table th:nth-child(4) { width: 11%; }
+        .picker-table th:nth-child(5) { width: 10%; }
+        .picker-table th:nth-child(6) { width: 10%; }
+        .picker-table th:nth-child(7) { width: 9%; }
+        .picker-table th:nth-child(8) { width: 6%; }
+
+        .picker-table input {
+            width: 100%;
+            padding: 6px 8px;
+            border-radius: 10px;
+            border: 1px solid #cfdfed;
+            font-size: 0.8rem;
+            background: #fff;
+        }
+        .picker-table input:read-only {
+            background: #f8fafc;
+            cursor: default;
+        }
+
+        /* 姓名列内嵌下拉 - 优化滚动体验，下拉框悬浮且自动限制最大高度，不依赖表格外部滚动 */
+        .picker-search-select {
+            position: relative;
+            width: 100%;
+        }
+        .picker-search-input {
+            width: 100%;
+            padding: 6px 8px;
+            border-radius: 10px;
+            border: 1px solid #cfdfed;
+            font-size: 0.8rem;
+            background: #fff;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .picker-search-input span {
+            color: #1f2f46;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .picker-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e2edf7;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            z-index: 1000;
+            max-height: 240px;
+            overflow-y: auto;
+            display: none;
+        }
+        .picker-dropdown.show {
+            display: block;
+        }
+        .picker-dropdown-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f4fa;
+            font-size: 0.8rem;
+        }
+        .picker-dropdown-item:hover {
+            background: #f6fafd;
+        }
+
+        .add-picker-btn {
+            background: #eff6ff;
+            border: 1px dashed #7fa5c2;
+            border-radius: 40px;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #2c6280;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 18px;
+            transition: 0.2s;
+        }
+        .add-picker-btn:hover {
+            background: #e3f0fc;
+            border-color: #2c8f6e;
+            color: #1f6e55;
+        }
+        .remove-row-btn {
+            background: none;
+            border: none;
+            color: #b91c1c;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            opacity: 0.7;
+        }
+        .remove-row-btn:hover { opacity: 1; }
+
+        .action-buttons {
+            padding: 24px 32px 32px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            background: #ffffff;
+        }
+        .btn {
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #2c4f6e;
+            border: 1px solid #dce5ec;
+        }
+        .btn-primary {
+            background: #2c8f6e;
+            color: white;
+            box-shadow: 0 2px 6px rgba(44, 143, 110, 0.2);
+        }
+        .btn-primary:hover {
+            background: #237a5c;
+            transform: translateY(-1px);
+        }
+        footer {
+            font-size: 0.7rem;
+            text-align: center;
+            padding: 16px;
+            color: #9aaebf;
+            background: #fbfdff;
+            border-top: 1px solid #ecf3f9;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 24px 36px;
+        }
+    </style>
+</head>
+<body>
+<div class="rule-container">
+    <div class="form-header">
+        <div class="title-section">
+            <h2>📦 拣货分配规则 · 智能策略配置</h2>
+            <p>无多余滚动条 | 下拉悬浮顺滑 | 工号联动姓名</p>
+        </div>
+        <div class="badge-version">动态分配引擎 v3.6</div>
+    </div>
+
+    <!-- 基础信息区 -->
+    <div class="form-section">
+        <div class="section-title"><span>📋 基础信息</span></div>
+        <div class="form-grid">
+            <div class="field"><div class="field-label">规则名称 <span class="required">*</span></div><input type="text" value="大促波次-主分配规则" id="ruleName"></div>
+            <div class="field"><div class="field-label">优先级</div><input type="number" value="1" id="priority" min="0"><div class="hint-text">数字越小优先级越高</div></div>
+            <div class="field"><div class="field-label">规则类型 <span class="required">*</span></div><div class="radio-group"><label><input type="radio" name="ruleType" value="roundRobin" checked> 轮询分配</label><label><input type="radio" name="ruleType" value="random"> 随机分配</label><label><input type="radio" name="ruleType" value="leastTask"> 最少任务优先</label><label><input type="radio" name="ruleType" value="longestIdle"> 最长空闲优先</label></div></div>
+        </div>
+    </div>
+
+    <!-- 仓库范围 & 仓区编号 + 规则描述 水平对齐 -->
+    <div class="form-section">
+        <div class="section-title"><span>🏭 仓库范围 & 策略描述</span></div>
+        <div class="equal-height-row">
+            <div class="left-area-box">
+                <div class="card-panel">
+                    <div class="field">
+                        <div class="field-label">仓库名称 <span class="required">*</span></div>
+                        <div class="searchable-select" id="warehouseSearchSelect">
+                            <div class="searchable-select-input" id="warehouseInputTrigger"><span id="selectedWarehouseText">物联网仓 (005)</span><span class="arrow">▼</span></div>
+                            <div class="searchable-dropdown" id="warehouseDropdown"><div class="dropdown-search"><input type="text" id="warehouseSearchInput" placeholder="搜索仓库编号/名称..."></div><div id="warehouseListContainer"></div></div>
+                        </div>
+                        <div class="hint-text">支持搜索仓库编号或名称，联动下方库区</div>
+                    </div>
+                    <div class="field" style="margin-top: 16px;">
+                        <div class="field-label">仓区编号（可多选）</div>
+                        <div class="area-multi-box" id="areaGroup"></div>
+                        <div class="hint-text">不选表示该仓库下所有库区</div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-desc-box">
+                <div class="card-panel">
+                    <div class="field">
+                        <div class="field-label">规则描述</div>
+                        <textarea rows="4" class="desc-textarea" placeholder="策略说明..." id="ruleDesc" maxlength="300">支持多策略分配，每日重置轮询，忽略休息人员，超时30分钟</textarea>
+                        <div class="hint-text"><span id="descCount">0</span>/300</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="rule-meta-bar">
+            <div class="meta-item">
+                <span class="meta-label">设为默认规则</span>
+                <div class="meta-value">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" id="defaultRuleCheck"> <span>是</span></label>
+                </div>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">状态</span>
+                <div class="meta-value status-badge">
+                    <label><input type="radio" name="globalStatus" value="启用" checked> 启用</label>
+                    <label><input type="radio" name="globalStatus" value="禁用"> 禁用</label>
+                    <label><input type="radio" name="globalStatus" value="测试中"> 测试中</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 规则参数配置 -->
+    <div class="form-section">
+        <div class="section-title"><span>⚙️ 规则参数配置</span></div>
+        <div class="form-grid">
+            <div class="field"><div class="field-label">轮询重置策略</div><select id="resetStrategy"><option value="daily" selected>每日重置</option><option value="weekly">每周重置</option><option value="never">永不重置(累积轮询)</option></select></div>
+            <div class="field"><div class="field-label">忽略休息人员</div><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="ignoreRest" checked> 拣货员休息/离岗时自动跳过</label></div>
+            <div class="field"><div class="field-label">任务超时时间 <span class="hint-text">(分钟)</span></div><input type="number" value="30" id="taskTimeout" min="0"><div class="hint-text">0表示不限制，超时可重新分配</div></div>
+        </div>
+    </div>
+
+    <!-- 拣货员明细 & 权重配置 - 无单独滚动容器，表格自然撑开 -->
+    <div class="form-section">
+        <div class="section-title"><span>👥 拣货员明细 & 权重配置</span></div>
+        <div class="picker-section">
+            <table class="picker-table" id="pickerTable">
+                <thead>
+                    <tr><th>工号</th><th>姓名</th><th>最大并发任务</th><th>每日最大任务数</th><th>生效开始时间</th><th>生效结束时间</th><th>权重</th><th></th></tr>
+                </thead>
+                <tbody id="pickerTableBody"></tbody>
+            </table>
+            <div class="add-picker-btn" id="addPickerBtn">+ 添加拣货员</div>
+            <div class="hint-text" style="margin-top:12px;">💡 权重越高优先级越高；姓名列支持搜索，选定后工号自动填充且不可编辑。下拉框自动悬浮，滚动流畅。</div>
+        </div>
+    </div>
+
+    <div class="action-buttons"><button class="btn btn-secondary" id="cancelBtn">取消</button><button class="btn btn-primary" id="submitBtn">确定 · 保存规则</button></div>
+    <footer>⚡ 移除表格外部滚动容器，下拉列表独立滚动 | 仓区编号与规则描述水平对齐 | 工号联动姓名</footer>
+</div>
+
+<script>
+    // ---------- 仓库数据 ----------
+    const warehouseList = [
+        { code: "005", name: "物联网仓" }, { code: "007", name: "测试库" }, { code: "shanxi_cang", name: "陕西仓" },
+        { code: "WS", name: "测试111" }, { code: "WS001", name: "WS01" }, { code: "GZ", name: "广州仓" },
+        { code: "cs01", name: "测试仓库1号" }, { code: "RM-INV", name: "材料仓" }, { code: "FG-INV", name: "产成品仓" },
+        { code: "11", name: "测试库-zzx" }, { code: "CHN0001", name: "中国区光明仓" }
+    ];
+    const areaMapping = {
+        "005": ["A区","B区","C区","D区","E区"], "007": ["T1区","T2区","T3区"], "shanxi_cang": ["SX北区","SX南区","SX中转区"],
+        "WS": ["WS-A区","WS-B区"], "WS001": ["WS001-1区","WS001-2区"], "GZ": ["GZ-黄埔","GZ-南沙","GZ-白云"],
+        "cs01": ["CS-A","CS-B"], "RM-INV": ["原料区","包材区"], "FG-INV": ["成品区","待检区"],
+        "11": ["测试库北区","测试库南区"], "CHN0001": ["光明A库","光明B库","光明冷链区"]
+    };
+    const pickerMasterList = [
+        { id: "15020579521", name: "TTT" }, { id: "SaaS001", name: "SaaS用户1" }, { id: "test03", name: "jana" },
+        { id: "P10086", name: "张明远" }, { id: "P10087", name: "李芳芳" }, { id: "EMP099", name: "王启航" },
+        { id: "WH123", name: "赵一航" }, { id: "OP890", name: "孙小美" }, { id: "LW999", name: "刘文" }
+    ];
+
+    let currentWarehouse = null;
+    function renderWarehouseDropdown(filterText = "") {
+        const container = document.getElementById("warehouseListContainer");
+        const filtered = warehouseList.filter(w => w.code.toLowerCase().includes(filterText.toLowerCase()) || w.name.toLowerCase().includes(filterText.toLowerCase()));
+        if(filtered.length === 0) { container.innerHTML = `<div class="no-result">暂无匹配仓库</div>`; return; }
+        container.innerHTML = "";
+        filtered.forEach(wh => {
+            const itemDiv = document.createElement("div"); itemDiv.className = "dropdown-item";
+            itemDiv.innerHTML = `<span class="warehouse-code">${wh.code}</span> <span class="warehouse-name">${wh.name}</span>`;
+            itemDiv.addEventListener("click", (e) => { e.stopPropagation(); selectWarehouse(wh); document.getElementById("warehouseDropdown").classList.remove("show"); });
+            container.appendChild(itemDiv);
+        });
+    }
+    function selectWarehouse(wh) { currentWarehouse = wh; document.getElementById("selectedWarehouseText").innerText = `${wh.name} (${wh.code})`; renderAreaOptions(wh.code); }
+    function renderAreaOptions(warehouseCode) {
+        const areas = areaMapping[warehouseCode] || ["默认库区"]; const container = document.getElementById("areaGroup"); container.innerHTML = '';
+        areas.forEach(area => { const label = document.createElement('label'); label.innerHTML = `<input type="checkbox" value="${area}"> ${area}`; if(warehouseCode === "005" && area === "D区") label.querySelector('input').checked = true; container.appendChild(label); });
+        if(areas.length === 0) container.innerHTML = '<span style="color:#aaa;">暂无库区</span>';
+    }
+    function initDefaultWarehouse() { const defaultWh = warehouseList.find(w => w.code === "005"); if(defaultWh) selectWarehouse(defaultWh); else selectWarehouse(warehouseList[0]); }
+    function bindDropdownEvents() {
+        const trigger = document.getElementById("warehouseInputTrigger"), dropdown = document.getElementById("warehouseDropdown"), searchInput = document.getElementById("warehouseSearchInput");
+        trigger.addEventListener("click", (e) => { e.stopPropagation(); dropdown.classList.toggle("show"); if(dropdown.classList.contains("show")) { renderWarehouseDropdown(""); searchInput.value = ""; searchInput.focus(); } });
+        searchInput.addEventListener("input", (e) => renderWarehouseDropdown(e.target.value));
+        document.addEventListener("click", function(e) { if(!trigger.contains(e.target) && !dropdown.contains(e.target)) dropdown.classList.remove("show"); });
+    }
+
+    // 姓名列下拉联动工号 (优化滚动，下拉框独立滚动)
+    function attachPickerWithSync(nameCell, empIdInput) {
+        const wrapper = document.createElement("div"); wrapper.className = "picker-search-select";
+        const displayDiv = document.createElement("div"); displayDiv.className = "picker-search-input";
+        const spanText = document.createElement("span"); spanText.innerText = "请选择拣货员";
+        const arrowSpan = document.createElement("span"); arrowSpan.innerText = "▼"; arrowSpan.style.fontSize = "10px";
+        displayDiv.appendChild(spanText); displayDiv.appendChild(arrowSpan);
+        const dropdownDiv = document.createElement("div"); dropdownDiv.className = "picker-dropdown";
+        const searchBox = document.createElement("input"); searchBox.placeholder = "搜索工号/姓名..."; searchBox.style.width = "100%"; searchBox.style.padding = "6px"; searchBox.style.border = "none"; searchBox.style.borderBottom = "1px solid #eee";
+        dropdownDiv.appendChild(searchBox);
+        const listContainer = document.createElement("div"); listContainer.className = "picker-dropdown-list"; dropdownDiv.appendChild(listContainer);
+        wrapper.appendChild(displayDiv); wrapper.appendChild(dropdownDiv);
+        nameCell.innerHTML = ""; nameCell.appendChild(wrapper);
+
+        function renderPickerList(filter = "") {
+            const filtered = pickerMasterList.filter(p => p.id.toLowerCase().includes(filter.toLowerCase()) || p.name.toLowerCase().includes(filter.toLowerCase()));
+            listContainer.innerHTML = "";
+            if(filtered.length === 0) { const no = document.createElement("div"); no.className = "picker-dropdown-item"; no.innerText = "无匹配"; listContainer.appendChild(no); return; }
+            filtered.forEach(p => {
+                const item = document.createElement("div"); item.className = "picker-dropdown-item"; item.innerText = `${p.id} - ${p.name}`;
+                item.addEventListener("click", (e) => { e.stopPropagation();
+                    spanText.innerText = `${p.name} (${p.id})`;
+                    empIdInput.value = p.id;
+                    dropdownDiv.classList.remove("show");
+                });
+                listContainer.appendChild(item);
+            });
+        }
+
+        displayDiv.addEventListener("click", (e) => { e.stopPropagation(); dropdownDiv.classList.toggle("show"); if(dropdownDiv.classList.contains("show")) { renderPickerList(""); searchBox.value = ""; searchBox.focus(); } });
+        searchBox.addEventListener("input", (e) => renderPickerList(e.target.value));
+        document.addEventListener("click", (e) => { if(!wrapper.contains(e.target)) dropdownDiv.classList.remove("show"); });
+    }
+
+    let rowCounter = 3;
+    function createPickerRow(presetPicker = null) {
+        const tr = document.createElement("tr");
+        const empIdCell = document.createElement("td"); const empIdInput = document.createElement("input"); empIdInput.type = "text"; empIdInput.className = "empId"; empIdInput.readOnly = true; empIdInput.style.background = "#f8fafc";
+        const nameCell = document.createElement("td");
+        const maxConcCell = document.createElement("td"); const maxConcInput = document.createElement("input"); maxConcInput.type = "number"; maxConcInput.value = "3"; maxConcInput.className = "maxConc"; maxConcInput.min = "1";
+        const dailyMaxCell = document.createElement("td"); const dailyMaxInput = document.createElement("input"); dailyMaxInput.type = "number"; dailyMaxInput.value = "0"; dailyMaxInput.className = "dailyMax";
+        const startCell = document.createElement("td"); const startInput = document.createElement("input"); startInput.type = "time"; startInput.value = "09:00"; startInput.className = "startTime";
+        const endCell = document.createElement("td"); const endInput = document.createElement("input"); endInput.type = "time"; endInput.value = "21:00"; endInput.className = "endTime";
+        const weightCell = document.createElement("td"); const weightInput = document.createElement("input"); weightInput.type = "number"; weightInput.value = "5"; weightInput.className = "weightVal"; weightInput.min = "1";
+        const actionCell = document.createElement("td"); const delBtn = document.createElement("button"); delBtn.innerText = "🗑️"; delBtn.className = "remove-row-btn"; delBtn.onclick = () => tr.remove();
+        actionCell.appendChild(delBtn);
+        tr.appendChild(empIdCell); tr.appendChild(nameCell); tr.appendChild(maxConcCell); tr.appendChild(dailyMaxCell); tr.appendChild(startCell); tr.appendChild(endCell); tr.appendChild(weightCell); tr.appendChild(actionCell);
+        empIdCell.appendChild(empIdInput); maxConcCell.appendChild(maxConcInput); dailyMaxCell.appendChild(dailyMaxInput); startCell.appendChild(startInput); endCell.appendChild(endInput); weightCell.appendChild(weightInput);
+        if(presetPicker) {
+            empIdInput.value = presetPicker.id;
+            attachPickerWithSync(nameCell, empIdInput);
+            setTimeout(() => {
+                const wrapperDiv = nameCell.querySelector('.picker-search-select');
+                if(wrapperDiv) {
+                    const spanElem = wrapperDiv.querySelector('.picker-search-input span');
+                    if(spanElem) spanElem.innerText = `${presetPicker.name} (${presetPicker.id})`;
+                }
+            }, 10);
+        } else {
+            attachPickerWithSync(nameCell, empIdInput);
+        }
+        return tr;
+    }
+
+    const tableBody = document.getElementById("pickerTableBody");
+    function loadInitialPickers() {
+        const initPickers = [
+            { id: "15020579521", name: "TTT" }, { id: "SaaS001", name: "SaaS用户1" }, { id: "test03", name: "jana" }
+        ];
+        initPickers.forEach(p => { const row = createPickerRow(p); tableBody.appendChild(row); });
+        rowCounter = 10;
+    }
+    document.getElementById("addPickerBtn").addEventListener("click", () => { const newRow = createPickerRow(null); tableBody.appendChild(newRow); rowCounter++; });
+
+    function collectFormData() {
+        const ruleName = document.getElementById('ruleName').value;
+        const priority = parseInt(document.getElementById('priority').value,10);
+        let ruleType = ''; for(let r of document.getElementsByName('ruleType')) if(r.checked) { ruleType = r.value; break; }
+        const warehouseCode = currentWarehouse?.code || "", warehouseName = currentWarehouse?.name || "";
+        const selectedAreas = Array.from(document.querySelectorAll('#areaGroup input:checked')).map(cb => cb.value);
+        const isDefault = document.getElementById('defaultRuleCheck').checked;
+        let status = ''; for(let s of document.getElementsByName('globalStatus')) if(s.checked) { status = s.value; break; }
+        const description = document.getElementById('ruleDesc').value;
+        const resetStrategy = document.getElementById('resetStrategy').value;
+        const ignoreRest = document.getElementById('ignoreRest').checked;
+        const taskTimeout = parseInt(document.getElementById('taskTimeout').value,10);
+        const pickers = [];
+        document.querySelectorAll('#pickerTableBody tr').forEach(row => {
+            const empIdInput = row.querySelector('.empId');
+            const empId = empIdInput ? empIdInput.value : '';
+            const nameSpanCell = row.cells[1];
+            let displayName = '';
+            if(nameSpanCell) {
+                const spanElem = nameSpanCell.querySelector('.picker-search-input span');
+                if(spanElem) displayName = spanElem.innerText.split('(')[0].trim();
+            }
+            const maxConc = parseInt(row.querySelector('.maxConc')?.value,10) || 0;
+            const dailyMax = parseInt(row.querySelector('.dailyMax')?.value,10) || 0;
+            const start = row.querySelector('.startTime')?.value || '';
+            const end = row.querySelector('.endTime')?.value || '';
+            const weight = parseInt(row.querySelector('.weightVal')?.value,10) || 1;
+            if(empId) pickers.push({ empId, name: displayName, maxConcurrent: maxConc, dailyMaxTasks: dailyMax, effectiveStart: start, effectiveEnd: end, weight });
+        });
+        return { ruleName, priority, ruleType, warehouseCode, warehouseName, areaCodes: selectedAreas, isDefault, status, description, resetStrategy, ignoreRest, taskTimeout, pickers };
+    }
+
+    document.getElementById('submitBtn').addEventListener('click', () => {
+        const data = collectFormData();
+        if(!data.ruleName.trim()) { alert("请填写规则名称"); return; }
+        if(!data.warehouseCode) { alert("请选择仓库"); return; }
+        if(data.pickers.length === 0) { alert("至少添加一名拣货员"); return; }
+        let typeMap = { roundRobin:"轮询分配", random:"随机分配", leastTask:"最少任务优先", longestIdle:"最长空闲优先" };
+        alert(`✅ 规则“${data.ruleName}”已保存\n📌 类型: ${typeMap[data.ruleType]}\n🏭 仓库: ${data.warehouseName} (${data.warehouseCode}) | 库区: ${data.areaCodes.length ? data.areaCodes.join(',') : '全部'}\n👥 拣货员: ${data.pickers.length}人`);
+        console.log(data);
+    });
+
+    document.getElementById('cancelBtn').addEventListener('click', () => {
+        if(confirm("重置所有未保存的修改？")) {
+            document.getElementById('ruleName').value = "大促波次-主分配规则";
+            document.getElementById('priority').value = "1";
+            document.querySelector('input[value="roundRobin"]').checked = true;
+            initDefaultWarehouse();
+            document.getElementById('defaultRuleCheck').checked = false;
+            document.querySelector('input[name="globalStatus"][value="启用"]').checked = true;
+            document.getElementById('ruleDesc').value = "支持多策略分配，每日重置轮询，忽略休息人员，超时30分钟";
+            document.getElementById('resetStrategy').value = "daily";
+            document.getElementById('ignoreRest').checked = true;
+            document.getElementById('taskTimeout').value = "30";
+            tableBody.innerHTML = '';
+            loadInitialPickers();
+            updateDescCount();
+        }
+    });
+
+    const descTextarea = document.getElementById('ruleDesc');
+    const descSpan = document.getElementById('descCount');
+    function updateDescCount() { descSpan.innerText = descTextarea.value.length; }
+    descTextarea.addEventListener('input', updateDescCount);
+    updateDescCount();
+
+    initDefaultWarehouse();
+    bindDropdownEvents();
+    loadInitialPickers();
+</script>
+</body>
+</html>

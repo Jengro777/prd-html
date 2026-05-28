@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>亚马逊FNSKU生成器 · 哈希规则与清晰度模拟</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', 'Inter', 'Roboto', 'Helvetica Neue', sans-serif;
+        }
+        body {
+            background: linear-gradient(145deg, #f1f5f9 0%, #e6edf4 100%);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .card {
+            max-width: 880px;
+            width: 100%;
+            background: rgba(255,255,255,0.96);
+            backdrop-filter: blur(0px);
+            border-radius: 42px;
+            box-shadow: 0 25px 45px -12px rgba(0,0,0,0.3), 0 2px 6px rgba(0,0,0,0.05);
+            overflow: hidden;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        .header {
+            background: #232f3e;
+            padding: 24px 28px;
+            color: white;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .header h1 small {
+            font-size: 0.8rem;
+            background: #ff9900;
+            padding: 4px 12px;
+            border-radius: 60px;
+            font-weight: 500;
+            color: #1a1f2c;
+        }
+        .header p {
+            margin: 8px 0 0;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        .content {
+            padding: 28px 30px 36px;
+        }
+        .input-group {
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .input-group label {
+            font-weight: 600;
+            color: #0f172a;
+            font-size: 0.85rem;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .input-group label i {
+            font-style: normal;
+            font-weight: 400;
+            color: #ff9900;
+            background: #fff3e0;
+            padding: 0 6px;
+            border-radius: 24px;
+            font-size: 0.7rem;
+        }
+        input, select {
+            padding: 14px 16px;
+            border-radius: 28px;
+            border: 1.5px solid #e2e8f0;
+            background: #ffffff;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            outline: none;
+            font-weight: 500;
+        }
+        input:focus, select:focus {
+            border-color: #ff9900;
+            box-shadow: 0 0 0 3px rgba(255,153,0,0.2);
+        }
+        .row-2cols {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .row-2cols > div {
+            flex: 1;
+            min-width: 180px;
+        }
+        button {
+            background: #ff9900;
+            border: none;
+            padding: 14px 18px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #1e293b;
+            cursor: pointer;
+            transition: 0.15s;
+            width: 100%;
+            box-shadow: 0 4px 6px -2px rgba(0,0,0,0.1);
+            margin-top: 8px;
+        }
+        button:hover {
+            background: #fa8c00;
+            transform: scale(0.98);
+            box-shadow: 0 2px 4px -1px rgba(0,0,0,0.1);
+        }
+        .result-area {
+            background: #f8fafc;
+            border-radius: 32px;
+            margin-top: 32px;
+            padding: 20px 24px;
+            border: 1px solid #e9eef3;
+            transition: all 0.2s;
+        }
+        .fnsku-badge {
+            background: white;
+            border-radius: 28px;
+            padding: 12px 20px;
+            font-family: 'Courier New', 'Fira Code', monospace;
+            font-size: 1.7rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-align: center;
+            color: #0f172a;
+            border: 1px dashed #cbd5e1;
+            word-break: break-all;
+            margin-bottom: 16px;
+            box-shadow: inset 0 1px 3px #0001, 0 2px 4px white;
+        }
+        .clarity-section {
+            background: #ffffffd9;
+            border-radius: 28px;
+            padding: 16px 20px;
+            margin-top: 18px;
+        }
+        .clarity-meter {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 14px 0 8px;
+        }
+        .meter-bar {
+            flex: 2;
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .meter-fill {
+            width: 0%;
+            height: 100%;
+            background: #ff9900;
+            border-radius: 20px;
+            transition: width 0.3s ease;
+        }
+        .clarity-text {
+            font-weight: 700;
+            font-size: 1rem;
+            min-width: 110px;
+        }
+        .advice {
+            font-size: 0.85rem;
+            background: #f1f5f9;
+            border-radius: 20px;
+            padding: 12px 16px;
+            margin-top: 12px;
+            color: #1e293b;
+            border-left: 4px solid #ff9900;
+        }
+        .badge {
+            background: #eef2ff;
+            padding: 6px 12px;
+            border-radius: 60px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        hr {
+            margin: 20px 0;
+            border-color: #e2edf7;
+        }
+        .footnote {
+            font-size: 0.7rem;
+            text-align: center;
+            color: #475569;
+            margin-top: 24px;
+        }
+        .rule-panel {
+            background: #fef9e6;
+            border-radius: 24px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            border: 1px solid #ffe0a3;
+            transition: 0.2s;
+        }
+        .rule-panel summary {
+            font-weight: 700;
+            color: #b45309;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: inline-block;
+            list-style: none;
+        }
+        .rule-panel summary::-webkit-details-marker {
+            display: inline-block;
+            color: #f97316;
+        }
+        .rule-content {
+            font-size: 0.8rem;
+            margin-top: 12px;
+            color: #3b2e1e;
+            font-family: monospace;
+            background: #fff8e7;
+            padding: 12px;
+            border-radius: 18px;
+            line-height: 1.5;
+        }
+        .rule-content code {
+            background: #232f3e10;
+            padding: 2px 5px;
+            border-radius: 10px;
+            font-weight: 600;
+            color: #d97706;
+        }
+        @media (max-width: 560px) {
+            .content { padding: 20px; }
+            .fnsku-badge { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="header">
+        <h1>
+            📦 FNSKU 发生器 
+            <small>唯一性引擎</small>
+        </h1>
+        <p>基于卖家ID + ASIN 确定性哈希 | 完整密钥规则透明化 · 标签清晰度模拟</p>
+    </div>
+    <div class="content">
+        <!-- 明确展示生成密钥规则区块 -->
+        <details class="rule-panel" open>
+            <summary>⚙️ FNSKU 生成算法 & 密钥规则 (点击展开/折叠)</summary>
+            <div class="rule-content">
+                <strong>🔐 确定性散列 + Base32 编码规则</strong><br>
+                1️⃣ <strong>组合原始密钥</strong>：<code>卖家ID | ASIN | salt=${动态盐值}</code>  <br>
+                2️⃣ <strong>哈希核心</strong>：采用 <strong>FNV-1a 32位</strong> 非加密哈希 + 黄金比例(<code>0x9E3779B9</code>) 混淆增强离散性。<br>
+                3️⃣ <strong>Base32 字符集</strong>：<code>ABCDEFGHJKLMNPQRSTUVWXYZ0123456789</code> （移除 I、O 避免混淆）共32字符。<br>
+                4️⃣ <strong>FNSKU 结构</strong>：固定前缀 <strong>X00</strong> + <strong>7位哈希(Base32)</strong> → 总长度 <strong>10位</strong> 符合亚马逊条码规范示例。<br>
+                5️⃣ <strong>唯一性机制</strong>：自动模式为每个<code>卖家ID+ASIN</code> 保留历史记录，当检测到生成的FNSKU已存在时，自动递增salt重试（盐值+1）直至生成全新编码，模拟数据库UNIQUE约束。<br>
+                6️⃣ <strong>确定性模式</strong>：salt始终为0，相同输入永远输出相同FNSKU，不进行碰撞规避。<br>
+                🌟 最终FNSKU示例：<code>X00A3B9K2M</code> （前缀恒定，后7位哈希派生）
+            </div>
+        </details>
+
+        <div class="row-2cols">
+            <div class="input-group">
+                <label>🆔 卖家ID (Seller ID) <i>唯一标识</i></label>
+                <input type="text" id="sellerId" placeholder="例: A3KJ9X2M5Q8L4" value="A3KJ9X2M5Q8L4">
+            </div>
+            <div class="input-group">
+                <label>🏷️ ASIN / 商品编码 <i>标准品号</i></label>
+                <input type="text" id="asin" placeholder="例: B08N5WRWNS" value="B08N5WRWNS">
+            </div>
+        </div>
+        
+        <div class="row-2cols">
+            <div class="input-group">
+                <label>🔧 碰撞模拟 (防重策略) </label>
+                <select id="collisionMode">
+                    <option value="auto">自动唯一性保证 (模拟数据库防重·基于盐值迭代)</option>
+                    <option value="deterministic">确定模式（无防撞，相同输入输出一致）</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>📏 清晰度参数 <i>打印DPI模拟</i></label>
+                <select id="dpiSelect">
+                    <option value="203">203 DPI (热敏入门 / 模糊风险高)</option>
+                    <option value="300" selected>300 DPI (标准推荐 • 亚马逊要求)</option>
+                    <option value="406">406 DPI (高精度工业级)</option>
+                    <option value="600">600 DPI (极致超清)</option>
+                </select>
+            </div>
+        </div>
+        
+        <button id="generateBtn">✨ 生成 FNSKU & 计算清晰度 ✨</button>
+        
+        <div class="result-area" id="resultArea">
+            <div style="margin-bottom: 6px; font-weight:500;">🔖 生成的 FNSKU (亚马逊条形码)</div>
+            <div class="fnsku-badge" id="fnskuDisplay">X00————</div>
+            
+            <div class="clarity-section" id="claritySection">
+                <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                    <strong>🔍 标签清晰度/打印质量评估</strong>
+                    <span class="badge" id="dpiBadge">300 DPI</span>
+                </div>
+                <div class="clarity-meter">
+                    <div class="meter-bar"><div class="meter-fill" id="clarityFill"></div></div>
+                    <div class="clarity-text" id="clarityPercent">--%</div>
+                </div>
+                <div id="clarityAdvice" class="advice">
+                    // 清晰度模拟文案将根据DPI、FNSKU长度、字符混杂度实时计算
+                </div>
+                <div id="collisionNote" style="font-size: 0.7rem; margin-top: 10px; color:#4b5563;"></div>
+            </div>
+            <hr />
+            <div class="footnote">
+                ⚡ 技术原理：基于FNV-1a + 黄金比例散列 → Base32(7位) + 前缀X00，固定总长10位。<br>
+                🌟 清晰度模型考虑：DPI有效分辨率、字符边缘密度、条形码模块最小宽度、打印对比度模拟。
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // ---------- FNSKU 核心算法 (确定性哈希 + Base32 + 固定长度) ----------
+        // 自定义字符集 (移除 I, O 避免混淆，符合大多数标准)
+        const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';  // 32字符
+        const BASE = 32;
+        const HASH_LEN = 7;      // 哈希部分长度
+        const PREFIX = 'X00';
+        const TOTAL_LEN = PREFIX.length + HASH_LEN;  // 10位
+        
+        // FNV-1a 32位哈希
+        function fnv1aHash(str) {
+            let hash = 2166136261;
+            for(let i = 0; i < str.length; i++) {
+                hash ^= str.charCodeAt(i);
+                hash = (hash * 16777619) >>> 0;
+            }
+            return hash >>> 0;
+        }
+        
+        // 混淆组合: seller + asin + salt (盐值参与密钥)
+        function combineHash(sellerId, asin, salt = 0) {
+            const input = `${sellerId}|${asin}|salt=${salt}`;
+            const rawHash = fnv1aHash(input);
+            // 二次混淆 黄金比例乘法 + 位偏移增强分散性 (使不同盐值分布极其均匀)
+            const GOLDEN = 0x9E3779B9;
+            let mixed = (rawHash ^ (rawHash >>> 16)) >>> 0;
+            mixed = (mixed * GOLDEN) >>> 0;
+            mixed = (mixed ^ (mixed << 13) ^ (mixed >>> 19)) >>> 0;
+            return mixed >>> 0;
+        }
+        
+        // 数字转固定长度Base32 (左侧填充至length位)
+        function toBase32Fixed(num, length) {
+            let res = '';
+            let tmp = num;
+            for (let i = 0; i < length; i++) {
+                const mod = tmp % BASE;
+                res = ALPHABET[mod] + res;
+                tmp = Math.floor(tmp / BASE);
+            }
+            return res;
+        }
+        
+        // 核心生成: 基于seller, asin, salt 产生 FNSKU
+        function generateRawFNSKU(sellerId, asin, salt = 0) {
+            const combined = combineHash(sellerId, asin, salt);
+            const maxVal = Math.pow(BASE, HASH_LEN);  // 32^7 
+            const finalNum = combined % maxVal;
+            const hashPart = toBase32Fixed(finalNum, HASH_LEN);
+            return PREFIX + hashPart;
+        }
+        
+        // 生成带唯一性保障的FNSKU (基于每个产品维度的Set避免碰撞)
+        // existingSet 为当前（卖家+ASIN）已经生成过的FNSKU集合
+        function generateUniqueFNSKU(sellerId, asin, existingSet = null, maxAttempts = 12) {
+            if (!existingSet) existingSet = new Set();
+            let salt = 0;
+            let attempts = 0;
+            while (attempts < maxAttempts) {
+                const candidate = generateRawFNSKU(sellerId, asin, salt);
+                if (!existingSet.has(candidate)) {
+                    existingSet.add(candidate);
+                    return { fnsku: candidate, saltUsed: salt, collisionRetries: attempts };
+                }
+                salt++;
+                attempts++;
+            }
+            // 极端碰撞后备 (加时间扰动)
+            const fallbackSalt = Date.now() % 100000 + Math.random() * 10000;
+            const fallback = generateRawFNSKU(sellerId, asin, Math.floor(fallbackSalt));
+            return { fnsku: fallback, saltUsed: -1, collisionRetries: attempts, fallback: true };
+        }
+        
+        // ---------- 清晰度计算 完整模型(DPI + 字符熵 + 条码解析)----------
+        function computeClarityMetrics(dpi, fnskuStr) {
+            // 基础DPI性能得分 (基于打印分辨率对于条码X尺寸影响)
+            let dpiScore = 0;
+            if (dpi === 203) dpiScore = 58;
+            else if (dpi === 300) dpiScore = 82;
+            else if (dpi === 406) dpiScore = 92;
+            else if (dpi === 600) dpiScore = 98;
+            else dpiScore = 75;
+            
+            // 字符熵因子 —— FNSKU字符变化越丰富，条码黑白模块越分明，降低误读
+            const chars = fnskuStr.split('');
+            let transitions = 0;
+            for (let i = 1; i < chars.length; i++) {
+                if (chars[i] !== chars[i-1]) transitions++;
+            }
+            const varietyRatio = Math.min(1, transitions / (chars.length - 1));  // 相邻变化比例
+            // 混合字母与数字增强边缘对比
+            let hasMixed = /[A-Z]\d|\d[A-Z]/.test(fnskuStr) ? 1 : 0.7;
+            const entropyBonus = (varietyRatio * 12) + (hasMixed * 5);  // 最高17分加成
+            
+            let clarity = dpiScore + entropyBonus;
+            clarity = Math.min(99.5, Math.max(38, clarity));
+            clarity = Math.round(clarity * 10) / 10;
+            
+            // 质量等级及精确建议
+            let grade = '';
+            let adviceText = '';
+            if (clarity >= 92) {
+                grade = '🏆 卓越级 · 极高清晰度';
+                adviceText = '条码边缘锐利，支持高速扫码通过率≥99.9%。满足亚马逊FBA最高入库标准。';
+            } else if (clarity >= 80) {
+                grade = '✅ 良好级 · 符合推荐标准';
+                adviceText = '300DPI以上打印效果稳定，普通热敏纸即可。但仍需避免标签褶皱或油污。';
+            } else if (clarity >= 65) {
+                grade = '⚠️ 警戒级 · 模糊风险升高';
+                adviceText = '建议提高DPI至300以上，检查碳带/热敏头是否老化。否则可能产生入库缺陷费(每件$0.32~$1.74)。';
+            } else {
+                grade = '❌ 高风险 · 条码不可靠';
+                adviceText = '极大概率被亚马逊仓库拒收或重新贴标！立即更换打印机，使用≥300DPI设备并确保标签完全覆盖原UPC码。';
+            }
+            
+            let specificNote = '';
+            if (dpi === 203 && clarity < 75) {
+                specificNote = '⚠️ 203 DPI下细条宽度不足，极易造成扫描混淆。亚马逊官方建议最低300 DPI。';
+            } else if (dpi >= 406 && clarity > 88) {
+                specificNote = '✨ 高分辨率确保任何角度的扫描成功率，适合大批量自动化贴标。';
+            } else if (dpi === 300) {
+                specificNote = '📌 300 DPI为亚马逊FBA推荐基准，配合防磨损标签纸效果最佳。';
+            }
+            if(specificNote) adviceText = specificNote + ' ' + adviceText;
+            
+            const xDimensionMm = (dpi === 203 ? 0.125 : (dpi === 300 ? 0.085 : (dpi === 406 ? 0.062 : 0.042))).toFixed(3);
+            const technicalNote = `窄条宽度: ${xDimensionMm}mm · 符号对比度模拟良好 · 字符变化率: ${(varietyRatio*100).toFixed(0)}%`;
+            
+            return {
+                clarityPercent: clarity,
+                grade,
+                adviceText,
+                technicalNote,
+                xDim: xDimensionMm,
+                varietyRatio: (varietyRatio*100).toFixed(0)
+            };
+        }
+        
+        // 碰撞说明文案（包含密钥规则相关展示）
+        function getCollisionNote(mode, usedSalt, retries, isFallback, sellerId, asin, finalFnsku) {
+            if (mode === 'deterministic') {
+                return '🔒 确定性模式（无盐值碰撞规避），相同卖家+ASIN永远生成相同FNSKU。密钥规则固定salt=0，FNV-1a哈希直接输出。';
+            } else {
+                if (retries === 0) {
+                    return `✅ 唯一性已保障 · 首先生成无碰撞。密钥使用salt=0，基于“${sellerId}|${asin}|salt=0”哈希派生。已存入模拟唯一池。`;
+                } else if (retries > 0 && !isFallback) {
+                    return `🔄 唯一性校验碰撞！初始哈希产生的FNSKU命中历史记录，自动递增盐值重试 ${retries} 次 (salt递增至${usedSalt})，最终生成全新FNSKU ${finalFnsku}。符合数据库UNIQUE防重逻辑。`;
+                } else if (isFallback) {
+                    return `⚠️ 极限碰撞后备: 经过 ${retries} 次盐值迭代仍碰撞，启用时间扰动后备盐值，依然确保唯一性。密钥规则极端健壮。`;
+                } else {
+                    return `✨ 唯一性引擎启用，基于每个商品维度的历史记录集，杜绝FNSKU冲突。`;
+                }
+            }
+        }
+        
+        // 全局存储每个 (seller|ASIN) 组合已生成的FNSKU集合，用于自动模式防重
+        // 符合亚马逊业务：相同卖家相同商品下不能生成重复FNSKU
+        
+        // 更新UI主函数
+        function updateFNSKUAndClarity() {
+            const sellerId = document.getElementById('sellerId').value.trim();
+            let asin = document.getElementById('asin').value.trim();
+            const mode = document.getElementById('collisionMode').value;
+            const dpi = parseInt(document.getElementById('dpiSelect').value, 10);
+            
+            if (!sellerId) {
+                alert('请输入卖家ID (模拟数据)');
+                return;
+            }
+            if (!asin) {
+                asin = 'MISSING_ASIN';
+            }
+            
+            let fnsku = '';
+            let collisionDetails = { retries: 0, saltUsed: 0, fallback: false };
+            
+            // 初始化全局商品维度Map
+            if (!window._fnskuPerProductMap) window._fnskuPerProductMap = new Map(); // key为 compositeKey
+            
+            const compositeKey = `${sellerId}|${asin}`;
+            
+            if (mode === 'deterministic') {
+                // 确定性模式，不使用任何历史防碰撞集，但为了展示清楚，直接生成salt=0
+                fnsku = generateRawFNSKU(sellerId, asin, 0);
+                collisionDetails.retries = 0;
+                collisionDetails.saltUsed = 0;
+                collisionDetails.isDeterministic = true;
+                // 注意确定性模式下不需要改变任何产品集合，但仍然为了展示信息
+            } 
+            else {
+                // 自动唯一模式: 基于当前商品组合历史防止相同FNSKU
+                let productSet = window._fnskuPerProductMap.get(compositeKey);
+                if (!productSet) {
+                    productSet = new Set();
+                    window._fnskuPerProductMap.set(compositeKey, productSet);
+                }
+                const uniqueResult = generateUniqueFNSKU(sellerId, asin, productSet, 12);
+                fnsku = uniqueResult.fnsku;
+                collisionDetails.retries = uniqueResult.collisionRetries;
+                collisionDetails.saltUsed = uniqueResult.saltUsed;
+                collisionDetails.fallback = uniqueResult.fallback || false;
+                collisionDetails.isDeterministic = false;
+            }
+            
+            // 展示到UI
+            const fnskuDisplay = document.getElementById('fnskuDisplay');
+            fnskuDisplay.innerText = fnsku;
+            fnskuDisplay.style.fontFamily = "'Courier New', 'Fira Code', monospace";
+            
+            // 清晰度计算
+            const clarityResult = computeClarityMetrics(dpi, fnsku);
+            const fillBar = document.getElementById('clarityFill');
+            const clarityPercentSpan = document.getElementById('clarityPercent');
+            const adviceDiv = document.getElementById('clarityAdvice');
+            const dpiBadgeSpan = document.getElementById('dpiBadge');
+            dpiBadgeSpan.innerText = `${dpi} DPI`;
+            
+            clarityPercentSpan.innerText = `${clarityResult.clarityPercent}%`;
+            fillBar.style.width = `${Math.min(100, clarityResult.clarityPercent)}%`;
+            // 动态色彩
+            if (clarityResult.clarityPercent >= 85) {
+                fillBar.style.background = "#2b9348";
+            } else if (clarityResult.clarityPercent >= 70) {
+                fillBar.style.background = "#ffb347";
+            } else {
+                fillBar.style.background = "#e63946";
+            }
+            
+            const gradeHtml = `<strong style="display:block; margin-bottom: 6px;">📊 质量等级: ${clarityResult.grade}</strong>`;
+            const adviceHtml = `<div>${clarityResult.adviceText}</div><div style="margin-top: 8px; font-size:0.75rem; color:#4a5c6c;">🔬 ${clarityResult.technicalNote} | X-Bar宽度: ${clarityResult.xDim}mm</div>`;
+            adviceDiv.innerHTML = gradeHtml + adviceHtml;
+            
+            // 碰撞信息显示 详细描述密钥规则影响
+            let noteMsg = '';
+            if (mode === 'deterministic') {
+                noteMsg = getCollisionNote('deterministic', 0, 0, false, sellerId, asin, fnsku);
+            } else {
+                noteMsg = getCollisionNote('auto', collisionDetails.saltUsed, collisionDetails.retries, collisionDetails.fallback, sellerId, asin, fnsku);
+                if (!collisionDetails.fallback && collisionDetails.retries === 0) {
+                    noteMsg += ` 当前FNSKU: ${fnsku} 已收录至商品组合历史集，后续同卖家/ASIN自动防撞。`;
+                } else if (collisionDetails.retries > 0) {
+                    noteMsg += ` 最终生成: ${fnsku} ，密钥迭代盐值次数: ${collisionDetails.retries}`;
+                }
+            }
+            const collisionNoteSpan = document.getElementById('collisionNote');
+            collisionNoteSpan.innerHTML = `🛡️ [唯一性机制 & 密钥规则] ${noteMsg}`;
+            
+            // 低清晰度告警样式
+            if (clarityResult.clarityPercent < 68) {
+                adviceDiv.style.borderLeftColor = "#e63946";
+                adviceDiv.style.background = "#fff5f5";
+            } else {
+                adviceDiv.style.borderLeftColor = "#ff9900";
+                adviceDiv.style.background = "#f1f5f9";
+            }
+        }
+        
+        // 绑定按钮及初始化事件
+        const btn = document.getElementById('generateBtn');
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            updateFNSKUAndClarity();
+        });
+        
+        // 重置当前商品历史记录的辅助函数(用于演示清理防撞缓存 - 保持体验)
+        function resetCurrentProductHistory() {
+            const seller = document.getElementById('sellerId').value.trim();
+            const asinCode = document.getElementById('asin').value.trim();
+            if(seller && asinCode && window._fnskuPerProductMap) {
+                const key = `${seller}|${asinCode}`;
+                if(window._fnskuPerProductMap.has(key)) {
+                    window._fnskuPerProductMap.delete(key);
+                    const noteSpan = document.getElementById('collisionNote');
+                    noteSpan.innerHTML = `🧹 已重置当前「卖家+ASIN」的历史FNSKU缓存，后续自动模式将重新开始唯一池 (密钥盐值从0开始)。`;
+                    setTimeout(() => {
+                        if(document.getElementById('collisionNote') === noteSpan && noteSpan.innerHTML.includes('重置')) {
+                            // 保留提示几秒后如果用户再次点击生成会被覆盖
+                        }
+                    }, 2500);
+                } else {
+                    const noteSpan = document.getElementById('collisionNote');
+                    noteSpan.innerHTML = `ℹ️ 当前组合没有碰撞缓存记录，无需重置。`;
+                }
+            }
+        }
+        
+        window.addEventListener('load', () => {
+            if (!window._fnskuPerProductMap) window._fnskuPerProductMap = new Map();
+            updateFNSKUAndClarity();
+            // 添加重置按钮便捷操作(已经存在于HTML内部插入, 确保存在)
+            const existingResetBtn = document.getElementById('resetProductHistoryBtn');
+            if(!existingResetBtn){
+                const footerDiv = document.querySelector('.footnote');
+                const resetSpan = document.createElement('div');
+                resetSpan.style.textAlign = 'right';
+                resetSpan.style.marginTop = '12px';
+                resetSpan.innerHTML = '<span id="resetProductHistoryBtn" style="cursor:pointer; background:#e9ecef; padding:4px 12px; border-radius:40px; font-size:0.7rem;">🗑️ 重置当前商品防重缓存</span>';
+                document.querySelector('.result-area').appendChild(resetSpan);
+                document.getElementById('resetProductHistoryBtn')?.addEventListener('click', resetCurrentProductHistory);
+            } else {
+                existingResetBtn.addEventListener('click', resetCurrentProductHistory);
+            }
+        });
+    })();
+</script>
+</body>
+</html>

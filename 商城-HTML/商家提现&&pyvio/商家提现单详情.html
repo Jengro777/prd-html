@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>提现对账凭证 · 亚马逊卖家钱包 | 子单号溯源</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f0f2f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            padding: 2rem 1rem;
+            color: #1a2634;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        /* 主卡片 */
+        .main-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+        /* 头部 */
+        .card-header {
+            background: linear-gradient(135deg, #232f3e 0%, #1a2a3a 100%);
+            color: white;
+            padding: 1.2rem 1.8rem;
+        }
+        .card-header h1 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .card-header p {
+            font-size: 0.7rem;
+            opacity: 0.8;
+        }
+        .header-badge {
+            background: #ff9900;
+            color: #1a2634;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.2rem 0.6rem;
+            border-radius: 40px;
+            letter-spacing: 0.3px;
+        }
+        /* 提现主单信息 */
+        .withdrawal-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            background: #f8fafc;
+            padding: 1rem 1.8rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        .info-label {
+            font-size: 0.65rem;
+            color: #5b6e8c;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .info-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .info-value.amount {
+            font-size: 1.4rem;
+            color: #15803d;
+        }
+        .withdrawal-badge {
+            font-family: monospace;
+            background: #ff9900;
+            color: #1a2634;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-block;
+        }
+        /* 表格 */
+        .section-title {
+            padding: 1rem 1.8rem 0.5rem 1.8rem;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #334155;
+            background: white;
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .section-sub {
+            font-size: 0.7rem;
+            font-weight: normal;
+            color: #5b6e8c;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+        .data-table th {
+            background: #f1f5f9;
+            padding: 0.7rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #1e3a5f;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .data-table td {
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid #f0f2f5;
+            vertical-align: top;
+        }
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        .amount-positive {
+            color: #15803d;
+            font-weight: 600;
+        }
+        .amount-negative {
+            color: #b91c1c;
+            font-weight: 600;
+        }
+        .badge-settlement {
+            font-family: monospace;
+            background: #eef2ff;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        .badge-wallet-bill {
+            font-family: monospace;
+            background: #e6f7ec;
+            border-left: 3px solid #15803d;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #0a4e2c;
+        }
+        .total-row {
+            background: #f8fafc;
+            font-weight: 600;
+            border-top: 1px solid #e2e8f0;
+        }
+        .footer-note {
+            background: #fef9e6;
+            padding: 0.8rem 1.8rem;
+            font-size: 0.7rem;
+            color: #7a6400;
+            border-top: 1px solid #f0e1b6;
+        }
+        .code {
+            font-family: monospace;
+            background: #eef2ff;
+            padding: 0.1rem 0.3rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+        }
+        .highlight {
+            background: #fff2d7;
+            font-weight: 600;
+        }
+        .reconcile-note {
+            margin-top: 0.25rem;
+            font-size: 0.7rem;
+        }
+        @media (max-width: 680px) {
+            .data-table th, .data-table td {
+                padding: 0.5rem 0.6rem;
+            }
+            .withdrawal-info {
+                gap: 0.8rem;
+            }
+            .section-title {
+                padding: 0.8rem 1rem 0.2rem 1rem;
+            }
+            .footer-note {
+                padding: 0.7rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="main-card">
+        <div class="card-header">
+            <h1>
+                💰 提现对账凭证 · 钱包资金明细
+                <span class="header-badge">对账专用 · 子单号可追溯</span>
+            </h1>
+            <p>提现主单 → 钱包对账单号（提现子单） → 关联结算单 | 支持同一结算单拆分多次提现，每笔提现独立凭证</p>
+        </div>
+
+        <!-- 提现主单信息（不变，核心提现记录） -->
+        <div class="withdrawal-info">
+            <div class="info-item">
+                <span class="info-label">提现主单号</span>
+                <span class="info-value"><span class="withdrawal-badge">WD-20260401-001</span></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">提现金额</span>
+                <span class="info-value amount">$5,000.00 USD</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">提现时间</span>
+                <span class="info-value">2026-04-01 10:23:45 UTC</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">到账银行</span>
+                <span class="info-value">中国银行 · 尾号 1234</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">支付服务商</span>
+                <span class="info-value">Payoneer</span>
+            </div>
+        </div>
+
+        <!-- 明细表格：钱包对账单号（提现子单号）为核心 -->
+        <div class="section-title">
+            <span>🧾 提现资金来源拆分 · 钱包对账单明细</span>
+            <span class="section-sub">每个子单号 = 一次独立对账凭证</span>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>钱包对账单号<br><span style="font-weight:normal; font-size:0.7rem;">(提现子单号 / 对账凭证ID)</span></th>
+                    <th>关联结算单号<br>(Settlement ID)</th>
+                    <th>结算周期</th>
+                    <th>结算单净收入<br>(原始金额)</th>
+                    <th>本次提现子单金额<br>(钱包划出)</th>
+                    <th>结算单剩余金额<br>(提现后钱包余额)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge-wallet-bill">WALLET-BILL-20260401-001-01</span><br>
+                        <span style="font-size:0.65rem; color:#4b5563;">对账凭证</span>
+                    </td>
+                    <td><span class="badge-settlement">STL-20260315-001</span></td>
+                    <td>2026/03/01 - 2026/03/14</td>
+                    <td class="amount-positive">$5,000.00</td>
+                    <td class="amount-negative">$4,000.00</td>
+                    <td>$0.00</td>
+                </tr>
+                <tr>
+                    <td><span class="badge-wallet-bill">WALLET-BILL-20260401-001-02</span><br>
+                        <span style="font-size:0.65rem; color:#4b5563;">对账凭证</span>
+                    </td>
+                    <td><span class="badge-settlement">STL-20260330-002</span></td>
+                    <td>2026/03/15 - 2026/03/28</td>
+                    <td class="amount-positive">$3,000.00</td>
+                    <td class="amount-negative">$1,000.00</td>
+                    <td>$2,000.00</td>
+                </tr>
+                 <!-- 补充一个典型场景：同一个结算单被多次提现的示例（仅作示意，增强对账理解） 
+                      实际数据里如果同一个结算单分两次提现，这里体现合理性 -->
+                 <tr style="background:#fefce8;">
+                    <td><span class="badge-wallet-bill">WALLET-BILL-20260401-001-03</span><br>
+                        <span style="font-size:0.65rem; color:#4b5563;">对账凭证</span>
+                     </td>
+                    <td><span class="badge-settlement">STL-20260315-001</span> 
+                        <span style="background:#e2e3e8; padding:0.1rem 0.3rem; border-radius:12px; font-size:0.6rem; margin-left:4px;">二次拆分</span>
+                     </td>
+                    <td>2026/03/01 - 2026/03/14</td>
+                    <td class="amount-positive">$5,000.00</td>
+                    <td class="amount-negative">$1,000.00</td>
+                    <td><span style="color:#b45309;">$0.00 (已全部提完)</span></td>
+                 </tr>
+            </tbody>
+            <!-- 汇总行：总提现金额=三个子单金额之和，完全匹配提现主单 -->
+            <tr class="total-row">
+                <td colspan="4" style="text-align: right; font-weight: 600;">提现主单总金额核对 ✔</td>
+                <td class="amount-negative" style="font-weight: 700;">$5,000.00</td>
+                <td style="font-size:0.7rem;">汇总三个子单</td>
+            </tr>
+        </table>
+
+        <!-- 拆分说明 + 对账逻辑解释（强调钱包对账单号必要性） -->
+        <div class="footer-note">
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between;">
+                <div style="flex: 1;">
+                    🔗 <strong>命名规则 · 钱包对账凭证</strong><br>
+                    <span class="code">WALLET-BILL-{提现主单号后段}-{序号}</span> ，例如 <span class="code">WALLET-BILL-20260401-001-01</span>。<br>
+                    ✅ 每个子单号对应一次“钱包资金划出记录”，支持部分提现、分拆结算单，<strong>是支付公司与亚马逊对账的原子凭证</strong>。
+                </div>
+                <div style="flex: 1;">
+                    🧾 <strong>核心对账价值</strong><br>
+                    • 同一个结算单（如 STL-20260315-001）可分多次提现 → 生成多个钱包对账单号。<br>
+                    • 提现主单 = 资金归集单，钱包对账单号 = 底层溯源ID，外部审计、支付商对账均以此为据。
+                </div>
+            </div>
+            <div class="reconcile-note" style="margin-top: 10px; border-top: 1px dashed #ffdd99; padding-top: 8px;">
+                📌 <strong>对账场景示例：</strong> 支付商（Payoneer）向亚马逊钱包发起提现 $5,000，后台自动生成三笔钱包对账单号分别对应三笔结算单资金划扣。对账时，只需按 <span class="code">WALLET-BILL-xxxx</span> 逐笔核对资金流水与结算单净收入，确保金额、剩余余额一致。
+            </div>
+        </div>
+    </div>
+
+    <!-- 额外辅助说明区块：更贴近真实钱包后台 -->
+    <div style="max-width: 1200px; margin: 1rem auto 0 auto; background: #ffffffd9; border-radius: 20px; padding: 0.8rem 1.2rem; border: 1px solid #dce3ec; font-size: 0.7rem; color: #2c3e66;">
+        <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+            <span>⚡ <strong>设计理念</strong>：“调节单号” → 正式更名为 <strong style="background:#eef2ff; padding:0.1rem 0.5rem; border-radius: 14px;">钱包对账单号 (Wallet Bill ID)</strong></span>
+            <span>| 每个子单唯一标识一次提现动作，规避“调节”一词的调账歧义，更适合对账与审计追溯。</span>
+            <span style="color:#15803d;">✓ 符合卖家钱包及跨境支付对账规范</span>
+        </div>
+    </div>
+</div>
+</body>
+</html>

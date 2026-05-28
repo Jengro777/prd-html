@@ -1,0 +1,941 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>加纳网点坐标地图展示 - 优化边界展示</title>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        />
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            body {
+                background: linear-gradient(135deg, #1a2a6c, #0d4d4b, #1a2a6c);
+                color: #fff;
+                min-height: 100vh;
+                overflow: hidden;
+            }
+
+            .container {
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+                padding: 10px;
+            }
+
+            header {
+                padding: 10px 15px;
+                margin-bottom: 10px;
+                background: rgba(0, 0, 0, 0.25);
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                backdrop-filter: blur(8px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            h1 {
+                font-size: 1.8rem;
+                margin-bottom: 5px;
+                color: #42b7ae;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .subtitle {
+                font-size: 0.9rem;
+                color: #e0e0e0;
+                line-height: 1.4;
+                max-width: 800px;
+            }
+
+            .stats {
+                display: flex;
+                gap: 10px;
+                margin-top: 10px;
+                flex-wrap: wrap;
+            }
+
+            .stat-box {
+                background: rgba(66, 183, 174, 0.15);
+                padding: 8px 12px;
+                border-radius: 6px;
+                text-align: center;
+                min-width: 100px;
+                border: 1px solid rgba(66, 183, 174, 0.3);
+                font-size: 0.8rem;
+            }
+
+            .stat-box i {
+                font-size: 1.2rem;
+                margin-bottom: 5px;
+                color: #42b7ae;
+            }
+
+            .content {
+                display: flex;
+                flex: 1;
+                gap: 15px;
+                min-height: 0;
+            }
+
+            .map-container {
+                flex: 1;
+                min-width: 300px;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+                background: rgba(0, 0, 0, 0.2);
+                position: relative;
+                transition: all 0.3s ease;
+            }
+
+            #map {
+                width: 100%;
+                height: 100%;
+            }
+
+            .locations-panel {
+                width: 280px;
+                background: rgba(0, 0, 0, 0.25);
+                border-radius: 8px;
+                padding: 12px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+                backdrop-filter: blur(8px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                overflow-y: auto;
+                transition: all 0.3s ease;
+                position: relative;
+            }
+
+            .locations-panel.collapsed {
+                width: 40px;
+                padding: 0;
+                overflow: hidden;
+            }
+
+            .panel-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 12px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid rgba(66, 183, 174, 0.5);
+            }
+
+            .panel-header h2 {
+                font-size: 1.3rem;
+                color: #42b7ae;
+                transition: opacity 0.3s ease;
+            }
+
+            .collapsed .panel-header h2,
+            .collapsed .search-box,
+            .collapsed #counter,
+            .collapsed .location-list {
+                opacity: 0;
+                pointer-events: none;
+            }
+
+            .toggle-panel-btn {
+                position: absolute;
+                top: 50%;
+                right: -15px;
+                transform: translateY(-50%);
+                background: rgba(66, 183, 174, 0.8);
+                border: none;
+                width: 30px;
+                height: 60px;
+                border-radius: 0 5px 5px 0;
+                color: white;
+                cursor: pointer;
+                z-index: 10;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+                box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+            }
+
+            .toggle-panel-btn:hover {
+                background: #42b7ae;
+                width: 35px;
+            }
+
+            .toggle-panel-btn .label {
+                position: absolute;
+                white-space: nowrap;
+                font-size: 0.7rem;
+                transition: opacity 0.3s ease;
+                right: 35px;
+                background: rgba(66, 183, 174, 0.8);
+                padding: 3px 8px;
+                border-radius: 4px;
+                opacity: 0;
+                pointer-events: none;
+            }
+
+            .toggle-panel-btn:hover .label {
+                opacity: 1;
+            }
+
+            .search-box {
+                margin-bottom: 12px;
+                position: relative;
+            }
+
+            .search-box input {
+                width: 100%;
+                padding: 8px 12px 8px 32px;
+                border-radius: 50px;
+                border: none;
+                background: rgba(255, 255, 255, 0.1);
+                color: white;
+                font-size: 0.85rem;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            .search-box i {
+                position: absolute;
+                left: 12px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #42b7ae;
+                font-size: 0.9rem;
+            }
+
+            .location-list {
+                list-style: none;
+            }
+
+            .location-item {
+                padding: 10px;
+                margin-bottom: 8px;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 6px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                border-left: 3px solid #42b7ae;
+                font-size: 0.85rem;
+            }
+
+            .location-item:hover {
+                background: rgba(66, 183, 174, 0.15);
+                transform: translateX(3px);
+            }
+
+            .location-name {
+                font-weight: 600;
+                margin-bottom: 4px;
+                color: #42b7ae;
+            }
+
+            .location-coords {
+                font-size: 0.75rem;
+                color: #bbb;
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .highlight {
+                background: rgba(66, 183, 174, 0.25) !important;
+                border: 1px solid #42b7ae;
+            }
+
+            .info-window {
+                padding: 6px;
+                color: #333;
+                min-width: 200px;
+                font-size: 0.9rem;
+            }
+
+            .info-window h3 {
+                color: #1a2a6c;
+                margin-bottom: 4px;
+                border-bottom: 1px solid #ff4d4d;
+                padding-bottom: 4px;
+                font-size: 1rem;
+            }
+
+            .info-window p {
+                margin: 4px 0;
+                font-size: 0.8rem;
+            }
+
+            /* 红色水滴样式 */
+            .water-drop {
+                position: relative;
+                width: 24px;
+                height: 24px;
+                background: #ff4d4d;
+                border-radius: 50% 50% 50% 0;
+                transform: rotate(-45deg);
+                box-shadow: 0 0 10px rgba(255, 77, 77, 0.7);
+                animation: pulse 1.5s infinite;
+            }
+
+            .water-drop::after {
+                content: "";
+                position: absolute;
+                width: 12px;
+                height: 12px;
+                background: rgba(255, 255, 255, 0.5);
+                border-radius: 50%;
+                top: 4px;
+                left: 4px;
+            }
+
+            @keyframes pulse {
+                0% {
+                    transform: rotate(-45deg) scale(1);
+                }
+                50% {
+                    transform: rotate(-45deg) scale(1.1);
+                }
+                100% {
+                    transform: rotate(-45deg) scale(1);
+                }
+            }
+
+            .legend {
+                position: absolute;
+                bottom: 20px;
+                left: 10px;
+                z-index: 1000;
+                background: rgba(0, 0, 0, 0.6);
+                border-radius: 4px;
+                padding: 10px;
+                backdrop-filter: blur(5px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                color: white;
+                font-size: 0.8rem;
+            }
+
+            .legend-item {
+                display: flex;
+                align-items: center;
+                margin-bottom: 5px;
+            }
+
+            .legend-color {
+                width: 20px;
+                height: 20px;
+                margin-right: 8px;
+                border-radius: 3px;
+            }
+
+            .ghana-boundary {
+                background: rgba(26, 115, 232, 0.6);
+            }
+
+            .region-boundary {
+                background: rgba(52, 168, 83, 0.6);
+            }
+
+            .point-marker {
+                background: #ff4d4d;
+            }
+
+            .hidden {
+                display: none;
+            }
+
+            /* 折叠状态下的提示 */
+            .collapsed-hint {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(90deg);
+                white-space: nowrap;
+                font-size: 0.8rem;
+                color: #42b7ae;
+                font-weight: bold;
+                opacity: 0.7;
+            }
+
+            /* 重置视图按钮 */
+            .reset-view-btn {
+                position: absolute;
+                top: 85px;
+                right: 20px;
+                z-index: 10;
+                background: rgba(66, 183, 174, 0.8);
+                color: white;
+                border: none;
+                border-radius: 5px;
+                padding: 8px 15px;
+                font-size: 0.85rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            }
+
+            .reset-view-btn:hover {
+                background: #42b7ae;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            }
+
+            /* 加载指示器 */
+            .loader {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 1000;
+                width: 60px;
+                height: 60px;
+                border: 8px solid rgba(255, 255, 255, 0.3);
+                border-radius: 50%;
+                border-top: 8px solid #42b7ae;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: translate(-50%, -50%) rotate(0deg);
+                }
+                100% {
+                    transform: translate(-50%, -50%) rotate(360deg);
+                }
+            }
+
+            /* 边界标记样式 */
+            .boundary-marker {
+                position: absolute;
+                background: rgba(255, 77, 77, 0.8);
+                color: white;
+                padding: 3px 8px;
+                border-radius: 4px;
+                font-size: 0.7rem;
+                z-index: 1001;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            }
+
+            .north-marker {
+                top: 5px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .south-marker {
+                bottom: 5px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .east-marker {
+                top: 50%;
+                right: 5px;
+                transform: translateY(-50%);
+            }
+
+            .west-marker {
+                top: 50%;
+                left: 5px;
+                transform: translateY(-50%);
+            }
+
+            /* 响应式设计增强 */
+            @media (max-width: 900px) {
+                .content {
+                    flex-direction: column;
+                }
+
+                .locations-panel {
+                    width: 100%;
+                    max-height: 200px;
+                }
+
+                .toggle-panel-btn {
+                    display: none;
+                }
+
+                .reset-view-btn {
+                    top: 15px;
+                    right: 15px;
+                }
+
+                .boundary-marker {
+                    display: none;
+                }
+            }
+
+            @media (max-width: 600px) {
+                h1 {
+                    font-size: 1.4rem;
+                }
+
+                .subtitle {
+                    font-size: 0.8rem;
+                }
+
+                .stat-box {
+                    min-width: 80px;
+                    padding: 6px 8px;
+                }
+
+                .reset-view-btn span {
+                    display: none;
+                }
+
+                .reset-view-btn {
+                    padding: 8px 10px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <h1><i class="fas fa-map-marked-alt"></i> 加纳网点坐标地图</h1>
+                <p class="subtitle">
+                    此地图展示了加纳主要地区的坐标位置，地图边界已优化为最大可显示范围。
+                </p>
+
+                <div class="stats">
+                    <div class="stat-box">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h3>20个</h3>
+                        <p>网点位置</p>
+                    </div>
+                    <div class="stat-box">
+                        <i class="fas fa-road"></i>
+                        <h3>5000+公里</h3>
+                        <p>覆盖范围</p>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content">
+                <div class="map-container">
+                    <div id="map"></div>
+                    <div class="loader"></div>
+                    <button id="resetView" class="reset-view-btn">
+                        <i class="fas fa-sync-alt"></i> <span>重置视图</span>
+                    </button>
+
+                    <!-- 边界标记 -->
+                    <div class="boundary-marker north-marker">
+                        <i class="fas fa-arrow-up"></i> 加纳北部边界
+                    </div>
+                    <div class="boundary-marker south-marker">
+                        <i class="fas fa-arrow-down"></i> 加纳南部边界
+                    </div>
+                    <div class="boundary-marker east-marker">
+                        <i class="fas fa-arrow-right"></i> 加纳东部边界
+                    </div>
+                    <div class="boundary-marker west-marker">
+                        <i class="fas fa-arrow-left"></i> 加纳西部边界
+                    </div>
+
+                    <!-- 图例 -->
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color ghana-boundary"></div>
+                            <span>加纳边界</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color point-marker"></div>
+                            <span>网点位置</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="locations-panel">
+                    <button id="togglePanel" class="toggle-panel-btn">
+                        <i class="fas fa-chevron-left"></i>
+                        <span class="label">折叠</span>
+                    </button>
+
+                    <!-- 折叠状态提示 -->
+                    <div class="collapsed-hint">网点列表</div>
+
+                    <div class="panel-header">
+                        <h2><i class="fas fa-list"></i> 地点列表</h2>
+                        <span id="counter">20个地点</span>
+                    </div>
+
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input
+                            type="text"
+                            id="search"
+                            placeholder="搜索地点..."
+                        />
+                    </div>
+
+                    <ul class="location-list" id="locationList">
+                        <!-- 地点列表将通过JS动态生成 -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // 加纳网点数据
+            const locations = [
+                {
+                    name: "Adenta Municipality",
+                    coords: { lat: 5.7141674, lng: -0.1541 },
+                },
+                {
+                    name: "Ashaiman",
+                    coords: { lat: 5.6930008, lng: -0.0337718 },
+                },
+                { name: "Suaman", coords: { lat: 6.1229434, lng: -3.0375914 } },
+                { name: "Accra Central", coords: { lat: 5.555, lng: -0.201 } },
+                { name: "Kumasi", coords: { lat: 6.672, lng: -1.616 } },
+                { name: "Tamale", coords: { lat: 9.404, lng: -0.843 } },
+                {
+                    name: "Sekondi-Takoradi",
+                    coords: { lat: 4.934, lng: -1.715 },
+                },
+                { name: "Cape Coast", coords: { lat: 5.104, lng: -1.246 } },
+                { name: "Obuasi", coords: { lat: 6.202, lng: -1.682 } },
+                { name: "Tema", coords: { lat: 5.666, lng: -0.016 } },
+                { name: "Sunyani", coords: { lat: 7.338, lng: -2.337 } },
+                { name: "Ho", coords: { lat: 6.601, lng: 0.471 } },
+                { name: "Bolgatanga", coords: { lat: 10.785, lng: -0.851 } },
+                { name: "Wa", coords: { lat: 10.062, lng: -2.502 } },
+                { name: "Koforidua", coords: { lat: 6.09, lng: -0.26 } },
+                { name: "Tarkwa", coords: { lat: 5.303, lng: -1.986 } },
+                { name: "Elmina", coords: { lat: 5.083, lng: -1.35 } },
+                { name: "Axim", coords: { lat: 4.866, lng: -2.241 } },
+                { name: "Hohoe", coords: { lat: 7.151, lng: 0.472 } },
+                { name: "Yendi", coords: { lat: 9.433, lng: -0.016 } },
+            ];
+
+            let map;
+            let markers = [];
+            let infoWindow;
+            let resizeTimer;
+            let ghanaBorder;
+            let regions = [];
+
+            // 加纳边界坐标（西南角和东北角）
+            const SOUTH_WEST = new google.maps.LatLng(4.73, -3.27);
+            const NORTH_EAST = new google.maps.LatLng(11.17, 1.19);
+
+            // 初始化地图
+            function initMap() {
+                // 隐藏加载器
+                document.querySelector(".loader").style.display = "none";
+
+                // 创建地图，中心点设在加纳首都阿克拉
+                map = new google.maps.Map(document.getElementById("map"), {
+                    zoom: 7,
+                    center: { lat: 7.9465, lng: -1.0232 },
+                    mapTypeId: "roadmap",
+                    restriction: {
+                        latLngBounds: new google.maps.LatLngBounds(
+                            SOUTH_WEST,
+                            NORTH_EAST,
+                        ),
+                        strictBounds: false,
+                    },
+                    styles: [
+                        {
+                            featureType: "administrative",
+                            elementType: "labels",
+                            stylers: [{ visibility: "on" }],
+                        },
+                        {
+                            featureType: "poi",
+                            stylers: [{ visibility: "off" }],
+                        },
+                        {
+                            featureType: "road",
+                            elementType: "labels",
+                            stylers: [{ visibility: "simplified" }],
+                        },
+                        {
+                            featureType: "water",
+                            elementType: "geometry",
+                            stylers: [{ color: "#2980b9" }],
+                        },
+                        {
+                            featureType: "landscape",
+                            stylers: [{ color: "#e5e8e7" }],
+                        },
+                    ],
+                    gestureHandling: "greedy",
+                });
+
+                // 确保边界在窗口中完整可见
+                setTimeout(ensureMaximizedView, 500);
+
+                // 创建信息窗口
+                infoWindow = new google.maps.InfoWindow({ maxWidth: 250 });
+
+                // 创建红色水滴标记
+                const redWaterDropSvg = `
+            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 22C7 22 2 17 2 12C2 7 7 2 12 2C17 2 22 7 22 12C22 17 17 22 12 22Z" fill="#ff4d4d" stroke="white" stroke-width="1.5"/>
+                <circle cx="12" cy="12" r="6" fill="white" fill-opacity="0.5"/>
+            </svg>
+        `;
+
+                const redWaterDropUrl =
+                    "data:image/svg+xml;charset=UTF-8," +
+                    encodeURIComponent(redWaterDropSvg);
+
+                // 创建标记和监听事件
+                locations.forEach((location) => {
+                    // 创建标记
+                    const marker = new google.maps.Marker({
+                        position: location.coords,
+                        map: map,
+                        title: location.name,
+                        icon: {
+                            url: redWaterDropUrl,
+                            scaledSize: new google.maps.Size(24, 24),
+                            anchor: new google.maps.Point(12, 12),
+                        },
+                    });
+
+                    markers.push(marker);
+
+                    // 添加鼠标悬停事件
+                    marker.addListener("mouseover", () => {
+                        infoWindow.setContent(`
+                    <div class="info-window">
+                        <h3>${location.name}</h3>
+                        <p><strong>纬度:</strong> ${location.coords.lat.toFixed(6)}</p>
+                        <p><strong>经度:</strong> ${location.coords.lng.toFixed(6)}</p>
+                    </div>
+                `);
+                        infoWindow.open(map, marker);
+
+                        // 高亮显示对应的列表项
+                        highlightLocation(location.name);
+                    });
+
+                    // 添加鼠标移出事件
+                    marker.addListener("mouseout", () => {
+                        infoWindow.close();
+                        removeHighlight();
+                    });
+                });
+
+                // 创建地点列表
+                const locationList = document.getElementById("locationList");
+                locations.forEach((location) => {
+                    const li = document.createElement("li");
+                    li.className = "location-item";
+                    li.innerHTML = `
+                <div class="location-name">${location.name}</div>
+                <div class="location-coords">
+                    <span>纬度: ${location.coords.lat.toFixed(6)}</span>
+                    <span>经度: ${location.coords.lng.toFixed(6)}</span>
+                </div>
+            `;
+
+                    // 点击列表项时定位到地图上的标记
+                    li.addEventListener("click", () => {
+                        map.panTo(location.coords);
+                        map.setZoom(12);
+
+                        // 高亮显示
+                        highlightLocation(location.name);
+
+                        // 显示信息窗口
+                        infoWindow.setContent(`
+                    <div class="info-window">
+                        <h3>${location.name}</h3>
+                        <p><strong>纬度:</strong> ${location.coords.lat.toFixed(6)}</p>
+                        <p><strong>经度:</strong> ${location.coords.lng.toFixed(6)}</p>
+                    </div>
+                `);
+
+                        // 查找对应的标记
+                        markers.forEach((marker) => {
+                            if (marker.getPosition().equals(location.coords)) {
+                                infoWindow.open(map, marker);
+                            }
+                        });
+                    });
+
+                    locationList.appendChild(li);
+                });
+
+                // 添加加纳边界
+                addGhanaBoundary();
+
+                // 搜索功能
+                const searchInput = document.getElementById("search");
+                searchInput.addEventListener("input", () => {
+                    const searchTerm = searchInput.value.toLowerCase();
+                    const listItems =
+                        document.querySelectorAll(".location-item");
+
+                    listItems.forEach((item) => {
+                        const locationName = item
+                            .querySelector(".location-name")
+                            .textContent.toLowerCase();
+                        if (locationName.includes(searchTerm)) {
+                            item.style.display = "block";
+                        } else {
+                            item.style.display = "none";
+                        }
+                    });
+                });
+
+                // 高亮显示地点
+                function highlightLocation(name) {
+                    const listItems =
+                        document.querySelectorAll(".location-item");
+                    listItems.forEach((item) => {
+                        item.classList.remove("highlight");
+                        if (
+                            item.querySelector(".location-name").textContent ===
+                            name
+                        ) {
+                            item.classList.add("highlight");
+                            item.scrollIntoView({
+                                behavior: "smooth",
+                                block: "nearest",
+                            });
+                        }
+                    });
+                }
+
+                // 移除高亮
+                function removeHighlight() {
+                    const listItems =
+                        document.querySelectorAll(".location-item");
+                    listItems.forEach((item) => {
+                        item.classList.remove("highlight");
+                    });
+                }
+
+                // 右侧面板折叠/展开功能
+                const togglePanelBtn = document.getElementById("togglePanel");
+                const locationsPanel =
+                    document.querySelector(".locations-panel");
+
+                togglePanelBtn.addEventListener("click", () => {
+                    locationsPanel.classList.toggle("collapsed");
+
+                    if (locationsPanel.classList.contains("collapsed")) {
+                        togglePanelBtn.innerHTML =
+                            '<i class="fas fa-chevron-right"></i><span class="label">展开</span>';
+                    } else {
+                        togglePanelBtn.innerHTML =
+                            '<i class="fas fa-chevron-left"></i><span class="label">折叠</span>';
+                    }
+
+                    // 重新调整地图视图
+                    setTimeout(ensureMaximizedView, 300);
+                });
+
+                // 确保整个加纳边界可见
+                ensureMaximizedView();
+
+                // 重置视图按钮事件
+                document
+                    .getElementById("resetView")
+                    .addEventListener("click", ensureMaximizedView);
+            }
+
+            // 添加加纳边界
+            function addGhanaBoundary() {
+                // 加纳边界坐标（矩形边界）
+                const ghanaCoords = [
+                    { lat: 11.17, lng: -3.27 }, // 西北
+                    { lat: 11.17, lng: 1.19 }, // 东北
+                    { lat: 4.73, lng: 1.19 }, // 东南
+                    { lat: 4.73, lng: -3.27 }, // 西南
+                    { lat: 11.17, lng: -3.27 }, // 回到起点
+                ];
+
+                ghanaBorder = new google.maps.Polygon({
+                    paths: ghanaCoords,
+                    strokeColor: "#1a73e8",
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: "#1a73e8",
+                    fillOpacity: 0.05,
+                    map: map,
+                });
+            }
+
+            // 确保边界最大化可见 (核心优化函数)
+            function ensureMaximizedView() {
+                if (!map) return;
+
+                try {
+                    // 1. 获取地图容器的实际尺寸
+                    const mapContainer = document.getElementById("map");
+                    const mapWidth = mapContainer.offsetWidth;
+                    const mapHeight = mapContainer.offsetHeight;
+
+                    // 2. 计算最佳内边距 (占宽高的1%)
+                    const padding = {
+                        top: Math.round(mapHeight * 0.01),
+                        right: Math.round(mapWidth * 0.01),
+                        bottom: Math.round(mapHeight * 0.01),
+                        left: Math.round(mapWidth * 0.01),
+                    };
+
+                    // 3. 创建加纳边界矩形
+                    const ghanaBounds = new google.maps.LatLngBounds(
+                        SOUTH_WEST,
+                        NORTH_EAST,
+                    );
+
+                    // 4. 动态调整地图视图
+                    map.fitBounds(ghanaBounds, padding);
+
+                    // 5. 确保最小缩放级别
+                    const minZoom = 6;
+                    setTimeout(() => {
+                        if (map.getZoom() > minZoom) {
+                            map.setZoom(minZoom);
+                        }
+                    }, 300);
+
+                    // 控制台日志（调试使用）
+                    console.log(`地图尺寸: ${mapWidth}x${mapHeight}`);
+                    console.log(
+                        `应用内边距: ${padding.top},${padding.right},${padding.bottom},${padding.left}`,
+                    );
+                } catch (error) {
+                    console.error("确保加纳视图最大化错误:", error);
+                }
+            }
+
+            // 窗口大小改变时重新调整地图视图
+            window.addEventListener("resize", function () {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function () {
+                    ensureMaximizedView();
+                }, 250); // 250ms防抖延迟
+            });
+
+            // 页面加载完成后初始化地图
+            window.onload = function () {
+                // 显示加载器
+                document.querySelector(".loader").style.display = "block";
+
+                // 初始化地图
+                initMap();
+            };
+        </script>
+    </body>
+</html>

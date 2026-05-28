@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>SKU与FNSKU绑定平台 | 智能仓品管理</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #f4f7fc;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            padding: 28px 24px;
+            color: #1a2c3e;
+        }
+        .dashboard-container { max-width: 1600px; margin: 0 auto; }
+        /* 统计卡片 - 无货主文案 */
+        .stats-row {
+            background: white;
+            border-radius: 28px;
+            padding: 20px 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #eef2f6;
+        }
+        .stats-grid {
+            display: flex;
+            gap: 48px;
+            background: #f9fafb;
+            padding: 8px 28px;
+            border-radius: 60px;
+        }
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 1.9rem; font-weight: 800; color: #1f5e3a; line-height: 1.2; }
+        .stat-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: #5b6e8c; font-weight: 600; }
+        .sync-badge {
+            background: #eef2ff;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #1f5e3a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        /* 操作栏优化 */
+        .action-bar {
+            background: white;
+            border-radius: 24px;
+            padding: 16px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #eef2f8;
+        }
+        .filters-group { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f8fafd;
+            border-radius: 60px;
+            padding: 6px 18px;
+            border: 1px solid #e2e8f0;
+            min-width: 280px;
+            transition: all 0.2s;
+        }
+        .search-box:focus-within { border-color: #1b4d3e; box-shadow: 0 0 0 2px rgba(27,77,62,0.1); }
+        .search-box input { border: none; background: transparent; padding: 10px 0; outline: none; width: 100%; font-weight: 500; }
+        .filter-select {
+            background: #f8fafd;
+            border: 1px solid #e2e8f0;
+            border-radius: 40px;
+            padding: 8px 20px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: #1f3a4b;
+        }
+        .btn-icon {
+            background: white;
+            border: 1px solid #cfdfed;
+            padding: 8px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #2c5f8a;
+        }
+        .btn-primary { background: #1b4d3e; border-color: #1b4d3e; color: white; }
+        .btn-primary:hover { background: #0f3a2e; transform: translateY(-1px); }
+        .btn-icon:hover { background: #f1f5f9; border-color: #b9cee4; }
+        /* 状态按钮组 - 精致胶囊 */
+        .status-tab-bar {
+            background: white;
+            border-radius: 60px;
+            padding: 6px;
+            margin-bottom: 24px;
+            display: inline-flex;
+            gap: 6px;
+            border: 1px solid #eef2f8;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .status-btn {
+            padding: 8px 24px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #4a627a;
+        }
+        .status-btn.active {
+            background: #1b4d3e;
+            color: white;
+            box-shadow: 0 2px 8px rgba(27,77,62,0.25);
+        }
+        .status-btn:not(.active):hover { background: #eef2f6; }
+        /* 表格 - 更清爽 */
+        .table-wrapper {
+            background: white;
+            border-radius: 28px;
+            overflow-x: auto;
+            border: 1px solid #eef2f8;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02);
+        }
+        .sku-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 1500px;
+        }
+        .sku-table th {
+            text-align: left;
+            padding: 18px 14px;
+            background-color: #fafcff;
+            font-weight: 700;
+            color: #2c4b6e;
+            border-bottom: 1px solid #e9edf2;
+            font-size: 0.85rem;
+        }
+        .sku-table td {
+            padding: 16px 14px;
+            border-bottom: 1px solid #f0f3f8;
+            vertical-align: middle;
+        }
+        .sku-table tr:hover td { background-color: #fafcfe; }
+        .product-img-placeholder {
+            width: 44px;
+            height: 44px;
+            background: #f0f4fa;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6d8aac;
+            font-size: 1.3rem;
+        }
+        /* 仓库悬浮详情 */
+        .warehouse-item {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dashed #b9cee4;
+            display: inline-block;
+            margin-right: 10px;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+        }
+        .warehouse-detail-popup {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            background: #1f2f3e;
+            color: white;
+            font-size: 0.7rem;
+            border-radius: 14px;
+            padding: 8px 14px;
+            width: 210px;
+            bottom: 150%;
+            left: 0;
+            z-index: 200;
+            transition: 0.12s;
+            pointer-events: none;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+            white-space: normal;
+            line-height: 1.5;
+            font-weight: 400;
+        }
+        .warehouse-item:hover .warehouse-detail-popup {
+            visibility: visible;
+            opacity: 1;
+        }
+        .warehouse-name { font-weight: 700; color: #1f5e3a; margin-right: 4px; }
+        .stock-dash { color: #9aaebf; font-style: italic; }
+        /* 仓品信息卡片 */
+        .warehouse-info-card {
+            background: #f8fafd;
+            border-radius: 18px;
+            padding: 8px 12px;
+            font-size: 0.7rem;
+            border-left: 3px solid #2c7a4d;
+            max-width: 240px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .warehouse-info-card div { margin: 5px 0; word-break: break-word; }
+        .info-label { font-weight: 700; color: #2c4b6e; display: inline-block; min-width: 62px; }
+        .empty-placeholder { color: #9aaebf; font-style: italic; font-size: 0.7rem; }
+        /* 总库存分类 */
+        .stock-category { display: flex; flex-direction: column; gap: 6px; }
+        .stock-row { display: flex; gap: 12px; flex-wrap: wrap; }
+        .stock-badge {
+            background: #f0f3f9;
+            border-radius: 30px;
+            padding: 3px 10px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        /* 绑定下拉组件优化 */
+        .bind-select-wrapper { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .custom-select { position: relative; display: inline-block; width: 190px; }
+        .select-input {
+            width: 100%;
+            padding: 7px 28px 7px 14px;
+            border-radius: 30px;
+            border: 1px solid #cbdde9;
+            background: white;
+            font-size: 0.75rem;
+            transition: 0.2s;
+        }
+        .select-input:focus { outline: none; border-color: #1b4d3e; box-shadow: 0 0 0 2px rgba(27,77,62,0.1); }
+        .dropdown-list {
+            position: absolute;
+            top: 36px;
+            left: 0;
+            width: 100%;
+            background: white;
+            border: 1px solid #dce5ec;
+            border-radius: 20px;
+            max-height: 210px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .dropdown-list.show { display: block; }
+        .dropdown-item { padding: 8px 14px; cursor: pointer; font-size: 0.75rem; }
+        .dropdown-item:hover { background: #eef2ff; }
+        .small-action-btn {
+            background: #f0f4f9;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            color: #1b4d3e;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: 0.1s;
+        }
+        .small-action-btn:hover { background: #e2e8f0; }
+        .badge-status {
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .status-bound { background: #e1f7ea; color: #1e7640; }
+        .status-unbound { background: #fff1e5; color: #c26b1a; }
+        .status-review { background: #fff0db; color: #b55f0a; border-left: 3px solid #f0b429; }
+        /* 弹窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(2px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-container {
+            background: white;
+            border-radius: 36px;
+            width: 600px;
+            max-width: 90%;
+            padding: 28px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.2);
+        }
+        .toast-msg {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1f2f3e;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            z-index: 1100;
+            font-size: 0.85rem;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .btn-sm { padding: 8px 18px; border-radius: 40px; border: none; font-weight: 600; cursor: pointer; }
+        .mt-3 { margin-top: 16px; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- 统计卡片 - 已移除货主文案 -->
+    <div class="stats-row">
+        <div class="stats-grid">
+            <div class="stat-item"><div class="stat-number" id="statGoodsCount">4</div><div class="stat-label">商品总数</div></div>
+            <div class="stat-item"><div class="stat-number" id="statSkuCount">4</div><div class="stat-label">SKU总数</div></div>
+            <div class="stat-item"><div class="stat-number" id="statTotalValue">$20,025.50</div><div class="stat-label">总库存价值</div></div>
+            <div class="stat-item"><div class="stat-number" id="statLowStock">0</div><div class="stat-label">低库存SKU</div></div>
+        </div>
+        <div class="sync-badge"><i class="fas fa-check-circle"></i> 库存已同步 · 实时</div>
+    </div>
+
+    <!-- 操作栏 -->
+    <div class="action-bar">
+        <div class="filters-group">
+            <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="搜索商品名称 / SKU编码 / SKU-TSIN / FNSKU..."></div>
+            <select id="shopFilter" class="filter-select">
+                <option value="all">🏢 全部店铺</option>
+                <option value="main">加纳优选主店</option>
+                <option value="wholesale">阿克拉批发店</option>
+                <option value="retail">特马零售店</option>
+            </select>
+            <button id="importTemplateBtn" class="btn-icon"><i class="fas fa-download"></i> 导入模板</button>
+            <button id="importBtn" class="btn-icon"><i class="fas fa-upload"></i> 导入绑定</button>
+            <button id="exportBtn" class="btn-icon"><i class="fas fa-file-export"></i> 导出数据</button>
+        </div>
+    </div>
+
+    <!-- 状态筛选胶囊栏 -->
+    <div class="status-tab-bar" id="statusTabBar">
+        <button class="status-btn active" data-status="all">全部</button>
+        <button class="status-btn" data-status="bound">已绑定</button>
+        <button class="status-btn" data-status="unbound">未绑定</button>
+        <button class="status-btn" data-status="review">审核中</button>
+    </div>
+
+    <!-- 表格 -->
+    <div class="table-wrapper">
+        <table class="sku-table">
+            <thead>
+                <tr><th>图片</th><th>商品信息</th><th>SKU-TSIN</th><th>规格</th><th>售价($)</th><th>仓品信息</th><th>绑定FNSKU</th><th>各仓库库存</th><th>总库存(正/次/残)</th><th>绑定状态</th></tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 导入弹窗 -->
+<div id="importModal" style="display:none;" class="modal-overlay">
+    <div class="modal-container">
+        <div class="flex-between" style="margin-bottom: 20px;"><span style="font-size: 1.4rem; font-weight: 700;"><i class="fas fa-cloud-upload-alt"></i> 批量导入绑定</span><span id="closeModalBtn" style="cursor:pointer; font-size: 1.6rem;">&times;</span></div>
+        <div style="background: #f8fafc; padding: 12px; border-radius: 20px; font-size: 0.85rem;">📌 支持 CSV / JSON，根据 SKU-TSIN 精准匹配并更新 FNSKU 与绑定状态。</div>
+        <div class="flex-between mt-3"><span><i class="fas fa-info-circle"></i> 下载模板填写</span><button id="downloadTemplateModalBtn" class="btn-icon btn-sm">下载模板CSV</button></div>
+        <div class="mt-3"><input type="file" id="importFileSelect" accept=".csv,.json" style="border:1px solid #e2e8f0; border-radius: 40px; padding: 8px;"></div>
+        <div class="flex-between mt-3"><button id="confirmImportBtn" class="btn-primary btn-sm">确认导入并匹配</button><button id="cancelImportBtn" class="btn-icon btn-sm">取消</button></div>
+    </div>
+</div>
+<div id="toastMsg" style="display:none;" class="toast-msg"></div>
+
+<script>
+    // ---------- 增强数据模型（各仓库细化正/次/残，未绑定库存展示--，总库存分类）----------
+    let skuData = [
+        { id:1, productName:"加纳特级可可粉", skuCode:"COCOA-500G", skuTsin:"TSIN-GH-1001", specification:"500g/罐 · 有机认证", internationalCode:"EAN-4901234567890", price:18.90, 
+          warehouses: [ { name:"阿克拉中央仓", good:120, defective:20, damaged:10 }, { name:"特马港仓", good:50, defective:6, damaged:4 }, { name:"库马西主仓", good:180, defective:12, damaged:8 }, { name:"塔科拉迪枢纽仓", good:25, defective:3, damaged:2 } ],
+          totalStock:440, totalGood:375, totalDefective:41, totalDamaged:24, fnsku:"", bindStatus:"unbound", shop:"main", warehouseTitle:"可可粉 · 黄金带精选", hasBinding: false },
+        { id:2, productName:"乳木果油护肤霜", skuCode:"SHEA-200ML", skuTsin:"TSIN-GH-1002", specification:"200ml 乳木果萃取", internationalCode:"EAN-4901234567891", price:14.50,
+          warehouses: [ { name:"阿克拉中央仓", good:70, defective:8, damaged:2 }, { name:"特马港仓", good:110, defective:6, damaged:4 }, { name:"库马西主仓", good:40, defective:3, damaged:2 }, { name:"塔科拉迪枢纽仓", good:0, defective:0, damaged:0 } ],
+          totalStock:245, totalGood:220, totalDefective:17, totalDamaged:8, fnsku:"XZ001FNSKU", bindStatus:"bound", shop:"main", warehouseTitle:"乳木果油保湿霜·臻享", hasBinding: true },
+        { id:3, productName:"非洲黑皂", skuCode:"SOAP-100G", skuTsin:"TSIN-GH-1003", specification:"100g 纯天然黑皂", internationalCode:"EAN-4901234567892", price:6.90,
+          warehouses: [ { name:"阿克拉中央仓", good:180, defective:12, damaged:8 }, { name:"特马港仓", good:70, defective:6, damaged:4 }, { name:"库马西主仓", good:140, defective:6, damaged:4 }, { name:"塔科拉迪枢纽仓", good:90, defective:6, damaged:4 } ],
+          totalStock:530, totalGood:480, totalDefective:30, totalDamaged:20, fnsku:"", bindStatus:"review", shop:"wholesale", warehouseTitle:"黑皂天然系列(审核中)", hasBinding: false },
+        { id:4, productName:"肯特布围巾", skuCode:"KENTE-SCARF", skuTsin:"TSIN-GH-1004", specification:"手工编织 传统纹样", internationalCode:"EAN-4901234567893", price:45.00,
+          warehouses: [ { name:"阿克拉中央仓", good:40, defective:3, damaged:2 }, { name:"特马港仓", good:18, defective:1, damaged:1 }, { name:"库马西主仓", good:32, defective:2, damaged:1 }, { name:"塔科拉迪枢纽仓", good:0, defective:0, damaged:0 } ],
+          totalStock:100, totalGood:90, totalDefective:6, totalDamaged:4, fnsku:"KNT-7789-BIND", bindStatus:"bound", shop:"retail", warehouseTitle:"肯特布限定·匠造", hasBinding: true }
+    ];
+    let availableFnsList = ["XZ001FNSKU", "KNT-7789-BIND", "FN-GH-8823", "FN-GH-4456", "FN-SHEA-999", "FN-COCOA-777", "FN-BLACKSOAP-123", ""];
+
+    function showToast(msg, dur=2400) { const t = document.getElementById('toastMsg'); t.innerText = msg; t.style.display='block'; setTimeout(()=>{t.style.display='none';}, dur); }
+    function refreshStats() {
+        let totalGoods = new Set(skuData.map(s=>s.productName)).size;
+        let totalSku = skuData.length;
+        let totalVal = skuData.reduce((s,it)=>s+(it.price*it.totalStock),0);
+        let lowStock = skuData.filter(it=>it.totalStock<20).length;
+        document.getElementById('statGoodsCount').innerText=totalGoods;
+        document.getElementById('statSkuCount').innerText=totalSku;
+        document.getElementById('statTotalValue').innerHTML=`$${totalVal.toLocaleString(undefined,{minimumFractionDigits:2})}`;
+        document.getElementById('statLowStock').innerText=lowStock;
+    }
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m=> m==='&'?'&amp;':m==='<'?'&lt;':'&gt;'); }
+
+    // 仓品信息：标题 + 国际编码 + FNSKU (已绑定展示，未绑定提示)
+    function renderWarehouseInfo(item) {
+        const isBound = item.fnsku && item.fnsku.trim() !== "";
+        if(!isBound) return `<div class="warehouse-info-card"><span class="empty-placeholder"><i class="fas fa-info-circle"></i> 未绑定，暂无仓品信息</span></div>`;
+        return `<div class="warehouse-info-card">
+                    <div><span class="info-label">📦 仓品标题</span> ${escapeHtml(item.warehouseTitle || '—')}</div>
+                    <div><span class="info-label">🌍 国际编码</span> ${escapeHtml(item.internationalCode || '—')}</div>
+                    <div><span class="info-label">🔗 FNSKU</span> ${escapeHtml(item.fnsku)}</div>
+                </div>`;
+    }
+
+    // 各仓库库存渲染：未绑定时显示 "--" ，已绑定则显示数量并悬浮详情
+    function renderWarehouseStocks(item) {
+        const isBound = item.fnsku && item.fnsku.trim() !== "";
+        if(!isBound) {
+            let dashHtml = '';
+            item.warehouses.forEach(wh => { dashHtml += `<div class="warehouse-item"><span class="warehouse-name">${escapeHtml(wh.name)}</span> <span class="stock-dash">--</span></div>`; });
+            return dashHtml || '<span class="stock-dash">—</span>';
+        }
+        let html = '';
+        item.warehouses.forEach(wh => {
+            const totalQty = wh.good + wh.defective + wh.damaged;
+            const detail = `✅正品:${wh.good}  ⚠️次品:${wh.defective}  🔧残品:${wh.damaged}`;
+            html += `<div class="warehouse-item">
+                        <span class="warehouse-name">${escapeHtml(wh.name)}</span> <strong>${totalQty}</strong>件
+                        <div class="warehouse-detail-popup">📊 ${detail}</div>
+                     </div>`;
+        });
+        return html;
+    }
+
+    // 总库存列：未绑定显示"--" ，否则展示分类
+    function renderTotalStock(item) {
+        const isBound = item.fnsku && item.fnsku.trim() !== "";
+        if(!isBound) return `<span class="stock-dash">--</span>`;
+        return `<div class="stock-category">
+                    <div><strong>📦 总库存 ${item.totalStock}件</strong></div>
+                    <div class="stock-row"><span class="stock-badge">✅ 正品 ${item.totalGood}</span> <span class="stock-badge">⚠️ 次品 ${item.totalDefective}</span> <span class="stock-badge">🔧 残品 ${item.totalDamaged}</span></div>
+                </div>`;
+    }
+
+    function getStatusBadge(status) {
+        if(status==='bound') return '<span class="badge-status status-bound"><i class="fas fa-link"></i> 绑定成功</span>';
+        if(status==='unbound') return '<span class="badge-status status-unbound"><i class="fas fa-unlink"></i> 未绑定</span>';
+        if(status==='review') return '<span class="badge-status status-review"><i class="fas fa-clock"></i> 绑定审核中</span>';
+        return '<span>—</span>';
+    }
+
+    function renderBindDropdown(item) {
+        const currentFn = item.fnsku || '';
+        let inputId = `fn_input_${item.id}`;
+        let dropdownId = `fn_dropdown_${item.id}`;
+        return `<div class="bind-select-wrapper">
+                    <div class="custom-select">
+                        <input type="text" id="${inputId}" class="select-input" placeholder="搜索或输入FNSKU" value="${escapeHtml(currentFn)}" autocomplete="off">
+                        <div id="${dropdownId}" class="dropdown-list"></div>
+                    </div>
+                    <button class="small-action-btn" data-action="saveBind" data-id="${item.id}"><i class="fas fa-save"></i> 保存</button>
+                </div>`;
+    }
+
+    let currentFilterStatus = 'all', currentSearch = '', currentShop = 'all';
+
+    function renderTable() {
+        let filtered = skuData.filter(item => {
+            let matchSearch = currentSearch==='' || item.productName.toLowerCase().includes(currentSearch) || item.skuCode.toLowerCase().includes(currentSearch) || item.skuTsin.toLowerCase().includes(currentSearch) || (item.fnsku && item.fnsku.toLowerCase().includes(currentSearch));
+            let matchStatus = (currentFilterStatus === 'all') || item.bindStatus === currentFilterStatus;
+            let matchShop = (currentShop === 'all') || item.shop === currentShop;
+            return matchSearch && matchStatus && matchShop;
+        });
+        const tbody = document.getElementById('tableBody');
+        if(!tbody) return;
+        if(filtered.length===0){ tbody.innerHTML='<td><td colspan="10" style="text-align:center; padding:48px; color:#7e95af;"><i class="fas fa-box-open"></i> 暂无匹配数据</td></tr>'; refreshStats(); return; }
+        let html = '';
+        filtered.forEach(item => {
+            html += `<tr>
+                        <td><div class="product-img-placeholder"><i class="fas fa-box"></i></div></td>
+                        <td><div><strong>${escapeHtml(item.productName)}</strong><div style="font-size:0.7rem;color:#6c86a3; margin-top:4px;">${escapeHtml(item.skuCode)}</div></div></td>
+                        <td><strong>${escapeHtml(item.skuTsin)}</strong></td>
+                        <td>${escapeHtml(item.specification)}</td>
+                        <td>$${item.price.toFixed(2)}</td>
+                        <td>${renderWarehouseInfo(item)}</td>
+                        <td>${renderBindDropdown(item)}</td>
+                        <td class="warehouse-stock">${renderWarehouseStocks(item)}</td>
+                        <td>${renderTotalStock(item)}</td>
+                        <td>${getStatusBadge(item.bindStatus)}</td>
+                    </tr>`;
+        });
+        tbody.innerHTML = html;
+        // 初始化每个下拉框的可搜索功能
+        skuData.forEach(item => {
+            const inputElem = document.getElementById(`fn_input_${item.id}`);
+            const dropdownElem = document.getElementById(`fn_dropdown_${item.id}`);
+            if(inputElem && dropdownElem){
+                let options = availableFnsList.filter(f => f !== "");
+                const updateDropdown = (filterVal='') => {
+                    let filteredOps = options.filter(opt => opt.toLowerCase().includes(filterVal.toLowerCase()));
+                    dropdownElem.innerHTML = '';
+                    filteredOps.forEach(opt => {
+                        let div = document.createElement('div'); div.className='dropdown-item'; div.innerText = opt;
+                        div.onclick = (e) => { e.stopPropagation(); inputElem.value = opt; dropdownElem.classList.remove('show'); };
+                        dropdownElem.appendChild(div);
+                    });
+                    if(filteredOps.length===0) dropdownElem.innerHTML='<div class="dropdown-item">无匹配项</div>';
+                };
+                inputElem.addEventListener('focus', () => { updateDropdown(inputElem.value); dropdownElem.classList.add('show'); });
+                inputElem.addEventListener('input', (e) => { updateDropdown(e.target.value); dropdownElem.classList.add('show'); });
+                document.addEventListener('click', function closeDrop(e) {
+                    if(!inputElem.contains(e.target) && !dropdownElem.contains(e.target)) dropdownElem.classList.remove('show');
+                });
+                dropdownElem.addEventListener('click', (e) => e.stopPropagation());
+            }
+        });
+        // 保存事件
+        document.querySelectorAll('[data-action="saveBind"]').forEach(btn => {
+            btn.removeEventListener('click', saveBindHandler);
+            btn.addEventListener('click', saveBindHandler);
+        });
+        refreshStats();
+    }
+
+    function saveBindHandler(e) {
+        const skuId = parseInt(e.currentTarget.getAttribute('data-id'));
+        const inputElem = document.getElementById(`fn_input_${skuId}`);
+        if(!inputElem) return;
+        const newFnsku = inputElem.value.trim();
+        const target = skuData.find(s=> s.id === skuId);
+        if(target){
+            target.fnsku = newFnsku;
+            if(newFnsku !== ""){
+                target.bindStatus = "bound";
+                if(!target.warehouseTitle) target.warehouseTitle = `${target.productName} · 专属仓品`;
+                if(!target.internationalCode) target.internationalCode = "待补充国际编码";
+            } else {
+                target.bindStatus = "unbound";
+            }
+            showToast(`✓ 已更新 ${target.skuCode} 的FNSKU: ${newFnsku || '未绑定'}，仓品信息同步`, 1600);
+            renderTable();
+        }
+    }
+
+    // 导入模板与导入逻辑
+    function downloadTemplate() {
+        const headers = ["SKU-TSIN","FNSKU","绑定状态(可选bound/unbound/review)"];
+        const example = [["TSIN-GH-1001","FN-EXAMPLE001","bound"],["TSIN-GH-1002","","unbound"]];
+        let csvRows = [headers, ...example].map(row => row.map(cell => `"${cell}"`).join(","));
+        const blob = new Blob(["\uFEFF" + csvRows.join("\n")], {type:"text/csv"});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "fnsku_binding_template.csv"; a.click(); URL.revokeObjectURL(a.href);
+        showToast("模板已下载，请按SKU-TSIN填写", 1800);
+    }
+    function importBindings(file) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            const content = ev.target.result;
+            const ext = file.name.split('.').pop().toLowerCase();
+            let bindings = [];
+            try {
+                if(ext === 'json') { let arr = JSON.parse(content); if(Array.isArray(arr)) bindings = arr; else throw new Error("JSON需为数组"); }
+                else if(ext === 'csv') {
+                    const lines = content.split(/\r?\n/).filter(l=>l.trim());
+                    if(lines.length<2) throw new Error("CSV数据不足");
+                    const headers = lines[0].split(',').map(h=>h.replace(/"/g,'').trim());
+                    const skuIdx = headers.findIndex(h=>h.toLowerCase().includes('skutsin')||h==='SKU-TSIN');
+                    const fnskuIdx = headers.findIndex(h=>h.toLowerCase().includes('fnsku'));
+                    const statusIdx = headers.findIndex(h=>h.toLowerCase().includes('绑定状态'));
+                    if(skuIdx===-1) throw new Error("缺少SKU-TSIN列");
+                    for(let i=1;i<lines.length;i++) {
+                        let values = parseCSVLine(lines[i]);
+                        if(values.length>Math.max(skuIdx,fnskuIdx)) {
+                            let skuTsin = values[skuIdx].replace(/^"|"$/g,'').trim();
+                            let fnsku = (fnskuIdx!==-1?values[fnskuIdx].replace(/^"|"$/g,'').trim():'');
+                            let bindStatus = (statusIdx!==-1 && values[statusIdx])? values[statusIdx].replace(/^"|"$/g,'').trim() : '';
+                            if(skuTsin) bindings.push({skuTsin, fnsku, bindStatus});
+                        }
+                    }
+                } else throw new Error("格式仅支持CSV/JSON");
+            } catch(err){ showToast("解析失败: "+err.message,2500); return; }
+            let updated=0;
+            for(let b of bindings){
+                let exist = skuData.find(s=> s.skuTsin === b.skuTsin);
+                if(exist){
+                    if(b.fnsku !== undefined) exist.fnsku = b.fnsku;
+                    if(b.bindStatus && ['bound','unbound','review'].includes(b.bindStatus)) exist.bindStatus = b.bindStatus;
+                    else if(b.fnsku !== undefined && b.fnsku !== "") exist.bindStatus = "bound";
+                    else if(b.fnsku === "") exist.bindStatus = "unbound";
+                    updated++;
+                }
+            }
+            renderTable();
+            showToast(`✅ 导入匹配完成，成功更新 ${updated} 个SKU`, 2200);
+            document.getElementById('importModal').style.display='none';
+        };
+        reader.readAsText(file,'UTF-8');
+    }
+    function parseCSVLine(line) { const regex = /(".*?"|[^,]+)(?=\s*,|\s*$)/g; let matches=[], match; while((match=regex.exec(line))!==null) matches.push(match[0]); return matches; }
+
+    // 事件绑定
+    const modal = document.getElementById('importModal');
+    document.getElementById('importBtn').onclick = ()=> modal.style.display = 'flex';
+    document.getElementById('closeModalBtn').onclick = ()=> modal.style.display = 'none';
+    document.getElementById('cancelImportBtn').onclick = ()=> modal.style.display = 'none';
+    document.getElementById('importTemplateBtn').onclick = downloadTemplate;
+    document.getElementById('downloadTemplateModalBtn').onclick = downloadTemplate;
+    document.getElementById('confirmImportBtn').onclick = ()=>{
+        const fileInput = document.getElementById('importFileSelect');
+        if(!fileInput.files || !fileInput.files[0]) { showToast("请选择文件",1500); return; }
+        importBindings(fileInput.files[0]); fileInput.value = '';
+    };
+    document.getElementById('searchInput').addEventListener('input', (e)=>{ currentSearch = e.target.value.toLowerCase(); renderTable(); });
+    document.getElementById('shopFilter').addEventListener('change', (e)=>{ currentShop = e.target.value; renderTable(); });
+    document.getElementById('exportBtn').addEventListener('click', ()=>{
+        let exportArr = skuData.map(s=>({ 商品名称:s.productName, "SKU-TSIN":s.skuTsin, 规格:s.specification, 售价:s.price, 仓品标题:s.warehouseTitle||"", 国际编码:s.internationalCode, FNSKU:s.fnsku, 绑定状态:s.bindStatus, 总库存:s.totalStock, 正品:s.totalGood, 次品:s.totalDefective, 残品:s.totalDamaged }));
+        let csvRows = [Object.keys(exportArr[0]).join(","), ...exportArr.map(row=>Object.values(row).map(v=>`"${String(v).replace(/"/g,'""')}"`).join(","))];
+        const blob = new Blob(["\uFEFF"+csvRows.join("\n")], {type:"text/csv"});
+        const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download="sku_binding_export.csv"; a.click(); URL.revokeObjectURL(a.href);
+        showToast("导出完成", 1500);
+    });
+    document.querySelectorAll('.status-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.status-btn').forEach(b=>b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilterStatus = btn.getAttribute('data-status');
+            renderTable();
+        });
+    });
+    renderTable();
+</script>
+</body>
+</html>

@@ -1,0 +1,2824 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快递运输任务调度系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f5ff 0%, #e6f0ff 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-y: hidden;
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: white;
+        }
+
+        header {
+            background: linear-gradient(90deg, #1a6dcc 0%, #2c87e5 100%);
+            color: white;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+            background: rgba(255, 255, 255, 0.2);
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-text h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .logo-text p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .panel-header {
+            padding: 10px 25px 10px;
+            background: white;
+            border-bottom: 1px solid #eaeef5;
+        }
+
+        .panel-header h2 {
+            font-size: 20px;
+            color: #1a3a6d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-header p {
+            color: #6a7c94;
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 0 0 14px 14px;
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+
+        .form-row label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1a3a6d;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-row input,
+        .form-row select,
+        .form-row textarea {
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #d0dbe8;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-row input:focus,
+        .form-row select:focus,
+        .form-row textarea:focus {
+            outline: none;
+            border-color: #1a6dcc;
+            box-shadow: 0 0 0 3px rgba(26, 109, 204, 0.1);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 5px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .radio-option input {
+            margin: 0;
+        }
+
+        .vehicle-info {
+            background: #f8fafd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            border: 1px solid #e4ecf7;
+        }
+
+        .vehicle-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .info-item {
+            font-size: 14px;
+            color: #4a5a72;
+        }
+
+        .info-item strong {
+            color: #1a3a6d;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .driver-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .driver-tag {
+            background: #eef2f7;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eaeef5;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #ff6b00;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #e55e00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: #eef2f7;
+            color: #1a3a6d;
+            flex: 1;
+        }
+
+        .btn-reset {
+            background: #eef2f7;
+            color: #1a3a6d;
+            width: auto;
+            padding: 10px 15px;
+        }
+
+        .btn-secondary:hover {
+            background: #dfe6f0;
+        }
+
+        .input-section {
+            flex: 1;
+            padding: 10px 15px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: white;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .tabs {
+            display: flex;
+            background: #eef2f7;
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 0px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6a7c94;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .tab.active {
+            background: white;
+            color: #1a6dcc;
+            box-shadow: 0 4px 12px rgba(26, 109, 204, 0.15);
+        }
+
+        .tab-content {
+            display: none;
+            height: 100%;
+        }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .scan-box {
+            background: white;
+            border-radius: 12px;
+            border: 2px dashed #d0dbe8;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .scan-box:hover {
+            border-color: #1a6dcc;
+            background: #f0f7ff;
+        }
+
+        .scan-icon {
+            font-size: 48px;
+            color: #1a6dcc;
+            margin-bottom: 15px;
+        }
+
+        .scan-box h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #1a3a6d;
+        }
+
+        .scan-box p {
+            color: #6a7c94;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .text-area-box {
+            margin-top: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .text-area-box textarea {
+            width: 100%;
+            height: 100%;
+            min-height: 200px;
+            border-radius: 12px;
+            border: 1px solid #d0dbe8;
+            padding: 15px;
+            font-size: 15px;
+            resize: none;
+            transition: all 0.3s ease;
+        }
+
+        .text-area-box textarea:focus {
+            outline: none;
+            border-color: #1a6dcc;
+            box-shadow: 0 0 0 3px rgba(26, 109, 204, 0.1);
+        }
+
+        .file-upload {
+            border: 2px dashed #d0dbe8;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .file-upload:hover {
+            border-color: #1a6dcc;
+            background: #f0f7ff;
+        }
+
+        .file-upload i {
+            font-size: 48px;
+            color: #1a6dcc;
+            margin-bottom: 15px;
+        }
+
+        .recent-section {
+            margin-top: 30px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .recent-section h3 {
+            font-size: 17px;
+            margin-bottom: 15px;
+            color: #1a3a6d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .recent-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tag {
+            background: #eef2f7;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tag:hover {
+            background: #1a6dcc;
+            color: white;
+        }
+
+        .preview-content {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+            overflow: hidden;
+        }
+
+        .order-list {
+            flex: 1;
+            background: #f9fbfd;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .order-list-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: #eef2f7;
+            border: none;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .filter-btn.active {
+            background: #1a6dcc;
+            color: white;
+        }
+
+        .orders-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+            max-height: calc(100% - 50px); /* 确保分页器可见 */
+        }
+
+        .order-item {
+            background: white;
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+            transition: all 0.2s ease;
+        }
+
+        .order-item:hover {
+            transform: translateX(3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .order-item.invalid {
+            border-left-color: #dc3545;
+            background-color: #fff5f5;
+        }
+
+        .order-item.warning {
+            border-left-color: #ffc107;
+            background-color: #fff9e6;
+        }
+
+        .order-check {
+            margin-right: 12px;
+            min-width: 24px;
+        }
+
+        .order-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .order-info h4 {
+            font-size: 14px;
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .order-id {
+            font-weight: 600;
+            color: #1a3a6d;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 180px;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: none;
+            color: #1a6dcc;
+            cursor: pointer;
+            padding: 2px 5px;
+            font-size: 12px;
+            opacity: 0.7;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            opacity: 1;
+            color: #ff6b00;
+        }
+
+        .order-status {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-valid {
+            background: rgba(40, 167, 69, 0.15);
+            color: #28a745;
+        }
+
+        .status-invalid {
+            background: rgba(220, 53, 69, 0.15);
+            color: #dc3545;
+        }
+
+        .status-warning {
+            background: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+        }
+
+        .order-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 3px;
+            font-size: 13px;
+            color: #6a7c94;
+        }
+
+        .order-address {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex: 1;
+            min-width: 200px;
+            font-size: 12px;
+        }
+
+        .order-departure,
+        .order-destination {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            font-size: 12px;
+        }
+
+        /* 修改为灰色 */
+        .order-departure i,
+        .order-destination i,
+        .order-detail i {
+            color: #6a7c94 !important;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: 10px;
+        }
+
+        .action-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            border: none;
+            background: #eef2f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 12px;
+        }
+
+        .action-btn:hover {
+            background: #1a6dcc;
+            color: white;
+        }
+
+        .action-btn.remove-btn:hover {
+            background: #dc3545;
+        }
+
+        .weight-stats {
+            background: #f0f7ff;
+            border-radius: 8px;
+            padding: 10px 15px;
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .weight-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .weight-stat i {
+            color: #1a6dcc;
+            font-size: 16px;
+        }
+
+        .weight-stat span {
+            font-weight: 600;
+            color: #1a3a6d;
+        }
+
+        .system-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 100%;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px; /* 增加上边距 */
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #d0dbe8;
+            font-size: 15px;
+        }
+
+        .search-box button {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            background: #1a6dcc;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .system-results {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #eaeef5;
+            padding: 10px;
+            flex: 1;
+            overflow-y: auto;
+            max-height: 100%;
+        }
+
+        .system-item {
+            padding: 8px 10px;
+            border-bottom: 1px solid #f0f4f9;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .system-item:last-child {
+            border-bottom: none;
+        }
+
+        .system-item:hover {
+            background: #f9fbfd;
+        }
+
+        .system-item input {
+            margin-right: 10px;
+        }
+
+        .system-item .info {
+            flex: 1;
+        }
+
+        .system-item .info h4 {
+            font-size: 14px;
+            color: #1a3a6d;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .system-item .info p {
+            font-size: 13px;
+            color: #6a7c94;
+            display: flex;
+            gap: 12px;
+            margin-top: 4px;
+        }
+
+        .bulk-actions {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: #f0f7ff;
+            border-top: 1px solid #eaeef5;
+            align-items: center;
+        }
+
+        .bulk-remove-btn {
+            padding: 8px 15px;
+            border-radius: 6px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.2s;
+            min-width: 120px;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .bulk-remove-btn:hover {
+            background: #bd2130;
+        }
+
+        .time-inputs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .time-inputs input {
+            flex: 1;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            gap: 20px;
+            padding: 10px;
+            background: #f0f5ff;
+        }
+
+        .left-panel {
+            width: 22%;
+            min-width: 320px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e1e8f0;
+            overflow-y: auto;
+        }
+
+        .center-panel {
+            flex: 1;
+            min-width: 500px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e1e8f0;
+            overflow-y: auto;
+        }
+
+        .right-panel {
+            width: 28%;
+            min-width: 380px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e1e8f0;
+            overflow-y: auto;
+        }
+
+        .route-info {
+            display: flex;
+            margin-top: 3px;
+            gap: 10px;
+            font-size: 12px;
+            color: #6a7c94;
+        }
+
+        .route-info span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: auto;
+            padding-top: 10px;
+            border-top: 1px solid #eaeef5;
+        }
+
+        .pagination-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: none;
+            background: #eef2f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 12px;
+            min-width: 36px;
+            height: 36px;
+        }
+
+        .pagination-btn:hover {
+            background: #1a6dcc;
+            color: white;
+        }
+
+        .pagination-btn.active {
+            background: #1a6dcc;
+            color: white;
+        }
+
+        .pagination-info {
+            font-size: 13px;
+            color: #6a7c94;
+            margin: 0 8px;
+        }
+
+        .order-search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 0 15px;
+            margin-top: 10px; /* 增加上边距 */
+        }
+
+        .order-search-box input {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #d0dbe8;
+            font-size: 15px;
+        }
+
+        .order-search-box button {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            background: #1a6dcc;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .status-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 8px;
+            padding: 0 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .status-filter-btn {
+            padding: 7px 12px;
+            border-radius: 20px;
+            background: #eef2f7;
+            border: none;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .status-filter-btn.active {
+            background: #1a6dcc;
+            color: white;
+        }
+
+        .header-stats {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #6a7c94;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #1a3a6d;
+        }
+
+        .task-type-row {
+            margin-bottom: 15px;
+        }
+
+        .system-pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding: 10px 0;
+            border-top: 1px solid #eaeef5;
+        }
+
+        .system-add-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            background: #ff6b00;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .system-add-btn:hover {
+            background: #e55e00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+        }
+
+        .select-all-btn {
+            background: #eef2f7;
+            color: #1a3a6d;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .select-all-btn:hover {
+            background: #1a6dcc;
+            color: white;
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                flex-wrap: wrap;
+            }
+
+            .left-panel,
+            .center-panel,
+            .right-panel {
+                min-width: 100%;
+            }
+
+            .left-panel {
+                order: 1;
+                height: auto;
+            }
+
+            .center-panel {
+                order: 3;
+                flex: 2;
+            }
+
+            .right-panel {
+                order: 2;
+                height: auto;
+            }
+        }
+
+        .fade-move {
+            transition: all 0.3s;
+        }
+
+        /* 改进的动画效果 */
+        .slide-fade-enter-active {
+            transition: all 0.3s ease-out;
+        }
+        .slide-fade-leave-active {
+            transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+            position: absolute;
+            width: calc(100% - 20px);
+        }
+        .slide-fade-enter-from,
+        .slide-fade-leave-to {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        .slide-fade-move {
+            transition: transform 0.3s;
+        }
+
+        /* 添加运单动画 */
+        .add-order-animation {
+            animation: highlightAdd 1s ease;
+        }
+        @keyframes highlightAdd {
+            0% {
+                background-color: rgba(102, 187, 106, 0.5);
+                transform: scale(1.02);
+            }
+            100% {
+                background-color: white;
+                transform: scale(1);
+            }
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation:
+                fadeIn 0.3s,
+                fadeOut 0.3s 2.7s;
+        }
+
+        .notification.success {
+            background: #28a745;
+        }
+
+        .notification.warning {
+            background: #ffc107;
+        }
+
+        .notification.error {
+            background: #dc3545;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        .weight-volume {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+            font-size: 13px;
+            color: #6a7c94;
+        }
+
+        .weight-tag,
+        .volume-tag {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: #f0f7ff;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        .order-details {
+            display: flex;
+            gap: 10px;
+            margin-top: 3px;
+            flex-wrap: wrap;
+        }
+
+        .order-detail {
+            font-size: 12px;
+            color: #6a7c94;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            min-width: 120px;
+        }
+
+        .copy-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 15px;
+            border-radius: 6px;
+            background: rgba(40, 167, 69, 0.9);
+            color: white;
+            font-weight: 500;
+            z-index: 1001;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            animation:
+                fadeIn 0.3s,
+                fadeOut 0.3s 1.5s;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .add-single-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 12px;
+        }
+
+        .add-single-btn:hover {
+            background: #28a745;
+            color: white;
+        }
+
+        .system-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 10px;
+        }
+
+        .pagination-left {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pagination-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pagination-right {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .system-pagination .pagination {
+            border-top: none;
+            padding-top: 0;
+            margin-top: 0;
+        }
+
+        .system-pagination .pagination-controls {
+            gap: 5px;
+        }
+        
+        /* 扫描进度条 */
+        .scan-progress {
+            height: 5px;
+            background: #1a6dcc;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 0 0 12px 12px;
+        }
+        
+        .scan-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .scan-history {
+            margin-top: 20px;
+            padding-top: 15px;
+        }
+        
+        .scan-history h4 {
+            font-size: 15px;
+            margin-bottom: 10px;
+            color: #1a3a6d;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .history-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .history-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border-left: 4px solid;
+        }
+        
+        .card-header {
+            padding: 10px 15px;
+            background: #f8fafd;
+            color: #1a3a6d;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .card-content {
+            padding: 10px 15px;
+            font-size: 14px;
+        }
+        
+        .card-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #f0f4f9;
+        }
+        
+        .card-item:last-child {
+            border-bottom: none;
+        }
+        
+        .history-card.success {
+            border-left-color: #28a745;
+        }
+        
+        .history-card.warning {
+            border-left-color: #ffc107;
+        }
+        
+        .history-card.error {
+            border-left-color: #dc3545;
+        }
+        
+        .card-time {
+            color: #6a7c94;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-shipping-fast"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>快递运输任务调度系统</h1>
+                    <p>高效创建与分配运输任务</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- 左侧面板：创建任务 -->
+            <div class="left-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-tasks"></i> 创建运输任务</h2>
+                    <p>填写运输任务基本信息并配置相关参数</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-row task-type-row">
+                        <label><i class="fas fa-route"></i> 任务类型</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input
+                                    type="radio"
+                                    v-model="taskType"
+                                    value="point-to-point"
+                                    checked
+                                />
+                                站到站
+                            </label>
+                            <label class="radio-option">
+                                <input
+                                    type="radio"
+                                    v-model="taskType"
+                                    value="circular"
+                                />
+                                循环接驳
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label><i class="fas fa-route"></i> 关联路线</label>
+                        <select v-model="selectedRoute">
+                            <option value="">选择路线</option>
+                            <option
+                                v-for="route in routes"
+                                :value="route.id"
+                                :key="route.id"
+                            >
+                                {{ route.name }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <label
+                            ><i class="fas fa-map-marker-alt"></i>
+                            起始地</label
+                        >
+                        <input
+                            type="text"
+                            :value="getRouteStart(selectedRoute)"
+                            readonly
+                        />
+                    </div>
+
+                    <div class="form-row">
+                        <label
+                            ><i class="fas fa-flag-checkered"></i>
+                            目的地</label
+                        >
+                        <input
+                            type="text"
+                            :value="getRouteEnd(selectedRoute)"
+                            readonly
+                        />
+                    </div>
+
+                    <div class="form-row">
+                        <label><i class="fas fa-truck"></i> 车辆</label>
+                        <select v-model="selectedVehicle">
+                            <option value="">选择车辆</option>
+                            <option
+                                v-for="vehicle in vehicles"
+                                :value="vehicle.id"
+                                :key="vehicle.id"
+                            >
+                                {{ vehicle.license }}
+                            </option>
+                        </select>
+
+                        <div class="vehicle-info" v-if="selectedVehicle">
+                            <div class="vehicle-grid">
+                                <div class="info-item">
+                                    <strong>车辆类型</strong>
+                                    {{ getVehicle(selectedVehicle).type }}
+                                </div>
+                                <div class="info-item">
+                                    <strong>载重</strong>
+                                    {{ getVehicle(selectedVehicle).capacity
+                                    }} kg
+                                </div>
+                                <div class="info-item">
+                                    <strong>载体积</strong>
+                                    {{ getVehicle(selectedVehicle).volume }}
+                                    m³
+                                </div>
+                                <div class="info-item">
+                                    <strong>长宽高</strong>
+                                    {{
+                                    getVehicle(selectedVehicle).dimensions
+                                    }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label
+                            ><i class="fas fa-user-friends"></i> 司机</label
+                        >
+                        <div class="driver-tags">
+                            <div
+                                class="driver-tag"
+                                v-for="driver in drivers"
+                                :key="driver.id"
+                            >
+                                <i class="fas fa-user"></i> {{ driver.name
+                                }} ({{ driver.license }})
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label
+                            ><i class="fas fa-clock"></i>
+                            计划发车时间</label
+                        >
+                        <div class="time-inputs">
+                            <input type="date" v-model="departureDate" />
+                            <input type="time" v-model="departureTime" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label
+                            ><i class="fas fa-hourglass-half"></i>
+                            持续时间</label
+                        >
+                        <div
+                            style="
+                                display: flex;
+                                align-items: center;
+                                gap: 10px;
+                            "
+                        >
+                            <input
+                                type="number"
+                                v-model="duration"
+                                style="flex: 1"
+                            />
+                            <span>分钟</span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-reset" @click="resetForm">
+                            <i class="fas fa-redo"></i> 重置
+                        </button>
+                        <button class="btn btn-primary" @click="createTask">
+                            <i class="fas fa-check-circle"></i> 创建运输任务
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 中间面板：运单预览 -->
+            <div class="center-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-clipboard-list"></i> 运单预览</h2>
+                    <div class="header-stats">
+                        <div class="stat-item">
+                            已添加运单:
+                            <span class="stat-value"
+                                >{{ orders.length }}个</span
+                            >
+                        </div>
+                        <div class="stat-item">
+                            有效:
+                            <span class="stat-value">{{ validCount }}</span>
+                        </div>
+                        <div class="stat-item">
+                            需确认:
+                            <span class="stat-value"
+                                >{{ warningCount }}</span
+                            >
+                        </div>
+                        <div class="stat-item">
+                            无效:
+                            <span class="stat_value"
+                                >{{ invalidCount }}</span
+                            >
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-weight-hanging"></i> 总重量:
+                            <span class="stat-value"
+                                >{{ totalWeight }} kg</span
+                            >
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-box"></i> 总体积:
+                            <span class="stat-value"
+                                >{{ totalVolume }} m³</span
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <div class="order-search-box">
+                    <input
+                        type="text"
+                        placeholder="搜索运单号、地址或收件人..."
+                        v-model="orderSearchQuery"
+                    />
+                    <button @click="searchOrders">
+                        <i class="fas fa-search"></i> 搜索
+                    </button>
+                </div>
+
+                <div class="status-filters">
+                    <button
+                        class="status-filter-btn"
+                        :class="{active: statusFilter === 'all'}"
+                        @click="statusFilter = 'all'"
+                    >
+                        全部
+                    </button>
+                    <button
+                        class="status-filter-btn"
+                        :class="{active: statusFilter === 'valid'}"
+                        @click="statusFilter = 'valid'"
+                    >
+                        有效
+                    </button>
+                    <button
+                        class="status-filter-btn"
+                        :class="{active: statusFilter === 'warning'}"
+                        @click="statusFilter = 'warning'"
+                    >
+                        需确认
+                    </button>
+                    <button
+                        class="status-filter-btn"
+                        :class="{active: statusFilter === 'invalid'}"
+                        @click="statusFilter = 'invalid'"
+                    >
+                        无效
+                    </button>
+                    <button class="bulk-remove-btn" @click="bulkRemove">
+                        <i class="fas fa-trash-alt"></i> 批量移除
+                    </button>
+                </div>
+
+                <div class="order-list">
+                    <div class="orders-container">
+                        <transition-group name="slide-fade" tag="div">
+                            <div
+                                class="order-item"
+                                :class="[order.status, { 'add-order-animation': order.highlight }]"
+                                v-for="order in paginatedOrders"
+                                :key="order.id"
+                                v-show="order.visible"
+                                @animationend="order.highlight = false"
+                            >
+                                <div class="order-check">
+                                    <input
+                                        type="checkbox"
+                                        v-model="order.checked"
+                                    />
+                                </div>
+                                <div class="order-info">
+                                    <h4>
+                                        <span class="order-id"
+                                            >{{ order.id }}</span
+                                        >
+                                        <button
+                                            class="copy-btn"
+                                            @click.stop="copyOrderId(order.id)"
+                                        >
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                        <span
+                                            class="order-status"
+                                            :class="'status-'+order.status"
+                                            >{{ order.statusText }}</span
+                                        >
+                                    </h4>
+                                    <div class="order-address">
+                                        <i
+                                            class="fas fa-map-marker-alt"
+                                        ></i>
+                                        {{ order.address }}
+                                    </div>
+                                    <div class="order-details">
+                                        <div class="order-detail">
+                                            <i
+                                                class="fas fa-truck-loading"
+                                            ></i>
+                                            起始: {{ order.departure }}
+                                        </div>
+                                        <div class="order-detail">
+                                            <i
+                                                class="fas fa-flag-checkered"
+                                            ></i>
+                                            目的: {{ order.destination }}
+                                        </div>
+                                        <div class="order-detail">
+                                            <i
+                                                class="fas fa-weight-hanging"
+                                            ></i>
+                                            重量: {{ order.weight }} kg
+                                        </div>
+                                        <div class="order-detail">
+                                            <i class="fas fa-box"></i> 体积:
+                                            {{ order.volume }} m³
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="order-actions">
+                                    <button
+                                        class="action-btn remove-btn"
+                                        @click="removeOrder(order.id)"
+                                    >
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </transition-group>
+                    </div>
+
+                    <div class="pagination">
+                        <div class="pagination-left">
+                            <button
+                                class="select-all-btn"
+                                @click="selectAllCurrentPage"
+                            >
+                                <i class="fas fa-check-square"></i> 全选
+                            </button>
+                            <button
+                                class="select-all-btn"
+                                @click="deselectAllCurrentPage"
+                            >
+                                <i class="fas fa-times-circle"></i> 取消
+                            </button>
+                        </div>
+
+                        <div class="pagination-center">
+                            <button
+                                class="pagination-btn"
+                                @click="prevPage"
+                            >
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button
+                                v-for="page in totalPages"
+                                :key="page"
+                                class="pagination-btn"
+                                :class="{active: currentPage === page}"
+                                @click="currentPage = page"
+                            >
+                                {{ page }}
+                            </button>
+                            <button
+                                class="pagination-btn"
+                                @click="nextPage"
+                            >
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+
+                        <div class="pagination-right">
+                            <span class="pagination-info"
+                                >第 {{ currentPage }} 页 / 共 {{ totalPages
+                                }} 页</span
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧面板：批量添加运单 -->
+            <div class="right-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-barcode"></i> 批量添加运单</h2>
+                    <p>通过系统、扫描、粘贴或导入方式添加运单</p>
+                </div>
+
+                <div class="input-section">
+                    <div class="tabs">
+                        <div
+                            class="tab"
+                            :class="{active: activeTab === 'system'}"
+                            @click="activeTab = 'system'"
+                        >
+                            <i class="fas fa-database"></i> 选择
+                        </div>
+                        <div
+                            class="tab"
+                            :class="{active: activeTab === 'scan'}"
+                            @click="activeTab = 'scan'"
+                        >
+                            <i class="fas fa-barcode"></i> 扫描
+                        </div>
+                        <div
+                            class="tab"
+                            :class="{active: activeTab === 'paste'}"
+                            @click="activeTab = 'paste'"
+                        >
+                            <i class="fas fa-paste"></i> 粘贴
+                        </div>
+                        <div
+                            class="tab"
+                            :class="{active: activeTab === 'file'}"
+                            @click="activeTab = 'file'"
+                        >
+                            <i class="fas fa-file-import"></i> 导入
+                        </div>
+                    </div>
+
+                    <div
+                        class="tab-content"
+                        :class="{active: activeTab === 'system'}"
+                        id="system-content"
+                    >
+                        <div class="system-selector">
+                            <div class="search-box">
+                                <input
+                                    type="text"
+                                    placeholder="搜索运单号、收件人或地址..."
+                                    v-model="systemSearch"
+                                />
+                                <button @click="searchSystemOrders">
+                                    <i class="fas fa-search"></i> 搜索
+                                </button>
+                            </div>
+
+                            <div class="system-results">
+                                <div
+                                    class="system-item"
+                                    v-for="order in paginatedSystemOrders"
+                                    :key="order.id"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        v-model="order.checked"
+                                    />
+                                    <div class="info">
+                                        <h4>
+                                            {{ order.id }}
+                                            <button
+                                                class="copy-btn"
+                                                @click.stop="copyOrderId(order.id)"
+                                            >
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </h4>
+                                        <p>
+                                            <span
+                                                ><i class="fas fa-user"></i>
+                                                {{ order.recipient }}</span
+                                            >
+                                            <span
+                                                ><i
+                                                    class="fas fa-weight-hanging"
+                                                ></i>
+                                                {{ order.weight }}kg</span
+                                            >
+                                            <span
+                                                ><i class="fas fa-box"></i>
+                                                {{ order.volume }}m³</span
+                                            >
+                                        </p>
+                                        <div class="route-info">
+                                            <span
+                                                ><i
+                                                    class="fas fa-map-marker-alt"
+                                                ></i>
+                                                起始：{{ order.departure
+                                                }}</span
+                                            >
+                                            <span
+                                                ><i
+                                                    class="fas fa-flag-checkered"
+                                                ></i>
+                                                目的：{{ order.destination
+                                                }}</span
+                                            >
+                                        </div>
+                                    </div>
+                                    <div class="system-actions">
+                                        <button
+                                            class="add-single-btn"
+                                            @click.stop="addSingleOrder(order)"
+                                        >
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="system-pagination">
+                                <div class="pagination-controls">
+                                    <button
+                                        class="select-all-btn"
+                                        @click="selectAllSystemOrders"
+                                    >
+                                        <i class="fas fa-check-square"></i>
+                                        全选
+                                    </button>
+                                    <button
+                                        class="select-all-btn"
+                                        @click="deselectAllSystemOrders"
+                                    >
+                                        <i class="fas fa-times-circle"></i>
+                                        取消
+                                    </button>
+                                </div>
+
+                                <div class="pagination">
+                                    <div class="pagination-center">
+                                        <button
+                                            class="pagination-btn"
+                                            @click="prevSystemPage"
+                                        >
+                                            <i
+                                                class="fas fa-chevron-left"
+                                            ></i>
+                                        </button>
+                                        <button
+                                            v-for="page in systemTotalPages"
+                                            :key="page"
+                                            class="pagination-btn"
+                                            :class="{active: systemCurrentPage === page}"
+                                            @click="systemCurrentPage = page"
+                                        >
+                                            {{ page }}
+                                        </button>
+                                        <button
+                                            class="pagination-btn"
+                                            @click="nextSystemPage"
+                                        >
+                                            <i
+                                                class="fas fa-chevron-right"
+                                            ></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <button
+                                    class="system-add-btn"
+                                    @click="addSelectedOrders"
+                                >
+                                    <i class="fas fa-check-circle"></i>
+                                    添加选中运单
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="tab-content"
+                        :class="{active: activeTab === 'scan'}"
+                        id="scan-content"
+                    >
+                        <div
+                            class="scan-box"
+                            id="scanner-box"
+                            @click="startScan"
+                        >
+                            <div class="scan-icon">
+                                <i class="fas fa-barcode"></i>
+                            </div>
+                            <h3>{{ scanStatus.title }}</h3>
+                            <p>{{ scanStatus.message }}</p>
+                            <div class="scan-progress" :style="{width: scanProgress + '%'}"></div>
+                        </div>
+
+                        <div class="text-area-box">
+                            <textarea
+                                placeholder="扫描结果将显示在这里"
+                                v-model="scanResults"
+                                readonly
+                            ></textarea>
+                        </div>
+                        
+                        <div class="scan-actions">
+                            <button class="btn btn-primary" @click="validateAndAddScannedOrder">
+                                <i class="fas fa-check-circle"></i> 验证并添加
+                            </button>
+                            <button class="btn btn-reset" @click="clearScanResults">
+                                <i class="fas fa-times"></i> 清空
+                            </button>
+                        </div>
+                        
+                        <div class="scan-history" v-if="scanHistory.length > 0">
+                            <h4><i class="fas fa-history"></i> 扫描历史记录</h4>
+                            <div class="history-cards">
+                                <div class="history-card" :class="item.status" v-for="(item, index) in scanHistory.slice(0, 2)" :key="index">
+                                    <div class="card-header">
+                                        <i :class="item.icon"></i> {{ item.statusText }}
+                                    </div>
+                                    <div class="card-content">
+                                        <div class="card-item">
+                                            <span>运单号:</span>
+                                            <strong>{{ item.id }}</strong>
+                                        </div>
+                                        <div class="card-item">
+                                            <span>时间:</span>
+                                            <strong class="card-time">{{ item.time }}</strong>
+                                        </div>
+                                        <div class="card-item">
+                                            <span>状态:</span>
+                                            <strong>{{ item.details }}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="tab-content"
+                        :class="{active: activeTab === 'paste'}"
+                        id="paste-content"
+                    >
+                        <div class="text-area-box">
+                            <textarea
+                                placeholder="请粘贴运单号（支持多行、逗号或空格分隔）..."
+                                v-model="pastedOrders"
+                            ></textarea>
+                        </div>
+                        <button
+                            class="btn btn-primary"
+                            style="margin-top: 15px; width: 100%"
+                            @click="parsePastedOrders"
+                        >
+                            <i class="fas fa-check-circle"></i>
+                            解析并校验运单
+                        </button>
+                    </div>
+
+                    <div
+                        class="tab-content"
+                        :class="{active: activeTab === 'file'}"
+                        id="file-content"
+                    >
+                        <div class="file-upload" @click="openFileDialog">
+                            <i class="fas fa-file-excel"></i>
+                            <h3>拖放文件到此处或点击上传</h3>
+                            <p>支持 Excel、CSV 或文本文件（最大 10MB）</p>
+                            <input
+                                type="file"
+                                ref="fileInput"
+                                style="display: none"
+                                @change="handleFileUpload"
+                            />
+                            <button
+                                class="btn btn-primary"
+                                style="margin-top: 15px"
+                            >
+                                <i class="fas fa-folder-open"></i> 选择文件
+                            </button>
+                        </div>
+                        <div class="recent-section">
+                            <h3>
+                                <i class="fas fa-clock"></i> 最近使用的运单
+                            </h3>
+                            <div class="recent-tags">
+                                <div
+                                    class="tag"
+                                    v-for="tag in recentTags"
+                                    :key="tag"
+                                    @click="addRecentTag(tag)"
+                                >
+                                    {{ tag }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div
+            v-if="notification.show"
+            class="notification"
+            :class="notification.type"
+        >
+            {{ notification.message }}
+        </div>
+
+        <div v-if="copyBadge.show" class="copy-badge">
+            <i class="fas fa-check-circle"></i> 已复制: {{ copyBadge.id }}
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                taskType: "point-to-point",
+                routes: [
+                    {
+                        id: "route1",
+                        name: "营业部1 → 分拣中心1",
+                        start: "营业部1",
+                        end: "分拣中心1",
+                    },
+                    {
+                        id: "route2",
+                        name: "分拣中心1 → 营业部2",
+                        start: "分拣中心1",
+                        end: "营业部2",
+                    },
+                    {
+                        id: "route3",
+                        name: "分拣中心3 → 分拣中心1",
+                        start: "分拣中心3",
+                        end: "分拣中心1",
+                    },
+                ],
+                selectedRoute: "route1",
+                vehicles: [
+                    {
+                        id: "vehicle1",
+                        license: "京A·12345",
+                        type: "大型厢式货车",
+                        capacity: "5,000",
+                        volume: "40",
+                        dimensions: "9.6×2.5×2.7 m",
+                    },
+                    {
+                        id: "vehicle2",
+                        license: "沪B·67890",
+                        type: "中型货车",
+                        capacity: "3,000",
+                        volume: "25",
+                        dimensions: "7.2×2.3×2.5 m",
+                    },
+                    {
+                        id: "vehicle3",
+                        license: "粤C·54321",
+                        type: "小型货车",
+                        capacity: "1,500",
+                        volume: "12",
+                        dimensions: "5.0×1.8×2.0 m",
+                    },
+                ],
+                selectedVehicle: "vehicle1",
+                drivers: [
+                    { id: "driver1", name: "张师傅", license: "A类驾照" },
+                    { id: "driver2", name: "李师傅", license: "A类驾照" },
+                ],
+                departureDate: "2023-10-15",
+                departureTime: "08:30",
+                duration: 120,
+                orders: [],
+                orderSearchQuery: "",
+                statusFilter: "all",
+                currentPage: 1,
+                pageSize: 10,
+                activeTab: "system",
+                systemSearch: "",
+                systemOrders: [],
+                systemCurrentPage: 1,
+                systemPageSize: 10,
+                scanProgress: 0,
+                scanStatus: {
+                    title: "使用扫描枪扫描运单条码",
+                    message: "系统会自动识别并录入扫描的运单",
+                },
+                scanResults: "",
+                pastedOrders: "",
+                recentTags: [
+                    "SF14358769234",
+                    "JD82039485761",
+                    "YT58392017463",
+                    "ZT39485720194",
+                    "JD29384756019",
+                    "SF48573629184",
+                    "YT38475629103",
+                    "JD57382910475",
+                ],
+                notification: {
+                    show: false,
+                    message: "",
+                    type: "success",
+                },
+                copyBadge: {
+                    show: false,
+                    id: "",
+                },
+                scanHistory: [],
+            },
+            computed: {
+                getVehicle() {
+                    return (id) =>
+                        this.vehicles.find((v) => v.id === id) || {};
+                },
+                getRouteStart() {
+                    return (id) => {
+                        const route = this.routes.find((r) => r.id === id);
+                        return route ? route.start : "";
+                    };
+                },
+                getRouteEnd() {
+                    return (id) => {
+                        const route = this.routes.find((r) => r.id === id);
+                        return route ? route.end : "";
+                    };
+                },
+                validCount() {
+                    return this.orders.filter((o) => o.status === "valid")
+                        .length;
+                },
+                warningCount() {
+                    return this.orders.filter((o) => o.status === "warning")
+                        .length;
+                },
+                invalidCount() {
+                    return this.orders.filter((o) => o.status === "invalid")
+                        .length;
+                },
+                totalWeight() {
+                    return this.orders
+                        .reduce(
+                            (sum, order) => sum + parseFloat(order.weight),
+                            0,
+                        )
+                        .toFixed(1);
+                },
+                totalVolume() {
+                    return this.orders
+                        .reduce(
+                            (sum, order) => sum + parseFloat(order.volume),
+                            0,
+                        )
+                        .toFixed(2);
+                },
+                filteredOrders() {
+                    let result = [...this.orders];
+
+                    if (this.statusFilter !== "all") {
+                        result = result.filter(
+                            (order) => order.status === this.statusFilter,
+                        );
+                    }
+
+                    if (this.orderSearchQuery) {
+                        const query = this.orderSearchQuery.toLowerCase();
+                        result = result.filter(
+                            (order) =>
+                                order.id.toLowerCase().includes(query) ||
+                                order.address.toLowerCase().includes(query),
+                        );
+                    }
+
+                    result.forEach((order) => {
+                        order.visible = true;
+                    });
+
+                    return result;
+                },
+                paginatedOrders() {
+                    const start = (this.currentPage - 1) * this.pageSize;
+                    const end = start + this.pageSize;
+                    return this.filteredOrders.slice(start, end);
+                },
+                totalPages() {
+                    return Math.ceil(
+                        this.filteredOrders.length / this.pageSize,
+                    );
+                },
+                systemTotalPages() {
+                    return Math.ceil(
+                        this.systemOrders.length / this.systemPageSize,
+                    );
+                },
+                paginatedSystemOrders() {
+                    const start =
+                        (this.systemCurrentPage - 1) * this.systemPageSize;
+                    const end = start + this.systemPageSize;
+                    return this.systemOrders.slice(start, end);
+                },
+            },
+            mounted() {
+                this.initSystemOrders();
+                this.initPreviewOrders();
+            },
+            methods: {
+                initSystemOrders() {
+                    this.systemOrders = [
+                        {
+                            id: "SF14358769234",
+                            recipient: "张先生",
+                            weight: 3.2,
+                            volume: 0.12,
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            checked: true,
+                        },
+                        {
+                            id: "JD82039485761",
+                            recipient: "李女士",
+                            weight: 5.8,
+                            volume: 0.25,
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            checked: true,
+                        },
+                        {
+                            id: "YT58392017463",
+                            recipient: "王先生",
+                            weight: 12.5,
+                            volume: 0.45,
+                            departure: "营业部2",
+                            destination: "营业部6",
+                            checked: false,
+                        },
+                        {
+                            id: "ZT39485720194",
+                            recipient: "赵女士",
+                            weight: 8.1,
+                            volume: 0.32,
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            checked: true,
+                        },
+                        {
+                            id: "JD29384756019",
+                            recipient: "陈先生",
+                            weight: 2.3,
+                            volume: 0.08,
+                            departure: "营业部3",
+                            destination: "分拣中心2",
+                            checked: false,
+                        },
+                        {
+                            id: "SF48573629184",
+                            recipient: "刘先生",
+                            weight: 6.7,
+                            volume: 0.28,
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            checked: true,
+                        },
+                        {
+                            id: "JD74839201947",
+                            recipient: "钱先生",
+                            weight: 4.2,
+                            volume: 0.18,
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            checked: false,
+                        },
+                        {
+                            id: "SF58392017462",
+                            recipient: "孙女士",
+                            weight: 7.5,
+                            volume: 0.32,
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            checked: false,
+                        },
+                        {
+                            id: "YT39485720193",
+                            recipient: "周先生",
+                            weight: 3.8,
+                            volume: 0.15,
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            checked: false,
+                        },
+                        {
+                            id: "ZT48573629185",
+                            recipient: "吴先生",
+                            weight: 9.2,
+                            volume: 0.42,
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            checked: false,
+                        },
+                        {
+                            id: "SF29384756018",
+                            recipient: "郑先生",
+                            weight: 5.1,
+                            volume: 0.22,
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            checked: false,
+                        },
+                        {
+                            id: "JD14358769235",
+                            recipient: "王女士",
+                            weight: 6.3,
+                            volume: 0.28,
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            checked: false,
+                        },
+                    ];
+                },
+                initPreviewOrders() {
+                    this.orders = [
+                        {
+                            id: "SF14358769234",
+                            address: "北京市海淀区中关村大街27号",
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            weight: 3.2,
+                            volume: 0.12,
+                            status: "valid",
+                            statusText: "有效",
+                            checked: false,
+                            highlight: false,
+                        },
+                        {
+                            id: "JD82039485761",
+                            address: "上海市浦东新区张江高科技园区",
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            weight: 5.8,
+                            volume: 0.25,
+                            status: "valid",
+                            statusText: "有效",
+                            checked: false,
+                            highlight: false,
+                        },
+                        {
+                            id: "YT58392017463",
+                            address: "广州市天河区（需确认详细地址）",
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            weight: 12.5,
+                            volume: 0.45,
+                            status: "warning",
+                            statusText: "地址模糊",
+                            checked: false,
+                            highlight: false,
+                        },
+                        {
+                            id: "ZT39485720194",
+                            address: "深圳市南山区科技园南区",
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            weight: 8.1,
+                            volume: 0.32,
+                            status: "valid",
+                            statusText: "有效",
+                            checked: false,
+                            highlight: false,
+                        },
+                        {
+                            id: "JD29384756019",
+                            address:
+                                "杭州市余杭区五常街道（超出当前配送范围）",
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            weight: 2.3,
+                            volume: 0.08,
+                            status: "invalid",
+                            statusText: "超区",
+                            checked: false,
+                            highlight: false,
+                        },
+                        {
+                            id: "SF48573629184",
+                            address: "北京市朝阳区望京SOHO",
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            weight: 6.7,
+                            volume: 0.28,
+                            status: "valid",
+                            statusText: "有效",
+                            checked: false,
+                            highlight: false,
+                        },
+                        {
+                            id: "JD74839201947",
+                            address: "南京市鼓楼区中山路189号",
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            weight: 4.2,
+                            volume: 0.18,
+                            status: "valid",
+                            statusText: "有效",
+                            checked: false,
+                            highlight: false,
+                        },
+                        {
+                            id: "SF58392017462",
+                            address: "武汉市洪山区光谷广场",
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            weight: 7.5,
+                            volume: 0.32,
+                            status: "valid",
+                            statusText: "有效",
+                            checked: false,
+                            highlight: false,
+                        },
+                        {
+                            id: "YT39485720193",
+                            address: "成都市锦江区春熙路",
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            weight: 3.8,
+                            volume: 0.15,
+                            status: "valid",
+                            statusText: "有效",
+                            checked: false,
+                            highlight: false,
+                        },
+                        {
+                            id: "ZT48573629185",
+                            address: "重庆市渝中区解放碑",
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            weight: 9.2,
+                            volume: 0.42,
+                            status: "valid",
+                            statusText: "有效",
+                            checked: false,
+                            highlight: false,
+                        },
+                        {
+                            id: "SF29384756018",
+                            address: "西安市雁塔区小寨",
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            weight: 5.1,
+                            volume: 0.22,
+                            status: "valid",
+                            statusText: "有效",
+                            checked: false,
+                            highlight: false,
+                        },
+                        {
+                            id: "JD14358769235",
+                            address: "青岛市市南区五四广场",
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            weight: 6.3,
+                            volume: 0.28,
+                            status: "valid",
+                            statusText: "有效",
+                            checked: false,
+                            highlight: false,
+                        },
+                    ];
+                },
+                copyOrderId(id) {
+                    navigator.clipboard.writeText(id).then(() => {
+                        this.copyBadge = {
+                            show: true,
+                            id: id,
+                        };
+                        setTimeout(() => {
+                            this.copyBadge.show = false;
+                        }, 1500);
+                    });
+                },
+                resetForm() {
+                    this.selectedRoute = "route1";
+                    this.selectedVehicle = "vehicle1";
+                    this.departureDate = "2023-10-15";
+                    this.departureTime = "08:30";
+                    this.duration = 120;
+                    this.taskType = "point-to-point";
+                    this.showNotification("表单已重置");
+                },
+                createTask() {
+                    this.showNotification("运输任务创建成功！", "success");
+                },
+                removeOrder(id) {
+                    const index = this.orders.findIndex((o) => o.id === id);
+                    if (index !== -1) {
+                        this.orders.splice(index, 1);
+                        this.showNotification(`已移除运单: ${id}`);
+                    }
+                },
+                bulkRemove() {
+                    const selected = this.orders.filter((o) => o.checked);
+                    if (selected.length === 0) {
+                        this.showNotification(
+                            "请先选择要移除的运单",
+                            "warning",
+                        );
+                        return;
+                    }
+
+                    if (
+                        confirm(
+                            `确定要移除选中的 ${selected.length} 个运单吗？`,
+                        )
+                    ) {
+                        this.orders = this.orders.filter((o) => !o.checked);
+                        this.showNotification(
+                            `已移除 ${selected.length} 个运单`,
+                        );
+                    }
+                },
+                prevPage() {
+                    if (this.currentPage > 1) {
+                        this.currentPage--;
+                        this.showNotification(
+                            `已切换到第 ${this.currentPage} 页`,
+                        );
+                    }
+                },
+                nextPage() {
+                    if (this.currentPage < this.totalPages) {
+                        this.currentPage++;
+                        this.showNotification(
+                            `已切换到第 ${this.currentPage} 页`,
+                        );
+                    }
+                },
+                prevSystemPage() {
+                    if (this.systemCurrentPage > 1) {
+                        this.systemCurrentPage--;
+                    }
+                },
+                nextSystemPage() {
+                    if (this.systemCurrentPage < this.systemTotalPages) {
+                        this.systemCurrentPage++;
+                    }
+                },
+                searchOrders() {
+                    this.showNotification(`搜索: ${this.orderSearchQuery}`);
+                },
+                searchSystemOrders() {
+                    this.showNotification(`系统搜索: ${this.systemSearch}`);
+                },
+                addSelectedOrders() {
+                    const selected = this.systemOrders.filter(
+                        (o) => o.checked,
+                    );
+
+                    if (selected.length === 0) {
+                        this.showNotification(
+                            "请先选择要添加的运单",
+                            "warning",
+                        );
+                        return;
+                    }
+
+                    selected.forEach((order) => {
+                        if (!this.orders.some((o) => o.id === order.id)) {
+                            this.orders.push({
+                                id: order.id,
+                                address: "新添加的运单地址",
+                                departure: order.departure,
+                                destination: order.destination,
+                                weight: order.weight,
+                                volume: order.volume,
+                                status: "valid",
+                                statusText: "有效",
+                                checked: false,
+                                highlight: true,
+                            });
+                        }
+                    });
+
+                    // 从系统列表中移除选中的订单
+                    this.systemOrders = this.systemOrders.filter(
+                        (order) => !order.checked,
+                    );
+
+                    this.showNotification(
+                        `已添加 ${selected.length} 个运单，并从系统列表中移除`,
+                    );
+                },
+                addSingleOrder(order) {
+                    if (!this.orders.some((o) => o.id === order.id)) {
+                        this.orders.push({
+                            id: order.id,
+                            address: "新添加的运单地址",
+                            departure: order.departure,
+                            destination: order.destination,
+                            weight: order.weight,
+                            volume: order.volume,
+                            status: "valid",
+                            statusText: "有效",
+                            checked: false,
+                            highlight: true,
+                        });
+
+                        // 从系统列表中移除该订单
+                        const index = this.systemOrders.findIndex(
+                            (o) => o.id === order.id,
+                        );
+                        if (index !== -1) {
+                            this.systemOrders.splice(index, 1);
+                        }
+
+                        this.showNotification(
+                            `已添加运单: ${order.id}，并从系统列表中移除`,
+                        );
+                    } else {
+                        this.showNotification("该运单已存在", "warning");
+                    }
+                },
+                startScan() {
+                    this.scanStatus = {
+                        title: "扫描中...",
+                        message: "请将条码对准扫描枪",
+                    };
+                    
+                    this.scanProgress = 0;
+                    
+                    // 模拟扫描进度
+                    const interval = setInterval(() => {
+                        this.scanProgress += 5;
+                        if (this.scanProgress >= 100) {
+                            clearInterval(interval);
+                            this.scanStatus = {
+                                title: "扫描完成！",
+                                message: "运单号已录入，请点击验证并添加按钮"
+                            };
+                            
+                            // 生成一个随机的运单号
+                            const scannedOrder = 'SF' + Math.floor(Math.random() * 10000000000).toString().padStart(11, '0');
+                            this.scanResults = scannedOrder;
+                        }
+                    }, 100);
+                },
+                validateAndAddScannedOrder() {
+                    const id = this.scanResults.trim();
+                    if (!id) {
+                        this.showNotification("没有扫描到运单号", "warning");
+                        return;
+                    }
+                    
+                    // 模拟验证：80%概率有效，15%概率警告，5%概率无效
+                    const random = Math.random();
+                    let status, statusText;
+                    if (random < 0.8) {
+                        status = "valid";
+                        statusText = "有效";
+                    } else if (random < 0.95) {
+                        status = "warning";
+                        statusText = "需确认";
+                    } else {
+                        status = "invalid";
+                        statusText = "无效";
+                    }
+                    
+                    // 添加到运单列表
+                    if (!this.orders.some(o => o.id === id)) {
+                        this.orders.push({
+                            id: id,
+                            address: "新扫描的运单地址",
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            weight: Math.random() * 10 + 2,
+                            volume: Math.random() * 0.4 + 0.05,
+                            status: status,
+                            statusText: statusText,
+                            checked: false,
+                            highlight: true,
+                        });
+                        
+                        // 添加到扫描历史
+                        this.scanHistory.unshift({
+                            id: id,
+                            time: new Date().toLocaleTimeString(),
+                            status: status,
+                            statusText: statusText,
+                            icon: status === 'valid' ? 'fas fa-check-circle' : 
+                                  status === 'warning' ? 'fas fa-exclamation-triangle' : 'fas fa-times-circle',
+                            details: statusText
+                        });
+                        
+                        // 只保留最新的两条历史记录
+                        if (this.scanHistory.length > 2) {
+                            this.scanHistory = this.scanHistory.slice(0, 2);
+                        }
+                        
+                        this.showNotification(`运单 ${id} 已添加（${statusText}）`);
+                        this.scanResults = ""; // 清空扫描结果
+                    } else {
+                        this.showNotification("该运单已存在", "warning");
+                    }
+                },
+                clearScanResults() {
+                    this.scanResults = "";
+                    this.showNotification("扫描结果已清空");
+                },
+                parsePastedOrders() {
+                    const orders = this.pastedOrders
+                        .split(/[\n, ]+/)
+                        .filter(Boolean);
+                    if (orders.length > 0) {
+                        orders.forEach((id) => {
+                            if (!this.orders.some((o) => o.id === id)) {
+                                this.orders.push({
+                                    id: id,
+                                    address: "新添加的运单地址",
+                                    departure: "营业部1",
+                                    destination: "营业部7",
+                                    weight: Math.random() * 10 + 2,
+                                    volume: Math.random() * 0.4 + 0.05,
+                                    status: "valid",
+                                    statusText: "有效",
+                                    checked: false,
+                                    highlight: true,
+                                });
+                            }
+                        });
+                        this.showNotification(
+                            `已添加 ${orders.length} 个运单`,
+                        );
+                    } else {
+                        this.showNotification(
+                            "没有找到有效的运单号",
+                            "warning",
+                        );
+                    }
+                },
+                openFileDialog() {
+                    this.$refs.fileInput.click();
+                },
+                handleFileUpload(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        this.showNotification(`已选择文件: ${file.name}`);
+                    }
+                },
+                addRecentTag(tag) {
+                    if (!this.orders.some((o) => o.id === tag)) {
+                        this.orders.push({
+                            id: tag,
+                            address: "最近使用的运单地址",
+                            departure: "营业部1",
+                            destination: "营业部7",
+                            weight: Math.random() * 10 + 2,
+                            volume: Math.random() * 0.4 + 0.05,
+                            status: "valid",
+                            statusText: "有效",
+                            checked: false,
+                            highlight: true,
+                        });
+                        this.showNotification(`已添加运单: ${tag}`);
+                    }
+                },
+                showNotification(message, type = "success") {
+                    this.notification = {
+                        show: true,
+                        message,
+                        type,
+                    };
+
+                    setTimeout(() => {
+                        this.notification.show = false;
+                    }, 3000);
+                },
+                selectAllCurrentPage() {
+                    this.paginatedOrders.forEach((order) => {
+                        order.checked = true;
+                    });
+                    this.showNotification("已全选当前页运单");
+                },
+                deselectAllCurrentPage() {
+                    this.paginatedOrders.forEach((order) => {
+                        order.checked = false;
+                    });
+                    this.showNotification("已取消全选");
+                },
+                selectAllSystemOrders() {
+                    this.paginatedSystemOrders.forEach((order) => {
+                        order.checked = true;
+                    });
+                    this.showNotification("已全选当前页运单");
+                },
+                deselectAllSystemOrders() {
+                    this.paginatedSystemOrders.forEach((order) => {
+                        order.checked = false;
+                    });
+                    this.showNotification("已取消全选");
+                },
+            },
+        });
+    </script>
+</body>
+</html>

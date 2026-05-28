@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>亚马逊卖家中心 · 日期范围报告 (模拟)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #eef2f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', Helvetica, Arial, sans-serif;
+            padding: 2rem 1rem;
+            color: #1e2a3a;
+        }
+
+        .report-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* 报告头部 */
+        .report-header {
+            background: #232f3e;
+            color: white;
+            padding: 1.5rem 2rem;
+        }
+
+        .report-header h1 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .report-header h1 small {
+            font-size: 0.85rem;
+            font-weight: 400;
+            background: #ff9900;
+            padding: 4px 12px;
+            border-radius: 40px;
+            color: #1e2a3a;
+        }
+
+        .meta-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.8rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+        }
+
+        .meta-info span strong {
+            color: white;
+            font-weight: 500;
+        }
+
+        /* 汇总卡片区 */
+        .summary-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            padding: 1.5rem 2rem;
+            background: #f8fafc;
+            border-bottom: 1px solid #e9edf2;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1rem;
+            padding: 0.9rem 1.4rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            border: 1px solid #e2edf2;
+            min-width: 160px;
+        }
+
+        .card-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #5b6e8c;
+            font-weight: 600;
+        }
+
+        .card-value {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-top: 6px;
+        }
+
+        .card-value small {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: #3b5a7c;
+        }
+
+        /* 表格区域 */
+        .table-wrapper {
+            overflow-x: auto;
+            padding: 0 0 1rem 0;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            min-width: 1100px;
+        }
+
+        .data-table th {
+            background: #f1f5f9;
+            padding: 1rem 0.8rem;
+            text-align: left;
+            font-weight: 600;
+            color: #1e3a5f;
+            border-bottom: 1px solid #dce3ec;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .data-table td {
+            padding: 0.9rem 0.8rem;
+            border-bottom: 1px solid #ecf3fa;
+            color: #1f2d3d;
+            vertical-align: top;
+        }
+
+        .data-table tr:hover td {
+            background-color: #fefce8;
+        }
+
+        .type-badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .type-order {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .type-fee {
+            background: #ffe4e2;
+            color: #b91c1c;
+        }
+
+        .type-refund {
+            background: #ffedd5;
+            color: #b45309;
+        }
+
+        .type-transfer {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .amount-positive {
+            color: #15803d;
+            font-weight: 600;
+        }
+
+        .amount-negative {
+            color: #b91c1c;
+            font-weight: 500;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .footer-note {
+            padding: 1.2rem 2rem;
+            background: #fef9e6;
+            border-top: 1px solid #fdebb3;
+            font-size: 0.8rem;
+            color: #7a5d2c;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            font-size: 0.7rem;
+        }
+
+        button.mock-btn {
+            background: none;
+            border: 1px solid #cad5e0;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            cursor: default;
+            color: #2c5f8a;
+        }
+
+        @media (max-width: 680px) {
+            .report-header h1 { font-size: 1.2rem; }
+            .card-value { font-size: 1.2rem; }
+            .summary-cards { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="report-container">
+    <!-- 报告头部 (模拟亚马逊风格) -->
+    <div class="report-header">
+        <h1>
+            📄 日期范围报告 · 交易明细
+            <small>模拟数据 | 合规对账演示</small>
+        </h1>
+        <div class="meta-info">
+            <span><strong>报告周期:</strong> 2026年3月1日 - 2026年3月31日</span>
+            <span><strong>生成日期:</strong> 2026年4月1日 09:32 UTC</span>
+            <span><strong>卖家账号:</strong> SELLER_CN_AMZ01</span>
+            <span><strong>货币:</strong> USD (美元)</span>
+        </div>
+    </div>
+
+    <!-- 汇总卡片 (关键: 应结算净额 = 提现依据) -->
+    <div class="summary-cards">
+        <div class="card">
+            <div class="card-label">💰 总订单销售额</div>
+            <div class="card-value">$6,543.20</div>
+        </div>
+        <div class="card">
+            <div class="card-label">📦 总平台费用 (佣金+FBA+其他)</div>
+            <div class="card-value">-$1,282.35</div>
+        </div>
+        <div class="card">
+            <div class="card-label">🔄 促销/退款抵扣</div>
+            <div class="card-value">-$89.40</div>
+        </div>
+        <div class="card">
+            <div class="card-label">💸 其他支出(广告/订阅)</div>
+            <div class="card-value">-$210.00</div>
+        </div>
+        <div class="card" style="background:#eef2ff; border-left: 4px solid #ff9900;">
+            <div class="card-label">✅ 结算周期净收入 (应打款金额)</div>
+            <div class="card-value">$4,961.45 <small>USD</small></div>
+        </div>
+        <div class="card">
+            <div class="card-label">🏦 实际提现至银行卡</div>
+            <div class="card-value">$4,961.45 <small>(完全匹配)</small></div>
+        </div>
+    </div>
+
+    <!-- 交易明细表格: 完整模拟“日期范围报告”核心字段 -->
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>交易日期 (UTC)</th>
+                    <th>结算ID<br>(Settlement ID)</th>
+                    <th>交易类型<br>(Type)</th>
+                    <th>订单号<br>(Order ID)</th>
+                    <th>SKU</th>
+                    <th>商品销售额<br>(Product Sales)</th>
+                    <th>运费收入</th>
+                    <th>促销返点</th>
+                    <th>销售佣金</th>
+                    <th>FBA费用</th>
+                    <th>其他费用</th>
+                    <th>交易总额<br>(Total)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- ========= 订单1: 正收入明细 ========= -->
+                <tr>
+                    <td>2026-03-02 14:23:10</td>
+                    <td>STL-2026-0302-001</td>
+                    <td><span class="type-badge type-order">订单</span></td>
+                    <td>111-9876543-1234567</td>
+                    <td>BT-WIRELESS-01</td>
+                    <td class="amount-positive">$89.99</td>
+                    <td>$5.99</td>
+                    <td>-$0.00</td>
+                    <td>-$13.50</td>
+                    <td>-$6.25</td>
+                    <td>-$0.00</td>
+                    <td class="amount-positive">+$76.23</td>
+                </tr>
+                <tr>
+                    <td>2026-03-03 09:12:44</td>
+                    <td>STL-2026-0303-002</td>
+                    <td><span class="type-badge type-order">订单</span></td>
+                    <td>111-1234567-8901234</td>
+                    <td>HOME-KITCHEN-02</td>
+                    <td class="amount-positive">$42.50</td>
+                    <td>$4.49</td>
+                    <td>-$2.00</td>
+                    <td>-$6.38</td>
+                    <td>-$3.90</td>
+                    <td>-$0.00</td>
+                    <td class="amount-positive">+$34.71</td>
+                </tr>
+                <tr>
+                    <td>2026-03-05 18:45:02</td>
+                    <td>STL-2026-0305-003</td>
+                    <td><span class="type-badge type-order">订单</span></td>
+                    <td>112-4567891-2345678</td>
+                    <td>ELECTRONIC-POWERBANK</td>
+                    <td class="amount-positive">$29.99</td>
+                    <td>$3.99</td>
+                    <td>-$0.00</td>
+                    <td>-$4.50</td>
+                    <td>-$2.45</td>
+                    <td>-$0.00</td>
+                    <td class="amount-positive">+$27.03</td>
+                </tr>
+                <!-- 批量订单3月10日大单 -->
+                <tr>
+                    <td>2026-03-10 07:30:00</td>
+                    <td>STL-2026-0310-004</td>
+                    <td><span class="type-badge type-order">订单</span></td>
+                    <td>113-7891234-5678901</td>
+                    <td>SPORT-SHOES-X1</td>
+                    <td class="amount-positive">$129.99</td>
+                    <td>$7.99</td>
+                    <td>-$10.00</td>
+                    <td>-$19.50</td>
+                    <td>-$8.30</td>
+                    <td>-$0.00</td>
+                    <td class="amount-positive">+$100.18</td>
+                </tr>
+                <tr>
+                    <td>2026-03-12 20:15:33</td>
+                    <td>STL-2026-0312-005</td>
+                    <td><span class="type-badge type-order">订单</span></td>
+                    <td>114-4560123-7894561</td>
+                    <td>TOY-EDU-05</td>
+                    <td class="amount-positive">$19.97</td>
+                    <td>$3.49</td>
+                    <td>-$0.00</td>
+                    <td>-$3.00</td>
+                    <td>-$1.20</td>
+                    <td>-$0.00</td>
+                    <td class="amount-positive">+$19.26</td>
+                </tr>
+                <!-- 费用行示例: 月度仓储费 (非订单但影响结算) -->
+                <tr>
+                    <td>2026-03-15 00:00:00</td>
+                    <td>STL-2026-0315-FEE</td>
+                    <td><span class="type-badge type-fee">费用</span></td>
+                    <td>—</td>
+                    <td>月仓储费</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>-$78.50</td>
+                    <td>-$0.00</td>
+                    <td class="amount-negative">-$78.50</td>
+                </tr>
+                <!-- 广告费 -->
+                <tr>
+                    <td>2026-03-16 00:00:00</td>
+                    <td>STL-2026-0316-AD</td>
+                    <td><span class="type-badge type-fee">费用</span></td>
+                    <td>—</td>
+                    <td>Sponsored Ads</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>-$135.00</td>
+                    <td class="amount-negative">-$135.00</td>
+                </tr>
+                <!-- 退款订单示例 (会冲减收入) -->
+                <tr>
+                    <td>2026-03-18 11:20:17</td>
+                    <td>STL-2026-0318-REF</td>
+                    <td><span class="type-badge type-refund">退款</span></td>
+                    <td>111-9876543-1234567</td>
+                    <td>BT-WIRELESS-01</td>
+                    <td class="amount-negative">-$89.99</td>
+                    <td>-$5.99</td>
+                    <td>$0.00</td>
+                    <td>$13.50 <span style="font-size:0.7rem;">(退回)</span></td>
+                    <td>$6.25 <span style="font-size:0.7rem;">(退回)</span></td>
+                    <td>$0.00</td>
+                    <td class="amount-negative">-$76.23</td>
+                </tr>
+                <!-- 正常订单 三月下旬 -->
+                <tr>
+                    <td>2026-03-20 09:45:22</td>
+                    <td>STL-2026-0320-006</td>
+                    <td><span class="type-badge type-order">订单</span></td>
+                    <td>115-3216549-8521479</td>
+                    <td>WATCH-BAND-04</td>
+                    <td class="amount-positive">$24.99</td>
+                    <td>$2.99</td>
+                    <td>-$1.50</td>
+                    <td>-$3.75</td>
+                    <td>-$2.10</td>
+                    <td>-$0.00</td>
+                    <td class="amount-positive">+$20.63</td>
+                </tr>
+                <tr>
+                    <td>2026-03-22 14:10:33</td>
+                    <td>STL-2026-0322-007</td>
+                    <td><span class="type-badge type-order">订单</span></td>
+                    <td>116-7893214-9876540</td>
+                    <td>OFFICE-CHAIR</td>
+                    <td class="amount-positive">$219.99</td>
+                    <td>$12.99</td>
+                    <td>-$20.00</td>
+                    <td>-$33.00</td>
+                    <td>-$15.75</td>
+                    <td>-$0.00</td>
+                    <td class="amount-positive">+$164.23</td>
+                </tr>
+                <!-- 订阅费 专业销售计划 -->
+                <tr>
+                    <td>2026-03-25 00:00:00</td>
+                    <td>STL-2026-0325-SUB</td>
+                    <td><span class="type-badge type-fee">费用</span></td>
+                    <td>—</td>
+                    <td>月度订阅费</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>-$39.99</td>
+                    <td class="amount-negative">-$39.99</td>
+                </tr>
+                <tr>
+                    <td>2026-03-27 16:20:01</td>
+                    <td>STL-2026-0327-008</td>
+                    <td><span class="type-badge type-order">订单</span></td>
+                    <td>117-4561238-7418520</td>
+                    <td>BEAUTY-CREAM</td>
+                    <td class="amount-positive">$33.90</td>
+                    <td>$3.49</td>
+                    <td>-$0.00</td>
+                    <td>-$5.09</td>
+                    <td>-$2.25</td>
+                    <td>-$0.00</td>
+                    <td class="amount-positive">+$30.05</td>
+                </tr>
+                <tr>
+                    <td>2026-03-29 10:05:44</td>
+                    <td>STL-2026-0329-009</td>
+                    <td><span class="type-badge type-order">订单</span></td>
+                    <td>118-9632587-1472583</td>
+                    <td>PET-TOYS-12</td>
+                    <td class="amount-positive">$15.99</td>
+                    <td>$2.49</td>
+                    <td>-$0.00</td>
+                    <td>-$2.40</td>
+                    <td>-$1.05</td>
+                    <td>-$0.00</td>
+                    <td class="amount-positive">+$15.03</td>
+                </tr>
+                <!-- 结算转账记录 (体现资金流出至银行卡) -->
+                <tr style="background:#f0fdf4;">
+                    <td>2026-04-01 08:00:00</td>
+                    <td>STL-TRANSFER-0401</td>
+                    <td><span class="type-badge type-transfer">转账/提现</span></td>
+                    <td>—</td>
+                    <td>转账至银行账户</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>-$4,961.45</td>
+                    <td class="amount-negative">-$4,961.45</td>
+                </tr>
+                <!-- 注意：所有交易总额合计应该等于 应打款净额 -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 脚注: 对账逻辑说明 + settlement ID 归组示例 -->
+    <div class="footer-note">
+        <div>
+            <strong>📌 关键合规说明 (连接订单与提现)</strong><br>
+            ✅ 同一结算周期内，所有交易行的「交易总额」累加 = <strong style="color:#146b3a;">$4,961.45 USD</strong> (即应打款净额)。<br>
+            ✅ 每笔订单的费用明细 (佣金/FBA/广告) 均已单独列出，最终净收入与提现完全匹配。<br>
+            ✅ 卖家钱包提现时，只需核对该结算ID范围的总金额即可，无需逐笔订单相等。
+        </div>
+        <div class="legend">
+            <span><span class="type-badge type-order">订单</span> 销售收入</span>
+            <span><span class="type-badge type-fee">费用</span> 平台扣费</span>
+            <span><span class="type-badge type-refund">退款</span> 冲减收入</span>
+            <span><span class="type-badge type-transfer">转账</span> 资金划出至银行卡</span>
+            <span><button class="mock-btn" style="cursor:default;">📎 日期范围报告 模拟v1.0</button></span>
+        </div>
+    </div>
+
+    <!-- 附加明细: 模拟 settlement ID 聚合说明 (可视化对账核心) -->
+    <div style="padding: 1rem 2rem 1.5rem 2rem; background: #ffffff; border-top: 1px solid #eef2f8;">
+        <div style="font-size: 0.75rem; color: #2c5a7a; background: #f8fafd; padding: 0.8rem 1rem; border-radius: 16px;">
+            <div style="display: flex; flex-wrap: wrap; gap: 2rem; justify-content: space-between;">
+                <div>
+                    🔍 <strong>按结算ID归组示例 (用于对账)</strong><br>
+                    ▪ STL-2026-0302-001 合计总额: +$76.23<br>
+                    ▪ STL-2026-0303-002 合计: +$34.71<br>
+                    ▪ STL-2026-0315-FEE (仓储) : -$78.50 &nbsp;▪ 广告费: -$135.00<br>
+                    ▪ 最终全周期交易合计 = <strong>$4,961.45</strong> ✅
+                </div>
+                <div>
+                    💡 <strong>与中国合规对接:</strong> 本报告中的“结算净收入”与银行提现流水一致, 证明所有提现资金均来源于已扣除费用的订单结算。<br>
+                    📑 配合亚马逊税务报告 (VAT/销售税报告) 可完整用于中国税务申报, 满足“三流一致”原则。
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="text-align: center; margin-top: 1.5rem; font-size: 0.7rem; color: #5f7d9c;">
+    模拟亚马逊「日期范围报告」展示 | 基于卖家真实对账场景设计，突出交易总额与提现金额匹配逻辑
+</div>
+</body>
+</html>

@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>智能调度系统 · 路径修改</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js">
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f1f5f9;
+            color: #0f172a;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .app-layout {
+            display: flex;
+            height: 100%;
+            width: 100%;
+        }
+        .nav-sidebar {
+            width: 260px;
+            background: #ffffff;
+            border-right: 1px solid #e9edf2;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+        .logo-area {
+            padding: 20px 20px 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #f0f2f5;
+            margin-bottom: 16px;
+            color: #1e293b;
+        }
+        .logo-area i {
+            font-size: 1.6rem;
+            color: #2563eb;
+            background: #eff6ff;
+            padding: 6px;
+            border-radius: 12px;
+        }
+        .menu-section {
+            padding: 8px 16px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: #7c879c;
+            margin-top: 8px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            margin: 2px 8px;
+            border-radius: 10px;
+            color: #334155;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .nav-item i {
+            width: 22px;
+            font-size: 1rem;
+        }
+        .nav-item:hover {
+            background: #f8fafc;
+            color: #2563eb;
+        }
+        .nav-item.active {
+            background: #eff6ff;
+            color: #2563eb;
+            font-weight: 600;
+        }
+        .main-workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+        .top-bar {
+            background: white;
+            padding: 0 28px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e9edf2;
+            flex-shrink: 0;
+        }
+        .page-title {
+            font-weight: 600;
+            font-size: 1.25rem;
+            letter-spacing: -0.2px;
+        }
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+        }
+        .three-columns {
+            display: flex;
+            gap: 20px;
+            height: 100%;
+            min-height: 0;
+        }
+        .order-panel {
+            flex: 1.2;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .editor-panel {
+            flex: 0.8;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .map-panel {
+            flex: 1.4;
+            background: #f0f2f5;
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+        .map-header {
+            padding: 10px 16px;
+            background: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+            border-bottom: 1px solid #eef2f6;
+        }
+        #routeMap {
+            flex: 1;
+            width: 100%;
+            background: #e9ecef;
+        }
+        .map-legend {
+            padding: 8px 12px;
+            background: white;
+            border-top: 1px solid #eef2f6;
+            font-size: 0.6rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 3px;
+            border-radius: 2px;
+        }
+        .filter-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 18px;
+            align-items: flex-end;
+        }
+        .filter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #475569;
+        }
+        .filter-field label {
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .filter-field input,
+        .filter-field .select2-container .select2-selection--single,
+        .filter-field .select2-container .select2-selection--multiple {
+            min-height: 36px !important;
+            height: auto !important;
+        }
+        #filterId {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 0 12px;
+            font-size: 0.75rem;
+            width: 160px;
+            outline: none;
+            height: 36px;
+            line-height: 36px;
+        }
+        .filter-field .select2-container {
+            width: 180px !important;
+        }
+        .filter-field .select2-selection {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+        }
+        .select2-container--default .select2-results__option--selectable {
+            padding-left: 28px;
+            position: relative;
+        }
+        .select2-container--default .select2-results__option--selectable:before {
+            content: "☐";
+            position: absolute;
+            left: 8px;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+        .select2-container--default .select2-results__option--selected:before {
+            content: "✓";
+            color: #2563eb;
+            font-weight: bold;
+        }
+        .filter-actions-row {
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            gap: 12px;
+            margin-top: 6px;
+        }
+        .btn-sm {
+            padding: 5px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.75rem;
+            border: none;
+            cursor: pointer;
+            height: 34px;
+        }
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+        .btn-outline {
+            background: white;
+            border: 1px solid #cbd5e1;
+            color: #1f2937;
+        }
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+        .selected-info {
+            background: #eff6ff;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #1e40af;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .batch-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .table-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            margin-top: 6px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+        th {
+            text-align: left;
+            padding: 10px 8px;
+            border-bottom: 1px solid #edf2f7;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 1;
+        }
+        td {
+            padding: 8px 8px;
+            border-bottom: 1px solid #f0f2f5;
+            vertical-align: middle;
+        }
+        .order-main-row td {
+            border-bottom: none;
+        }
+        .order-route-row td {
+            padding-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eef2f8;
+        }
+        .order-route-full {
+            font-size: 0.7rem;
+            line-height: 1.5;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+        }
+        .route-node {
+            display: inline;
+            font-size: 0.7rem;
+            color: #1e293b;
+        }
+        .route-node.completed {
+            text-decoration: line-through;
+            color: #8c9eb2;
+        }
+        .route-node.current {
+            font-weight: 700;
+            color: #2563eb;
+        }
+        .route-arrow {
+            color: #94a3b8;
+            font-size: 0.65rem;
+            margin: 0 2px;
+        }
+        .adjust-count {
+            cursor: pointer;
+            color: #2563eb;
+            text-decoration: underline;
+        }
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #eef2f6;
+        }
+        .tab {
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            color: #64748b;
+            border-bottom: 2px solid transparent;
+        }
+        .tab.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .sortable-node {
+            background: #f9fafb;
+            border: 1px solid #e4e7ec;
+            border-radius: 10px;
+            padding: 6px 8px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sortable-node.draggable {
+            cursor: grab;
+        }
+        .sortable-node.disabled {
+            background: #f1f5f9;
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        .node-order {
+            background: #e6edf5;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 0.6rem;
+            font-weight: bold;
+        }
+        .node-name-text {
+            flex: 1;
+            font-weight: 500;
+            font-size: 0.75rem;
+        }
+        .remove-node {
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+        .remove-node:hover {
+            color: #ef4444;
+        }
+        .route-list-container {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 8px;
+            max-height: 260px;
+        }
+        .preview-bar {
+            margin-top: 8px;
+            background: #f1f5fc;
+            border-radius: 12px;
+            padding: 6px 10px;
+            font-size: 0.7rem;
+        }
+        .apply-note {
+            background: #eff6ff;
+            border-radius: 10px;
+            padding: 6px 10px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .checkbox-col {
+            width: 28px;
+        }
+        .btn-sm-sm {
+            padding: 3px 8px;
+            font-size: 0.65rem;
+        }
+        .btn-confirm {
+            background: #10b981;
+            color: white;
+            width: 100%;
+            margin-top: 8px;
+        }
+        .modal-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-dialog {
+            background: white;
+            border-radius: 20px;
+            width: 95vw;
+            height: 90vh;
+            max-width: 1400px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .modal-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #eef2f6;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .modal-body {
+            padding: 20px 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .modal-footer {
+            padding: 12px 24px;
+            border-top: 1px solid #eef2f6;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        .history-item,
+        .order-select-item {
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+        .node-item-in-modal {
+            padding: 8px 12px;
+            border-bottom: 1px solid #edf2f7;
+            cursor: pointer;
+        }
+        .node-item-in-modal:hover {
+            background: #f1f5f9;
+        }
+        .batch-order-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+        .batch-order-table th,
+        .batch-order-table td {
+            padding: 10px 8px;
+            text-align: left;
+            border-bottom: 1px solid #edf2f7;
+        }
+        .batch-order-table th {
+            background: #f8fafc;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        .batch-order-table tr.disabled-row {
+            background-color: #f1f5f9;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .batch-order-table tr.disabled-row td {
+            color: #94a3b8;
+        }
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+            font-size: 0.75rem;
+        }
+        .pagination button {
+            padding: 4px 10px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .batch-search-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            align-items: flex-end;
+            background: #f9fafb;
+            padding: 12px 16px;
+            border-radius: 16px;
+        }
+        .batch-search-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #475569;
+        }
+        .batch-search-field input,
+        .batch-search-field select {
+            height: 34px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0 10px;
+            font-size: 0.75rem;
+            width: 140px;
+        }
+        .batch-search-field .select2-container {
+            width: 140px !important;
+        }
+        .lock-hint-text {
+            font-size: 0.7rem;
+            color: #64748b;
+            margin-left: 8px;
+            font-weight: normal;
+        }
+        /* ---- 新增: 异路径板块样式 ---- */
+        .cross-route-section {
+            margin-top: 14px;
+            border-top: 1px solid #eef2f6;
+            padding-top: 14px;
+        }
+        .cross-route-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .cross-route-header h4 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .cross-route-header h4 i {
+            color: #f59e0b;
+        }
+        .cross-route-header .badge-count {
+            font-size: 0.65rem;
+            background: #f1f5f9;
+            padding: 2px 10px;
+            border-radius: 20px;
+            color: #64748b;
+        }
+        .cross-route-hint {
+            background: #fef3c7;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            color: #92400e;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .cross-route-hint i {
+            color: #f59e0b;
+        }
+        .common-node-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid #eef2f6;
+        }
+        .common-node-item:last-child {
+            border-bottom: none;
+        }
+        .common-node-idx {
+            font-weight: 600;
+            font-size: 0.65rem;
+            color: #64748b;
+            width: 22px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .common-node-select {
+            flex: 1;
+            height: 30px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 0 8px;
+            font-size: 0.75rem;
+            background: white;
+            outline: none;
+            min-width: 0;
+        }
+        .common-node-select:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15);
+        }
+        .remove-common-node {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 4px;
+            border-radius: 4px;
+            transition: 0.15s;
+            flex-shrink: 0;
+        }
+        .remove-common-node:hover {
+            color: #ef4444;
+            background: #fef2f2;
+        }
+        .btn-cross-confirm {
+            width: 100%;
+            margin-top: 8px;
+            background: #f59e0b;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: 0.15s;
+        }
+        .btn-cross-confirm:hover {
+            background: #d97706;
+        }
+        .btn-cross-confirm:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        #commonNodesContainer {
+            max-height: 170px;
+            overflow-y: auto;
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 6px 10px;
+            min-height: 40px;
+        }
+        .empty-common-msg {
+            color: #94a3b8;
+            font-size: 0.7rem;
+            text-align: center;
+            padding: 12px 0;
+        }
+        .cross-route-section .apply-note-warn {
+            background: #fef3c7;
+            border-radius: 10px;
+            padding: 6px 10px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #92400e;
+        }
+        /* ---- 单车标逻辑（箭头内仅当运单不在任何节点上时显示） ---- */
+        .vehicle-arrow-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            color: #94a3b8;
+            font-size: 0.65rem;
+        }
+        .vehicle-arrow-container .fa-truck {
+            color: #f59e0b;
+            font-size: 0.7rem;
+        }
+        .vehicle-arrow-container .fa-arrow-right {
+            color: #94a3b8;
+        }
+        .vehicle-arrow-container.highlight {
+            color: #2563eb;
+        }
+        .vehicle-arrow-container.highlight .fa-truck {
+            color: #2563eb;
+        }
+        .vehicle-arrow-container.highlight .fa-arrow-right {
+            color: #2563eb;
+        }
+        .vehicle-arrow-container .fa-truck.single-vehicle {
+            /* 仅显示一个车标 */;
+        }
+        .vehicle-arrow-container .fa-arrow-right {
+            margin-left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <div class="nav-sidebar">
+            <div class="logo-area"><i class="fas fa-charging-station"></i> 星络调度</div>
+            <div class="menu-section">业务管理</div>
+            <div class="nav-item active"><i class="fas fa-edit"></i> 路径修改</div>
+            <div class="nav-item"><i class="fas fa-truck-fast"></i> 车队看板</div>
+            <div class="nav-item"><i class="fas fa-user-check"></i> 司机关怀</div>
+            <div class="menu-section">智能调度中心</div>
+            <div class="nav-item"><i class="fas fa-diagram-project"></i> 拓扑规划</div>
+            <div class="nav-item"><i class="fas fa-map"></i> 线路仿真</div>
+        </div>
+        <div class="main-workspace">
+            <div class="top-bar"><div class="page-title"><i class="fas fa-edit" style="margin-right: 8px; color:#2563eb;"></i> 路径修改 · 调度节点人工调整</div><div class="user-badge"><i class="far fa-bell"></i><span>运营中心</span></div></div>
+            <div class="scroll-area">
+                <div class="three-columns">
+                    <!-- 订单面板 -->
+                    <div class="order-panel">
+                        <div class="tabs"><div class="tab active" data-tab="pending">待处理</div><div class="tab" data-tab="today">今日修改</div></div>
+                        <div class="filter-grid">
+                            <div class="filter-field"><label>运单号</label><input type="text" id="filterId" placeholder="ORD- / 运单号"></div>
+                            <div class="filter-field"><label>起始节点</label><select id="filterStart" class="searchable-select"></select></div>
+                            <div class="filter-field"><label>途径节点</label><select id="filterVia" class="multi-searchable" multiple></select></div>
+                            <div class="filter-field"><label>结束节点</label><select id="filterEnd" class="searchable-select"></select></div>
+                            <div class="filter-actions-row"><button class="btn-sm btn-primary" id="searchBtn"><i class="fas fa-search"></i> 查询</button><button class="btn-sm btn-outline" id="resetBtn"><i class="fas fa-undo-alt"></i> 重置</button></div>
+                        </div>
+                        <div class="batch-bar"><div class="selected-info"><i class="fas fa-check-circle"></i> 已选中 <span id="globalSelectedCount">0</span> 个订单</div><button class="btn-sm btn-primary" id="addOrderBtn"><i class="fas fa-plus"></i> 添加运单</button></div>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr><th class="checkbox-col"><input type="checkbox" id="masterCheckbox"></th><th>运单ID</th><th>运单号</th><th>站点数</th><th>调整次数</th></tr>
+                                </thead>
+                                <tbody id="orderListTbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- 编辑面板 -->
+                    <div class="editor-panel">
+                        <div class="apply-note"><i class="fas fa-info-circle"></i> 将应用到已选中的 <span id="targetOrderCount">0</span> 个订单</div>
+                        <!-- 同路径板块 -->
+                        <div class="editor-header">
+                            <span><i class="fas fa-map-pin"></i> 调整节点(同路径) <span class="lock-hint-text">(<i class="fas fa-lock"></i> 灰色节点为已锁定站点，不可拖拽/删除；仅可调整剩余未完成节点)</span></span>
+                            <div><button class="btn-sm btn-outline btn-sm-sm" id="previewRouteBtn"><i class="fas fa-eye"></i> 线路预览</button><button class="btn-sm btn-outline btn-sm-sm" id="addNodeBtn"><i class="fas fa-plus"></i> 增加</button></div>
+                        </div>
+                        <div class="route-list-container" id="draggableRouteList"></div>
+                        <div class="preview-bar"><i class="fas fa-route"></i> 当前路径预览: <strong id="routePreviewText"></strong></div>
+                        <button class="btn-sm btn-confirm" id="confirmAdjustBtn"><i class="fas fa-check-circle"></i> 确认调整路径节点</button>
+
+                        <!-- 异路径板块 -->
+                        <div class="cross-route-section">
+                            <div class="cross-route-header">
+                                <h4><i class="fas fa-edit"></i> 调整节点(异路径)</h4>
+                                <span class="badge-count">共 <span id="commonNodeCount">0</span> 个共同节点</span>
+                            </div>
+                            <div class="cross-route-hint">
+                                <i class="fas fa-info-circle"></i>
+                                此处仅展示各运单途径的相同节点，只能修改或移除节点不可调整节点顺序
+                            </div>
+                            <div id="commonNodesContainer">
+                                <div class="empty-common-msg">请勾选多个不同路径的订单，自动提取相同节点</div>
+                            </div>
+                            <button class="btn-cross-confirm" id="confirmCrossRouteBtn">
+                                <i class="fas fa-check-circle"></i> 确认异路径调整（移除选中节点）
+                            </button>
+                        </div>
+
+                    </div>
+                    <!-- 地图面板 -->
+                    <div class="map-panel"><div class="map-header"><i class="fas fa-map-marked-alt"></i> 路线地图预览</div><div id="routeMap"></div><div class="map-legend" id="mapLegend"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 批量添加运单弹窗 -->
+    <div id="addOrderModal" class="modal-mask">
+        <div class="modal-dialog">
+            <div class="modal-header">批量添加运单 <button class="btn-sm btn-outline" onclick="closeAddOrderModal()">×</button></div>
+            <div class="modal-body">
+                <div class="batch-search-bar">
+                    <div class="batch-search-field"><label>运单ID</label><input type="text" id="batchOrderIdSearch" placeholder="输入运单ID"></div>
+                    <div class="batch-search-field"><label>运单号</label><input type="text" id="batchTrackingNoSearch" placeholder="输入运单号"></div>
+                    <div class="batch-search-field"><label>状态</label><select id="batchStatusFilter"><option value="">全部</option><option>新建</option><option>中转已入库</option><option>已签收</option><option>快递待接单</option></select></div>
+                    <div class="batch-search-field"><label>优先级</label><select id="batchPriorityFilter"><option value="">全部</option><option>高</option><option>中</option><option>低</option></select></div>
+                    <div class="batch-search-field"><label>创建日期</label><input type="date" id="batchCreateDateFilter"></div>
+                    <div class="batch-search-field"><label>起始节点</label><select id="batchStartNode" class="batch-node-select"></select></div>
+                    <div class="batch-search-field"><label>途径节点</label><select id="batchViaNode" class="batch-node-multi" multiple></select></div>
+                    <div class="batch-search-field"><label>结束节点</label><select id="batchEndNode" class="batch-node-select"></select></div>
+                    <div class="batch-search-field"><button class="btn-sm btn-primary" id="batchSearchBtn" style="margin-top: 18px;"><i class="fas fa-search"></i> 搜索</button></div>
+                </div>
+                <div style="overflow-y: auto; max-height: calc(90vh - 280px);">
+                    <table class="batch-order-table" id="batchOrdersTable">
+                        <thead>
+                            <tr><th><input type="checkbox" id="batchMasterCheckbox"></th><th>运单ID</th><th>运单号</th><th>状态</th><th>优先级</th><th>配送站点ID</th><th>收货地址</th><th>创建时间</th></tr>
+                        </thead>
+                        <tbody id="batchOrdersTbody"></tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="batchPagination"></div>
+            </div>
+            <div class="modal-footer"><button class="btn-sm btn-outline" onclick="closeAddOrderModal()">取消</button><button class="btn-sm btn-primary" id="confirmBatchAddOrderBtn">确认批量添加 (0)</button></div>
+        </div>
+    </div>
+
+    <div id="historyModal" class="modal-mask"><div class="modal-dialog" style="width:600px; height:auto;"><div class="modal-header">调整记录<button class="btn-sm btn-outline" onclick="closeHistoryModal()">×</button></div><div class="modal-body" id="historyModalBody"></div><div class="modal-footer"><button class="btn-sm btn-outline" onclick="closeHistoryModal()">关闭</button></div></div></div>
+    <div id="confirmModal" class="modal-mask"><div class="modal-dialog" style="width:500px; height:auto;"><div class="modal-header">确认路径调整<button class="btn-sm btn-outline" onclick="closeConfirmModal()">×</button></div><div class="modal-body" id="confirmModalBody"></div><div class="modal-footer"><button class="btn-sm btn-outline" onclick="closeConfirmModal()">取消</button><button class="btn-sm btn-primary" id="confirmExecuteBtn">确认执行</button></div></div></div>
+    <div id="selectNodeModal" class="modal-mask"><div class="modal-dialog" style="width:400px; height:auto;"><div class="modal-header">选择途经节点<button class="btn-sm btn-outline" onclick="closeSelectNodeModal()">×</button></div><div class="modal-body" id="selectNodeList"></div><div class="modal-footer"><button class="btn-sm btn-outline" onclick="closeSelectNodeModal()">取消</button></div></div></div>
+
+    <script>
+        const ALL_NODES = [
+            { name: "广州营业部", lat: 23.1291, lng: 113.2644 }, { name: "长沙分拨中心", lat: 28.2278, lng: 112.9389 },
+            { name: "武汉分拨中心", lat: 30.5928, lng: 114.3055 }, { name: "郑州分拨中心", lat: 34.7466, lng: 113.6254 },
+            { name: "合肥分拨中心", lat: 31.8612, lng: 117.2850 }, { name: "北京营业部", lat: 39.9042, lng: 116.4074 },
+            { name: "南京分拨中心", lat: 32.0603, lng: 118.7969 }, { name: "南昌分拨中心", lat: 28.6765, lng: 115.8925 },
+            { name: "杭州分拨中心", lat: 30.2741, lng: 120.1551 }
+        ];
+        const ROUTE_COLORS = ['#2563eb', '#dc2626', '#10b981', '#f59e0b', '#8b5cf6'];
+
+        // 模拟运单池 & 订单数据
+        let availableOrdersPool = [];
+        const mockStatuses = ["新建", "中转已入库", "已签收", "快递待接单"];
+        const mockPriorities = ["高", "中", "低"];
+        const mockAddresses = ["下关街道驴子巷8号小区", "江苏省南京市鼓楼区新门口2号", "宝塔桥金陵新九村东院2号", "阅江楼街道商埠街17号"];
+        for (let i = 100; i <= 341; i++) {
+            const createDate = new Date(Date.now() - Math.random() * 30 * 24 * 3600000);
+            availableOrdersPool.push({
+                id: i,
+                orderId: `ORD-${i}`,
+                trackingNo: i % 2 === 0 ? `YRT20260508${String(i).slice(-3)}` : `WB202604${String(100 + Math.floor(Math.random() * 30))}`,
+                status: mockStatuses[Math.floor(Math.random() * mockStatuses.length)],
+                priority: mockPriorities[Math.floor(Math.random() * mockPriorities.length)],
+                siteId: 1513 + Math.floor(Math.random() * 20),
+                address: mockAddresses[Math.floor(Math.random() * mockAddresses.length)],
+                createTime: createDate.toISOString().slice(0, 19).replace('T', ' '),
+                lat: 32.06 + (Math.random() * 0.5),
+                lng: 118.7 + (Math.random() * 0.5)
+            });
+        }
+
+        let allOrdersData = [];
+        // ---- 创建一条运单，当前节点索引设为 1.5（表示在两个节点之间） ----
+        const routeBetween = ALL_NODES.slice(0, 5).map(n => ({ name: n.name, lat: n.lat, lng: n.lng }));
+        allOrdersData.push({
+            id: `ORD-000`,
+            trackingNo: `YRT20260508BETWEEN`,
+            isDelivered: false,
+            route: routeBetween,
+            currentNodeIndex: 1.5, // 表示在节点1和节点2之间
+            isInTransit: true,
+            adjustHistory: [],
+            adjustCount: 0,
+            lastAdjustTime: null
+        });
+
+        // 其余随机订单
+        for (let i = 1; i <= 12; i++) {
+            const routeObj = (() => { let copy = [...ALL_NODES]; for (let i = copy.length - 1; i > 0; i--) { let j = Math.floor(Math.random() * (i + 1));
+                    [copy[i], copy[j]] = [copy[j], copy[i]]; } return copy.slice(0, 4).map(n => ({ name: n.name, lat: n.lat,
+                    lng: n.lng })); })();
+            const randomIdx = Math.floor(Math.random() * 4);
+            allOrdersData.push({
+                id: `ORD-${String(i).padStart(3,'0')}`,
+                trackingNo: `YRT${Math.floor(100000+Math.random()*900000)}`,
+                isDelivered: false,
+                route: routeObj,
+                currentNodeIndex: randomIdx,
+                isInTransit: false,
+                adjustHistory: [],
+                adjustCount: 0,
+                lastAdjustTime: null
+            });
+        }
+        let ordersData = allOrdersData.filter(o => !o.isDelivered);
+        let currentFilteredOrders = [...ordersData];
+        let selectedOrderIds = new Set();
+        let currentEditingRoute = [];
+        let currentTab = "pending";
+        let map = null,
+            routeLayers = [],
+            previewLayer = null,
+            directionMarkers = [];
+
+        // --- 共同节点相关状态 ---
+        let commonNodesList = [];
+        let commonNodeModifications = {};
+        let commonNodeRemovals = new Set();
+
+        function initMap() { if (map) return;
+            map = L.map('routeMap').setView([32.5, 114.5], 6);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map); }
+
+        function clearPreviewLayer() {
+            if (previewLayer) { map.removeLayer(previewLayer);
+                previewLayer = null; }
+            directionMarkers.forEach(m => map.removeLayer(m));
+            directionMarkers = [];
+        }
+
+        function showPreviewRouteWithDirection() {
+            if (!currentEditingRoute.length) return alert("请先编辑路线");
+            clearPreviewLayer();
+            const latlngs = currentEditingRoute.map(n => [n.lat, n.lng]);
+            previewLayer = L.polyline(latlngs, { color: '#ef4444', weight: 4, dashArray: '8,6' }).addTo(map);
+            for (let i = 0; i < latlngs.length - 1; i++) {
+                const p1 = latlngs[i],
+                    p2 = latlngs[i + 1];
+                const midLat = (p1[0] + p2[0]) / 2,
+                    midLng = (p1[1] + p2[1]) / 2;
+                const angle = Math.atan2(p2[0] - p1[0], p2[1] - p1[1]) * 180 / Math.PI;
+                directionMarkers.push(L.marker([midLat, midLng], {
+                    icon: L.divIcon({ html: `<div style="color:#ef4444; font-size:16px; transform:rotate(${angle}deg);">▶</div>`,
+                        iconSize: [12, 12] })
+                }).addTo(map));
+            }
+            currentEditingRoute.forEach((node, idx) => {
+                directionMarkers.push(L.marker([node.lat, node.lng], {
+                    icon: L.divIcon({
+                        html: `<div style="background:#ef4444;color:white;border-radius:20px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:11px;">${idx+1}</div>`,
+                        iconSize: [24, 24]
+                    })
+                }).addTo(map).bindPopup(node.name));
+            });
+            map.fitBounds(L.latLngBounds(latlngs), { padding: [50, 50] });
+            setTimeout(() => clearPreviewLayer(), 5000);
+        }
+
+        function updateMapWithSelectedOrders() {
+            routeLayers.forEach(l => { if (l._arrows) l._arrows.forEach(a => map.removeLayer(a));
+                map.removeLayer(l); });
+            routeLayers = [];
+            const sel = currentFilteredOrders.filter(o => selectedOrderIds.has(o.id));
+            if (!sel.length) { document.getElementById('mapLegend').innerHTML = '<span>勾选订单后显示路线</span>'; return; }
+            let html = '';
+            sel.forEach((o, i) => { const c = ROUTE_COLORS[i % ROUTE_COLORS.length];
+                html += `<div class="legend-item"><div class="legend-color" style="background:${c};"></div><span>${o.id}</span></div>`; });
+            document.getElementById('mapLegend').innerHTML = html;
+            const bounds = [];
+            sel.forEach((order, idx) => {
+                const route = order.route;
+                if (!route) return;
+                const latlngs = route.map(n => [n.lat, n.lng]);
+                const color = ROUTE_COLORS[idx % ROUTE_COLORS.length];
+                const poly = L.polyline(latlngs, { color, weight: 3 }).addTo(map);
+                routeLayers.push(poly);
+                for (let i = 0; i < latlngs.length - 1; i++) {
+                    const p1 = latlngs[i],
+                        p2 = latlngs[i + 1];
+                    const angle = Math.atan2(p2[0] - p1[0], p2[1] - p1[1]) * 180 / Math.PI;
+                    const arrow = L.marker([(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2], {
+                        icon: L.divIcon({ html: `<div style="color:${color};font-size:14px;transform:rotate(${angle}deg);">▶</div>`,
+                            iconSize: [12, 12] })
+                    }).addTo(map);
+                    if (!poly._arrows) poly._arrows = [];
+                    poly._arrows.push(arrow);
+                    routeLayers.push(arrow);
+                }
+                route.forEach((node, ni) => {
+                    const mc = ni === 0 ? '#10b981' : (ni === route.length - 1 ? '#f59e0b' : '#3b82f6');
+                    const m = L.marker([node.lat, node.lng], {
+                        icon: L.divIcon({
+                            html: `<div style="background:${mc};color:white;border-radius:20px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:10px;">${ni+1}</div>`,
+                            iconSize: [22, 22]
+                        })
+                    }).addTo(map);
+                    routeLayers.push(m);
+                    bounds.push([node.lat, node.lng]);
+                });
+            });
+            if (bounds.length) map.fitBounds(L.latLngBounds(bounds), { padding: [50, 50] });
+        }
+
+        // ---- formatRouteWithStatus: 完成置灰，当前高亮，仅当运单不在任何节点上（即处于行程中）显示一个车标 ----
+        function formatRouteWithStatus(order) {
+            const r = order.route;
+            if (!r) return "";
+            const currentIdx = order.currentNodeIndex || 0;
+            // 判断是否 "在节点上"：如果 currentIdx 是整数且在 0~n-1 范围内，则认为在节点上。
+            const isAtNode = (Number.isInteger(currentIdx) && currentIdx >= 0 && currentIdx < r.length);
+            let vehicleArrowIndex = -1;
+            if (!isAtNode) {
+                // 不在任何节点上：车标应显示在 "最后一个已完成节点" 与 "下一个节点" 之间
+                const baseIdx = Math.floor(currentIdx);
+                if (baseIdx >= 0 && baseIdx < r.length - 1) {
+                    vehicleArrowIndex = baseIdx;
+                } else if (baseIdx >= r.length - 1) {
+                    vehicleArrowIndex = r.length - 2; // 最后一段
+                } else {
+                    vehicleArrowIndex = -1;
+                }
+            }
+
+            let res = [];
+            for (let i = 0; i < r.length; i++) {
+                const node = r[i];
+                let classNames = 'route-node';
+                const isCompleted = (i < currentIdx);
+                const isCurrent = (i === currentIdx && isAtNode);
+                if (isCompleted) classNames += ' completed';
+                else if (isCurrent) classNames += ' current';
+                res.push(`<span class="${classNames}">${node.name}</span>`);
+                if (i < r.length - 1) {
+                    const arrowIdx = i;
+                    let isActiveArrow = false;
+                    if (!isAtNode && vehicleArrowIndex === i) {
+                        isActiveArrow = true;
+                    }
+                    const arrowClass = isActiveArrow ? 'vehicle-arrow-container highlight' : 'vehicle-arrow-container';
+                    let arrowHtml = '';
+                    if (isActiveArrow) {
+                        // 仅当运单不在节点上时，显示一个车标
+                        arrowHtml = `<span class="${arrowClass}"><i class="fas fa-truck single-vehicle"></i> <i class="fas fa-arrow-right"></i></span>`;
+                    } else {
+                        arrowHtml = `<span class="${arrowClass}"><i class="fas fa-arrow-right"></i></span>`;
+                    }
+                    res.push(arrowHtml);
+                }
+            }
+            return res.join(' ');
+        }
+
+        function renderMainTable() {
+            const tbody = document.getElementById('orderListTbody');
+            if (!currentFilteredOrders.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">暂无订单</td></tr>'; return; }
+            let html = '';
+            for (let o of currentFilteredOrders) {
+                const chk = selectedOrderIds.has(o.id);
+                html += `<tr class="order-main-row"><td><input type="checkbox" class="row-checkbox" data-id="${o.id}" ${chk?'checked':''}></td><td>${o.id}</td><td>${o.trackingNo}</td><td>${o.route.length}</td><td><span class="adjust-count" onclick="showHistory('${o.id}')">${o.adjustCount||0}次</span></td></tr>
+                        <tr class="order-route-row"><td colspan="5"><div class="order-route-full">${formatRouteWithStatus(o)}</div></td></tr>`;
+            }
+            tbody.innerHTML = html;
+            document.getElementById('globalSelectedCount').innerText = selectedOrderIds.size;
+            document.getElementById('targetOrderCount').innerText = selectedOrderIds.size;
+            document.querySelectorAll('.row-checkbox').forEach(cb => {
+                cb.addEventListener('change', function(e) {
+                    const id = this.dataset.id;
+                    if (this.checked) selectedOrderIds.add(id);
+                    else selectedOrderIds.delete(id);
+                    document.getElementById('globalSelectedCount').innerText = selectedOrderIds.size;
+                    document.getElementById('targetOrderCount').innerText = selectedOrderIds.size;
+                    updateMapWithSelectedOrders();
+                    renderCommonNodes();
+                });
+            });
+            updateMapWithSelectedOrders();
+            renderCommonNodes();
+        }
+
+        function applyFilters() {
+            const idv = document.getElementById('filterId').value.trim();
+            const start = $('#filterStart').val(),
+                end = $('#filterEnd').val(),
+                via = $('#filterVia').val() || [];
+            let f = ordersData.filter(o => {
+                if (idv && !o.id.includes(idv) && !o.trackingNo.includes(idv)) return false;
+                if (start && o.route[0]?.name !== start) return false;
+                if (end && o.route[o.route.length - 1]?.name !== end) return false;
+                if (via.length) {
+                    const names = o.route.map(n => n.name);
+                    if (!via.every(v => names.includes(v))) return false;
+                }
+                return true;
+            });
+            if (currentTab === 'today') {
+                const today = new Date().toDateString();
+                f = f.filter(o => o.lastAdjustTime && new Date(o.lastAdjustTime).toDateString() === today);
+            }
+            currentFilteredOrders = f;
+            const v = new Set(f.map(o => o.id));
+            for (let id of selectedOrderIds)
+                if (!v.has(id)) selectedOrderIds.delete(id);
+            renderMainTable();
+        }
+
+        // ---- 同路径编辑器 ----
+        function renderRouteEditor(nodes, containerId = 'draggableRouteList') {
+            const c = document.getElementById(containerId);
+            if (!nodes.length) { c.innerHTML = '<div style="padding:20px;text-align:center;">请添加节点</div>'; if (containerId ===
+                    'draggableRouteList') document.getElementById('routePreviewText').innerText = '路径为空'; return; }
+            let html = '';
+            nodes.forEach((n, i) => {
+                const isFirst = (i === 0);
+                const isDraggable = !isFirst;
+                const removable = !isFirst;
+                html += `<div class="sortable-node ${isFirst ? 'disabled' : 'draggable'}" data-index="${i}" ${isDraggable ? 'draggable="true"' : ''}>
+                            <i class="fas ${isFirst ? 'fa-lock' : 'fa-grip-vertical'}"></i>
+                            <div class="node-order">${i+1}</div>
+                            <div class="node-name-text">${n.name}</div>
+                            <div class="remove-node ${!removable ? 'disabled' : ''}" data-rmidx="${i}" ${!removable ? 'style="pointer-events:none; opacity:0.5;"' : ''}><i class="fas fa-trash-alt"></i></div>
+                       </div>`;
+            });
+            c.innerHTML = html;
+            if (containerId === 'draggableRouteList') document.getElementById('routePreviewText').innerText = nodes.map(n => n
+                .name).join(' → ');
+            let dragSrc = null;
+            document.querySelectorAll(`#${containerId} .sortable-node.draggable`).forEach(el => {
+                el.setAttribute('draggable', 'true');
+                el.addEventListener('dragstart', e => { dragSrc = parseInt(el.dataset.index);
+                    e.dataTransfer.effectAllowed = 'move'; });
+                el.addEventListener('dragover', e => e.preventDefault());
+                el.addEventListener('drop', e => {
+                    e.preventDefault();
+                    let targetIdx = parseInt(el.dataset.index);
+                    if (targetIdx === 0 || dragSrc === 0) return alert("起始节点为已锁定站点，不可移动");
+                    if (dragSrc !== null && dragSrc !== targetIdx) {
+                        const moved = nodes.splice(dragSrc, 1)[0];
+                        nodes.splice(targetIdx, 0, moved);
+                        renderRouteEditor(nodes, containerId);
+                    }
+                    dragSrc = null;
+                });
+            });
+            document.querySelectorAll(`#${containerId} .remove-node:not(.disabled)`).forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const idx = parseInt(btn.dataset.rmidx);
+                    if (idx === 0) return alert("已锁定起始站点，不可删除");
+                    if (nodes.length > 1) { nodes.splice(idx, 1);
+                        renderRouteEditor(nodes, containerId); } else alert("至少保留一个节点");
+                });
+            });
+        }
+
+        function openSelectNodeModal() {
+            const modal = document.getElementById('selectNodeModal');
+            const cont = document.getElementById('selectNodeList');
+            cont.innerHTML = '';
+            ALL_NODES.forEach(node => {
+                const div = document.createElement('div');
+                div.className = 'node-item-in-modal';
+                div.innerText = node.name;
+                div.onclick = () => {
+                    currentEditingRoute.push({ ...node });
+                    renderRouteEditor(currentEditingRoute);
+                    closeSelectNodeModal();
+                };
+                cont.appendChild(div);
+            });
+            modal.style.display = 'flex';
+        }
+
+        function showConfirmModal() {
+            if (selectedOrderIds.size === 0) return alert("请勾选订单");
+            if (!currentEditingRoute.length) return alert("请编辑路径");
+            document.getElementById('confirmModalBody').innerHTML =
+                `<div>将对${selectedOrderIds.size}个订单应用新路径</div><div style="margin-top:8px;">新路径: ${currentEditingRoute.map(n=>n.name).join('→')}</div>`;
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
+
+        function executeAdjust() {
+            const newRoute = currentEditingRoute.map(n => ({ ...n }));
+            const now = new Date();
+            const selList = currentFilteredOrders.filter(o => selectedOrderIds.has(o.id));
+            for (let o of selList) {
+                if (!o.adjustHistory) o.adjustHistory = [];
+                o.adjustHistory.push({ time: now.toLocaleString(), route: o.route.map(n => n.name) });
+                o.adjustCount = (o.adjustCount || 0) + 1;
+                o.route = newRoute.map(n => ({ ...n }));
+                o.currentNodeIndex = 0;
+                o.lastAdjustTime = now.toISOString();
+            }
+            applyFilters();
+            selectedOrderIds.clear();
+            renderMainTable();
+            closeConfirmModal();
+            alert(`成功调整 ${selList.length} 个订单`);
+        }
+
+        // ---- 批量添加运单 ----
+        let batchCurrentPage = 1,
+            batchPageSize = 12,
+            batchTotalFiltered = [],
+            batchSelectedOrders = new Set();
+
+        function renderBatchOrdersTable() {
+            const orderIdSearch = document.getElementById('batchOrderIdSearch').value.trim().toLowerCase();
+            const trackingSearch = document.getElementById('batchTrackingNoSearch').value.trim().toLowerCase();
+            const status = document.getElementById('batchStatusFilter').value;
+            const priority = document.getElementById('batchPriorityFilter').value;
+            const createDate = document.getElementById('batchCreateDateFilter').value;
+            let filtered = availableOrdersPool.filter(o => !ordersData.some(ex => ex.id === o.orderId));
+            if (orderIdSearch) filtered = filtered.filter(o => o.orderId.toLowerCase().includes(orderIdSearch));
+            if (trackingSearch) filtered = filtered.filter(o => o.trackingNo.toLowerCase().includes(trackingSearch));
+            if (status) filtered = filtered.filter(o => o.status === status);
+            if (priority) filtered = filtered.filter(o => o.priority === priority);
+            if (createDate) filtered = filtered.filter(o => o.createTime && o.createTime.startsWith(createDate));
+            batchTotalFiltered = filtered;
+            const totalPages = Math.ceil(filtered.length / batchPageSize);
+            const start = (batchCurrentPage - 1) * batchPageSize;
+            const pageData = filtered.slice(start, start + batchPageSize);
+            let html = '';
+            pageData.forEach(order => {
+                const alreadyAdded = ordersData.some(ex => ex.id === order.orderId);
+                const isSel = batchSelectedOrders.has(order.orderId) && !alreadyAdded;
+                html += `<tr class="${alreadyAdded ? 'disabled-row' : ''}"><td><input type="checkbox" class="batch-row-chk" data-id="${order.orderId}" ${alreadyAdded ? 'disabled' : ''} ${isSel?'checked':''}></td><td>${order.orderId}</td><td>${order.trackingNo}</td><td>${order.status}</td><td>${order.priority}</td><td>${order.siteId}</td><td>${order.address}</td><td>${order.createTime}</td></tr>`;
+            });
+            document.getElementById('batchOrdersTbody').innerHTML = html;
+            let pgHtml =
+                `<span>共${filtered.length}条</span><button ${batchCurrentPage===1?'disabled':''} id="batchPrevPage">上一页</button><span>第${batchCurrentPage}/${totalPages||1}页</span><button ${batchCurrentPage===totalPages||totalPages===0?'disabled':''} id="batchNextPage">下一页</button>`;
+            document.getElementById('batchPagination').innerHTML = pgHtml;
+            const validSelectedCount = Array.from(batchSelectedOrders).filter(id => !ordersData.some(ex => ex.id === id))
+            .length;
+            document.getElementById('confirmBatchAddOrderBtn').innerHTML = `确认批量添加 (${validSelectedCount})`;
+            document.querySelectorAll('.batch-row-chk:not(:disabled)').forEach(cb => {
+                cb.addEventListener('change', (e) => {
+                    const oid = cb.dataset.id;
+                    if (cb.checked) batchSelectedOrders.add(oid);
+                    else batchSelectedOrders.delete(oid);
+                    document.getElementById('confirmBatchAddOrderBtn').innerHTML =
+                        `确认批量添加 (${Array.from(batchSelectedOrders).filter(id=>!ordersData.some(ex=>ex.id===id)).length})`;
+                });
+            });
+            const master = document.getElementById('batchMasterCheckbox');
+            if (master) master.checked = pageData.filter(o => !ordersData.some(ex => ex.id === o.orderId)).length > 0 &&
+                pageData.filter(o => !ordersData.some(ex => ex.id === o.orderId)).every(o => batchSelectedOrders.has(o
+                    .orderId));
+        }
+
+        function openAddOrderModal() {
+            batchSelectedOrders.clear();
+            batchCurrentPage = 1;
+            document.getElementById('batchOrderIdSearch').value = '';
+            document.getElementById('batchTrackingNoSearch').value = '';
+            document.getElementById('batchStatusFilter').value = '';
+            document.getElementById('batchPriorityFilter').value = '';
+            document.getElementById('batchCreateDateFilter').value = '';
+            $('#batchStartNode,#batchEndNode').val(null).trigger('change');
+            $('#batchViaNode').val(null).trigger('change');
+            renderBatchOrdersTable();
+            document.getElementById('addOrderModal').style.display = 'flex';
+        }
+
+        function confirmBatchAdd() {
+            const toAdd = Array.from(batchSelectedOrders).filter(orderId => !ordersData.some(o => o.id === orderId));
+            if (toAdd.length === 0) return alert("没有可添加的新运单");
+            for (let orderId of toAdd) {
+                const pool = availableOrdersPool.find(p => p.orderId === orderId);
+                if (pool && !ordersData.some(o => o.id === pool.orderId)) {
+                    const defaultRoute = ALL_NODES.slice(0, 4).map(n => ({ name: n.name, lat: n.lat, lng: n.lng }));
+                    const newOrder = {
+                        id: pool.orderId,
+                        trackingNo: pool.trackingNo,
+                        isDelivered: false,
+                        route: defaultRoute,
+                        currentNodeIndex: 0,
+                        isInTransit: false,
+                        adjustHistory: [],
+                        adjustCount: 0,
+                        lastAdjustTime: null
+                    };
+                    ordersData.push(newOrder);
+                    allOrdersData.push(newOrder);
+                }
+            }
+            batchSelectedOrders.clear();
+            applyFilters();
+            closeAddOrderModal();
+            alert(`成功添加 ${toAdd.length} 个运单`);
+        }
+
+        function closeAddOrderModal() { document.getElementById('addOrderModal').style.display = 'none'; }
+
+        function closeHistoryModal() { document.getElementById('historyModal').style.display = 'none'; }
+
+        function closeConfirmModal() { document.getElementById('confirmModal').style.display = 'none'; }
+
+        function closeSelectNodeModal() { document.getElementById('selectNodeModal').style.display = 'none'; }
+
+        function showHistory(orderId) {
+            const order = [...currentFilteredOrders, ...ordersData].find(o => o.id === orderId);
+            if (!order) return;
+            let html = `<div>初始路径: ${order.route.map(n=>n.name).join('→')}</div>`;
+            if (order.adjustHistory) order.adjustHistory.forEach(h => { html += `<div>${h.time}: ${h.route.join('→')}</div>`; });
+            document.getElementById('historyModalBody').innerHTML = html;
+            document.getElementById('historyModal').style.display = 'flex';
+        }
+
+        // ---- 共同节点 ----
+        function computeCommonNodes(selectedOrders) {
+            if (selectedOrders.length < 2) return [];
+            const nameLists = selectedOrders.map(o => o.route.map(n => n.name));
+            const commonNames = nameLists.reduce((acc, list) => {
+                return acc.filter(name => list.includes(name));
+            }, [...nameLists[0]]);
+            if (commonNames.length === 0) return [];
+            const firstOrderNames = nameLists[0];
+            commonNames.sort((a, b) => firstOrderNames.indexOf(a) - firstOrderNames.indexOf(b));
+            return commonNames.map(name => {
+                const found = ALL_NODES.find(n => n.name === name);
+                return found ? { ...found } : { name, lat: 0, lng: 0 };
+            });
+        }
+
+        function renderCommonNodes() {
+            const container = document.getElementById('commonNodesContainer');
+            const countSpan = document.getElementById('commonNodeCount');
+            const selectedOrders = currentFilteredOrders.filter(o => selectedOrderIds.has(o.id));
+
+            if (selectedOrders.length < 2) {
+                container.innerHTML = '<div class="empty-common-msg">请勾选多个不同路径的订单，自动提取相同节点</div>';
+                countSpan.textContent = '0';
+                commonNodesList = [];
+                commonNodeModifications = {};
+                commonNodeRemovals = new Set();
+                document.getElementById('confirmCrossRouteBtn').disabled = true;
+                return;
+            }
+
+            commonNodesList = computeCommonNodes(selectedOrders);
+            countSpan.textContent = commonNodesList.length;
+
+            if (commonNodesList.length === 0) {
+                container.innerHTML = '<div class="empty-common-msg">所选订单无共同节点</div>';
+                document.getElementById('confirmCrossRouteBtn').disabled = true;
+                return;
+            }
+
+            const filteredNodes = commonNodesList.filter(n => !commonNodeRemovals.has(n.name));
+
+            if (filteredNodes.length === 0) {
+                container.innerHTML = '<div class="empty-common-msg">所有共同节点已被移除</div>';
+                document.getElementById('confirmCrossRouteBtn').disabled = false;
+                return;
+            }
+
+            let html = '';
+            filteredNodes.forEach((node, idx) => {
+                const modifiedName = commonNodeModifications[node.name] || node.name;
+                html += `
+                    <div class="common-node-item">
+                        <span class="common-node-idx">${idx+1}</span>
+                        <select class="common-node-select" data-original="${node.name}" data-idx="${idx}">
+                            ${ALL_NODES.map(n => `<option value="${n.name}" ${n.name === modifiedName ? 'selected' : ''}>${n.name}</option>`).join('')}
+                        </select>
+                        <button class="remove-common-node" data-node-name="${node.name}"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            document.getElementById('confirmCrossRouteBtn').disabled = false;
+
+            container.querySelectorAll('.common-node-select').forEach(sel => {
+                sel.addEventListener('change', function() {
+                    const original = this.dataset.original;
+                    const newVal = this.value;
+                    if (newVal === original) {
+                        delete commonNodeModifications[original];
+                    } else {
+                        commonNodeModifications[original] = newVal;
+                    }
+                    renderCommonNodes();
+                });
+            });
+
+            container.querySelectorAll('.remove-common-node').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const nodeName = this.dataset.nodeName;
+                    commonNodeRemovals.add(nodeName);
+                    renderCommonNodes();
+                });
+            });
+        }
+
+        function executeCrossRouteAdjust() {
+            const selectedOrders = currentFilteredOrders.filter(o => selectedOrderIds.has(o.id));
+            if (selectedOrders.length < 2) return alert("请至少勾选2个订单");
+            if (commonNodesList.length === 0) return alert("所选订单无共同节点，无法调整");
+
+            const remainingNodes = commonNodesList.filter(n => !commonNodeRemovals.has(n.name));
+            if (remainingNodes.length === 0) return alert("所有共同节点已被移除，无需调整");
+
+            for (let order of selectedOrders) {
+                let newRoute = order.route.filter(n => !commonNodeRemovals.has(n.name));
+                newRoute = newRoute.map(n => {
+                    const replace = commonNodeModifications[n.name];
+                    if (replace) {
+                        const target = ALL_NODES.find(node => node.name === replace);
+                        return target ? { ...target } : { ...n, name: replace };
+                    }
+                    return { ...n };
+                });
+                order.route = newRoute;
+                if (!order.adjustHistory) order.adjustHistory = [];
+                order.adjustHistory.push({
+                    time: new Date().toLocaleString(),
+                    route: newRoute.map(n => n.name)
+                });
+                order.adjustCount = (order.adjustCount || 0) + 1;
+                order.lastAdjustTime = new Date().toISOString();
+            }
+
+            commonNodeModifications = {};
+            commonNodeRemovals = new Set();
+            commonNodesList = [];
+
+            applyFilters();
+            selectedOrderIds.clear();
+            renderMainTable();
+            renderCommonNodes();
+            alert(`成功调整 ${selectedOrders.length} 个订单（异路径）`);
+        }
+
+        $(document).ready(function() {
+            const opts = ALL_NODES.map(n => ({ id: n.name, text: n.name }));
+            $('#filterStart,#filterEnd').select2({ data: opts, placeholder: "全部", allowClear: true });
+            $('#filterVia').select2({ data: opts, multiple: true, placeholder: "选择多个", allowClear: true });
+            $('#batchStartNode,#batchEndNode').select2({ data: opts, placeholder: "全部", allowClear: true, width: 'resolve' });
+            $('#batchViaNode').select2({ data: opts, multiple: true, placeholder: "全部", allowClear: true, width: 'resolve' });
+            $('#filterStart,#filterEnd,#filterVia').val(null).trigger('change');
+        });
+
+        document.getElementById('previewRouteBtn').onclick = showPreviewRouteWithDirection;
+        document.getElementById('confirmAdjustBtn').onclick = showConfirmModal;
+        document.getElementById('confirmExecuteBtn').onclick = executeAdjust;
+        document.getElementById('addNodeBtn').onclick = openSelectNodeModal;
+        document.getElementById('addOrderBtn').onclick = openAddOrderModal;
+        document.getElementById('confirmBatchAddOrderBtn').onclick = confirmBatchAdd;
+        document.getElementById('batchSearchBtn').onclick = () => { batchCurrentPage = 1;
+            renderBatchOrdersTable(); };
+        document.getElementById('resetBtn').onclick = () => { document.getElementById('filterId').value = '';
+            $('#filterStart,#filterEnd,#filterVia').val(null).trigger('change');
+            applyFilters(); };
+        document.getElementById('searchBtn').onclick = applyFilters;
+        document.getElementById('confirmCrossRouteBtn').onclick = executeCrossRouteAdjust;
+
+        document.getElementById('masterCheckbox')?.addEventListener('change', (e) => {
+            const c = e.target.checked;
+            document.querySelectorAll('.row-checkbox').forEach(cb => {
+                cb.checked = c;
+                if (c) selectedOrderIds.add(cb.dataset.id);
+                else selectedOrderIds.delete(cb.dataset.id);
+            });
+            document.getElementById('globalSelectedCount').innerText = selectedOrderIds.size;
+            document.getElementById('targetOrderCount').innerText = selectedOrderIds.size;
+            renderMainTable();
+        });
+
+        document.querySelectorAll('.tab').forEach(t => {
+            t.onclick = () => {
+                document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+                t.classList.add('active');
+                currentTab = t.dataset.tab;
+                applyFilters();
+            };
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target.id === 'batchPrevPage') { batchCurrentPage--;
+                renderBatchOrdersTable(); }
+            if (e.target.id === 'batchNextPage') { batchCurrentPage++;
+                renderBatchOrdersTable(); }
+            if (e.target.id === 'batchMasterCheckbox') {
+                const isCkd = e.target.checked;
+                document.querySelectorAll('.batch-row-chk:not(:disabled)').forEach(cb => {
+                    cb.checked = isCkd;
+                    const oid = cb.dataset.id;
+                    if (isCkd) batchSelectedOrders.add(oid);
+                    else batchSelectedOrders.delete(oid);
+                });
+                document.getElementById('confirmBatchAddOrderBtn').innerHTML =
+                    `确认批量添加 (${Array.from(batchSelectedOrders).filter(id=>!ordersData.some(ex=>ex.id===id)).length})`;
+            }
+        });
+
+        initMap();
+        currentEditingRoute = ordersData[0]?.route.map(n => ({ ...n })) || ALL_NODES.slice(0, 4).map(n => ({ ...n }));
+        renderRouteEditor(currentEditingRoute);
+        renderMainTable();
+
+        window.showHistory = showHistory;
+        window.closeHistoryModal = closeHistoryModal;
+        window.closeConfirmModal = closeConfirmModal;
+        window.closeAddOrderModal = closeAddOrderModal;
+        window.closeSelectNodeModal = closeSelectNodeModal;
+    </script>
+</body>
+</html>

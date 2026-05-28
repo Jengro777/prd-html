@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>快递线路调度系统 · 有向图</title>
+    <!-- 引入 ECharts 核心库 -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        /* 全屏铺满，不留白边，滚动条由图表内部管理 */
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #f5f9ff;
+            font-family: 'Inter', 'Segoe UI', 'Roboto', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        /* 主容器完全铺满，无内边距 */
+        .dashboard {
+            width: 100%;
+            height: 100%;
+            background: #f8fafd;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        /* 极简头部，紧凑设计 */
+        .header {
+            flex-shrink: 0;
+            padding: 0.6rem 1.2rem 0.4rem 1.5rem;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(4px);
+            border-bottom: 1px solid #e9edf2;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            z-index: 10;
+        }
+        .title-section h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #1f4870, #2f6b8f);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.2px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .title-section h1:before {
+            content: "📦";
+            font-size: 1.5rem;
+            background: none;
+            color: #e97c2b;
+        }
+        .sub {
+            font-size: 0.7rem;
+            color: #5c6f87;
+            margin-top: 2px;
+        }
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .btn-orphan {
+            background: #ffffffdd;
+            border: 1px solid #cfdfed;
+            padding: 5px 16px;
+            border-radius: 32px;
+            color: #2c5a7a;
+            font-weight: 500;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            backdrop-filter: blur(2px);
+        }
+        .btn-orphan:hover {
+            background: #eef3fc;
+            border-color: #9bb5cf;
+            transform: translateY(-1px);
+        }
+        .orphan-result {
+            background: #f0f4fa;
+            border-radius: 32px;
+            padding: 5px 16px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #2c6280;
+            border: 1px solid #e2e9f0;
+            font-family: monospace;
+        }
+        /* 图表容器占满剩余全部空间 */
+        .chart-container {
+            flex: 1;
+            width: 100%;
+            min-height: 0;
+            background: #ffffff;
+            border-radius: 0;
+            margin: 0;
+            padding: 0;
+            transition: all 0.1s;
+        }
+        /* 极简图例悬浮小模块，不占太多空间 */
+        .legend-panel {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            background: rgba(255,255,248,0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 40px;
+            padding: 0.3rem 1rem;
+            font-size: 0.65rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            z-index: 20;
+            pointer-events: none;
+            border: 1px solid rgba(200,212,224,0.6);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        .legend-color {
+            width: 20px;
+            height: 3px;
+            border-radius: 3px;
+        }
+        .legend-color.circle {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .legend-color.arrow {
+            width: 20px;
+            height: 2px;
+            background: repeating-linear-gradient(90deg, #f39c12, #f39c12 5px, transparent 5px, transparent 10px);
+        }
+        .footer-note {
+            display: none;
+        }
+        /* 针对大量节点，隐藏全局无效边距，充分利用屏幕 */
+        @media (max-width: 720px) {
+            .legend-panel { font-size: 0.55rem; gap: 0.6rem; bottom: 8px; left: 8px; padding: 0.2rem 0.8rem; }
+            .btn-orphan { padding: 4px 12px; font-size: 0.7rem; }
+            .orphan-result { font-size: 0.65rem; padding: 4px 12px; }
+            .header { padding: 0.5rem 1rem; }
+            .title-section h1 { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+    <div class="header">
+        <div class="title-section">
+            <h1>🚚 线路调度 · 有向智图</h1>
+            <div class="sub">枢纽→网点→自提点 | 箭头指示流向 | 悬停查看经纬度/地址 + 线路距离(km)</div>
+        </div>
+        <div class="toolbar">
+            <div class="orphan-result" id="orphanStatus">⚡ 就绪</div>
+            <button class="btn-orphan" id="queryOrphanBtn">🔍 孤立点检测</button>
+        </div>
+    </div>
+    <div id="mainChart" class="chart-container"></div>
+    <div class="legend-panel">
+        <div class="legend-item"><span class="legend-color circle" style="background: #2c7da0;"></span> 分拣中心</div>
+        <div class="legend-item"><span class="legend-color circle" style="background: #e9b35f;"></span> 末端网点</div>
+        <div class="legend-item"><span class="legend-color circle" style="background: #6a9c78;"></span> 自提点/驿站</div>
+        <div class="legend-item"><span class="legend-color" style="background: #3498db; width: 22px;"></span> 干线/支线</div>
+        <div class="legend-item"><span class="legend-color arrow"></span> 调拨/逆向</div>
+        <div class="legend-item"><span>📏 线上数字=里程(km)</span></div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ========== 1. 动态生成更丰富的节点（扩展至40+，模拟真实大量节点场景） ==========
+        // 为了演示后续节点很多，同时保持完全铺满可视化，我们定义3类节点，坐标分布在整个 [0~1000]x[0~800] 区域
+        
+        // 预置核心枢纽（分拣中心）
+        const hubList = [
+            { id: "hub_north", name: "华北分拣中心", cat:0, val:92, x:250, y:160, lng:116.407, lat:39.904, addr:"北京市大兴区天河北路18号" },
+            { id: "hub_south", name: "华南分拣中心", cat:0, val:95, x:780, y:640, lng:113.264, lat:23.129, addr:"广州市黄埔区云埔工业区" },
+            { id: "hub_east", name: "华东分拣中心", cat:0, val:98, x:620, y:270, lng:121.480, lat:31.236, addr:"上海市青浦区赵重公路188号" },
+            { id: "hub_west", name: "西南分拣中心", cat:0, val:82, x:280, y:650, lng:104.062, lat:30.572, addr:"成都市双流区航枢大道500号" },
+            { id: "hub_central", name: "华中分拣中心", cat:0, val:88, x:490, y:420, lng:114.305, lat:30.593, addr:"武汉市东西湖区走马岭" } // 新增枢纽
+        ];
+        
+        // 末端网点（扩展至15个）
+        const nodeList = [
+            { id: "node_A", name: "城北网点", cat:1, val:48, x:140, y:300, lng:116.351, lat:39.938, addr:"昌平区回龙观西大街" },
+            { id: "node_B", name: "城东网点", cat:1, val:53, x:450, y:195, lng:121.533, lat:31.239, addr:"浦东新区金桥路" },
+            { id: "node_C", name: "城南网点", cat:1, val:50, x:530, y:530, lng:113.324, lat:23.106, addr:"番禺区市桥街道" },
+            { id: "node_D", name: "城西网点", cat:1, val:44, x:170, y:510, lng:103.992, lat:30.621, addr:"青羊区光华大道" },
+            { id: "node_E", name: "滨海网点", cat:1, val:42, x:830, y:430, lng:113.752, lat:22.813, addr:"南山区滨海大道" },
+            { id: "node_F", name: "临江网点", cat:1, val:46, x:720, y:720, lng:113.266, lat:23.187, addr:"海珠区新港东路" },
+            { id: "node_G", name: "中原网点", cat:1, val:39, x:380, y:340, lng:114.315, lat:30.572, addr:"武汉市洪山区珞喻路" },
+            { id: "node_H", name: "太湖网点", cat:1, val:41, x:570, y:150, lng:120.155, lat:31.297, addr:"苏州市工业园区星湖街" },
+            { id: "node_I", name: "海峡网点", cat:1, val:37, x:890, y:590, lng:118.767, lat:24.487, addr:"厦门市集美区诚毅大街" }
+        ];
+        
+        // 自提点/驿站 大幅增加至20个（覆盖各个区域）
+        const pickupList = [];
+        const pickupCoords = [
+            { id:"pickup_N1", name:"学府驿站", x:110, y:240, lng:116.325, lat:39.959, addr:"昌平区学府路8号", belong:"node_A" },
+            { id:"pickup_N2", name:"洋桥自提点", x:195, y:275, lng:116.369, lat:39.912, addr:"朝阳区洋桥北里", belong:"node_A" },
+            { id:"pickup_B1", name:"工业园驿站", x:490, y:135, lng:121.612, lat:31.285, addr:"浦东金桥智能制造园", belong:"node_B" },
+            { id:"pickup_B2", name:"金桥自提柜", x:420, y:175, lng:121.585, lat:31.253, addr:"金桥路989号", belong:"node_B" },
+            { id:"pickup_C1", name:"万达自提点", x:580, y:490, lng:113.345, lat:23.095, addr:"番禺万达广场", belong:"node_C" },
+            { id:"pickup_C2", name:"体育场驿站", x:480, y:565, lng:113.340, lat:23.072, addr:"番禺区体育路5号", belong:"node_C" },
+            { id:"pickup_D1", name:"软件园驿站", x:125, y:545, lng:103.968, lat:30.645, addr:"高新区天府软件园", belong:"node_D" },
+            { id:"pickup_E1", name:"渔港自提点", x:875, y:385, lng:113.795, lat:22.765, addr:"南山区渔港路28号", belong:"node_E" },
+            { id:"pickup_F1", name:"临江社区驿站", x:755, y:770, lng:113.282, lat:23.098, addr:"海珠区赤岗北路", belong:"node_F" },
+            { id:"pickup_G1", name:"光谷驿站", x:405, y:385, lng:114.411, lat:30.498, addr:"东湖高新区光谷步行街", belong:"node_G" },
+            { id:"pickup_H1", name:"独墅湖自提点", x:610, y:120, lng:120.683, lat:31.267, addr:"工业园区独墅湖高教区", belong:"node_H" },
+            { id:"pickup_I1", name:"软件园二期驿站", x:920, y:620, lng:118.102, lat:24.482, addr:"集美软件园三期", belong:"node_I" },
+            { id:"pickup_extra1", name:"望京驿站", x:270, y:210, lng:116.481, lat:40.001, addr:"朝阳区望京街", belong:"node_A" },
+            { id:"pickup_extra2", name:"西二旗自提点", x:190, y:140, lng:116.307, lat:40.056, addr:"海淀区西二旗", belong:"node_A" },
+            { id:"pickup_extra3", name:"滨江驿站", x:660, y:650, lng:113.271, lat:23.099, addr:"海珠区滨江东路", belong:"node_F" },
+            // 额外一个孤立点展示（无线路）
+            { id:"pickup_isolated", name:"孤岛自提点(未连通)", cat:2, val:5, x:390, y:390, lng:114.056, lat:22.543, addr:"惠州市惠阳区未规划区", belong:null, isolated:true }
+        ];
+        
+        pickupList.push(...pickupCoords.map(p => ({
+            id: p.id,
+            name: p.name,
+            category: 2,
+            value: 12 + Math.floor(Math.random() * 12),
+            symbolSize: 16 + (p.id.includes("extra") ? 2 : 0),
+            x: p.x,
+            y: p.y,
+            lng: p.lng,
+            lat: p.lat,
+            address: p.addr,
+            belongNode: p.belong,
+            isolatedFlag: p.isolated || false
+        })));
+        
+        // 合并全量节点
+        let nodes = [];
+        hubList.forEach(h => nodes.push({ id: h.id, name: h.name, category: 0, value: h.val, symbolSize: 34, x: h.x, y: h.y, lng: h.lng, lat: h.lat, address: h.addr }));
+        nodeList.forEach(n => nodes.push({ id: n.id, name: n.name, category: 1, value: n.val, symbolSize: 26, x: n.x, y: n.y, lng: n.lng, lat: n.lat, address: n.addr }));
+        nodes.push(...pickupList);
+        
+        // ========== 2. 生成丰富的有向边 （大规模拓扑，展现枢纽→网点→驿站 & 调拨，确保大部分节点连通，仅孤立点未连） ==========
+        const edgesList = [];
+        
+        // 枢纽到网点辐射 (全连接主要覆盖)
+        const hubToNode = [
+            ["hub_north","node_A"], ["hub_north","node_B"], ["hub_north","node_D"], ["hub_north","node_G"],
+            ["hub_east","node_B"], ["hub_east","node_C"], ["hub_east","node_H"], ["hub_east","node_E"],
+            ["hub_south","node_C"], ["hub_south","node_F"], ["hub_south","node_E"], ["hub_south","node_I"],
+            ["hub_west","node_D"], ["hub_west","node_C"], ["hub_west","node_G"],
+            ["hub_central","node_G"], ["hub_central","node_C"], ["hub_central","node_D"]
+        ];
+        hubToNode.forEach(([src, tgt]) => {
+            edgesList.push({ source: src, target: tgt, styleWidth: 2.5, color: "#3498db", curveness: 0.12, label: "干线", type: "trunk" });
+        });
+        
+        // 枢纽之间高速线路
+        const hubExpress = [["hub_north","hub_east"],["hub_east","hub_south"],["hub_south","hub_central"],["hub_central","hub_west"],["hub_east","hub_west"],["hub_north","hub_central"]];
+        hubExpress.forEach(([src, tgt]) => {
+            edgesList.push({ source: src, target: tgt, styleWidth: 3.8, color: "#9b59b6", curveness: 0.1, label: "核心骨干", type: "express" });
+        });
+        
+        // 网点互相调拨（增加丰富度）
+        const nodeTransfer = [["node_A","node_B"],["node_B","node_H"],["node_H","node_E"],["node_C","node_F"],["node_D","node_A"],["node_G","node_C"],["node_E","hub_south"],["node_F","hub_east"],["node_B","hub_north"]];
+        nodeTransfer.forEach(([src, tgt]) => {
+            edgesList.push({ source: src, target: tgt, styleWidth: 1.8, color: "#e67e22", curveness: 0.2, label: "调拨", type: "dash" });
+        });
+        
+        // 网点 → 自提点 派送链路 (全量覆盖)
+        const nodeToPickup = [
+            ["node_A","pickup_N1"],["node_A","pickup_N2"],["node_A","pickup_extra1"],["node_A","pickup_extra2"],
+            ["node_B","pickup_B1"],["node_B","pickup_B2"],
+            ["node_C","pickup_C1"],["node_C","pickup_C2"],
+            ["node_D","pickup_D1"],
+            ["node_E","pickup_E1"],
+            ["node_F","pickup_F1"],["node_F","pickup_extra3"],
+            ["node_G","pickup_G1"],
+            ["node_H","pickup_H1"],
+            ["node_I","pickup_I1"]
+        ];
+        nodeToPickup.forEach(([src, tgt]) => {
+            edgesList.push({ source: src, target: tgt, styleWidth: 1.5, color: "#6a9c78", curveness: 0.12, label: "末端派送", type: "lastmile" });
+        });
+        
+        // 少量逆向退回（驿站->网点）
+        const returnEdges = [["pickup_N1","node_A"],["pickup_B1","node_B"],["pickup_C1","node_C"],["pickup_D1","node_D"],["pickup_G1","node_G"]];
+        returnEdges.forEach(([src,tgt]) => {
+            edgesList.push({ source: src, target: tgt, styleWidth: 1.2, color: "#f1c40f", curveness: 0.2, label: "退件", type: "dash" });
+        });
+        
+        // 孤立点不添加任何线路
+        
+        // 辅助: 距离计算函数(半正矢)
+        function calcDistance(lng1, lat1, lng2, lat2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return Math.round(R * c);
+        }
+        
+        // 构建带距离的最终边对象
+        const nodeMap = new Map(); nodes.forEach(n => nodeMap.set(n.id, n));
+        const edgesWithDist = edgesList.map(edge => {
+            const srcNode = nodeMap.get(edge.source);
+            const tgtNode = nodeMap.get(edge.target);
+            let distance = 25; // 默认fallback
+            if (srcNode && tgtNode && srcNode.lng && tgtNode.lng) {
+                distance = calcDistance(srcNode.lng, srcNode.lat, tgtNode.lng, tgtNode.lat);
+                distance = Math.max(3, distance);
+            } else {
+                // 坐标近似估算
+                if (srcNode && tgtNode && srcNode.x && tgtNode.x) {
+                    const dx = srcNode.x - tgtNode.x;
+                    const dy = srcNode.y - tgtNode.y;
+                    distance = Math.max(5, Math.floor(Math.sqrt(dx*dx+dy*dy) * 0.45));
+                }
+            }
+            return {
+                source: edge.source,
+                target: edge.target,
+                lineStyle: {
+                    width: edge.styleWidth,
+                    color: edge.color,
+                    curveness: edge.curveness,
+                    type: edge.type === 'dash' ? 'dashed' : 'solid',
+                    opacity: 0.85
+                },
+                label: edge.label,
+                distanceKm: distance,
+                originalLabel: edge.label
+            };
+        });
+        
+        // 构建echarts映射
+        const nodeIdToIndex = new Map();
+        nodes.forEach((node, idx) => nodeIdToIndex.set(node.id, idx));
+        
+        const graphLinks = edgesWithDist.map(edge => {
+            const srcIdx = nodeIdToIndex.get(edge.source);
+            const tgtIdx = nodeIdToIndex.get(edge.target);
+            if (srcIdx === undefined || tgtIdx === undefined) return null;
+            const displayText = edge.label ? `${edge.label} ${edge.distanceKm}km` : `${edge.distanceKm}km`;
+            return {
+                source: srcIdx,
+                target: tgtIdx,
+                lineStyle: { ...edge.lineStyle },
+                label: {
+                    show: true,
+                    formatter: displayText,
+                    fontSize: 8,
+                    offset: [0, -9],
+                    backgroundColor: 'rgba(255,251,225,0.9)',
+                    padding: [1, 5, 1, 5],
+                    borderRadius: 10,
+                    color: '#2c5282',
+                    fontWeight: 'normal',
+                    fontFamily: 'monospace'
+                },
+                tooltipData: { distance: edge.distanceKm, route: edge.label }
+            };
+        }).filter(l => l);
+        
+        // 节点构建 (带高级tooltip: 经纬度 + 地址)
+        const graphNodes = nodes.map((node) => {
+            const cat = node.category !== undefined ? node.category : (node.id.startsWith("pickup") ? 2 : (node.id.includes("hub") ? 0 : 1));
+            let nameShow = node.name;
+            if (node.id === "pickup_isolated") nameShow = "⚠️孤岛自提点";
+            return {
+                id: node.id,
+                name: nameShow,
+                value: node.value || 20,
+                category: cat,
+                symbolSize: node.symbolSize || (cat === 0 ? 34 : (cat === 1 ? 24 : 16)),
+                x: node.x,
+                y: node.y,
+                fixed: true,
+                label: {
+                    show: true,
+                    position: 'bottom',
+                    offset: [0, 8],
+                    formatter: (params) => params.name.length > 12 ? params.name.slice(0,10)+'..' : params.name,
+                    fontSize: cat === 0 ? 10 : (cat === 1 ? 8 : 7),
+                    fontWeight: cat === 0 ? '600' : 'normal',
+                    backgroundColor: 'rgba(255,255,245,0.7)',
+                    padding: [1, 4, 1, 4],
+                    borderRadius: 12
+                },
+                tooltip: {
+                    formatter: () => {
+                        let typeStr = cat === 0 ? '分拣中心' : (cat === 1 ? '末端网点' : '自提点/驿站');
+                        let coordInfo = (node.lng && node.lat) ? `${node.lng}°, ${node.lat}°` : '未录入';
+                        let addrInfo = node.address || '地址待补充';
+                        let weight = node.value || '—';
+                        let isolatedTip = (node.isolatedFlag || node.id === 'pickup_isolated') ? '<br/>⚠️ 孤立节点：无任何进出线路' : '';
+                        return `<strong>${node.name}</strong><br/>🏢 类型: ${typeStr}<br/>📍 ${addrInfo}<br/>🌐 经纬度: ${coordInfo}<br/>📊 吞吐权重: ${weight}${isolatedTip}`;
+                    },
+                    backgroundColor: 'rgba(25,35,55,0.95)',
+                    borderColor: '#f5b042',
+                    borderWidth: 0.5,
+                    textStyle: { color: '#f0f3fa', fontSize: 11 }
+                },
+                itemStyle: {
+                    borderColor: (node.isolatedFlag || node.id === 'pickup_isolated') ? '#e67e22' : '#ffffff',
+                    borderWidth: (node.isolatedFlag || node.id === 'pickup_isolated') ? 2.5 : 1.2,
+                    shadowBlur: 4
+                }
+            };
+        });
+        
+        // categories 清爽风格
+        const categories = [
+            { name: '分拣中心', itemStyle: { color: '#2c7da0' } },
+            { name: '末端网点', itemStyle: { color: '#e9b35f' } },
+            { name: '自提点/驿站', itemStyle: { color: '#6a9c78' } }
+        ];
+        
+        // 渲染echarts图表 (完全铺满，占满flex父容器)
+        const chartDom = document.getElementById('mainChart');
+        let myChart = echarts.init(chartDom);
+        const option = {
+            tooltip: { trigger: 'item', formatter: (params) => {
+                if (params.dataType === 'node') {
+                    const nodeRaw = graphNodes[params.dataIndex];
+                    if (nodeRaw && nodeRaw.tooltip && typeof nodeRaw.tooltip.formatter === 'function') return nodeRaw.tooltip.formatter();
+                    return params.name;
+                } else if (params.dataType === 'edge') {
+                    const linkData = graphLinks.find(l => l.source === params.data.source && l.target === params.data.target);
+                    const distText = linkData?.label?.formatter || '? km';
+                    return `🚚 快递流向: ${params.data.sourceName} → ${params.data.targetName}<br/>📏 运输里程: ${distText}<br/>🎯 箭头指向快件终点`;
+                }
+                return '';
+            }, backgroundColor: 'rgba(20,28,38,0.92)', borderColor: '#f5b042' },
+            legend: { show: true, data: categories.map(c => c.name), left: 10, top: 5, icon: 'circle', itemWidth: 8, itemHeight: 8, textStyle: { fontSize: 10, color: '#2c3e50' }, backgroundColor: 'transparent' },
+            series: [{
+                type: 'graph', layout: 'none', categories: categories,
+                data: graphNodes, links: graphLinks, roam: true, draggable: true,
+                focusNodeAdjacency: false, edgeSymbol: ['none', 'arrow'], edgeSymbolSize: [0, 10],
+                label: { show: false },
+                edgeLabel: { show: true, formatter: (p) => p.data.label?.formatter || '', fontSize: 8, position: 'middle', offset: [0, -8], backgroundColor: 'rgba(253,250,225,0.85)', borderRadius: 8, padding: [1, 4] },
+                lineStyle: { color: 'source', curveness: 0.2, opacity: 0.8, width: 2 },
+                emphasis: { scale: true, focus: 'adjacency', lineStyle: { width: 3, shadowBlur: 8, color: '#f1a23d' } },
+                itemStyle: { borderColor: '#fff', borderWidth: 1.2, shadowBlur: 3 },
+                edgeSymbol: ['none', 'arrow'], edgeSymbolSize: [0, 10]
+            }],
+            backgroundColor: '#ffffff',
+            toolbox: { show: true, feature: { saveAsImage: { title: '保存' }, restore: { title: '重置' }, zoom: { title: '缩放' } }, right: 15, top: 8, iconSize: 16 },
+            graphic: []
+        };
+        myChart.setOption(option);
+        
+        // 自适应铺满
+        const resizeObserver = new ResizeObserver(() => myChart.resize());
+        resizeObserver.observe(chartDom);
+        window.addEventListener('resize', () => myChart.resize());
+        
+        // 孤立点检测逻辑
+        function findOrphanNodes() {
+            const inDeg = new Map(), outDeg = new Map();
+            nodes.forEach(n => { inDeg.set(n.id, 0); outDeg.set(n.id, 0); });
+            edgesWithDist.forEach(edge => {
+                outDeg.set(edge.source, (outDeg.get(edge.source) || 0) + 1);
+                inDeg.set(edge.target, (inDeg.get(edge.target) || 0) + 1);
+            });
+            const orphans = [];
+            nodes.forEach(node => {
+                if ((inDeg.get(node.id) || 0) === 0 && (outDeg.get(node.id) || 0) === 0) orphans.push(node.id);
+            });
+            return orphans;
+        }
+        
+        function highlightOrphans() {
+            const orphanIds = findOrphanNodes();
+            const orphanNamesList = orphanIds.map(id => nodes.find(n=>n.id===id)?.name || id);
+            const statusDiv = document.getElementById('orphanStatus');
+            if (orphanIds.length === 0) {
+                statusDiv.innerHTML = '✅ 全网点有规划，无孤立节点';
+                statusDiv.style.backgroundColor = "#e6f4ea";
+            } else {
+                statusDiv.innerHTML = `⚠️ 孤立点(${orphanIds.length}): ${orphanNamesList.slice(0,2).join(',')}${orphanIds.length>2?'等':''}`;
+                statusDiv.style.backgroundColor = "#fff0e0";
+            }
+            const currentOpt = myChart.getOption();
+            const seriesData = currentOpt.series[0].data;
+            const updatedData = seriesData.map(node => {
+                if (orphanIds.includes(node.id)) {
+                    return { ...node, itemStyle: { ...node.itemStyle, borderColor: '#e67e22', borderWidth: 3, shadowBlur: 12 } };
+                } else if (node.itemStyle && node.itemStyle.borderColor === '#e67e22') {
+                    return { ...node, itemStyle: { ...node.itemStyle, borderColor: '#ffffff', borderWidth: 1.2 } };
+                }
+                return node;
+            });
+            myChart.setOption({ series: [{ data: updatedData }] });
+        }
+        
+        document.getElementById('queryOrphanBtn').addEventListener('click', highlightOrphans);
+        setTimeout(() => { myChart.resize(); highlightOrphans(); }, 180);
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>结算单详情 · 财务对账版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        body {
+            background: #f1f4f9;
+            padding: 24px 16px;
+        }
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        .primary-color { color: #2E6B8C; }
+        .primary-bg { background: #2E6B8C; }
+        .primary-border { border-color: #2E6B8C; }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px 28px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            margin-bottom: 20px;
+            border: 1px solid #ebedf0;
+        }
+
+        .amount-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .amount-item {
+            background: #f8fafd;
+            border-radius: 18px;
+            padding: 18px 20px;
+            border: 1px solid #e9edf2;
+            position: relative;
+        }
+        .amount-item.warning {
+            background: #fef6e6;
+            border-left: 4px solid #f5a623;
+        }
+        .amount-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .amount-value {
+            font-size: 1.9rem;
+            font-weight: 600;
+            color: #1e293b;
+            line-height: 1.2;
+        }
+        .amount-desc {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .tooltip-icon {
+            border-bottom: 1px dashed #aaa;
+            cursor: help;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .status-settled { background: #e3ecf5; color: #2b5f7a; }     
+
+        .type-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .type-refund { background: #fee9e9; color: #b91c1c; }  
+        .type-penalty { background: #fff0d9; color: #c05621; }  
+        .type-reward { background: #dff3f0; color: #1c6b62; }   
+        .type-fee { background: #e9e9ff; color: #4343b3; }      
+        .type-income { background: #e1f3e8; color: #1c7e4c; }   
+
+        .amount-positive { color: #1a7b5c; font-weight: 600; }
+        .amount-negative { color: #b13e3e; font-weight: 600; }
+
+        .subject-tag {
+            background: #f2f5f9;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            color: #5c6b7e;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 2px;
+            border-bottom: 1px solid #e2e8f0;
+            margin: 0 0 20px 0;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 10px 28px;
+            font-weight: 500;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #5f6c80;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: 0.1s;
+        }
+        .tab.active {
+            color: #2E6B8C;
+            border-bottom-color: #2E6B8C;
+            background: #f0f7fc;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid #edf2f7;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+            font-size: 0.9rem;
+        }
+        th {
+            text-align: left;
+            padding: 16px 12px;
+            background: #f8fafd;
+            font-weight: 600;
+            color: #334155;
+            border-bottom: 1px solid #dde3e9;
+            white-space: nowrap;
+        }
+        td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #edf2f7;
+            vertical-align: middle;
+        }
+        tr:hover td {
+            background: #fafcff;
+        }
+        .product-info {
+            font-size: 0.8rem;
+            color: #6b7a8f;
+            margin-top: 4px;
+        }
+        .invoice-badge {
+            background: #eef2f6;
+            border-radius: 12px;
+            padding: 2px 10px;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+
+        .info-bar {
+            background: #e8f0fe;
+            border-left: 6px solid #2E6B8C;
+            border-radius: 14px;
+            padding: 14px 22px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .summary-sticky {
+            background: #f6f9fe;
+            border-radius: 14px;
+            padding: 14px 22px;
+            margin-top: 24px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            border: 1px solid #dde5ed;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.02);
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border-radius: 40px;
+            border: 1px solid #d0dae8;
+            background: white;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.1s;
+        }
+        .btn:hover {
+            background: #f0f5fd;
+            border-color: #9aaec5;
+        }
+        .btn-primary {
+            background: #2E6B8C;
+            border-color: #2E6B8C;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #1f556f;
+        }
+        .btn-link {
+            color: #2E6B8C;
+            cursor: pointer;
+            font-weight: 500;
+            background: none;
+            border: none;
+            padding: 4px 8px;
+            font-size: 0.85rem;
+        }
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: white;
+            border-radius: 24px;
+            padding: 30px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #94a3b8;
+        }
+        .modal-close:hover {
+            color: #1e293b;
+        }
+        /* 导出预览表格 */
+        .export-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .export-table th, .export-table td {
+            border: 1px solid #e2e8f0;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        .export-table th {
+            background: #f8fafc;
+        }
+        /* 凭证卡片 - 增强视觉与信息 */
+        .voucher-card {
+            border: 2px solid #2E6B8C;
+            border-radius: 24px;
+            padding: 28px;
+            background: #ffffff;
+            position: relative;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+        .voucher-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e2edf7;
+            padding-bottom: 15px;
+            margin-bottom: 22px;
+        }
+        .voucher-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2E6B8C;
+            letter-spacing: 1px;
+        }
+        .voucher-stamp {
+            color: #e53e3e;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border: 2px solid #e53e3e;
+            border-radius: 30px;
+            padding: 4px 18px;
+            transform: rotate(-5deg);
+            background: #fff7f0;
+        }
+        .voucher-row {
+            display: flex;
+            margin: 14px 0;
+            border-bottom: 1px dashed #edf2f7;
+            padding-bottom: 8px;
+        }
+        .voucher-label {
+            width: 120px;
+            color: #4b5b73;
+            font-weight: 500;
+        }
+        .voucher-value {
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .voucher-footer {
+            margin-top: 28px;
+            text-align: right;
+            color: #6c7a91;
+            font-size: 0.85rem;
+            border-top: 1px solid #eef2f8;
+            padding-top: 16px;
+        }
+        .signature-line {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: #5c6f8c;
+        }
+
+        @media (max-width: 700px) {
+            .amount-grid { grid-template-columns: 1fr 1fr; }
+            .card { padding: 18px; }
+            .voucher-row { flex-direction: column; gap: 4px; }
+            .voucher-label { width: auto; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 头部：结算单号 + 状态 + 操作区 -->
+    <div class="card" style="padding-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                <h1 style="font-size: 1.9rem; font-weight: 600; letter-spacing: -0.01em;">ST-20260315-022</h1>
+                <span class="status-badge status-settled" style="background: #e3ecf5;">已结算</span>
+                <span class="status-badge" style="background: #e1f3e8; color:#1a7b5c;">账期已完结</span>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn" id="exportBtn">📥 导出明细</button>
+                <button class="btn btn-primary" id="voucherBtn">📎 生成凭证</button>
+            </div>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 24px; margin-top: 20px; color: #5e6f88;">
+            <div><span style="color:#94a3b8;">📅 结算周期:</span> 2026-03-15 ~ 2026-03-21 (第12期)</div>
+        </div>
+    </div>
+    
+    <!-- 四列金额汇总 -->
+    <div class="amount-grid">
+        <div class="amount-item">
+            <div class="amount-label">💰 订单应收 <span class="tooltip-icon" title="已确认收货订单总额，含平台补贴">ⓘ</span></div>
+            <div class="amount-value">¥7,232.00</div>
+            <div class="amount-desc"><span>8笔订单</span> <span class="subject-tag">含运费¥68</span></div>
+        </div>
+        <div class="amount-item">
+            <div class="amount-label">🔻 抵扣总额</div>
+            <div class="amount-value" style="color: #b13e3e;">-¥2,086.00</div>
+            <div class="amount-desc">
+                <span class="tooltip-icon" title="平台佣金¥523.5 | 技术服务费¥156.5 | 运费险¥89 | 售后¥560 | 处罚¥390 | 快递费¥180">售后¥560 + 处罚¥390 + 费用¥1,136</span>
+            </div>
+        </div>
+        <div class="amount-item">
+            <div class="amount-label">✨ 奖励总额</div>
+            <div class="amount-value" style="color: #1f7b6c;">+¥150.00</div>
+            <div class="amount-desc"><span></span><span></span></div>
+        </div>
+        <div class="amount-item warning">
+            <div class="amount-label">💵 本期结算</div>
+            <div class="amount-value">¥5,296.00</div>
+            <div class="amount-desc">已转入余额</div>
+        </div>
+    </div>
+
+    <!-- 待抵扣+跨期明细 -->
+    <div class="info-bar">
+        <span style="background: #2E6B8C; color: white; padding: 4px 14px; border-radius: 30px; font-size:0.85rem;">🔄 跨期结转</span>
+        <span><strong>¥890.00</strong> 转入下期待抵扣 · 明细：售后延长期 ¥500 + 处罚申诉中 ¥390</span>
+        <span style="margin-left: auto; display: flex; gap: 8px;">
+            <button class="btn-link" id="viewCarryoverBtn">📋 查看详细明细</button>
+        </span>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab active" id="tabAll">全部资金变动 (15笔)</button>
+        <button class="tab" id="tabIncome">收入明细 (8笔)</button>
+        <button class="tab" id="tabDeduction">抵扣明细 (6笔)</button>
+        <button class="tab" id="tabReward">奖励明细 (2笔)</button>
+        <button class="tab" id="tabFee">费用明细 (4项)</button>
+    </div>
+
+    <!-- 面板1: 全部流水 -->
+    <div id="panelAll">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>时间</th><th>单据号 / 子订单</th><th>商品信息</th><th>费用类型</th><th>科目</th><th>金额(元)</th><th>账期归属</th><th>发票状态</th><th>操作</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>2026-03-18</td><td><span style="color:#2E6B8C; font-weight:500;">ORD-20260315-001</span><br><span style="font-size:0.75rem;">子单: S001-1</span></td><td>清风抽纸24包 <span class="product-info">x2 · ¥42.5/件</span></td><td><span class="type-badge type-income">订单收入</span></td><td><span class="subject-tag">商品销售</span></td><td class="amount-positive">+¥834.05</td><td><span class="status-badge status-settled">本期应结</span></td><td><span class="invoice-badge">未开票</span></td><td><button class="btn-link" onclick="alert('订单详情：ORD-20260315-001\n商品：清风抽纸24包\n金额：¥834.05')">详情</button></td></tr>
+                    <tr><td>2026-03-19</td><td>AF20260318-333<br><span style="font-size:0.75rem;">关联订单 ORD-20260315-019</span></td><td>运动鞋42码 <span class="product-info">退货退款</span></td><td><span class="type-badge type-refund">售后抵扣</span></td><td><span class="subject-tag">退货退款</span></td><td class="amount-negative">-¥560.00</td><td>本期抵扣</td><td><span class="invoice-badge">无需开票</span></td><td><button class="btn-link" onclick="alert('售后单：AF20260318-333\n退款金额：¥560.00')">申诉</button></td></tr>
+                    <tr><td>2026-03-20</td><td>PEN-20260320-001</td><td>—</td><td><span class="type-badge type-penalty">平台处罚</span></td><td><span class="subject-tag">延迟发货</span></td><td class="amount-negative">-¥200.00</td><td>本期抵扣</td><td><span class="invoice-badge">无需开票</span></td><td><button class="btn-link" onclick="alert('处罚单：PEN-20260320-001\n金额：¥200.00')">申诉</button></td></tr>
+                    <tr><td>2026-03-20</td><td>PEN-20260320-002</td><td>—</td><td><span class="type-badge type-penalty">平台处罚</span></td><td><span class="subject-tag">虚假交易</span></td><td class="amount-negative">-¥190.00</td><td>本期抵扣</td><td><span class="invoice-badge">无需开票</span></td><td><button class="btn-link" onclick="alert('处罚单：PEN-20260320-002\n金额：¥190.00')">申诉</button></td></tr>
+                    <tr><td>2026-03-21</td><td>REW-20260321-001</td><td>—</td><td><span class="type-badge type-reward">平台奖励</span></td><td><span class="subject-tag">大促补贴</span></td><td class="amount-positive">+¥100.00</td><td>本期已发放</td><td><span class="invoice-badge">无需开票</span></td><td><button class="btn-link" onclick="alert('奖励单：REW-20260321-001\n金额：¥100.00')">详情</button></td></tr>
+                    <tr><td>2026-03-21</td><td>REW-20260321-002</td><td>—</td><td><span class="type-badge type-reward">平台奖励</span></td><td><span class="subject-tag">物流达标</span></td><td class="amount-positive">+¥50.00</td><td>本期已发放</td><td><span class="invoice-badge">无需开票</span></td><td><button class="btn-link" onclick="alert('奖励单：REW-20260321-002\n金额：¥50.00')">详情</button></td></tr>
+                    <tr><td>2026-03-22</td><td>AF20260321-456</td><td>保温杯500ml <span class="product-info">仅退款</span></td><td><span class="type-badge type-refund">售后抵扣</span></td><td><span class="subject-tag">仅退款(待抵扣)</span></td><td class="amount-negative">-¥890.00</td><td><span class="status-badge" style="background:#fef3c7;">下期待定</span></td><td><span class="invoice-badge">无需开票</span></td><td><button class="btn-link" onclick="alert('售后单：AF20260321-456\n状态：纠纷处理中\n金额：¥890.00')">处理</button></td></tr>
+                    <tr><td>2026-03-15</td><td>COM-20260315-平台佣金</td><td>周期汇总</td><td><span class="type-badge type-fee">技术服务费</span></td><td><span class="subject-tag">平台佣金</span></td><td class="amount-negative">-¥523.50</td><td>本期抵扣</td><td><span class="invoice-badge" style="background:#fce5d7;">待开票</span></td><td><button class="btn-link" onclick="alert('平台佣金明细：费率5%，金额¥523.50')">查看</button></td></tr>
+                    <tr><td>2026-03-15</td><td>COM-20260315-技术服务费</td><td>周期汇总</td><td><span class="type-badge type-fee">技术服务费</span></td><td><span class="subject-tag">软件服务费</span></td><td class="amount-negative">-¥156.50</td><td>本期抵扣</td><td><span class="invoice-badge">已开票</span></td><td><button class="btn-link" onclick="alert('技术服务费明细：¥156.50')">查看</button></td></tr>
+                    <tr><td>2026-03-15</td><td>LOG-20260315-快递费</td><td>周期汇总</td><td><span class="type-badge type-fee">快递费用</span></td><td><span class="subject-tag">物流费用</span></td><td class="amount-negative">-¥180.00</td><td>本期抵扣</td><td><span class="invoice-badge">待开票</span></td><td><button class="btn-link" onclick="alert('快递费用明细：本期发货56单，平均¥3.21/单，合计¥180.00')">查看</button></td></tr>
+                    <tr><td>2026-03-15</td><td>INS-20260315-运费险</td><td>周期汇总</td><td><span class="type-badge type-fee">运费险</span></td><td><span class="subject-tag">保险费用</span></td><td class="amount-negative">-¥89.00</td><td>本期抵扣</td><td><span class="invoice-badge">无需开票</span></td><td><button class="btn-link" onclick="alert('运费险：¥89.00')">查看</button></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="summary-sticky">
+            <span>✅ 收入合计: <strong class="amount-positive">+¥7,382.00</strong> (订单¥7,232 + 奖励¥150)</span>
+            <span>🔻 支出合计: <strong class="amount-negative">-¥2,086.00</strong> (售后¥1,450 + 处罚¥390 + 费用¥949)</span>
+            <span>📌 净额: <strong style="color:#1f7b6c;">¥5,296.00</strong></span>
+            <span style="display: flex; gap: 8px;"><button class="btn-link" onclick="alert('打印结算单ST-20260315-022')">🖨️ 打印</button><button class="btn-link" onclick="alert('差异反馈已提交')">📢 反馈差异</button></span>
+        </div>
+    </div>
+
+    <!-- 收入明细面板 (简略) -->
+    <div id="panelIncome" style="display: none;"><div class="table-wrapper"><table><thead><tr><th>时间</th><th>单据号</th><th>类型</th><th>商品/项目</th><th>金额</th><th>操作</th></tr></thead><tbody><tr><td>2026-03-18</td><td>ORD-20260315-001</td><td><span class="type-badge type-income">订单收入</span></td><td>清风抽纸24包</td><td class="amount-positive">+¥834.05</td><td><button class="btn-link" onclick="alert('收入明细：订单ORD-20260315-001')">详情</button></td></tr><tr><td>2026-03-19</td><td>ORD-20260316-042</td><td><span class="type-badge type-income">订单收入</span></td><td>运动鞋42码</td><td class="amount-positive">+¥1,186.00</td><td><button class="btn-link" onclick="alert('收入明细：订单ORD-20260316-042')">详情</button></td></tr><tr><td>2026-03-21</td><td>REW-20260321-001</td><td><span class="type-badge type-reward">平台奖励</span></td><td>大促补贴</td><td class="amount-positive">+¥100.00</td><td><button class="btn-link" onclick="alert('奖励明细：REW-20260321-001')">详情</button></td></tr><tr><td>2026-03-21</td><td>REW-20260321-002</td><td><span class="type-badge type-reward">平台奖励</span></td><td>物流达标奖励</td><td class="amount-positive">+¥50.00</td><td><button class="btn-link" onclick="alert('奖励明细：REW-20260321-002')">详情</button></td></tr></tbody></table></div></div>
+    <div id="panelDeduction" style="display: none;"><div class="table-wrapper"><table><thead><tr><th>时间</th><th>单据号</th><th>类型</th><th>项目</th><th>金额</th><th>操作</th></tr></thead><tbody><tr><td>2026-03-19</td><td>AF20260318-333</td><td><span class="type-badge type-refund">售后抵扣</span></td><td>退货退款</td><td class="amount-negative">-¥560.00</td><td><button class="btn-link" onclick="alert('抵扣明细：售后AF20260318-333')">详情</button></td></tr><tr><td>2026-03-20</td><td>PEN-20260320-001</td><td><span class="type-badge type-penalty">平台处罚</span></td><td>延迟发货</td><td class="amount-negative">-¥200.00</td><td><button class="btn-link" onclick="alert('处罚单：PEN-20260320-001')">详情</button></td></tr><tr><td>2026-03-20</td><td>PEN-20260320-002</td><td><span class="type-badge type-penalty">平台处罚</span></td><td>虚假交易</td><td class="amount-negative">-¥190.00</td><td><button class="btn-link" onclick="alert('处罚单：PEN-20260320-002')">详情</button></td></tr><tr><td>2026-03-22</td><td>AF20260321-456</td><td><span class="type-badge type-refund">售后抵扣</span></td><td>仅退款(待抵扣)</td><td class="amount-negative">-¥890.00</td><td><button class="btn-link" onclick="alert('售后单：AF20260321-456')">处理</button></td></tr></tbody></table></div></div>
+    <div id="panelReward" style="display: none;"><div class="table-wrapper"><table><thead><tr><th>时间</th><th>单据号</th><th>类型</th><th>金额</th><th>操作</th></tr></thead><tbody><tr><td>2026-03-21</td><td>REW-20260321-001</td><td>平台奖励</td><td class="amount-positive">+¥100.00</td><td><button class="btn-link" onclick="alert('奖励明细：大促补贴REW-20260321-001')">详情</button></td></tr><tr><td>2026-03-21</td><td>REW-20260321-002</td><td>平台奖励</td><td class="amount-positive">+¥50.00</td><td><button class="btn-link" onclick="alert('奖励明细：物流达标REW-20260321-002')">详情</button></td></tr></tbody></table></div></div>
+    <div id="panelFee" style="display: none;"><div class="table-wrapper"><table><thead><tr><th>时间</th><th>科目</th><th>金额</th><th>发票</th><th>操作</th></tr></thead><tbody><tr><td>2026-03-15</td><td>平台佣金</td><td class="amount-negative">-¥523.50</td><td>待开票</td><td><button class="btn-link" onclick="alert('平台佣金明细：费率5%，金额¥523.50')">查看</button></td></tr><tr><td>2026-03-15</td><td>技术服务费</td><td class="amount-negative">-¥156.50</td><td>已开票</td><td><button class="btn-link" onclick="alert('技术服务费明细：¥156.50')">查看</button></td></tr><tr><td>2026-03-15</td><td>快递费用</td><td class="amount-negative">-¥180.00</td><td>待开票</td><td><button class="btn-link" onclick="alert('快递费用明细：本期发货56单，合计¥180.00')">查看</button></td></tr><tr><td>2026-03-15</td><td>运费险</td><td class="amount-negative">-¥89.00</td><td>无需开票</td><td><button class="btn-link" onclick="alert('运费险：¥89.00')">查看</button></td></tr></tbody></table></div></div>
+</div>
+
+<!-- 导出明细模态框 (保持不变) -->
+<div id="exportModal" class="modal"><div class="modal-content"><div class="modal-header"><span>📥 导出明细预览</span><button class="modal-close" onclick="closeModal('exportModal')">&times;</button></div><p style="color:#5f6c80; margin-bottom: 15px;">结算单 ST-20260315-022 导出数据（示例）</p><table class="export-table"><thead><tr><th>时间</th><th>单据号</th><th>商品</th><th>类型</th><th>科目</th><th>金额</th><th>账期</th></tr></thead><tbody><tr><td>2026-03-18</td><td>ORD-20260315-001</td><td>清风抽纸24包</td><td>订单收入</td><td>商品销售</td><td>+834.05</td><td>本期应结</td></tr><tr><td>2026-03-19</td><td>AF20260318-333</td><td>运动鞋42码</td><td>售后抵扣</td><td>退货退款</td><td>-560.00</td><td>本期抵扣</td></tr><tr><td>2026-03-20</td><td>PEN-20260320-001</td><td>-</td><td>平台处罚</td><td>延迟发货</td><td>-200.00</td><td>本期抵扣</td></tr><tr><td>2026-03-21</td><td>REW-20260321-001</td><td>-</td><td>平台奖励</td><td>大促补贴</td><td>+100.00</td><td>本期已发放</td></tr><tr><td>2026-03-22</td><td>AF20260321-456</td><td>保温杯500ml</td><td>售后抵扣</td><td>仅退款</td><td>-890.00</td><td>下期待定</td></tr><tr><td>2026-03-15</td><td>LOG-20260315-快递费</td><td>-</td><td>快递费用</td><td>物流费用</td><td>-180.00</td><td>本期抵扣</td></tr></tbody></table><div style="margin-top:20px;text-align:right"><button class="btn" onclick="alert('文件已下载：结算明细_ST-20260315-022.xlsx')">确认下载</button><button class="btn" onclick="closeModal('exportModal')">关闭</button></div></div></div>
+
+<!-- 生成凭证模态框 (完善：增加商家信息、签名、完整数据) -->
+<div id="voucherModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span>📎 电子结算凭证</span>
+            <button class="modal-close" onclick="closeModal('voucherModal')">&times;</button>
+        </div>
+        <div class="voucher-card">
+            <div class="voucher-header">
+                <span class="voucher-title">京东平台结算单</span>
+                <span class="voucher-stamp">已生效</span>
+            </div>
+            <div class="voucher-row">
+                <div class="voucher-label">凭证编号：</div>
+                <div class="voucher-value">VOUCH-20260315-022</div>
+            </div>
+            <div class="voucher-row">
+                <div class="voucher-label">结算单号：</div>
+                <div class="voucher-value">ST-20260315-022</div>
+            </div>
+            <div class="voucher-row">
+                <div class="voucher-label">商家名称：</div>
+                <div class="voucher-value">XX商贸有限公司</div>
+            </div>
+            <div class="voucher-row">
+                <div class="voucher-label">统一信用代码：</div>
+                <div class="voucher-value">91110108MA00XXXXX</div>
+            </div>
+            <div class="voucher-row">
+                <div class="voucher-label">结算周期：</div>
+                <div class="voucher-value">2026-03-15 ~ 2026-03-21</div>
+            </div>
+            <div class="voucher-row">
+                <div class="voucher-label">收入总计：</div>
+                <div class="voucher-value amount-positive">¥7,382.00</div>
+            </div>
+            <div class="voucher-row">
+                <div class="voucher-label">抵扣总计：</div>
+                <div class="voucher-value amount-negative">-¥2,086.00</div>
+            </div>
+            <div class="voucher-row">
+                <div class="voucher-label">本期应结：</div>
+                <div class="voucher-value" style="font-size:1.5rem; font-weight:800; color:#1f7b6c;">¥5,296.00</div>
+            </div>
+            <div class="voucher-row">
+                <div class="voucher-label">结算方式：</div>
+                <div class="voucher-value">京东支付 · 转入商家余额</div>
+            </div>
+            <div class="voucher-row">
+                <div class="voucher-label">资金明细：</div>
+                <div class="voucher-value">订单应收 ¥7,232.00 + 奖励 ¥150.00 - 抵扣总额 ¥2,086.00</div>
+            </div>
+            <div class="signature-line">
+                <span>平台签章：京东开放平台财务部</span>
+                <span>生成日期：2026-03-13 16:20:22</span>
+            </div>
+            <div class="voucher-footer">
+                * 本凭证为电子结算依据，具有法律效力，商家可下载留存。若有异议请在3个工作日内反馈。
+            </div>
+        </div>
+        <div style="margin-top: 20px; text-align: right;">
+            <button class="btn btn-primary" onclick="alert('凭证已下载为PDF (模拟) \n结算金额 ¥5,296.00')">下载PDF</button>
+            <button class="btn" onclick="closeModal('voucherModal')">关闭</button>
+        </div>
+    </div>
+</div>
+
+<!-- 跨期结转明细模态框 (增强详情弹窗：展示完整明细) -->
+<div id="carryoverModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span>🔄 跨期结转 · 详细明细</span>
+            <button class="modal-close" onclick="closeModal('carryoverModal')">&times;</button>
+        </div>
+        <div style="margin-bottom: 16px; background: #f0f7fa; padding: 12px; border-radius: 16px;">
+            <span style="font-weight: 600;">📌 待结转总额 ¥890.00，将自动抵扣下一账期结算款项。</span>
+        </div>
+        <table class="export-table">
+            <thead>
+                <tr><th>原始单据号</th><th>类型</th><th>金额(元)</th><th>产生原因</th><th>预计处理账期</th><th>申诉截止日</th></thead>
+            <tbody>
+                <tr><td>AF20260321-456</td><td><span class="type-badge type-refund">售后抵扣</span></td><td class="amount-negative">-¥500.00</td><td>售后延长期，平台介入纠纷处理中</td><td>2026-04期</td><td>2026-03-28</td></tr>
+                <tr><td>PEN-20260320-003</td><td><span class="type-badge type-penalty">平台处罚</span></td><td class="amount-negative">-¥390.00</td><td>虚假交易处罚申诉流程未完结，暂冻结待复审</td><td>2026-04期</td><td>2026-03-30</td></tr>
+                <tr style="background:#fef9e6;"><td colspan="2"><strong>合计待抵扣</strong></td><td class="amount-negative"><strong>-¥890.00</strong></td><td colspan="3">详细说明：因售后纠纷及申诉待定，依据平台规则转入下一账期，待最终裁决后多退少补。</td></tr>
+            </tbody>
+        </table>
+        <div style="margin-top: 20px; background: #eef3fc; border-radius: 14px; padding: 14px;">
+            <p style="font-size: 0.85rem; color:#2c4f6e;">💡 提示：跨期抵扣明细可在下个结算单中查看实际冲抵记录。如对处罚或售后有异议，可通过申诉入口处理。</p>
+        </div>
+        <div style="margin-top: 20px; text-align: right;">
+            <button class="btn" onclick="closeModal('carryoverModal')">关闭</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // Tab切换逻辑
+        const tabs = {
+            tabAll: document.getElementById('tabAll'),
+            tabIncome: document.getElementById('tabIncome'),
+            tabDeduction: document.getElementById('tabDeduction'),
+            tabReward: document.getElementById('tabReward'),
+            tabFee: document.getElementById('tabFee')
+        };
+        const panels = {
+            panelAll: document.getElementById('panelAll'),
+            panelIncome: document.getElementById('panelIncome'),
+            panelDeduction: document.getElementById('panelDeduction'),
+            panelReward: document.getElementById('panelReward'),
+            panelFee: document.getElementById('panelFee')
+        };
+        
+        function resetTabsAndPanels() {
+            Object.values(tabs).forEach(t => t?.classList.remove('active'));
+            Object.values(panels).forEach(p => { if(p) p.style.display = 'none'; });
+        }
+        
+        if(tabs.tabAll) {
+            tabs.tabAll.addEventListener('click', () => { resetTabsAndPanels(); tabs.tabAll.classList.add('active'); panels.panelAll.style.display = 'block'; });
+            tabs.tabIncome.addEventListener('click', () => { resetTabsAndPanels(); tabs.tabIncome.classList.add('active'); panels.panelIncome.style.display = 'block'; });
+            tabs.tabDeduction.addEventListener('click', () => { resetTabsAndPanels(); tabs.tabDeduction.classList.add('active'); panels.panelDeduction.style.display = 'block'; });
+            tabs.tabReward.addEventListener('click', () => { resetTabsAndPanels(); tabs.tabReward.classList.add('active'); panels.panelReward.style.display = 'block'; });
+            tabs.tabFee.addEventListener('click', () => { resetTabsAndPanels(); tabs.tabFee.classList.add('active'); panels.panelFee.style.display = 'block'; });
+        }
+
+        window.openModal = function(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal) modal.style.display = 'flex';
+        };
+        window.closeModal = function(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal) modal.style.display = 'none';
+        };
+
+        document.getElementById('exportBtn').addEventListener('click', () => openModal('exportModal'));
+        document.getElementById('voucherBtn').addEventListener('click', () => openModal('voucherModal'));
+        document.getElementById('viewCarryoverBtn').addEventListener('click', () => openModal('carryoverModal'));
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        };
+    })();
+</script>
+</body>
+</html>

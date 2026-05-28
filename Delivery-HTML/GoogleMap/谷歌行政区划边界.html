@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单多边形锚点编辑器 - Google Maps</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            min-height: 100vh;
+            padding: 15px;
+            color: #333;
+            overflow: hidden;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: calc(100vh - 30px);
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 15px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 2px solid #1a73e8;
+            position: relative;
+            z-index: 10;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #1a2980, #26d0ce);
+        }
+        
+        h1 {
+            color: #1a2980;
+            margin-bottom: 8px;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #26d0ce;
+            font-size: 1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            font-weight: 500;
+            line-height: 1.4;
+            padding: 0 10px;
+        }
+        
+        .controls-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            border: 2px solid #1a73e8;
+            z-index: 10;
+        }
+        
+        .map-container {
+            flex: 1;
+            min-height: 75vh;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            border: 2px solid #1a73e8;
+            position: relative;
+        }
+        
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+        
+        .panel {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+            flex: 1;
+            min-width: 260px;
+        }
+        
+        h2 {
+            color: #1a2980;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            border-bottom: 3px solid #26d0ce;
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+        
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .btn-group-top {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        button {
+            padding: 10px 15px;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            flex: 1;
+            min-width: 160px;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        button:disabled {
+            background: linear-gradient(135deg, #a0a0a0, #808080);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        #create-poly {
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+        }
+        
+        #delete-poly {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+        }
+        
+        #import-points {
+            background: linear-gradient(135deg, #00c853, #64dd17);
+        }
+        
+        #export-points {
+            background: linear-gradient(135deg, #aa00ff, #d500f9);
+            position: relative;
+        }
+        
+        .instructions {
+            background: #e8f4ff;
+            border-left: 4px solid #1a2980;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 0.9rem;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+            position: relative;
+        }
+        
+        .instructions li::before {
+            content: "•";
+            color: #1a2980;
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        
+        .instructions kbd {
+            background: #1a2980;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin: 0 3px;
+            display: inline-block;
+            min-width: 22px;
+            text-align: center;
+        }
+        
+        .status-panel {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        #status {
+            background: #f0f8ff;
+            border: 2px solid #26d0ce;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            flex-grow: 1;
+            font-family: 'Courier New', monospace;
+            overflow-y: auto;
+            max-height: 140px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .coordinates {
+            margin-top: 12px;
+            font-size: 0.95rem;
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #bbdefb;
+            font-weight: 500;
+        }
+        
+        .highlight {
+            color: #ff416c;
+            font-weight: 700;
+        }
+        
+        .vertex-count {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #1a2980;
+            font-size: 1rem;
+            background: #e3f2fd;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #bbdefb;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 10px;
+            color: white;
+            font-size: 0.9rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            font-weight: 500;
+            z-index: 10;
+        }
+        
+        .polygon-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px dashed #ccc;
+            font-size: 0.9rem;
+        }
+        
+        .info-value {
+            font-weight: 600;
+            color: #1a2980;
+        }
+        
+        .key-hint {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 4px;
+            font-size: 0.85rem;
+            color: #555;
+        }
+        
+        .visual-guide {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            padding: 10px;
+            background: #f8f9ff;
+            border-radius: 8px;
+        }
+        
+        .guide-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .guide-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .add-icon { background-color: #4CAF50; }
+        .delete-icon { background-color: #F44336; }
+        .move-icon { background-color: #2196F3; }
+        .drag-icon { background-color: #9C27B0; }
+        .import-icon { background-color: #00C853; }
+        .export-icon { background-color: #AA00FF; }
+        
+        .screenshot {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 8px 15px;
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+        }
+        
+        .screenshot:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        
+        .debug-panel {
+            position: absolute;
+            bottom: 70px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-size: 14px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #555;
+        }
+        
+        .modal-title {
+            font-size: 1.4rem;
+            color: #1a2980;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        
+        .format-option {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .format-option:hover {
+            background: #f5f7ff;
+            border-color: #1a73e8;
+        }
+        
+        .format-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .txt-icon { background: linear-gradient(135deg, #1a2980, #26d0ce); }
+        .json-icon { background: linear-gradient(135deg, #aa00ff, #d500f9); }
+        
+        .format-info h3 {
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .format-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-label {
+            display: block;
+            padding: 12px;
+            background: #e3f2fd;
+            border: 2px dashed #1a73e8;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+        
+        .file-label:hover {
+            background: #bbdefb;
+        }
+        
+        .search-container {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: 300px;
+            max-width: 80%;
+        }
+        
+        #search-box {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 24px;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            outline: none;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        #search-box:focus {
+            border-color: #1a73e8;
+            box-shadow: 0 2px 15px rgba(26, 115, 232, 0.4);
+        }
+        
+        .export-container {
+            position: relative;
+            flex: 1;
+            min-width: 160px;
+        }
+        
+        .export-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+        }
+        
+        .export-options {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 100%;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            top: 100%;
+            left: 0;
+            margin-top: 5px;
+        }
+        
+        .export-option {
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            background: white;
+        }
+        
+        .export-option:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .export-option i {
+            color: #5f6368;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .export-option.txt-option {
+            color: #1a73e8;
+        }
+        
+        .export-option.json-option {
+            color: #aa00ff;
+        }
+        
+        .export-container:hover .export-options {
+            display: block;
+        }
+        
+        .boundary-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            z-index: 1000;
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .boundary-btn:hover {
+            background: linear-gradient(135deg, #142072, #1fb7b5);
+        }
+        
+        .boundary-style {
+            stroke-color: #ff0000;
+            stroke-opacity: 0.8;
+            stroke-weight: 2;
+            stroke-dasharray: [5, 5];
+            fill-color: rgba(255, 0, 0, 0.1);
+            fill-opacity: 0.35;
+        }
+
+        @media (max-width: 992px) {
+            .controls-container {
+                flex-direction: column;
+            }
+            
+            .map-container {
+                min-height: 55vh;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            button {
+                min-width: 140px;
+            }
+            
+            .btn-group-top {
+                flex-direction: column;
+            }
+            
+            .boundary-btn {
+                top: 60px;
+                right: 10px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+                min-width: 100%;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .subtitle {
+                font-size: 0.95rem;
+            }
+            
+            .visual-guide {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .debug-panel {
+                bottom: 60px;
+                left: 10px;
+                font-size: 12px;
+                padding: 8px;
+            }
+            
+            .search-container {
+                width: 250px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .search-container {
+                width: 200px;
+            }
+            
+            header {
+                padding: 12px;
+            }
+            
+            h1 {
+                font-size: 1.4rem;
+            }
+        }
+        
+        /* 加载动画 */
+        .loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(26, 41, 128, 0.3);
+            border-top: 5px solid #1a2980;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-draw-polygon"></i> 单多边形锚点编辑器</h1>
+            <p class="subtitle">创建、编辑和导出多边形区域。支持导入坐标点创建新多边形</p>
+        </header>
+        
+        <div class="controls-container">
+            <div class="panel">
+                <h2><i class="fas fa-tools"></i> 操作控制</h2>
+                <div class="btn-group-top">
+                    <button id="create-poly">
+                        <i class="fas fa-plus-circle"></i> 创建新多边形
+                    </button>
+                    <button id="delete-poly" disabled>
+                        <i class="fas fa-trash-alt"></i> 删除当前多边形
+                    </button>
+                    
+                    <div class="export-container">
+                        <button id="export-points" class="export-btn" disabled>
+                            <i class="fas fa-file-export"></i> 导出坐标点
+                            <i class="fas fa-caret-down"></i>
+                        </button>
+                        <div class="export-options">
+                            <div class="export-option txt-option" id="export-txt">
+                                <i class="fas fa-file-alt"></i> 导出为TXT
+                            </div>
+                            <div class="export-option json-option" id="export-json">
+                                <i class="fas fa-file-code"></i> 导出为JSON
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button id="import-points">
+                        <i class="fas fa-file-import"></i> 导入坐标点
+                    </button>
+                </div>
+                
+                <div class="instructions">
+                    <p><strong>锚点编辑指南：</strong></p>
+                    <ul>
+                        <li><span class="highlight">添加锚点</span>：在编辑模式下，将鼠标悬停到边线上，出现"+"图标时点击</li>
+                        <li><span class="highlight">删除锚点</span>：点击要删除的锚点（白色方块），然后按键盘 <kbd>Delete</kbd> 键</li>
+                        <li><span class="highlight">移动锚点</span>：拖动任何锚点调整位置（多边形会自动更新）</li>
+                        <li><span class="highlight">移动多边形</span>：按住 <kbd>Alt</kbd> 键并拖动多边形整体移动（释放Alt键后可编辑锚点）</li>
+                        <li><span class="highlight">搜索边界</span>：输入地点名称，点击"显示边界"按钮查看行政边界</li>
+                    </ul>
+                </div>
+                
+                <div class="visual-guide">
+                    <div class="guide-item">
+                        <div class="guide-icon add-icon">+</div>
+                        <span>添加锚点</span>
+                    </div>
+                    <div class="guide-item">
+                        <div class="guide-icon delete-icon">×</div>
+                        <span>删除锚点</span>
+                    </div>
+                    <div class="guide-item">
+                        <div class="guide-icon move-icon">↔</div>
+                        <span>移动锚点</span>
+                    </div>
+                    <div class="guide-item">
+                        <div class="guide-icon drag-icon">⇲</div>
+                        <span>移动多边形</span>
+                    </div>
+                    <div class="guide-item">
+                        <div class="guide-icon import-icon">↓</div>
+                        <span>导入坐标</span>
+                    </div>
+                    <div class="guide-item">
+                        <div class="guide-icon export-icon">↑</div>
+                        <span>导出坐标</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel status-panel">
+                <h2><i class="fas fa-info-circle"></i> 状态信息</h2>
+                <div id="status">准备就绪。点击"创建新多边形"按钮开始绘制。</div>
+                <div class="coordinates" id="coords">中心坐标: -</div>
+                <div class="vertex-count" id="vertex-count">当前锚点数量: 0</div>
+                
+                <div class="polygon-info">
+                    <div class="info-item">
+                        <span>多边形状态：</span>
+                        <span class="info-value" id="poly-status">未创建</span>
+                    </div>
+                    <div class="info-item">
+                        <span>编辑模式：</span>
+                        <span class="info-value" id="edit-mode">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span>多边形面积：</span>
+                        <span class="info-value" id="poly-area">0 km²</span>
+                    </div>
+                    <div class="info-item">
+                        <span>边界状态：</span>
+                        <span class="info-value" id="boundary-status">未加载</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="map-container">
+            <div class="search-container">
+                <input id="search-box" type="text" placeholder="搜索地点 (例如: 北京市, 上海市)">
+            </div>
+            <button class="boundary-btn" id="boundary-btn">
+                <i class="fas fa-map-marked-alt"></i> 显示边界
+            </button>
+            <div id="map"></div>
+            <button class="screenshot" id="screenshot-btn">
+                <i class="fas fa-camera"></i> 截取地图
+            </button>
+            <div class="debug-panel" id="debug-panel">
+                调试信息: 无
+            </div>
+            <div class="loader" id="loader">
+                <div class="loader-spinner"></div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Google Maps 单多边形锚点编辑器 &copy; 2023 | 支持TXT和JSON格式导入导出</p>
+        </footer>
+    </div>
+
+    <!-- 导入格式选择模态框 -->
+    <div class="modal" id="import-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-import">&times;</span>
+            <h2 class="modal-title">导入坐标点</h2>
+            <div class="modal-body">
+                <div class="format-option" id="import-txt">
+                    <div class="format-icon txt-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="format-info">
+                        <h3>TXT 文本格式</h3>
+                        <p>每行一个坐标点，格式为：纬度,经度</p>
+                        <p>示例：<br>39.9042,116.4074<br>39.9123,116.3987</p>
+                    </div>
+                </div>
+                
+                <div class="format-option" id="import-json">
+                    <div class="format-icon json-icon">
+                        <i class="fas fa-file-code"></i>
+                    </div>
+                    <div class="format-info">
+                        <h3>JSON 格式</h3>
+                        <p>包含坐标点数组的JSON文件</p>
+                        <p>示例：<br>[{"lat":39.9042,"lng":116.4074},<br>{"lat":39.9123,"lng":116.3987}]</p>
+                    </div>
+                </div>
+                
+                <input type="file" id="file-input" class="file-input" accept=".txt,.json">
+                <label for="file-input" class="file-label" id="file-label">
+                    <i class="fas fa-cloud-upload-alt"></i> 选择文件
+                </label>
+                <div id="file-name" style="margin-top: 10px; text-align: center; font-style: italic;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 使用Google Maps API密钥
+        const API_KEY = 'AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg';
+        
+        let map;
+        let drawingManager;
+        let activePolygon = null;
+        let centerMarker = null;
+        let polygonExists = false;
+        let isAltDown = false;
+        let isDrawing = false;
+        let debugPanel;
+        let importModal;
+        let searchBox;
+        let geocoder;
+        let boundaryPolygon = null;
+        let boundaryData = null;
+        let loader;
+
+        function initMap() {
+            // 创建地图实例
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 39.9042, lng: 116.4074 }, // 北京为中心
+                zoom: 10,
+                mapTypeControl: true,
+                streetViewControl: false,
+                mapTypeId: 'roadmap'
+            });
+
+            // 初始化地理编码器
+            geocoder = new google.maps.Geocoder();
+            
+            debugPanel = document.getElementById('debug-panel');
+            importModal = document.getElementById('import-modal');
+            loader = document.getElementById('loader');
+            
+            // 初始化搜索框
+            const searchInput = document.getElementById('search-box');
+            searchBox = new google.maps.places.SearchBox(searchInput);
+            
+            // 监听搜索框选择事件
+            searchBox.addListener('places_changed', function() {
+                const places = searchBox.getPlaces();
+                if (places.length === 0) return;
+                
+                const bounds = new google.maps.LatLngBounds();
+                places.forEach(place => {
+                    if (!place.geometry) return;
+                    
+                    if (place.geometry.viewport) {
+                        bounds.union(place.geometry.viewport);
+                    } else {
+                        bounds.extend(place.geometry.location);
+                    }
+                });
+                
+                map.fitBounds(bounds);
+                map.setZoom(Math.min(15, map.getZoom()));
+                
+                updateStatus(`定位到: ${places[0].name}`);
+                document.getElementById('boundary-status').textContent = '未加载';
+            });
+            
+            // 初始化绘图管理器
+            drawingManager = new google.maps.drawing.DrawingManager({
+                drawingMode: null,
+                drawingControl: false,
+                polygonOptions: {
+                    editable: true,
+                    draggable: false,
+                    strokeColor: '#1a73e8',
+                    strokeOpacity: 0.9,
+                    strokeWeight: 3,
+                    fillColor: '#1a73e8',
+                    fillOpacity: 0.4
+                }
+            });
+            drawingManager.setMap(map);
+            
+            // 监听多边形创建事件
+            google.maps.event.addListener(drawingManager, 'polygoncomplete', (polygon) => {
+                setActivePolygon(polygon);
+                setupPolygonListeners(polygon);
+                polygonExists = true;
+                updateControlStates();
+                document.getElementById('edit-mode').textContent = '启用';
+                updateStatus('多边形创建完成！进入编辑模式添加/删除锚点');
+                document.getElementById('poly-status').textContent = '已创建';
+                calculatePolygonArea(polygon);
+                addCenterMarker(polygon);
+                updateVertexCount();
+                isDrawing = false;
+                
+                // 确保多边形可编辑
+                polygon.setEditable(true);
+                polygon.setDraggable(false);
+                
+                // 退出绘图模式
+                drawingManager.setDrawingMode(null);
+            });
+            
+            // 监听键盘事件
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Alt') {
+                    isAltDown = true;
+                    if (activePolygon) {
+                        activePolygon.setOptions({ 
+                            draggable: true,
+                            editable: false
+                        });
+                        updateStatus('按住Alt键可拖动多边形（此时无法编辑锚点）');
+                        updateDebugInfo('Alt键按下 - 多边形可拖动');
+                    }
+                }
+                
+                // 删除锚点
+                if (e.key === 'Delete' && activePolygon) {
+                    const path = activePolygon.getPath();
+                    const selectedVertex = activePolygon.selectedVertex;
+                    
+                    if (selectedVertex !== undefined && selectedVertex !== null) {
+                        path.removeAt(selectedVertex);
+                        activePolygon.selectedVertex = null;
+                        updateStatus('已删除选中的锚点');
+                        updateDebugInfo(`删除锚点: ${selectedVertex}`);
+                    }
+                }
+            });
+            
+            document.addEventListener('keyup', (e) => {
+                if (e.key === 'Alt') {
+                    isAltDown = false;
+                    if (activePolygon) {
+                        activePolygon.setOptions({ 
+                            draggable: false,
+                            editable: true
+                        });
+                        updateStatus('已释放Alt键，现在可以编辑锚点');
+                        updateDebugInfo('Alt键释放 - 多边形可编辑');
+                    }
+                }
+            });
+            
+            // 监听地图点击事件
+            map.addListener('click', (e) => {
+                if (!isDrawing && activePolygon && !isAltDown) {
+                    updateStatus('已存在多边形。要创建新多边形，请先删除当前多边形');
+                }
+            });
+            
+            // 设置导入模态框事件
+            document.getElementById('import-txt').addEventListener('click', () => {
+                document.getElementById('file-input').accept = ".txt";
+                document.getElementById('file-label').innerHTML = '<i class="fas fa-cloud-upload-alt"></i> 选择TXT文件';
+                document.getElementById('file-input').click();
+            });
+            
+            document.getElementById('import-json').addEventListener('click', () => {
+                document.getElementById('file-input').accept = ".json";
+                document.getElementById('file-label').innerHTML = '<i class="fas fa-cloud-upload-alt"></i> 选择JSON文件';
+                document.getElementById('file-input').click();
+            });
+            
+            document.getElementById('close-import').addEventListener('click', () => {
+                importModal.style.display = 'none';
+            });
+            
+            document.getElementById('file-input').addEventListener('change', handleFileUpload);
+            
+            // 设置导出选项事件
+            document.getElementById('export-txt').addEventListener('click', exportTxtPoints);
+            document.getElementById('export-json').addEventListener('click', exportJsonPoints);
+            
+            // 设置显示边界按钮事件
+            document.getElementById('boundary-btn').addEventListener('click', findBoundary);
+            
+            // 初始化按钮状态
+            updateControlStates();
+        }
+        
+        // 更新控件状态
+        function updateControlStates() {
+            const hasPoly = !!activePolygon;
+            document.getElementById('create-poly').disabled = hasPoly;
+            document.getElementById('delete-poly').disabled = !hasPoly;
+            document.getElementById('export-points').disabled = !hasPoly;
+            // 导入按钮始终可用
+            document.getElementById('import-points').disabled = false;
+        }
+
+        function setActivePolygon(polygon) {
+            // 移除之前的高亮效果
+            if (activePolygon) {
+                activePolygon.setOptions({ 
+                    strokeColor: '#1a73e8', 
+                    fillColor: '#1a73e8',
+                    strokeWeight: 3
+                });
+            }
+            
+            activePolygon = polygon;
+            
+            // 高亮当前多边形
+            if (polygon) {
+                polygon.setOptions({ 
+                    strokeColor: '#ea4335', 
+                    fillColor: '#ea4335',
+                    strokeWeight: 4
+                });
+            }
+        }
+
+        function setupPolygonListeners(polygon) {
+            // 点击多边形时设为当前活动多边形
+            google.maps.event.addListener(polygon, 'click', (event) => {
+                setActivePolygon(polygon);
+                
+                // 如果是点击锚点
+                if (event.vertex !== undefined) {
+                    polygon.selectedVertex = event.vertex;
+                    updateStatus(`选中锚点 ${event.vertex} - 按Delete键删除`);
+                    updateDebugInfo(`选中锚点: ${event.vertex}`);
+                } else {
+                    updateStatus('多边形已选中');
+                }
+            });
+            
+            // 监听路径变化（添加/删除锚点）
+            const path = polygon.getPath();
+            
+            path.addListener('insert_at', (index) => {
+                const newPoint = path.getAt(index);
+                updateStatus(`添加了新锚点 (位置:${index}): ${formatCoordinate(newPoint)}`);
+                updateCenterMarker(polygon);
+                updateVertexCount();
+                calculatePolygonArea(polygon);
+                updateDebugInfo(`添加锚点: ${index}`);
+            });
+            
+            path.addListener('set_at', (index) => {
+                const movedPoint = path.getAt(index);
+                updateStatus(`锚点移动 (位置:${index}): ${formatCoordinate(movedPoint)}`);
+                updateCenterMarker(polygon);
+                calculatePolygonArea(polygon);
+                updateDebugInfo(`移动锚点: ${index}`);
+            });
+            
+            path.addListener('remove_at', (index) => {
+                updateStatus(`删除了锚点 (位置:${index})`);
+                updateCenterMarker(polygon);
+                updateVertexCount();
+                calculatePolygonArea(polygon);
+                updateDebugInfo(`删除锚点: ${index}`);
+            });
+            
+            // 监听多边形被删除
+            google.maps.event.addListener(polygon, 'remove', () => {
+                if (activePolygon === polygon) {
+                    activePolygon = null;
+                    polygonExists = false;
+                    if (centerMarker) centerMarker.setMap(null);
+                    updateStatus('多边形已删除');
+                    updateControlStates();
+                    document.getElementById('edit-mode').textContent = '-';
+                    document.getElementById('coords').innerHTML = '中心坐标: -';
+                    document.getElementById('vertex-count').innerHTML = '当前锚点数量: 0';
+                    document.getElementById('poly-status').textContent = '未创建';
+                    document.getElementById('poly-area').textContent = '0 km²';
+                    updateDebugInfo('多边形已删除');
+                }
+            });
+            
+            // 监听多边形拖动
+            google.maps.event.addListener(polygon, 'dragstart', () => {
+                updateStatus('正在移动多边形...');
+                updateDebugInfo('开始拖动多边形');
+            });
+            
+            google.maps.event.addListener(polygon, 'dragend', () => {
+                updateStatus('多边形移动完成');
+                updateCenterMarker(polygon);
+                updateDebugInfo('结束拖动多边形');
+            });
+        }
+        
+        function calculatePolygonArea(polygon) {
+            if (!polygon) return;
+            
+            const area = google.maps.geometry.spherical.computeArea(polygon.getPath());
+            const areaKm = (area / 1000000).toFixed(2);
+            document.getElementById('poly-area').textContent = `${areaKm} km²`;
+        }
+
+        function addCenterMarker(polygon) {
+            // 计算多边形的中心点
+            const bounds = new google.maps.LatLngBounds();
+            polygon.getPath().forEach(latLng => {
+                bounds.extend(latLng);
+            });
+            const center = bounds.getCenter();
+            
+            // 创建中心标记
+            if (centerMarker) {
+                centerMarker.setMap(null);
+            }
+            
+            centerMarker = new google.maps.Marker({
+                position: center,
+                map: map,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 10,
+                    fillColor: '#ff4081',
+                    fillOpacity: 0.9,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 3
+                },
+                title: '多边形中心点',
+                zIndex: 1000
+            });
+            
+            // 显示中心坐标
+            document.getElementById('coords').innerHTML = 
+                `<strong>中心坐标:</strong> ${formatCoordinate(center)}`;
+        }
+        
+        function updateCenterMarker(polygon) {
+            if (!centerMarker || !polygon) return;
+            
+            // 重新计算中心点
+            const bounds = new google.maps.LatLngBounds();
+            polygon.getPath().forEach(latLng => {
+                bounds.extend(latLng);
+            });
+            centerMarker.setPosition(bounds.getCenter());
+            
+            // 更新中心坐标显示
+            document.getElementById('coords').innerHTML = 
+                `<strong>中心坐标:</strong> ${formatCoordinate(bounds.getCenter())}`;
+        }
+        
+        function updateVertexCount() {
+            if (activePolygon) {
+                const count = activePolygon.getPath().getLength();
+                document.getElementById('vertex-count').innerHTML = 
+                    `当前锚点数量: ${count}`;
+            }
+        }
+
+        // 格式化坐标显示
+        function formatCoordinate(latLng) {
+            return `(${latLng.lat().toFixed(5)}, ${latLng.lng().toFixed(5)})`;
+        }
+
+        // 更新状态信息
+        function updateStatus(message) {
+            document.getElementById('status').innerHTML = `<strong>状态:</strong> ${message}`;
+        }
+        
+        // 更新调试信息
+        function updateDebugInfo(message) {
+            debugPanel.textContent = `调试信息: ${message}`;
+        }
+
+        // 创建新多边形按钮
+        document.getElementById('create-poly').addEventListener('click', () => {
+            // 如果已有多边形，先删除
+            if (activePolygon) {
+                activePolygon.setMap(null);
+                activePolygon = null;
+                if (centerMarker) {
+                    centerMarker.setMap(null);
+                    centerMarker = null;
+                }
+                polygonExists = false;
+            }
+            
+            // 设置绘图模式为多边形
+            drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
+            updateStatus('准备绘制新多边形：在地图上点击添加顶点，双击或点击起点完成绘制');
+            document.getElementById('create-poly').disabled = true;
+            document.getElementById('poly-status').textContent = '正在绘制...';
+            document.getElementById('edit-mode').textContent = '禁用';
+            isDrawing = true;
+            updateDebugInfo('开始绘制新多边形');
+        });
+
+        // 删除多边形按钮
+        document.getElementById('delete-poly').addEventListener('click', () => {
+            if (activePolygon) {
+                activePolygon.setMap(null);
+                activePolygon = null;
+                polygonExists = false;
+                if (centerMarker) centerMarker.setMap(null);
+                updateStatus('多边形已删除。现在可以创建新多边形');
+                updateControlStates();
+                document.getElementById('poly-status').textContent = '未创建';
+                document.getElementById('edit-mode').textContent = '-';
+                document.getElementById('vertex-count').innerHTML = '当前锚点数量: 0';
+                document.getElementById('coords').innerHTML = '中心坐标: -';
+                document.getElementById('poly-area').textContent = '0 km²';
+                updateDebugInfo('多边形已删除');
+            } else {
+                updateStatus('没有可删除的多边形');
+            }
+        });
+
+        // 导出坐标点按钮 (TXT格式)
+        function exportTxtPoints() {
+            if (!activePolygon) return updateStatus('错误：没有活动多边形');
+            
+            const path = activePolygon.getPath();
+            let output = "多边形坐标点:\n";
+            
+            for (let i = 0; i < path.getLength(); i++) {
+                const point = path.getAt(i);
+                output += `${i}: ${point.lat().toFixed(6)},${point.lng().toFixed(6)}\n`;
+            }
+            
+            // 创建下载链接
+            const blob = new Blob([output], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'polygon-coordinates.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            updateStatus('坐标点已导出为TXT文件');
+            updateDebugInfo('导出坐标点 (TXT)');
+        }
+        
+        // 导出JSON按钮
+        function exportJsonPoints() {
+            if (!activePolygon) return updateStatus('错误：没有活动多边形');
+            
+            const path = activePolygon.getPath();
+            const coordinates = [];
+            
+            for (let i = 0; i < path.getLength(); i++) {
+                const point = path.getAt(i);
+                coordinates.push({
+                    lat: point.lat(),
+                    lng: point.lng()
+                });
+            }
+            
+            const jsonOutput = JSON.stringify(coordinates, null, 2);
+            
+            // 创建下载链接
+            const blob = new Blob([jsonOutput], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'polygon-coordinates.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            updateStatus('坐标点已导出为JSON文件');
+            updateDebugInfo('导出坐标点 (JSON)');
+        }
+        
+        // 导入坐标点按钮
+        document.getElementById('import-points').addEventListener('click', () => {
+            importModal.style.display = 'flex';
+            document.getElementById('file-name').textContent = '';
+            updateDebugInfo('打开导入对话框');
+        });
+        
+        // 处理文件上传
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            document.getElementById('file-name').textContent = `已选择: ${file.name}`;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const content = e.target.result;
+                    let coordinates = [];
+                    
+                    // 检查文件扩展名
+                    if (file.name.toLowerCase().endsWith('.json')) {
+                        // 处理JSON格式
+                        coordinates = JSON.parse(content);
+                        if (!Array.isArray(coordinates)) {
+                            throw new Error('JSON格式无效：应包含坐标数组');
+                        }
+                    } else if (file.name.toLowerCase().endsWith('.txt')) {
+                        // 处理TXT格式
+                        const lines = content.split('\n');
+                        for (const line of lines) {
+                            if (line.trim() === '') continue;
+                            
+                            // 支持两种格式：纬度,经度 或 (纬度, 经度)
+                            let match = line.match(/\(?\s*([-+]?\d*\.?\d+)\s*,\s*([-+]?\d*\.?\d+)\s*\)?/);
+                            if (match) {
+                                const lat = parseFloat(match[1]);
+                                const lng = parseFloat(match[2]);
+                                if (!isNaN(lat) && !isNaN(lng)) {
+                                    coordinates.push({lat, lng});
+                                }
+                            }
+                        }
+                    } else {
+                        throw new Error('不支持的文件格式');
+                    }
+                    
+                    if (coordinates.length < 3) {
+                        throw new Error('至少需要3个坐标点来创建多边形');
+                    }
+                    
+                    // 创建多边形
+                    createPolygonFromCoordinates(coordinates);
+                    importModal.style.display = 'none';
+                    
+                } catch (error) {
+                    updateStatus(`导入失败: ${error.message}`);
+                    updateDebugInfo(`导入错误: ${error.message}`);
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        // 从坐标数组创建多边形
+        function createPolygonFromCoordinates(coordinates) {
+            // 删除现有多边形
+            if (activePolygon) {
+                activePolygon.setMap(null);
+                activePolygon = null;
+            }
+            
+            // 创建路径数组
+            const path = coordinates.map(coord => new google.maps.LatLng(coord.lat, coord.lng));
+            
+            // 创建多边形
+            const polygon = new google.maps.Polygon({
+                paths: path,
+                strokeColor: '#1a73e8',
+                strokeOpacity: 0.9,
+                strokeWeight: 3,
+                fillColor: '#1a73e8',
+                fillOpacity: 0.4,
+                editable: true,
+                draggable: false,
+                map: map
+            });
+            
+            // 设置多边形为活动状态
+            setActivePolygon(polygon);
+            setupPolygonListeners(polygon);
+            polygonExists = true;
+            updateControlStates();
+            
+            // 计算多边形中心并定位地图
+            const bounds = new google.maps.LatLngBounds();
+            path.forEach(latLng => bounds.extend(latLng));
+            map.fitBounds(bounds);
+            
+            // 更新状态信息
+            updateStatus(`成功导入${coordinates.length}个坐标点`);
+            document.getElementById('edit-mode').textContent = '启用';
+            document.getElementById('poly-status').textContent = '已创建';
+            calculatePolygonArea(polygon);
+            addCenterMarker(polygon);
+            updateVertexCount();
+            updateDebugInfo(`导入成功: ${coordinates.length}个点`);
+        }
+        
+        // 截取地图按钮
+        document.getElementById('screenshot-btn').addEventListener('click', () => {
+            updateStatus('正在生成地图截图...');
+            
+            // 创建截图
+            setTimeout(() => {
+                html2canvas(document.getElementById('map')).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.href = imgData;
+                    link.download = 'map-screenshot.png';
+                    link.click();
+                    updateStatus('地图截图已保存');
+                    updateDebugInfo('地图截图已保存');
+                }).catch(err => {
+                    updateStatus('截图生成失败: ' + err.message);
+                });
+            }, 500);
+        });
+        
+        // 查找地点边界
+        function findBoundary() {
+            const address = document.getElementById('search-box').value.trim();
+            if (!address) {
+                updateStatus('请在搜索框中输入地点名称');
+                return;
+            }
+            
+            updateStatus(`正在查找 "${address}" 的边界...`);
+            document.getElementById('boundary-status').textContent = '加载中...';
+            showLoader();
+            
+            // 使用地理编码API获取地点边界
+            geocoder.geocode({ address: address }, (results, status) => {
+                if (status === 'OK') {
+                    if (results[0]) {
+                        const place = results[0];
+                        
+                        // 移除之前的边界多边形
+                        if (boundaryPolygon) {
+                            boundaryPolygon.setMap(null);
+                        }
+                        
+                        // 检查是否有边界几何数据
+                        if (place.geometry.bounds) {
+                            // 创建边界矩形
+                            boundaryPolygon = new google.maps.Polygon({
+                                paths: [
+                                    {lat: place.geometry.bounds.getSouthWest().lat(), lng: place.geometry.bounds.getSouthWest().lng()},
+                                    {lat: place.geometry.bounds.getSouthWest().lat(), lng: place.geometry.bounds.getNorthEast().lng()},
+                                    {lat: place.geometry.bounds.getNorthEast().lat(), lng: place.geometry.bounds.getNorthEast().lng()},
+                                    {lat: place.geometry.bounds.getNorthEast().lat(), lng: place.geometry.bounds.getSouthWest().lng()}
+                                ],
+                                strokeColor: '#FF0000',
+                                strokeOpacity: 0.8,
+                                strokeWeight: 2,
+                                strokeDashArray: [10, 5],
+                                fillColor: 'rgba(255, 0, 0, 0.1)',
+                                fillOpacity: 0.35,
+                                map: map
+                            });
+                            
+                            // 定位到边界
+                            map.fitBounds(place.geometry.bounds);
+                            updateStatus(`已显示 "${address}" 的边界矩形`);
+                            document.getElementById('boundary-status').textContent = '已显示矩形边界';
+                            updateDebugInfo(`显示边界矩形: ${address}`);
+                        } else if (place.geometry.viewport) {
+                            // 创建视口矩形
+                            boundaryPolygon = new google.maps.Polygon({
+                                paths: [
+                                    {lat: place.geometry.viewport.getSouthWest().lat(), lng: place.geometry.viewport.getSouthWest().lng()},
+                                    {lat: place.geometry.viewport.getSouthWest().lat(), lng: place.geometry.viewport.getNorthEast().lng()},
+                                    {lat: place.geometry.viewport.getNorthEast().lat(), lng: place.geometry.viewport.getNorthEast().lng()},
+                                    {lat: place.geometry.viewport.getNorthEast().lat(), lng: place.geometry.viewport.getSouthWest().lng()}
+                                ],
+                                strokeColor: '#FF0000',
+                                strokeOpacity: 0.8,
+                                strokeWeight: 2,
+                                strokeDashArray: [10, 5],
+                                fillColor: 'rgba(255, 0, 0, 0.1)',
+                                fillOpacity: 0.35,
+                                map: map
+                            });
+                            
+                            // 定位到边界
+                            map.fitBounds(place.geometry.viewport);
+                            updateStatus(`已显示 "${address}" 的视图边界`);
+                            document.getElementById('boundary-status').textContent = '已显示视图边界';
+                            updateDebugInfo(`显示视图边界: ${address}`);
+                        } else {
+                            // 没有边界数据
+                            updateStatus(`"${address}" 没有可用的边界数据`);
+                            document.getElementById('boundary-status').textContent = '无边界数据';
+                        }
+                        
+                        // 添加边界点击事件
+                        boundaryPolygon.addListener('click', () => {
+                            updateStatus(`点击了 "${address}" 的边界`);
+                        });
+                    } else {
+                        updateStatus('未找到该地点的边界信息');
+                        document.getElementById('boundary-status').textContent = '未找到';
+                    }
+                } else {
+                    updateStatus(`地理编码失败: ${status}`);
+                    document.getElementById('boundary-status').textContent = '请求失败';
+                }
+                hideLoader();
+            });
+        }
+        
+        // 显示加载动画
+        function showLoader() {
+            loader.style.display = 'block';
+        }
+        
+        // 隐藏加载动画
+        function hideLoader() {
+            loader.style.display = 'none';
+        }
+    </script>
+    
+    <!-- 加载Google Maps API  AIzaSyC9Yi4yrQjx0rV8NydX9xAlfxfccxU9cjY AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg   -->
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9Yi4yrQjx0rV8NydX9xAlfxfccxU9cjY&libraries=drawing,geometry,places&callback=initMap">
+    </script>
+    
+    <!-- 加载截图库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</body>
+</html>

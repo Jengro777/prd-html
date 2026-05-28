@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Amazon Send to Amazon - FBA Shipment Workflow</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#eaeded;
+    color:#0f1111;
+    font-size:13px;
+}
+
+a{
+    text-decoration:none;
+}
+
+button{
+    cursor:pointer;
+}
+
+.amazon-header{
+    background:#131921;
+    color:white;
+    padding:14px 24px;
+    border-bottom:1px solid #232f3e;
+}
+
+.header-inner{
+    max-width:1600px;
+    margin:auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.logo{
+    font-size:24px;
+    font-weight:bold;
+}
+
+.logo span{
+    color:#ff9900;
+}
+
+.header-right{
+    display:flex;
+    gap:14px;
+    align-items:center;
+    font-size:12px;
+}
+
+.top-badge{
+    background:#232f3e;
+    border:1px solid #37475a;
+    padding:6px 12px;
+    border-radius:4px;
+}
+
+.workflow-bar{
+    background:white;
+    border-bottom:1px solid #d5d9d9;
+}
+
+.workflow-inner{
+    max-width:1600px;
+    margin:auto;
+    display:flex;
+}
+
+.step{
+    flex:1;
+    padding:16px;
+    border-right:1px solid #e7e7e7;
+    position:relative;
+}
+
+.step:last-child{
+    border-right:none;
+}
+
+.step.active{
+    background:#fff7e0;
+}
+
+.step-number{
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    background:#007185;
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+.step.active .step-number{
+    background:#ff9900;
+    color:black;
+}
+
+.step-title{
+    font-weight:bold;
+    margin-bottom:4px;
+}
+
+.step-desc{
+    color:#565959;
+    font-size:12px;
+}
+
+.page{
+    max-width:1600px;
+    margin:20px auto;
+    display:flex;
+    gap:20px;
+    align-items:flex-start;
+    padding:0 20px;
+}
+
+.main{
+    flex:1;
+    min-width:0;
+}
+
+.summary{
+    width:320px;
+    position:sticky;
+    top:20px;
+}
+
+.section{
+    background:white;
+    border:1px solid #d5d9d9;
+    margin-bottom:20px;
+}
+
+.section-header{
+    padding:16px 20px;
+    border-bottom:1px solid #e7e7e7;
+    background:#f7fafa;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.section-title{
+    font-size:18px;
+    font-weight:bold;
+}
+
+.section-body{
+    padding:20px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:16px;
+    margin-bottom:18px;
+}
+
+.field label{
+    display:block;
+    margin-bottom:6px;
+    font-weight:bold;
+    color:#0f1111;
+}
+
+.field input,
+.field select{
+    width:100%;
+    padding:8px 10px;
+    border:1px solid #888c8c;
+    border-radius:4px;
+    background:white;
+    font-size:13px;
+}
+
+.field input:focus,
+.field select:focus{
+    outline:none;
+    border-color:#007185;
+    box-shadow:0 0 0 2px rgba(0,113,133,0.2);
+}
+
+.amazon-btn{
+    background:#ffd814;
+    border:1px solid #fcd200;
+    border-radius:8px;
+    padding:8px 16px;
+    font-size:13px;
+}
+
+.amazon-btn:hover{
+    background:#f7ca00;
+}
+
+.amazon-btn-secondary{
+    background:white;
+    border:1px solid #d5d9d9;
+    border-radius:8px;
+    padding:8px 16px;
+}
+
+.amazon-btn-secondary:hover{
+    background:#f7fafa;
+}
+
+.toolbar{
+    display:flex;
+    gap:12px;
+    margin-bottom:16px;
+    flex-wrap:wrap;
+}
+
+.inventory-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.inventory-table th{
+    background:#f0f2f2;
+    border-bottom:1px solid #d5d9d9;
+    padding:12px;
+    text-align:left;
+    font-weight:bold;
+}
+
+.inventory-table td{
+    border-bottom:1px solid #e7e7e7;
+    padding:12px;
+    vertical-align:top;
+}
+
+.inventory-table tr:hover{
+    background:#fafafa;
+}
+
+.sku-title{
+    font-weight:bold;
+    margin-bottom:4px;
+}
+
+.sku-sub{
+    color:#565959;
+    font-size:12px;
+}
+
+.qty-input{
+    width:90px;
+    padding:6px;
+    border:1px solid #888c8c;
+    border-radius:4px;
+}
+
+.carton-card{
+    border:1px solid #d5d9d9;
+    margin-bottom:14px;
+}
+
+.carton-header{
+    background:#f7fafa;
+    padding:14px 16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    cursor:pointer;
+}
+
+.carton-left{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+}
+
+.carton-name{
+    font-weight:bold;
+}
+
+.carton-meta{
+    color:#565959;
+    font-size:12px;
+}
+
+.carton-body{
+    border-top:1px solid #e7e7e7;
+    padding:16px;
+}
+
+.contents-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:12px;
+}
+
+.contents-table th{
+    background:#f7fafa;
+    padding:10px;
+    text-align:left;
+    border-bottom:1px solid #d5d9d9;
+}
+
+.contents-table td{
+    padding:10px;
+    border-bottom:1px solid #e7e7e7;
+}
+
+.summary-box{
+    background:white;
+    border:1px solid #d5d9d9;
+}
+
+.summary-header{
+    background:#f7fafa;
+    padding:16px;
+    border-bottom:1px solid #d5d9d9;
+    font-weight:bold;
+    font-size:16px;
+}
+
+.summary-body{
+    padding:16px;
+}
+
+.summary-item{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:14px;
+}
+
+.summary-label{
+    color:#565959;
+}
+
+.summary-value{
+    font-weight:bold;
+}
+
+.warning{
+    background:#fff3cd;
+    border:1px solid #ffeeba;
+    padding:12px;
+    border-radius:4px;
+    margin-top:14px;
+    color:#856404;
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:18px;
+}
+
+.badge{
+    background:#e6f1f1;
+    color:#007185;
+    padding:2px 8px;
+    border-radius:999px;
+    font-size:11px;
+}
+
+.expand-icon{
+    font-size:18px;
+}
+
+.mobile-only{
+    display:none;
+}
+
+@media(max-width:1200px){
+    .page{
+        flex-direction:column;
+    }
+
+    .summary{
+        width:100%;
+        position:static;
+    }
+}
+
+@media(max-width:768px){
+
+    .workflow-inner{
+        flex-direction:column;
+    }
+
+    .step{
+        border-right:none;
+        border-bottom:1px solid #e7e7e7;
+    }
+
+    .section-header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:10px;
+    }
+
+    .inventory-table{
+        min-width:900px;
+    }
+
+    .table-scroll{
+        overflow:auto;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="amazon-header">
+    <div class="header-inner">
+        <div class="logo">
+            amazon <span>FBA</span>
+        </div>
+
+        <div class="header-right">
+            <div class="top-badge">Send to Amazon</div>
+            <div class="top-badge">Marketplace: Amazon.com</div>
+        </div>
+    </div>
+</div>
+
+<div class="workflow-bar">
+    <div class="workflow-inner">
+
+        <div class="step active">
+            <div class="step-number">1</div>
+            <div class="step-title">Select inventory</div>
+            <div class="step-desc">Choose products and quantities</div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-title">Packing details</div>
+            <div class="step-desc">Prep and label ownership</div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-title">Pack boxes</div>
+            <div class="step-desc">Define carton contents</div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-title">Review shipment</div>
+            <div class="step-desc">Placement and fees</div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">5</div>
+            <div class="step-title">Print labels</div>
+            <div class="step-desc">Box and pallet labels</div>
+        </div>
+
+    </div>
+</div>
+
+<div class="page">
+
+    <div class="main">
+
+        <!-- Inventory -->
+        <div class="section">
+
+            <div class="section-header">
+                <div class="section-title">
+                    Step 1. Select inventory
+                </div>
+
+                <button class="amazon-btn" onclick="addSku()">
+                    Add product
+                </button>
+            </div>
+
+            <div class="section-body">
+
+                <div class="toolbar">
+
+                    <input type="text" placeholder="Search SKU / ASIN / FNSKU"
+                    style="padding:8px 12px; width:300px; border:1px solid #888c8c; border-radius:4px;">
+
+                    <button class="amazon-btn-secondary">
+                        Upload file
+                    </button>
+
+                    <button class="amazon-btn-secondary">
+                        Use packing template
+                    </button>
+
+                </div>
+
+                <div class="table-scroll">
+
+                    <table class="inventory-table">
+
+                        <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>MSKU</th>
+                            <th>FNSKU</th>
+                            <th>Available</th>
+                            <th>Units per box</th>
+                            <th>Send units</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="skuTableBody">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Packing -->
+        <div class="section">
+
+            <div class="section-header">
+                <div class="section-title">
+                    Step 2. Packing details
+                </div>
+            </div>
+
+            <div class="section-body">
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label>Shipment name</label>
+                        <input value="FBA Shipment May 2026">
+                    </div>
+
+                    <div class="field">
+                        <label>Ship from</label>
+                        <input value="Shenzhen Warehouse CN">
+                    </div>
+
+                    <div class="field">
+                        <label>Destination marketplace</label>
+                        <select>
+                            <option>Amazon.com</option>
+                            <option>Amazon.co.uk</option>
+                            <option>Amazon.de</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Destination FC</label>
+                        <input value="FTW1">
+                    </div>
+
+                    <div class="field">
+                        <label>Packing type</label>
+                        <select>
+                            <option>Case-packed products</option>
+                            <option>Individual units</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Shipping mode</label>
+                        <select>
+                            <option>SPD</option>
+                            <option>LTL</option>
+                            <option>FTL</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Who preps?</label>
+                        <select>
+                            <option>Seller</option>
+                            <option>Amazon</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Who labels?</label>
+                        <select>
+                            <option>Seller</option>
+                            <option>Amazon</option>
+                        </select>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Boxes -->
+        <div class="section">
+
+            <div class="section-header">
+
+                <div class="section-title">
+                    Step 3. Pack boxes
+                </div>
+
+                <div>
+                    <button class="amazon-btn" onclick="createCarton()">
+                        Create box
+                    </button>
+                </div>
+
+            </div>
+
+            <div class="section-body">
+
+                <div id="cartonsContainer"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Summary -->
+    <div class="summary">
+
+        <div class="summary-box">
+
+            <div class="summary-header">
+                Shipment summary
+            </div>
+
+            <div class="summary-body">
+
+                <div class="summary-item">
+                    <div class="summary-label">Total SKUs</div>
+                    <div class="summary-value" id="summarySkus">0</div>
+                </div>
+
+                <div class="summary-item">
+                    <div class="summary-label">Total cartons</div>
+                    <div class="summary-value" id="summaryCartons">0</div>
+                </div>
+
+                <div class="summary-item">
+                    <div class="summary-label">Total units</div>
+                    <div class="summary-value" id="summaryUnits">0</div>
+                </div>
+
+                <div class="summary-item">
+                    <div class="summary-label">Total weight</div>
+                    <div class="summary-value" id="summaryWeight">0 kg</div>
+                </div>
+
+                <div class="summary-item">
+                    <div class="summary-label">Estimated FBA fee</div>
+                    <div class="summary-value" id="summaryFee">$0.00</div>
+                </div>
+
+                <div class="warning">
+                    Oversize cartons may incur additional placement or handling fees.
+                </div>
+
+                <div class="actions">
+
+                    <button class="amazon-btn">
+                        Review shipment
+                    </button>
+
+                    <button class="amazon-btn-secondary" onclick="exportJson()">
+                        Export JSON
+                    </button>
+
+                    <button class="amazon-btn-secondary" onclick="printLabels()">
+                        Print labels
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+let skus = [
+    {
+        id:1,
+        name:'Premium Noise Cancelling Headphones',
+        msku:'HP-1001',
+        fnsku:'X001ABC123',
+        available:1320,
+        unitsPerBox:30,
+        sendUnits:60
+    },
+    {
+        id:2,
+        name:'Wireless Power Bank',
+        msku:'PB-908',
+        fnsku:'X008ZZK992',
+        available:890,
+        unitsPerBox:50,
+        sendUnits:120
+    }
+];
+
+let cartons = [
+    {
+        id:1,
+        name:'Box A1',
+        length:50,
+        width:40,
+        height:30,
+        weight:14.5,
+        count:2,
+        expanded:true,
+        contents:[
+            { skuId:1, quantity:25 },
+            { skuId:2, quantity:10 }
+        ]
+    }
+];
+
+function renderSkus(){
+
+    const tbody = document.getElementById('skuTableBody');
+
+    tbody.innerHTML = '';
+
+    skus.forEach(sku=>{
+
+        tbody.innerHTML += `
+        <tr>
+
+            <td>
+                <div class="sku-title">${sku.name}</div>
+                <div class="sku-sub">ASIN: B0TEST${sku.id}</div>
+            </td>
+
+            <td>${sku.msku}</td>
+
+            <td>${sku.fnsku}</td>
+
+            <td>${sku.available}</td>
+
+            <td>
+                <input class="qty-input"
+                value="${sku.unitsPerBox}">
+            </td>
+
+            <td>
+                <input class="qty-input"
+                value="${sku.sendUnits}">
+            </td>
+
+            <td>
+                <button class="amazon-btn-secondary"
+                onclick="removeSku(${sku.id})">
+                    Remove
+                </button>
+            </td>
+
+        </tr>
+        `;
+
+    });
+
+    updateSummary();
+
+}
+
+function renderCartons(){
+
+    const container = document.getElementById('cartonsContainer');
+
+    container.innerHTML = '';
+
+    cartons.forEach(carton=>{
+
+        let totalUnits = carton.contents.reduce((a,b)=>a+b.quantity,0);
+
+        container.innerHTML += `
+        <div class="carton-card">
+
+            <div class="carton-header"
+            onclick="toggleCarton(${carton.id})">
+
+                <div class="carton-left">
+
+                    <div class="carton-name">
+                        ${carton.name}
+                    </div>
+
+                    <div class="carton-meta">
+                        ${carton.length} × ${carton.width} × ${carton.height} cm
+                        · ${carton.weight} kg
+                        · ${carton.count} cartons
+                        · ${totalUnits} units/carton
+                    </div>
+
+                </div>
+
+                <div class="expand-icon">
+                    ${carton.expanded ? '−' : '+'}
+                </div>
+
+            </div>
+
+            ${carton.expanded ? `
+            <div class="carton-body">
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label>Length (cm)</label>
+                        <input value="${carton.length}">
+                    </div>
+
+                    <div class="field">
+                        <label>Width (cm)</label>
+                        <input value="${carton.width}">
+                    </div>
+
+                    <div class="field">
+                        <label>Height (cm)</label>
+                        <input value="${carton.height}">
+                    </div>
+
+                    <div class="field">
+                        <label>Weight (kg)</label>
+                        <input value="${carton.weight}">
+                    </div>
+
+                </div>
+
+                <table class="contents-table">
+
+                    <thead>
+                    <tr>
+                        <th>SKU</th>
+                        <th>FNSKU</th>
+                        <th>Quantity</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+
+                    ${
+                        carton.contents.map(content=>{
+
+                            let sku = skus.find(s=>s.id===content.skuId);
+
+                            return `
+                            <tr>
+
+                                <td>${sku?.name || ''}</td>
+
+                                <td>${sku?.fnsku || ''}</td>
+
+                                <td>
+                                    <input class="qty-input"
+                                    value="${content.quantity}">
+                                </td>
+
+                                <td>
+                                    <button class="amazon-btn-secondary"
+                                    onclick="removeContent(${carton.id},${content.skuId})">
+                                        Remove
+                                    </button>
+                                </td>
+
+                            </tr>
+                            `;
+
+                        }).join('')
+                    }
+
+                    </tbody>
+
+                </table>
+
+                <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+
+                    <button class="amazon-btn-secondary"
+                    onclick="addSkuToCarton(${carton.id})">
+                        Add SKU to box
+                    </button>
+
+                    <button class="amazon-btn-secondary"
+                    onclick="duplicateCarton(${carton.id})">
+                        Duplicate box
+                    </button>
+
+                    <button class="amazon-btn-secondary"
+                    onclick="deleteCarton(${carton.id})">
+                        Delete box
+                    </button>
+
+                </div>
+
+            </div>
+            ` : ''}
+
+        </div>
+        `;
+
+    });
+
+    updateSummary();
+
+}
+
+function toggleCarton(id){
+
+    let carton = cartons.find(c=>c.id===id);
+
+    carton.expanded = !carton.expanded;
+
+    renderCartons();
+
+}
+
+function addSku(){
+
+    let name = prompt('Product name');
+
+    if(!name) return;
+
+    let id = Date.now();
+
+    skus.push({
+        id,
+        name,
+        msku:'SKU-'+id,
+        fnsku:'X00'+id,
+        available:500,
+        unitsPerBox:20,
+        sendUnits:40
+    });
+
+    renderSkus();
+
+}
+
+function removeSku(id){
+
+    skus = skus.filter(s=>s.id!==id);
+
+    cartons.forEach(c=>{
+        c.contents = c.contents.filter(x=>x.skuId!==id);
+    });
+
+    renderSkus();
+    renderCartons();
+
+}
+
+function createCarton(){
+
+    let id = Date.now();
+
+    cartons.push({
+        id,
+        name:'New Box',
+        length:50,
+        width:40,
+        height:30,
+        weight:12,
+        count:1,
+        expanded:true,
+        contents:[]
+    });
+
+    renderCartons();
+
+}
+
+function deleteCarton(id){
+
+    cartons = cartons.filter(c=>c.id!==id);
+
+    renderCartons();
+
+}
+
+function addSkuToCarton(cartonId){
+
+    if(skus.length===0){
+        alert('No SKUs');
+        return;
+    }
+
+    let skuNames = skus.map(s=>s.name).join('\n');
+
+    let selected = prompt(
+        'Select SKU:\n'+skuNames
+    );
+
+    let sku = skus.find(s=>s.name===selected);
+
+    if(!sku) return;
+
+    let qty = parseInt(prompt('Quantity',10));
+
+    if(isNaN(qty)) return;
+
+    let carton = cartons.find(c=>c.id===cartonId);
+
+    carton.contents.push({
+        skuId:sku.id,
+        quantity:qty
+    });
+
+    renderCartons();
+
+}
+
+function removeContent(cartonId,skuId){
+
+    let carton = cartons.find(c=>c.id===cartonId);
+
+    carton.contents = carton.contents.filter(
+        x=>x.skuId!==skuId
+    );
+
+    renderCartons();
+
+}
+
+function duplicateCarton(id){
+
+    let carton = cartons.find(c=>c.id===id);
+
+    let clone = JSON.parse(JSON.stringify(carton));
+
+    clone.id = Date.now();
+    clone.name += ' Copy';
+
+    cartons.push(clone);
+
+    renderCartons();
+
+}
+
+function updateSummary(){
+
+    document.getElementById('summarySkus').innerText = skus.length;
+
+    let totalCartons = cartons.reduce((a,b)=>a+b.count,0);
+
+    document.getElementById('summaryCartons').innerText = totalCartons;
+
+    let totalUnits = 0;
+
+    cartons.forEach(c=>{
+        c.contents.forEach(x=>{
+            totalUnits += x.quantity * c.count;
+        });
+    });
+
+    document.getElementById('summaryUnits').innerText = totalUnits;
+
+    let totalWeight = cartons.reduce((a,b)=>a+(b.weight*b.count),0);
+
+    document.getElementById('summaryWeight').innerText =
+        totalWeight.toFixed(2)+' kg';
+
+    let fee =
+        totalWeight * 0.65 +
+        totalUnits * 0.12;
+
+    document.getElementById('summaryFee').innerText =
+        '$'+fee.toFixed(2);
+
+}
+
+function exportJson(){
+
+    let data = {
+        skus,
+        cartons
+    };
+
+    let blob = new Blob(
+        [JSON.stringify(data,null,2)],
+        {type:'application/json'}
+    );
+
+    let a = document.createElement('a');
+
+    a.href = URL.createObjectURL(blob);
+
+    a.download = 'fba-shipment.json';
+
+    a.click();
+
+}
+
+function printLabels(){
+
+    let text = '';
+
+    cartons.forEach(carton=>{
+
+        for(let i=1;i<=carton.count;i++){
+
+            text += `
+=================================
+FBA BOX LABEL
+=================================
+
+${carton.name}
+
+${carton.length}x${carton.width}x${carton.height} cm
+${carton.weight} kg
+
+`;
+
+            carton.contents.forEach(c=>{
+
+                let sku = skus.find(s=>s.id===c.skuId);
+
+                text += `${sku?.name} x${c.quantity}\n`;
+
+            });
+
+            text += '\n';
+
+        }
+
+    });
+
+    let w = window.open();
+
+    w.document.write('<pre>'+text+'</pre>');
+
+}
+
+renderSkus();
+renderCartons();
+
+</script>
+
+</body>
+</html>

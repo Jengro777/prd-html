@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>店铺密钥管理中心 | WMS货主编码 · TMS无编码</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(145deg, #ecf3fa 0%, #dee6f0 100%);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 1.5rem;
+            color: #1a2634;
+        }
+        .hub-container { max-width: 1300px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 1.5rem; gap: 1rem; }
+        .logo-area h1 { font-size: 1.7rem; font-weight: 800; background: linear-gradient(135deg, #0a2e42, #1b5e7a); background-clip: text; -webkit-background-clip: text; color: transparent; }
+        .logo-area p { font-size: 0.75rem; color: #5b6e8c; }
+        .filter-bar { background: white; border-radius: 20px; padding: 1rem 1.5rem; margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; box-shadow: 0 2px 6px rgba(0,0,0,0.02), 0 0 0 1px #eef2f8; }
+        .filter-group { flex: 1; min-width: 200px; }
+        .filter-group label { font-size: 0.7rem; font-weight: 600; color: #5b6e8c; display: block; margin-bottom: 4px; }
+        .filter-group input { width: 100%; padding: 0.5rem 0.8rem; border-radius: 40px; border: 1px solid #dce5ef; font-family: inherit; font-size: 0.8rem; background: white; }
+        .btn-filter { background: #1e4f6e; border: none; padding: 0.5rem 1.2rem; border-radius: 40px; color: white; font-weight: 600; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-filter-outline { background: white; border: 1px solid #cbdde9; padding: 0.5rem 1.2rem; border-radius: 40px; font-weight: 600; font-size: 0.8rem; cursor: pointer; }
+        .table-wrapper { background: white; border-radius: 24px; overflow-x: auto; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05), 0 0 0 1px #eef2f8; }
+        .shop-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 700px; }
+        .shop-table th { background: #f8fafd; padding: 1rem 1rem; text-align: left; font-weight: 700; color: #2c5a7a; border-bottom: 1px solid #e2e8f0; }
+        .shop-table td { padding: 1rem 1rem; border-bottom: 1px solid #edf2f7; vertical-align: middle; }
+        .shop-table tr:hover { background: #fafcff; }
+        .shop-badge { background: #eef2fc; padding: 0.2rem 0.7rem; border-radius: 30px; font-size: 0.7rem; font-weight: 600; color: #1f6392; display: inline-block; margin-top: 4px; }
+        .bind-count { display: inline-flex; align-items: center; gap: 6px; background: #e6f7f0; padding: 0.3rem 0.9rem; border-radius: 40px; font-weight: 700; font-size: 0.85rem; color: #1e7b48; }
+        .remark-cell { max-width: 220px; word-break: break-word; line-height: 1.4; color: #4b6f8c; }
+        .btn-edit-bindings { background: #eef2fc; border: none; cursor: pointer; font-size: 0.75rem; padding: 0.4rem 1rem; border-radius: 30px; font-weight: 600; color: #1f6392; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .btn-edit-bindings:hover { background: #e0e9f5; transform: translateY(-1px); }
+        .empty-row td { text-align: center; padding: 2rem; color: #8ba0b8; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; z-index: 1100; visibility: hidden; opacity: 0; transition: 0.2s; }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+        .modal-card { background: white; width: 95%; max-width: 1450px; border-radius: 1.5rem; padding: 1.5rem; box-shadow: 0 25px 40px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; border-bottom: 1px solid #e2edf5; padding-bottom: 0.8rem; }
+        .modal-header h3 { font-weight: 700; color: #1a4d6b; }
+        .modal-header h3 i { margin-right: 8px; color: #2a6f97; }
+        .binding-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 0.5rem; }
+        .binding-table th { background: #f8fafd; padding: 0.75rem 0.8rem; text-align: left; font-weight: 700; color: #2c5a7a; border-bottom: 2px solid #e2e8f0; font-size: 0.75rem; }
+        .binding-table td { padding: 0.75rem 0.8rem; border-bottom: 1px solid #edf2f7; vertical-align: middle; }
+        .binding-table tr:hover { background: #fafcff; }
+        .platform-select { padding: 0.4rem 0.6rem; border-radius: 12px; border: 1px solid #cfdfed; font-size: 0.75rem; width: 140px; background: white; }
+        .ak-input, .sk-input, .shipper-code-input { padding: 0.4rem 0.6rem; border-radius: 12px; border: 1px solid #cfdfed; font-size: 0.75rem; font-family: monospace; }
+        .ak-input { width: 170px; }
+        .sk-input { width: 170px; }
+        .shipper-code-input { width: 130px; background: white; }
+        .shipper-hidden { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
+        .status-badge { display: inline-flex; align-items: center; gap: 4px; padding: 0.2rem 0.6rem; border-radius: 30px; font-size: 0.7rem; font-weight: 600; }
+        .status-badge.valid { background: #e0f2e9; color: #1e7b48; }
+        .status-badge.invalid { background: #fee9e3; color: #bd5a2c; }
+        .btn-icon-sm { background: none; border: none; cursor: pointer; font-size: 0.7rem; padding: 0.3rem 0.8rem; border-radius: 30px; font-weight: 500; transition: 0.1s; margin: 0 2px; }
+        .btn-save-sm { background: #dcfce7; color: #15803d; }
+        .btn-save-sm:hover { background: #bbf7d0; }
+        .btn-delete-sm { background: #fee9e3; color: #b91c1c; }
+        .btn-delete-sm:hover { background: #fee0d6; }
+        .btn-add-binding { background: white; border: 1px dashed #8bb4d0; border-radius: 40px; padding: 0.5rem 1.2rem; margin: 1rem 0 0.5rem; cursor: pointer; font-size: 0.75rem; font-weight: 600; color: #2c6e9e; display: inline-flex; align-items: center; gap: 6px; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #eef2f8; }
+        .global-toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: #1e2a36e6; backdrop-filter: blur(8px); color: white; padding: 0.7rem 1.5rem; border-radius: 48px; font-size: 0.85rem; opacity: 0; transition: 0.2s; pointer-events: none; z-index: 1200; white-space: nowrap; max-width: 90vw; text-align: center; }
+        .global-toast.show { opacity: 1; }
+        .info-note { font-size: 0.7rem; color: #6c86a0; margin-top: 0.8rem; text-align: center; }
+        footer { text-align: center; margin-top: 2rem; font-size: 0.7rem; color: #6c86a0; }
+        .tenant-info-cell { font-size: 0.7rem; color: #2c6e9e; max-width: 160px; word-break: break-word; background: #f8fafc; border-radius: 12px; padding: 0.2rem 0.4rem; }
+        .opt-tag { font-size: 0.65rem; background: #e2e8f0; border-radius: 30px; padding: 0.1rem 0.4rem; margin-left: 4px; }
+    </style>
+</head>
+<body>
+<div class="hub-container">
+    <div class="header">
+        <div class="logo-area">
+            <h1><i class="fas fa-store"></i> 店铺密钥管理中心</h1>
+            <p>店铺维度 · 独立保存校验 | WMS平台支持货主编码 · TMS无货主编码</p>
+        </div>
+    </div>
+
+    <div class="filter-bar">
+        <div class="filter-group">
+            <label><i class="fas fa-search"></i> 店铺名称 / 代码</label>
+            <input type="text" id="filterKeyword" placeholder="输入店铺名或代码">
+        </div>
+        <button class="btn-filter" id="applyFilterBtn"><i class="fas fa-sliders-h"></i> 筛选</button>
+        <button class="btn-filter-outline" id="resetFilterBtn"><i class="fas fa-undo"></i> 重置</button>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="shop-table">
+            <thead><tr><th>店铺信息</th><th>绑定平台数量</th><th>店铺备注</th><th>操作</th></tr></thead>
+            <tbody id="shopTableBody"><tr class="empty-row"><td colspan="4">加载店铺数据中...</td></tr></tbody>
+        </table>
+    </div>
+    <div class="info-note">
+        <i class="fas fa-info-circle"></i> 仅 <strong>WMS平台</strong> 可填写货主编码；TMS平台不提供货主编码字段。每行独立保存校验。
+    </div>
+    <footer>🔐 校验规则：WMS AK需WAK_开头或含wms标识且SK≥8位；TMS AK需TAK_开头或含tms标识且SK≥8位；货主编码仅用于业务标记。</footer>
+</div>
+
+<!-- 编辑绑定弹窗：货主编码列仅对WMS显示/可编辑，TMS显示禁用的占位符 -->
+<div id="bindingsModal" class="modal-overlay">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3><i class="fas fa-key"></i> 编辑平台绑定 — <span id="modalShopName"></span></h3>
+            <button id="closeModalBtn" style="background:none; border:none; font-size:1.4rem; cursor:pointer;">&times;</button>
+        </div>
+        <div style="overflow-x: auto;">
+            <table class="binding-table" id="bindingTable">
+                <thead>
+                    <tr>
+                        <th>平台名称</th>
+                        <th>货主编码 <span style="font-weight:normal;">(仅WMS)</span></th>
+                        <th>Access Key (AK)</th>
+                        <th>Secret Key (SK)</th>
+                        <th>关联租户/信息</th>
+                        <th>校验状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="bindingTableBody"></tbody>
+            </table>
+        </div>
+        <div><button class="btn-add-binding" id="addBindingRowBtn"><i class="fas fa-plus"></i> 添加平台绑定</button></div>
+        <div class="modal-actions"><button id="cancelBindingsBtn" class="btn-filter-outline">关闭</button></div>
+    </div>
+</div>
+<div id="globalToast" class="global-toast"></div>
+
+<script>
+    const platformsList = [
+        { id: 'delzoa-wms', name: 'Delzoa WMS', category: 'wms' },
+        { id: 'smart-wms-pro', name: '智仓 WMS Pro', category: 'wms' },
+        { id: 'delzoa-tms', name: 'Delzoa TMS', category: 'tms' },
+        { id: 'logix-tms', name: 'LogiX TMS', category: 'tms' }
+    ];
+
+    function validateAkSkPair(category, ak, sk) {
+        if (!ak || !sk || ak.trim() === '' || sk.trim() === '') return false;
+        const akTrim = ak.trim();
+        const skTrim = sk.trim();
+        if (category === 'wms') {
+            const akValid = akTrim.startsWith('WAK_') || akTrim.toLowerCase().includes('wms') || akTrim.length >= 8;
+            const skValid = skTrim.length >= 8 && (skTrim.includes('sec') || skTrim.includes('key') || skTrim.length >= 10);
+            const demoPairs = [['WAK_shipper9f', 'SK_8f7a3b2c1d'], ['WMS_AK_wh10086', 'SK_wh_secure2024'], ['wms_tenant_master', 'sk_tenant_abc123']];
+            const isDemo = demoPairs.some(([dak, dsk]) => dak === akTrim && dsk === skTrim);
+            return (akValid && skValid) || isDemo;
+        } else {
+            const akValid = akTrim.startsWith('TAK_') || akTrim.toLowerCase().includes('tms') || akTrim.length >= 8;
+            const skValid = skTrim.length >= 8 && (skTrim.includes('secret') || skTrim.includes('token') || skTrim.length >= 10);
+            const demoPairs = [['TAK_carrier001', 'SK_carrier_secret'], ['tms_ak_fleet889', 'sk_fleet_2025'], ['TAK_sf_express', 'SK_sf_secure_key']];
+            const isDemo = demoPairs.some(([dak, dsk]) => dak === akTrim && dsk === skTrim);
+            return (akValid && skValid) || isDemo;
+        }
+    }
+
+    async function remoteValidate(category, ak, sk) {
+        return new Promise(resolve => setTimeout(() => resolve(validateAkSkPair(category, ak, sk)), 200));
+    }
+
+    // 生成租户信息：TMS忽略货主编码，WMS展示货主编码(若有)
+    function generateTenantInfo(platformName, category, ak, shipperCode = '') {
+        const akLower = (ak || '').toLowerCase();
+        let baseTenant = '';
+        if (akLower.includes('shipper') || akLower.includes('wak_shipper')) baseTenant = '杭州云裳科技有限公司';
+        else if (akLower.includes('wh_10086') || akLower.includes('wms_ak_wh')) baseTenant = '华南中心仓';
+        else if (akLower.includes('tenant_master') || akLower.includes('abc123')) baseTenant = '义乌优选贸易商行';
+        else if (akLower.includes('shanghai_wh')) baseTenant = '上海嘉定仓';
+        else if (akLower.includes('carrier001')) baseTenant = '顺丰速运（杭州）';
+        else if (akLower.includes('fleet889')) baseTenant = '极兔车队华东区';
+        else if (akLower.includes('sf_express')) baseTenant = '京东物流华东分部';
+        else baseTenant = `${platformName} 租户`;
+        
+        if (category === 'wms' && shipperCode && shipperCode.trim() !== '') {
+            return `${baseTenant} (货主:${shipperCode.trim()})`;
+        }
+        return baseTenant;
+    }
+
+    let shops = [];
+    let currentFilter = { keyword: '' };
+    let currentEditingShop = null;
+    function generateId() { return Date.now() + '_' + Math.random().toString(36).substring(2, 10); }
+
+    function initData() {
+        shops = [
+            { 
+                id: generateId(), shopName: '杭州云裳科技有限公司', shopCode: 'shop_hz_ys', remark: '主仓对接，日单量约5000',
+                bindings: [
+                    { id: generateId(), platformId: 'delzoa-wms', platformName: 'Delzoa WMS', category: 'wms', ak: 'WAK_shipper9f', sk: 'SK_8f7a3b2c1d', shipperCode: 'HZYS001', status: true, tenantInfo: '杭州云裳科技有限公司 (货主:HZYS001)', isPersisted: true },
+                    { id: generateId(), platformId: 'delzoa-tms', platformName: 'Delzoa TMS', category: 'tms', ak: 'TAK_carrier001', sk: 'SK_carrier_secret', shipperCode: '', status: true, tenantInfo: '顺丰速运（杭州）', isPersisted: true }
+                ]
+            },
+            { 
+                id: generateId(), shopName: '义乌优选贸易商行', shopCode: 'yiwu_premium', remark: '测试租户，待正式启用',
+                bindings: [
+                    { id: generateId(), platformId: 'delzoa-wms', platformName: 'Delzoa WMS', category: 'wms', ak: 'wms_tenant_abc123', sk: 'sk_tenant_abc123', shipperCode: 'YW888', status: true, tenantInfo: '义乌优选贸易商行 (货主:YW888)', isPersisted: true }
+                ]
+            },
+            { 
+                id: generateId(), shopName: '华南中心仓', shopCode: 'SC_WH_01', remark: '华南区总仓',
+                bindings: [
+                    { id: generateId(), platformId: 'delzoa-wms', platformName: 'Delzoa WMS', category: 'wms', ak: 'wms_wh_10086', sk: 'SK_wh_secure2024', shipperCode: 'HNWH01', status: true, tenantInfo: '华南中心仓 (货主:HNWH01)', isPersisted: true }
+                ]
+            },
+            { 
+                id: generateId(), shopName: '上海嘉定仓', shopCode: 'shanghai_wh', remark: '嘉定保税区',
+                bindings: [
+                    { id: generateId(), platformId: 'smart-wms-pro', platformName: '智仓 WMS Pro', category: 'wms', ak: 'wms_shanghai_wh', sk: 'SK_shanghai2025', shipperCode: 'SHJD022', status: true, tenantInfo: '上海嘉定仓 (货主:SHJD022)', isPersisted: true }
+                ]
+            },
+            { id: generateId(), shopName: '华东测试仓', shopCode: 'test_demo', remark: '未配置密钥示例', bindings: [] }
+        ];
+    }
+
+    function getFilteredShops() {
+        let filtered = [...shops];
+        const kw = currentFilter.keyword.trim().toLowerCase();
+        if (kw) filtered = filtered.filter(s => s.shopName.toLowerCase().includes(kw) || (s.shopCode && s.shopCode.toLowerCase().includes(kw)));
+        return filtered;
+    }
+
+    function renderShopList() {
+        const filtered = getFilteredShops();
+        const tbody = document.getElementById('shopTableBody');
+        if (filtered.length === 0) { tbody.innerHTML = '<tr class="empty-row"><td colspan="4">暂无店铺数据</td></tr>'; return; }
+        let html = '';
+        filtered.forEach(shop => {
+            const bindCount = shop.bindings.length;
+            const validCount = shop.bindings.filter(b => b.status === true).length;
+            html += `<tr data-shop-id="${shop.id}">
+                        <td><strong>${escapeHtml(shop.shopName)}</strong><br><span class="shop-badge">${escapeHtml(shop.shopCode || '-')}</span></td>
+                        <td><span class="bind-count"><i class="fas fa-link"></i> ${bindCount} 个绑定</span>${validCount < bindCount ? `<span style="margin-left:8px; font-size:0.65rem; color:#bd5a2c;">(${validCount}有效)</span>` : ''}</td>
+                        <td class="remark-cell">${escapeHtml(shop.remark || '-')}</td>
+                        <td><button class="btn-edit-bindings" data-shop-id="${shop.id}"><i class="fas fa-edit"></i> 编辑绑定</button></td>
+                    </tr>`;
+        });
+        tbody.innerHTML = html;
+        document.querySelectorAll('.btn-edit-bindings').forEach(btn => btn.addEventListener('click', (e) => openBindingsModal(btn.dataset.shopId)));
+    }
+
+    function openBindingsModal(shopId) {
+        const shop = shops.find(s => s.id === shopId);
+        if (!shop) return;
+        currentEditingShop = shop;
+        document.getElementById('modalShopName').innerText = shop.shopName;
+        renderBindingTable(shop.bindings);
+        document.getElementById('bindingsModal').classList.add('active');
+    }
+
+    // 核心渲染: TMS行货主编码显示为禁用横线，WMS显示可编辑输入框
+    function renderBindingTable(bindings) {
+        const tbody = document.getElementById('bindingTableBody');
+        if (!tbody) return;
+        if (bindings.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem;">暂无绑定，点击下方添加平台</td></tr>';
+            return;
+        }
+        let html = '';
+        bindings.forEach((binding, idx) => {
+            const platform = platformsList.find(p => p.id === binding.platformId);
+            const platformNameDisplay = platform ? platform.name : binding.platformName;
+            const statusClass = binding.status ? 'valid' : 'invalid';
+            const statusText = binding.status ? '有效' : '无效';
+            const tenantShow = binding.tenantInfo || (binding.status ? '已关联' : '未保存/无效');
+            const currentAk = binding.ak || '';
+            const currentSk = binding.sk || '';
+            const currentShipper = binding.shipperCode || '';
+            const isWms = binding.category === 'wms';
+            
+            // 货主编码单元格内容：WMS显示可编辑输入框，TMS显示只读不可填写的占位符
+            const shipperCell = isWms 
+                ? `<input type="text" class="shipper-code-input" data-binding-idx="${idx}" data-field="shipperCode" value="${escapeHtml(currentShipper)}" placeholder="货主编码(可选)">`
+                : `<input type="text" class="shipper-code-input shipper-hidden" data-binding-idx="${idx}" data-field="shipperCode" value="— TMS无需编码 —" disabled style="background:#f1f5f9; color:#94a3b8; cursor:default;" title="TMS平台无需货主编码">`;
+            
+            html += `<tr data-binding-idx="${idx}" data-binding-id="${binding.id}">
+                        <td>
+                            <select class="platform-select" data-binding-idx="${idx}" data-field="platformId">
+                                ${platformsList.map(p => `<option value="${p.id}" data-cat="${p.category}" ${p.id === binding.platformId ? 'selected' : ''}>${p.name} (${p.category.toUpperCase()})</option>`).join('')}
+                            </select>
+                        </td>
+                        <td>${shipperCell}</td>
+                        <td><input type="text" class="ak-input" data-binding-idx="${idx}" data-field="ak" value="${escapeHtml(currentAk)}" placeholder="Access Key"></td>
+                        <td><input type="password" class="sk-input" data-binding-idx="${idx}" data-field="sk" value="${escapeHtml(currentSk)}" placeholder="Secret Key"></td>
+                        <td class="tenant-info-cell" data-tenant-idx="${idx}">${escapeHtml(tenantShow)}</td>
+                        <td><span class="status-badge ${statusClass}" data-status-idx="${idx}">${statusText}</span></td>
+                        <td>
+                            <button class="btn-icon-sm btn-save-sm" data-action="save" data-idx="${idx}"><i class="fas fa-save"></i> 保存并校验</button>
+                            <button class="btn-icon-sm btn-delete-sm" data-action="delete" data-idx="${idx}"><i class="fas fa-trash"></i> 删除</button>
+                        </td>
+                    </tr>`;
+        });
+        tbody.innerHTML = html;
+        attachBindingTableEvents();
+    }
+
+    function attachBindingTableEvents() {
+        document.querySelectorAll('.platform-select').forEach(select => {
+            select.removeEventListener('change', handlePlatformChange);
+            select.addEventListener('change', handlePlatformChange);
+        });
+        document.querySelectorAll('[data-action="save"]').forEach(btn => {
+            btn.removeEventListener('click', handleSaveBinding);
+            btn.addEventListener('click', handleSaveBinding);
+        });
+        document.querySelectorAll('[data-action="delete"]').forEach(btn => {
+            btn.removeEventListener('click', handleDeleteBinding);
+            btn.addEventListener('click', handleDeleteBinding);
+        });
+    }
+
+    function handlePlatformChange(e) {
+        const idx = parseInt(e.target.dataset.bindingIdx);
+        if (isNaN(idx) || !currentEditingShop || !currentEditingShop.bindings[idx]) return;
+        const newPlatformId = e.target.value;
+        const platform = platformsList.find(p => p.id === newPlatformId);
+        if (platform) {
+            const oldCategory = currentEditingShop.bindings[idx].category;
+            currentEditingShop.bindings[idx].platformId = platform.id;
+            currentEditingShop.bindings[idx].platformName = platform.name;
+            currentEditingShop.bindings[idx].category = platform.category;
+            // 如果从WMS切换到TMS，清空货主编码；如果从TMS切换到WMS，保留原有货主编码或设置为空
+            if (oldCategory === 'wms' && platform.category === 'tms') {
+                currentEditingShop.bindings[idx].shipperCode = '';
+            }
+            // 先保存当前输入框内容到model
+            const currentRow = document.querySelector(`tr[data-binding-idx="${idx}"]`);
+            if (currentRow) {
+                const akInput = currentRow.querySelector('.ak-input');
+                const skInput = currentRow.querySelector('.sk-input');
+                const shipperInput = currentRow.querySelector('.shipper-code-input');
+                if (akInput) currentEditingShop.bindings[idx].ak = akInput.value;
+                if (skInput) currentEditingShop.bindings[idx].sk = skInput.value;
+                if (shipperInput && currentEditingShop.bindings[idx].category === 'wms') {
+                    currentEditingShop.bindings[idx].shipperCode = shipperInput.value;
+                }
+            }
+            showToast(`已切换至 ${platform.name}，请重新保存校验`, false);
+            renderBindingTable(currentEditingShop.bindings);
+        }
+    }
+
+    async function handleSaveBinding(e) {
+        const idx = parseInt(e.target.dataset.idx);
+        if (isNaN(idx) || !currentEditingShop || !currentEditingShop.bindings[idx]) return;
+        const binding = currentEditingShop.bindings[idx];
+        const row = document.querySelector(`tr[data-binding-idx="${idx}"]`);
+        if (row) {
+            const akInput = row.querySelector('.ak-input');
+            const skInput = row.querySelector('.sk-input');
+            const platformSelect = row.querySelector('.platform-select');
+            if (akInput) binding.ak = akInput.value;
+            if (skInput) binding.sk = skInput.value;
+            if (platformSelect) {
+                const newPlatformId = platformSelect.value;
+                const platform = platformsList.find(p => p.id === newPlatformId);
+                if (platform) {
+                    binding.platformId = platform.id;
+                    binding.platformName = platform.name;
+                    binding.category = platform.category;
+                }
+            }
+            // 只有WMS平台才从输入框提取货主编码，TMS忽略不清除已有但强制置空
+            if (binding.category === 'wms') {
+                const shipperInput = row.querySelector('.shipper-code-input');
+                if (shipperInput && !shipperInput.disabled) {
+                    binding.shipperCode = shipperInput.value;
+                }
+            } else {
+                binding.shipperCode = '';  // TMS 强制无货主编码
+            }
+        }
+
+        if (!binding.ak || !binding.sk) {
+            showToast('❌ AK和SK不能为空', true);
+            return;
+        }
+        const isValid = await remoteValidate(binding.category, binding.ak, binding.sk);
+        binding.status = isValid;
+        if (isValid) {
+            const tenant = generateTenantInfo(binding.platformName, binding.category, binding.ak, binding.shipperCode);
+            binding.tenantInfo = tenant;
+            binding.isPersisted = true;
+            showToast(`✅ 保存成功！${binding.platformName} 密钥有效${binding.category === 'wms' && binding.shipperCode ? `，货主:${binding.shipperCode}` : ''}`, false);
+        } else {
+            binding.tenantInfo = `校验失败 (${binding.category.toUpperCase()}规则不符)`;
+            binding.isPersisted = false;
+            showToast(`❌ 保存失败，AK/SK 不符合${binding.category.toUpperCase()}平台规则`, true);
+        }
+        renderBindingTable(currentEditingShop.bindings);
+    }
+
+    function handleDeleteBinding(e) {
+        const idx = parseInt(e.target.dataset.idx);
+        if (!isNaN(idx) && currentEditingShop && currentEditingShop.bindings[idx]) {
+            if (confirm('确定删除此绑定吗？')) {
+                currentEditingShop.bindings.splice(idx, 1);
+                renderBindingTable(currentEditingShop.bindings);
+                showToast('已删除绑定', false);
+            }
+        }
+    }
+
+    function addNewBindingRow() {
+        if (!currentEditingShop) return;
+        const defaultPlatform = platformsList[0]; // 默认WMS
+        const newBinding = {
+            id: generateId(),
+            platformId: defaultPlatform.id,
+            platformName: defaultPlatform.name,
+            category: defaultPlatform.category,
+            ak: '',
+            sk: '',
+            shipperCode: '',
+            status: false,
+            tenantInfo: '',
+            isPersisted: false
+        };
+        currentEditingShop.bindings.push(newBinding);
+        renderBindingTable(currentEditingShop.bindings);
+        const container = document.querySelector('.modal-card');
+        if (container) container.scrollTop = container.scrollHeight;
+    }
+
+    function closeModal() {
+        renderShopList();
+        document.getElementById('bindingsModal').classList.remove('active');
+        currentEditingShop = null;
+    }
+
+    function applyFilter() { currentFilter.keyword = document.getElementById('filterKeyword').value; renderShopList(); }
+    function resetFilter() { document.getElementById('filterKeyword').value = ''; currentFilter = { keyword: '' }; renderShopList(); }
+    function showToast(msg, isError = false) {
+        const toast = document.getElementById('globalToast');
+        toast.style.backgroundColor = isError ? '#c2410ce6' : '#1e7b48e6';
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+    function escapeHtml(str) { if (!str) return ''; return String(str).replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' })[m]); }
+
+    document.getElementById('applyFilterBtn').addEventListener('click', applyFilter);
+    document.getElementById('resetFilterBtn').addEventListener('click', resetFilter);
+    document.getElementById('addBindingRowBtn').addEventListener('click', addNewBindingRow);
+    document.getElementById('cancelBindingsBtn').addEventListener('click', closeModal);
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    document.getElementById('bindingsModal').addEventListener('click', (e) => { if (e.target === document.getElementById('bindingsModal')) closeModal(); });
+
+    initData();
+    renderShopList();
+</script>
+</body>
+</html>

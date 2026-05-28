@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>运营后台 · 商家资金管理（资金流水版）</title>
+    <!-- Font Awesome 5 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+
+        .nav-header {
+            display: flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: white;
+            border-bottom: 1px solid #e9edf4;
+        }
+
+        .logo-area {
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 240px;
+        }
+
+        .logo-area i {
+            color: #3b82f6;
+            font-size: 1.8rem;
+        }
+
+        .top-nav {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .breadcrumb .separator {
+            color: #cbd5e1;
+        }
+
+        .breadcrumb .active {
+            color: #0f172a;
+            font-weight: 500;
+        }
+
+        .user-badge span {
+            background-color: #f1f5f9;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            color: #334155;
+        }
+
+        .main-layout {
+            display: flex;
+            min-height: 700px;
+        }
+
+        .sidebar {
+            width: 240px;
+            background-color: #f8fafc;
+            border-right: 1px solid #e9edf4;
+            padding: 1.5rem 0;
+        }
+
+        .menu-item {
+            padding: 0.8rem 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: #475569;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item i {
+            width: 22px;
+            color: #64748b;
+        }
+
+        .menu-item.active {
+            background-color: #eef2ff;
+            border-left-color: #3b82f6;
+            color: #1e4bd2;
+        }
+
+        .menu-item.active i {
+            color: #3b82f6;
+        }
+
+        .submenu {
+            padding-left: 2.8rem;
+            font-size: 0.9rem;
+            color: #3b82f6;
+            background-color: #eef2ff;
+            border-left: 3px solid #3b82f6;
+            font-weight: 500;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 1.8rem 2rem;
+            background-color: white;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .merchant-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: #f1f5f9;
+            padding: 0.2rem 0.2rem 0.2rem 1.2rem;
+            border-radius: 40px;
+        }
+
+        .merchant-selector i {
+            color: #64748b;
+        }
+
+        .merchant-selector input {
+            border: none;
+            background: transparent;
+            padding: 0.6rem 0;
+            width: 220px;
+            outline: none;
+            font-size: 0.95rem;
+        }
+
+        .merchant-selector button {
+            background: white;
+            border: none;
+            border-radius: 30px;
+            padding: 0.5rem 1.2rem;
+            font-weight: 500;
+            color: #334155;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            cursor: default;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border: 1px solid #edf2f7;
+            transition: 0.2s;
+            position: relative;
+        }
+
+        .stat-card:hover {
+            border-color: #cbd5e1;
+        }
+
+        .card-label {
+            color: #64748b;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            border-bottom: 1px dashed #d1d9e6;
+            padding-bottom: 0.4rem;
+        }
+
+        .card-label i {
+            color: #94a3b8;
+            font-size: 0.8rem;
+        }
+
+        .card-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.2rem;
+        }
+
+        .card-sub {
+            font-size: 0.8rem;
+            color: #475569;
+        }
+
+        /* 时间筛选行 */
+        .time-filter-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1.5rem 0 1.5rem;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .time-dimension {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: white;
+            padding: 0.3rem;
+            border-radius: 40px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .dim-btn {
+            padding: 0.4rem 1rem;
+            border-radius: 30px;
+            border: none;
+            background: transparent;
+            font-size: 0.9rem;
+            color: #475569;
+            cursor: default;
+        }
+
+        .dim-btn.active {
+            background: #1e293b;
+            color: white;
+        }
+
+        .dim-icon {
+            color: #94a3b8;
+            margin-left: 0.2rem;
+        }
+
+        .export-small {
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 30px;
+            padding: 0.4rem 1.2rem;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: default;
+        }
+
+        /* 表格区域 */
+        .table-container {
+            border: 1px solid #eef2f6;
+            border-radius: 18px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            margin-bottom: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem 1.2rem;
+            background-color: #f9fbfd;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #475569;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        td {
+            padding: 1rem 1.2rem;
+            border-bottom: 1px solid #edf2f9;
+            color: #1e293b;
+            font-size: 0.95rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .btn-link {
+            color: #2563eb;
+            background: none;
+            border: none;
+            font-weight: 500;
+            cursor: default;
+            font-size: 0.9rem;
+        }
+
+        .btn-link i {
+            font-size: 0.8rem;
+        }
+
+        .export-pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1.2rem 0 2rem;
+        }
+
+        .export-btn {
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 30px;
+            padding: 0.6rem 1.5rem;
+            font-weight: 500;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: default;
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #334155;
+        }
+
+        .page-num {
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+            background: #f1f5f9;
+        }
+
+        [data-tip] {
+            position: relative;
+            cursor: help;
+        }
+        [data-tip]:hover::after {
+            content: attr(data-tip);
+            position: absolute;
+            background: #1e293b;
+            color: white;
+            font-size: 0.75rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            white-space: nowrap;
+            bottom: 130%;
+            left: 0;
+            z-index: 10;
+        }
+
+        .text-muted {
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+
+        .role-hint {
+            background: #f1f4f9;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+<div class="admin-container">
+    <!-- 头部导航 -->
+    <div class="nav-header">
+        <div class="logo-area">
+            <i class="fas fa-store-alt"></i> <span>商城运营</span>
+        </div>
+        <div class="top-nav">
+            <div class="breadcrumb">
+                <span>主页</span> <span class="separator">/</span> <span>收益统计</span> <span class="separator">/</span> <span class="active">商家资金管理</span>
+            </div>
+            <div class="user-badge">
+                <span><i class="fas fa-user-circle"></i> 财务专员 王</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主体: 左侧菜单 + 右侧内容 -->
+    <div class="main-layout">
+        <!-- 左侧导航 (示意) -->
+        <div class="sidebar">
+            <div class="menu-item"><i class="fas fa-chart-pie"></i> 仪表盘</div>
+            <div class="menu-item"><i class="fas fa-shopping-bag"></i> 订单管理</div>
+            <div class="menu-item active"><i class="fas fa-chart-line"></i> 收益统计</div>
+            <div class="submenu"><i class="fas fa-circle" style="font-size: 0.4rem;"></i> 总览</div>
+            <div class="submenu" style="color:#1e293b; background: #e6f0ff;"><i class="fas fa-circle" style="font-size: 0.4rem;"></i> 商家资金管理</div>
+            <div class="menu-item"><i class="fas fa-users"></i> 商家管理</div>
+            <div class="menu-item"><i class="fas fa-file-invoice"></i> 结算中心</div>
+        </div>
+
+        <!-- 右侧核心内容 (已移除提现申请记录板块) -->
+        <div class="content-area">
+            <!-- 商家筛选行 -->
+            <div class="page-header">
+                <h2><i class="fas fa-hand-holding-usd" style="color: #3b82f6;"></i> 商家资金管理</h2>
+                <div class="merchant-selector">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="搜索商家名称或ID" value="悦味食品旗舰店">
+                    <button><i class="fas fa-store"></i> 商家ID: 10248 <i class="fas fa-chevron-down"></i></button>
+                </div>
+            </div>
+
+            <!-- 三个核心卡片 (可提现 / 提现中 / 已提现) 带口径说明 -->
+            <div class="cards-grid">
+                <div class="stat-card" data-tip="卖家已结算收益 - 已申请提现金额（含审核中）">
+                    <div class="card-label"><i class="fas fa-wallet"></i> 可提现金额</div>
+                    <div class="card-value">¥ 123,456.78</div>
+                    <div class="card-sub">截至今日 10:00 实时</div>
+                </div>
+                <div class="stat-card" data-tip="审核中 + 打款中的提现单总额">
+                    <div class="card-label"><i class="fas fa-clock"></i> 提现中金额</div>
+                    <div class="card-value">¥ 5,000.00</div>
+                    <div class="card-sub">2 笔提现处理中</div>
+                </div>
+                <div class="stat-card" data-tip="历史累计成功提现总额">
+                    <div class="card-label"><i class="fas fa-history"></i> 已提现金额</div>
+                    <div class="card-value">¥ 1,000,000.00</div>
+                    <div class="card-sub">累计提现 24 次</div>
+                </div>
+            </div>
+
+            <!-- 仅保留资金流水明细区域，不再有tab和提现记录模块 -->
+            <!-- 时间维度筛选器 (独立一行) -->
+            <div class="time-filter-row">
+                <div class="time-dimension">
+                    <span class="dim-btn">年</span>
+                    <span class="dim-btn">季</span>
+                    <span class="dim-btn active">月 <i class="fas fa-caret-down dim-icon"></i></span>
+                    <span class="dim-btn">周</span>
+                    <span class="dim-btn">日</span>
+                </div>
+                <div class="role-hint">
+                    <i class="fas fa-eye"></i> 资金流水明细 · 按自然月统计
+                </div>
+            </div>
+
+            <!-- 资金流水明细表格 (原资金流水明细，无任何提现记录tab) -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>时间 (日/月)</th>
+                            <th>卖家收益 (期间收入)</th>
+                            <th>期间提现</th>
+                            <th>期末可提现余额</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2024-01-01</td>
+                            <td>¥ 98,765.00</td>
+                            <td>¥ 0.00</td>
+                            <td>¥ 123,456.78</td>
+                            <td><button class="btn-link"><i class="far fa-eye"></i> 详情</button></td>
+                        </tr>
+                        <tr>
+                            <td>2024-01-02</td>
+                            <td>¥ 12,345.00</td>
+                            <td>¥ 5,000.00</td>
+                            <td>¥ 130,801.78</td>
+                            <td><button class="btn-link"><i class="far fa-eye"></i> 详情</button></td>
+                        </tr>
+                        <tr>
+                            <td>2024-01-03</td>
+                            <td>¥ 23,456.00</td>
+                            <td>¥ 0.00</td>
+                            <td>¥ 154,257.78</td>
+                            <td><button class="btn-link"><i class="far fa-eye"></i> 详情</button></td>
+                        </tr>
+                        <tr>
+                            <td>2024-01-04</td>
+                            <td>¥ 15,200.00</td>
+                            <td>¥ 12,000.00</td>
+                            <td>¥ 157,457.78</td>
+                            <td><button class="btn-link"><i class="far fa-eye"></i> 详情</button></td>
+                        </tr>
+                        <tr>
+                            <td>2024-01-05</td>
+                            <td>¥ 22,330.00</td>
+                            <td>¥ 0.00</td>
+                            <td>¥ 179,787.78</td>
+                            <td><button class="btn-link"><i class="far fa-eye"></i> 详情</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 导出 + 分页 (财务专用) -->
+            <div class="export-pagination">
+                <div>
+                    <button class="export-btn"><i class="fas fa-download"></i> 导出资金流水 (Excel/CSV)</button>
+                    <span class="text-muted" style="margin-left: 1rem;"><i class="fas fa-lock"></i> 仅财务/超管可导出</span>
+                </div>
+                <div class="pagination">
+                    <i class="fas fa-chevron-left"></i>
+                    <span class="page-num">1</span>
+                    <span>/ 8</span>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+
+            <!-- 补充说明: 口径与权限提示 (干净无提现记录) -->
+            <div style="margin-top: 2rem; border-top: 1px dashed #d9e2ef; padding-top: 1.2rem; display: flex; gap: 2rem; font-size: 0.8rem; color: #475569; flex-wrap: wrap;">
+                <span><i class="fas fa-circle" style="color:#10b981;"></i> 可提现余额 = 结算收益 - 所有未完成提现金额</span>
+                <span><i class="fas fa-circle" style="color:#f59e0b;"></i> 鼠标悬停卡片可查看详细口径</span>
+                <span><i class="fas fa-circle" style="color:#3b82f6;"></i> 当前商家: 悦味食品旗舰店 (ID:10248)</span>
+                <span><i class="fas fa-shield-alt"></i> 提现申请记录板块已按需隐藏</span>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

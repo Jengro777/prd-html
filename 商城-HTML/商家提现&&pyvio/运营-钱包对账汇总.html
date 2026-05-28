@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>亚马逊卖家钱包 · 多店铺综合对账单 | 店铺+时间+类型筛选 | 导出CSV</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #eef2f9;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            padding: 2rem 1rem;
+            color: #0f172a;
+        }
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+        .main-card {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            border: 1px solid #e4e9f0;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #0a2540 0%, #1f3b4c 100%);
+            color: white;
+            padding: 1.3rem 2rem;
+        }
+        .card-header h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-bottom: 0.3rem;
+        }
+        .header-badge {
+            background: #ffb347;
+            color: #1e2a3a;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+        }
+        .card-header p {
+            font-size: 0.75rem;
+            opacity: 0.85;
+        }
+        .balance-summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            background: #f9fbfe;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #e9edf2;
+            justify-content: space-between;
+        }
+        .balance-item {
+            background: white;
+            border-radius: 20px;
+            padding: 0.7rem 1.2rem;
+            min-width: 150px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            border: 1px solid #eef2f8;
+        }
+        .balance-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #5e6f8d;
+            letter-spacing: 0.5px;
+        }
+        .balance-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f3b4c;
+        }
+        .balance-number.positive {
+            color: #15803d;
+        }
+        .balance-number.warning {
+            color: #b45309;
+        }
+        .verify-badge {
+            background: #e6f7e6;
+            color: #2b6e2f;
+            border-radius: 40px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .filter-section {
+            background: white;
+            border-bottom: 1px solid #edf2f7;
+            padding: 1rem 2rem 0.8rem 2rem;
+        }
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        .shop-controls, .date-controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.8rem;
+            background: #f8fafc;
+            padding: 0.3rem 1rem;
+            border-radius: 48px;
+        }
+        .filter-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #1e3a5f;
+            background: #eef2ff;
+            padding: 0.2rem 0.7rem;
+            border-radius: 30px;
+        }
+        .date-input, .shop-select {
+            border: 1px solid #cbd5e1;
+            border-radius: 24px;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.7rem;
+            font-family: monospace;
+            background: white;
+        }
+        .shop-select {
+            font-family: system-ui;
+            min-width: 140px;
+            cursor: pointer;
+        }
+        .reset-date, .reset-shop {
+            background: #eef2ff;
+            color: #1e3a5f;
+            border-radius: 40px;
+            padding: 0.3rem 0.9rem;
+            font-size: 0.65rem;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .reset-date:hover, .reset-shop:hover {
+            background: #e0e7ff;
+        }
+        .btn-export {
+            background: #2c6e2f;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 0.4rem 1.2rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: 0.2s;
+        }
+        .btn-export:hover {
+            background: #1f5422;
+            transform: translateY(-1px);
+        }
+        .type-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.6rem;
+            margin-top: 0.2rem;
+        }
+        .filter-chip {
+            background: #f1f5f9;
+            border-radius: 40px;
+            padding: 0.4rem 1.2rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            color: #1e2f47;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        .filter-chip:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+        .filter-chip.active {
+            background: #1e3a5f;
+            color: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .summary-bar {
+            padding: 0.5rem 2rem 0 2rem;
+            font-size: 0.7rem;
+            color: #475569;
+            text-align: right;
+            border-bottom: 1px solid #f0f2f5;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+        .data-table th {
+            background: #f8fafd;
+            padding: 0.8rem 0.8rem;
+            text-align: left;
+            font-weight: 600;
+            color: #1e3a5f;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.7rem;
+        }
+        .data-table td {
+            padding: 0.8rem 0.8rem;
+            border-bottom: 1px solid #f0f4fa;
+            vertical-align: middle;
+        }
+        .badge-type {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 30px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .type-settlement { background: #e0f2fe; color: #0369a1; }
+        .type-withdrawal { background: #ffe4e2; color: #b91c1c; }
+        .type-adfee { background: #fff3e3; color: #b45a1c; }
+        .type-servicefee { background: #f1e5fe; color: #6b21a5; }
+        .type-adjustment { background: #dcfce7; color: #15803d; }
+        .amount-in { color: #15803d; font-weight: 600; }
+        .amount-out { color: #b91c1c; font-weight: 600; }
+        .wallet-bill-id {
+            font-family: monospace;
+            font-weight: 600;
+            background: #f1f4f9;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+        }
+        .ref-business-id {
+            font-family: monospace;
+            font-size: 0.7rem;
+            color: #4a5b7a;
+        }
+        .shop-badge {
+            background: #e6f0fa;
+            border-radius: 30px;
+            padding: 0.2rem 0.7rem;
+            font-size: 0.65rem;
+            font-weight: 500;
+            display: inline-block;
+            color: #075985;
+        }
+        .total-row {
+            background: #fefce8;
+            font-weight: 700;
+            border-top: 1px solid #e2e8f0;
+        }
+        .footer-note {
+            background: #f1f6fd;
+            padding: 1rem 2rem;
+            font-size: 0.7rem;
+            color: #2c4a6e;
+            border-top: 1px solid #e2edf7;
+        }
+        .code {
+            font-family: monospace;
+            background: #eef2ff;
+            padding: 0.1rem 0.3rem;
+            border-radius: 6px;
+        }
+        .empty-message {
+            text-align: center;
+            padding: 2rem;
+            color: #6c86a3;
+            font-size: 0.8rem;
+        }
+        @media (max-width: 760px) {
+            .data-table th, .data-table td { padding: 0.5rem 0.4rem; }
+            .balance-summary { padding: 0.8rem 1rem; }
+            .balance-number { font-size: 1.1rem; }
+            .filter-section { padding: 0.8rem 1rem; }
+            .filter-row { flex-direction: column; align-items: stretch; }
+            .summary-bar { padding: 0.5rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="main-card">
+        <div class="card-header">
+            <h1>
+                🏪 亚马逊卖家钱包 · 多店铺综合对账单
+                <span class="header-badge">店铺+时间+业务类型 筛选 | 导出CSV</span>
+            </h1>
+            <p>支持多店铺资金归集｜每笔流水关联店铺｜唯一钱包对账单号｜余额连续自洽</p>
+        </div>
+
+        <!-- 余额汇总卡片（全量店铺数据展示，不受筛选影响） -->
+        <div class="balance-summary" id="balanceSummary">
+            <div class="balance-item">
+                <div class="balance-label">📌 期初余额 (2026-03-01)</div>
+                <div class="balance-number" id="openingBalance">$12,430.50</div>
+                <div style="font-size: 0.65rem;">截止2026-03-01 00:00 UTC</div>
+            </div>
+            <div class="balance-item">
+                <div class="balance-label">💰 全量收入总额</div>
+                <div class="balance-number positive" id="totalIncomeAll">+ $0.00</div>
+                <div>结算入账 + 费用调增/赔偿款</div>
+            </div>
+            <div class="balance-item">
+                <div class="balance-label">📤 全量支出总额</div>
+                <div class="balance-number warning" id="totalExpenseAll">- $0.00</div>
+                <div>提现 + 广告费 + 服务费</div>
+            </div>
+            <div class="balance-item">
+                <div class="balance-label">⚖️ 期末余额</div>
+                <div class="balance-number positive" id="closingBalanceAll">$0.00</div>
+                <div><span class="verify-badge" id="verifyBadge">✓ 自洽校验通过</span></div>
+            </div>
+        </div>
+
+        <!-- 筛选区域: 店铺筛选 + 时间范围 + 业务类型 -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="shop-controls">
+                    <span class="filter-label">🏷️ 店铺筛选</span>
+                    <select id="shopSelect" class="shop-select">
+                        <option value="all">📊 全部店铺</option>
+                        <option value="US_MAIN">🇺🇸 美国站 - 主力店</option>
+                        <option value="EU_CENTRAL">🇪🇺 欧洲站 - 综合店</option>
+                        <option value="JP_TOKYO">🇯🇵 日本站 - 东京店</option>
+                    </select>
+                    <span class="reset-shop" id="resetShopBtn">重置店铺</span>
+                </div>
+                <div class="date-controls">
+                    <span class="filter-label">📅 时间范围</span>
+                    <input type="date" id="startDate" class="date-input" value="2026-03-01">
+                    <span>—</span>
+                    <input type="date" id="endDate" class="date-input" value="2026-03-31">
+                    <span class="reset-date" id="resetDateBtn">重置日期</span>
+                </div>
+                <button id="exportBtn" class="btn-export">📎 导出当前筛选 (CSV)</button>
+            </div>
+            <div class="type-row">
+                <span class="filter-chip active" data-type="all">全部业务</span>
+                <span class="filter-chip" data-type="settlement">结算入账</span>
+                <span class="filter-chip" data-type="withdrawal">提现</span>
+                <span class="filter-chip" data-type="adfee">广告费</span>
+                <span class="filter-chip" data-type="servicefee">技术服务费</span>
+                <span class="filter-chip" data-type="adjustment">费用调增/赔偿款</span>
+            </div>
+        </div>
+
+        <div class="summary-bar" id="summaryBar"></div>
+
+        <div style="overflow-x: auto;">
+            <table class="data-table" id="walletTable">
+                <thead>
+                    <tr>
+                        <th>钱包对账单号</th>
+                        <th>店铺信息</th>
+                        <th>业务类型</th>
+                        <th>业务单号 / 关联凭证</th>
+                        <th>业务日期</th>
+                        <th>收入金额 (+) </th>
+                        <th>支出金额 (-) </th>
+                        <th>交易后余额(全局)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- 动态渲染 -->
+                </tbody>
+                <tfoot id="tableFooter"></tfoot>
+            </table>
+        </div>
+
+        <div class="footer-note">
+            <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: space-between;">
+                <div><strong>🧾 自洽校验</strong><br>期初 + 全量收入 − 全量支出 = 期末余额，每笔流水余额连续递推 ✅</div>
+                <div><strong>📎 钱包对账单号原则</strong><br>全局唯一 WBI-YYYYMMDD-NNN，提现拆分对应多个子单号</div>
+                <div><strong>🏪 店铺维度</strong><br>支持按店铺独立筛选，查看不同站点资金流向</div>
+            </div>
+            <div style="margin-top: 12px; border-top: 1px solid #cbdde9; padding-top: 8px;">
+                ✅ <strong>「费用调增 / 赔偿款」说明</strong>：平台多扣费用返还、FBA库存赔偿等正向入账，<strong>不包含买家订单退款</strong>。
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---------- 原始全量流水数据（新增店铺字段，保证余额连续自洽）---------
+    const OPENING_BALANCE = 12430.50;
+    // 每笔交易明确店铺: US_MAIN(美国主力), EU_CENTRAL(欧洲), JP_TOKYO(日本)
+    const rawTransactions = [
+        { id: "WBI-20260302-001", shopCode: "US_MAIN", shopName: "🇺🇸 美国站 - 主力店", type: "settlement", typeLabel: "结算入账", typeIcon: "📦", refRaw: "STL-20260228-101 (周期:02/15-02/28)", date: "2026-03-02", income: 3250.00, expense: 0 },
+        { id: "WBI-20260305-002", shopCode: "EU_CENTRAL", shopName: "🇪🇺 欧洲站 - 综合店", type: "adfee", typeLabel: "广告费", typeIcon: "📢", refRaw: "AD-ORDER-45892 SP广告活动", date: "2026-03-05", income: 0, expense: 890.00 },
+        { id: "WBI-20260310-003", shopCode: "US_MAIN", shopName: "🇺🇸 美国站 - 主力店", type: "servicefee", typeLabel: "技术服务费", typeIcon: "⚙️", refRaw: "FEE-202603-专业计划 (月度订阅+推荐费)", date: "2026-03-10", income: 0, expense: 139.99 },
+        { id: "WBI-20260315-004", shopCode: "JP_TOKYO", shopName: "🇯🇵 日本站 - 东京店", type: "settlement", typeLabel: "结算入账", typeIcon: "📦", refRaw: "STL-20260312-205 (周期:03/01-03/12)", date: "2026-03-15", income: 5000.00, expense: 0 },
+        { id: "WBI-20260320-005", shopCode: "US_MAIN", shopName: "🇺🇸 美国站 - 主力店", type: "withdrawal", typeLabel: "提现", typeIcon: "🏦", refRaw: "提现主单:WD-20260320-001 / 关联结算单:STL-20260312-205(部分)", date: "2026-03-20", income: 0, expense: 2500.00 },
+        { id: "WBI-20260325-006", shopCode: "EU_CENTRAL", shopName: "🇪🇺 欧洲站 - 综合店", type: "withdrawal", typeLabel: "提现", typeIcon: "🏦", refRaw: "提现主单:WD-20260325-002 / 关联结算单:STL-20260228-101+STL-20260312-205(剩余)", date: "2026-03-25", income: 0, expense: 3200.00 },
+        { id: "WBI-20260328-007", shopCode: "JP_TOKYO", shopName: "🇯🇵 日本站 - 东京店", type: "adjustment", typeLabel: "费用调增/赔偿款", typeIcon: "💰", refRaw: "ADJ-20260328-仓储费多扣返还 (平台调账/FBA赔偿)", date: "2026-03-28", income: 270.00, expense: 0 },
+        { id: "WBI-20260330-008", shopCode: "US_MAIN", shopName: "🇺🇸 美国站 - 主力店", type: "servicefee", typeLabel: "月度仓储费", typeIcon: "📦", refRaw: "FBA-STORAGE-MAR 长期仓储费", date: "2026-03-30", income: 0, expense: 80.01 }
+    ];
+
+    // 计算每笔交易后的全局余额（连续递推）
+    let running = OPENING_BALANCE;
+    const fullTransactions = rawTransactions.map(tx => {
+        const delta = (tx.income || 0) - (tx.expense || 0);
+        running = running + delta;
+        const balanceAfter = Math.round(running * 100) / 100;
+        return { ...tx, balanceAfter };
+    });
+    
+    // 全量汇总数据（不受筛选影响）
+    const totalIncomeAll = fullTransactions.reduce((s, t) => s + t.income, 0);
+    const totalExpenseAll = fullTransactions.reduce((s, t) => s + t.expense, 0);
+    const finalBalanceAll = fullTransactions.length ? fullTransactions[fullTransactions.length-1].balanceAfter : OPENING_BALANCE;
+    
+    // 更新卡片
+    document.getElementById("totalIncomeAll").innerHTML = `+ $${totalIncomeAll.toFixed(2)}`;
+    document.getElementById("totalExpenseAll").innerHTML = `- $${totalExpenseAll.toFixed(2)}`;
+    document.getElementById("closingBalanceAll").innerHTML = `$${finalBalanceAll.toFixed(2)}`;
+    if (Math.abs(OPENING_BALANCE + totalIncomeAll - totalExpenseAll - finalBalanceAll) < 0.01) {
+        document.getElementById("verifyBadge").innerHTML = "✓ 自洽校验通过";
+    } else {
+        document.getElementById("verifyBadge").innerHTML = "⚠️ 校验异常";
+    }
+
+    // ---------- 状态管理 ----------
+    let currentTypeFilter = "all";
+    let currentShopFilter = "all";      // "all" 或具体店铺code
+    let startDate = "2026-03-01";
+    let endDate = "2026-03-31";
+
+    // 日期范围判定（包容边界，endDate当天包含在内）
+    function isDateInRange(dateStr) {
+        if (!startDate && !endDate) return true;
+        const d = new Date(dateStr);
+        if (startDate && new Date(startDate) > d) return false;
+        if (endDate) {
+            const endPlus = new Date(endDate);
+            endPlus.setHours(23, 59, 59);
+            if (endPlus < d) return false;
+        }
+        return true;
+    }
+
+    // 综合筛选：店铺 + 类型 + 日期
+    function getFilteredTransactions() {
+        let filtered = fullTransactions;
+        if (currentShopFilter !== "all") {
+            filtered = filtered.filter(tx => tx.shopCode === currentShopFilter);
+        }
+        if (currentTypeFilter !== "all") {
+            filtered = filtered.filter(tx => tx.type === currentTypeFilter);
+        }
+        filtered = filtered.filter(tx => isDateInRange(tx.date));
+        return filtered;
+    }
+
+    // 渲染表格及底部汇总
+    function renderTable() {
+        const filtered = getFilteredTransactions();
+        const tbody = document.getElementById("tableBody");
+        const tfoot = document.getElementById("tableFooter");
+        const summaryBar = document.getElementById("summaryBar");
+        if (!tbody) return;
+        
+        if (filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" class="empty-message">当前店铺/时间/业务类型下无流水记录</td></tr>`;
+            tfoot.innerHTML = '';
+            if (summaryBar) summaryBar.innerHTML = '';
+            return;
+        }
+
+        let rows = "";
+        for (let tx of filtered) {
+            let typeClass = "";
+            if (tx.type === "settlement") typeClass = "type-settlement";
+            else if (tx.type === "withdrawal") typeClass = "type-withdrawal";
+            else if (tx.type === "adfee") typeClass = "type-adfee";
+            else if (tx.type === "servicefee") typeClass = "type-servicefee";
+            else if (tx.type === "adjustment") typeClass = "type-adjustment";
+            const typeDisplay = `${tx.typeIcon} ${tx.typeLabel}`;
+            const incomeHtml = tx.income > 0 ? `<span class="amount-in">$${tx.income.toFixed(2)}</span>` : "—";
+            const expenseHtml = tx.expense > 0 ? `<span class="amount-out">$${tx.expense.toFixed(2)}</span>` : "—";
+            // 店铺显示徽章
+            const shopHtml = `<span class="shop-badge">${tx.shopName}</span>`;
+            rows += `<tr>
+                <td><span class="wallet-bill-id">${tx.id}</span>${tx.id.includes("005") ? "<br><span style='font-size:0.65rem;'>(提现子凭证)</span>" : ""}</td>
+                <td>${shopHtml}</td>
+                <td><span class="badge-type ${typeClass}">${typeDisplay}</span></td>
+                <td><span class="ref-business-id">${tx.refRaw}</span></td>
+                <td>${tx.date}</td>
+                <td>${incomeHtml}</td>
+                <td>${expenseHtml}</td>
+                <td>$${tx.balanceAfter.toFixed(2)}</td>
+            </tr>`;
+        }
+        tbody.innerHTML = rows;
+
+        let sumIncome = 0, sumExpense = 0;
+        for (let tx of filtered) {
+            sumIncome += tx.income;
+            sumExpense += tx.expense;
+        }
+        const footerHtml = `<tr class="total-row">
+            <td colspan="5" style="text-align: right; font-weight: 700;">筛选结果汇总 (${filtered.length}笔)</td>
+            <td style="font-weight: 700; color:#15803d;">$${sumIncome.toFixed(2)}</td>
+            <td style="font-weight: 700; color:#b91c1c;">$${sumExpense.toFixed(2)}</td>
+            <td style="font-weight: 700; background:#fef9e3;">—</td>
+        </tr>`;
+        tfoot.innerHTML = footerHtml;
+
+        // 更新顶部摘要栏
+        if (summaryBar) {
+            summaryBar.innerHTML = `当前筛选: ${filtered.length}笔记录 | 收入 $${sumIncome.toFixed(2)} / 支出 $${sumExpense.toFixed(2)}`;
+        }
+    }
+
+    // 导出CSV（包含店铺信息字段）
+    function exportToCSV() {
+        const filtered = getFilteredTransactions();
+        if (filtered.length === 0) {
+            alert("没有符合条件的数据可导出");
+            return;
+        }
+        const headers = ["钱包对账单号", "店铺名称", "业务类型", "业务单号/凭证", "业务日期", "收入金额(USD)", "支出金额(USD)", "交易后余额(USD)"];
+        const rows = filtered.map(tx => {
+            let typeDisplay = `${tx.typeIcon} ${tx.typeLabel}`;
+            return [
+                tx.id,
+                tx.shopName,
+                typeDisplay,
+                tx.refRaw.replace(/,/g, ";"),
+                tx.date,
+                tx.income > 0 ? tx.income.toFixed(2) : "0.00",
+                tx.expense > 0 ? tx.expense.toFixed(2) : "0.00",
+                tx.balanceAfter.toFixed(2)
+            ];
+        });
+        const csvContent = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(",")).join("\n");
+        const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.setAttribute("download", `wallet_statement_multi_shop_${new Date().toISOString().slice(0,19)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    // 重置日期
+    function resetDateRange() {
+        startDate = "2026-03-01";
+        endDate = "2026-03-31";
+        document.getElementById("startDate").value = startDate;
+        document.getElementById("endDate").value = endDate;
+        renderTable();
+    }
+
+    // 重置店铺为全部
+    function resetShopFilter() {
+        currentShopFilter = "all";
+        const shopSelect = document.getElementById("shopSelect");
+        if (shopSelect) shopSelect.value = "all";
+        renderTable();
+    }
+
+    // 绑定全局事件
+    function bindGlobalEvents() {
+        // 业务类型筛选
+        const typeChips = document.querySelectorAll(".type-row .filter-chip");
+        typeChips.forEach(chip => {
+            chip.addEventListener("click", () => {
+                const typeVal = chip.getAttribute("data-type");
+                currentTypeFilter = typeVal;
+                typeChips.forEach(c => c.classList.remove("active"));
+                chip.classList.add("active");
+                renderTable();
+            });
+        });
+        
+        // 店铺下拉变化
+        const shopSelect = document.getElementById("shopSelect");
+        if (shopSelect) {
+            shopSelect.addEventListener("change", (e) => {
+                currentShopFilter = e.target.value;
+                renderTable();
+            });
+        }
+        
+        // 日期输入框
+        const startInput = document.getElementById("startDate");
+        const endInput = document.getElementById("endDate");
+        startInput.addEventListener("change", (e) => { startDate = e.target.value; renderTable(); });
+        endInput.addEventListener("change", (e) => { endDate = e.target.value; renderTable(); });
+        
+        // 重置按钮
+        document.getElementById("resetDateBtn").addEventListener("click", resetDateRange);
+        document.getElementById("resetShopBtn").addEventListener("click", resetShopFilter);
+        document.getElementById("exportBtn").addEventListener("click", exportToCSV);
+    }
+
+    function init() {
+        bindGlobalEvents();
+        renderTable();
+    }
+    init();
+</script>
+</body>
+</html>

@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>拣货分配规则 - 可搜索仓库下拉</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f0f2f6;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 32px 28px;
+            color: #1e293b;
+        }
+
+        .list-container {
+            max-width: 1440px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+        }
+
+        .list-header {
+            padding: 20px 28px 16px 28px;
+            border-bottom: 1px solid #eef2f8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            background: #fff;
+        }
+        .title-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #1e466e, #1f6e55);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+        .title-section p {
+            font-size: 0.8rem;
+            color: #5b6e8c;
+            margin-top: 4px;
+        }
+        .action-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .btn-icon {
+            background: #fff;
+            border: 1px solid #cfdfed;
+            border-radius: 40px;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #2c6280;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-icon:hover {
+            background: #f1f9fe;
+            border-color: #2c8f6e;
+            color: #1f6e55;
+        }
+        .btn-primary-outline {
+            background: #2c8f6e;
+            border-color: #2c8f6e;
+            color: white;
+        }
+        .btn-primary-outline:hover {
+            background: #237a5c;
+        }
+        .btn-danger-outline {
+            color: #b91c1c;
+            border-color: #f3cfcf;
+        }
+        .btn-danger-outline:hover {
+            background: #fef2f2;
+            border-color: #b91c1c;
+        }
+
+        .filter-bar {
+            padding: 16px 28px;
+            background: #fafcff;
+            border-bottom: 1px solid #eef2f8;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px;
+        }
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 4px 12px 4px 16px;
+            border-radius: 40px;
+            border: 1px solid #e2eaf2;
+        }
+        .filter-item label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #4b6a8a;
+        }
+        .filter-item input, .filter-item select {
+            border: none;
+            padding: 6px 0;
+            font-size: 0.85rem;
+            outline: none;
+            background: transparent;
+            min-width: 140px;
+        }
+        /* 可搜索下拉容器 */
+        .searchable-select {
+            position: relative;
+            min-width: 200px;
+        }
+        .searchable-select-input {
+            width: 100%;
+            background: white;
+            border: 1px solid #e2eaf2;
+            border-radius: 32px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+        .searchable-select-input span {
+            color: #1f2f46;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .searchable-select-input .arrow {
+            font-size: 10px;
+            color: #8aa0b5;
+        }
+        .searchable-dropdown {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e2edf7;
+            border-radius: 16px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+            z-index: 200;
+            max-height: 280px;
+            overflow-y: auto;
+            display: none;
+        }
+        .searchable-dropdown.show {
+            display: block;
+        }
+        .dropdown-search {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eef2f8;
+            position: sticky;
+            top: 0;
+            background: white;
+        }
+        .dropdown-search input {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 40px;
+            border: 1px solid #dce5ec;
+            font-size: 0.8rem;
+            background: #fff;
+        }
+        .dropdown-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f4fa;
+            font-size: 0.85rem;
+            transition: background 0.1s;
+        }
+        .dropdown-item:hover {
+            background: #f6fafd;
+        }
+        .dropdown-item .wh-code {
+            font-weight: 600;
+            color: #1e466e;
+        }
+        .dropdown-item .wh-name {
+            color: #4a627a;
+            margin-left: 8px;
+        }
+        .no-result {
+            padding: 16px;
+            text-align: center;
+            color: #8a99aa;
+            font-size: 0.8rem;
+        }
+
+        .search-btn, .reset-btn {
+            padding: 6px 20px;
+            border-radius: 32px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-weight: 500;
+            border: none;
+        }
+        .search-btn {
+            background: #2c8f6e;
+            color: white;
+        }
+        .reset-btn {
+            background: #f1f5f9;
+            border: 1px solid #dce5ec;
+            color: #4a627a;
+        }
+
+        .table-wrapper {
+            padding: 0 28px 28px 28px;
+            overflow-x: auto;
+        }
+        .rule-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 1100px;
+        }
+        .rule-table th {
+            text-align: left;
+            padding: 16px 12px;
+            background: #f8fafd;
+            font-weight: 600;
+            color: #2c3f4f;
+            border-bottom: 1px solid #e9f0f5;
+        }
+        .rule-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #f1f6fc;
+            vertical-align: middle;
+            color: #1f2f46;
+        }
+        .rule-table tr:hover {
+            background: #fafdff;
+        }
+        .checkbox-col {
+            width: 40px;
+            text-align: center;
+        }
+        .checkbox-col input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        .status-enable { background: #e0f2e9; color: #1f6e55; }
+        .status-test { background: #fff3e0; color: #b75d0d; }
+        .status-disable { background: #fee9e6; color: #b12e1a; }
+        .default-badge {
+            background: #eef2ff;
+            color: #2c5f8a;
+            border-radius: 40px;
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+        .action-buttons { display: flex; gap: 12px; }
+        .action-link { color: #2c8f6e; cursor: pointer; font-weight: 500; font-size: 0.8rem; text-decoration: none; }
+        .action-link.del { color: #c2412c; }
+        .action-link:hover { text-decoration: underline; }
+        .pagination {
+            padding: 20px 28px 28px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 16px;
+            border-top: 1px solid #eef2f8;
+        }
+        .page-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid #cfdfed;
+            background: white;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .page-btn.active {
+            background: #2c8f6e;
+            border-color: #2c8f6e;
+            color: white;
+        }
+        .empty-row td { text-align: center; padding: 48px; color: #8aa0b5; }
+        .footer-note {
+            font-size: 0.7rem;
+            color: #9aaebf;
+            text-align: right;
+            padding: 8px 28px 24px;
+        }
+    </style>
+</head>
+<body>
+<div class="list-container">
+    <div class="list-header">
+        <div class="title-section">
+            <h2>📋 拣货分配规则</h2>
+            <p>管理仓库拣货策略 · 轮询 / 加权 / 最少任务优先</p>
+        </div>
+        <div class="action-bar">
+            <button class="btn-icon" id="refreshBtn">⟳ 刷新</button>
+            <button class="btn-icon btn-primary-outline" id="createRuleBtn">+ 新建规则</button>
+            <button class="btn-icon btn-danger-outline" id="batchDeleteBtn">🗑️ 批量删除</button>
+        </div>
+    </div>
+
+    <!-- 筛选栏：规则名称、类型、可搜索仓库下拉、状态 -->
+    <div class="filter-bar">
+        <div class="filter-item">
+            <label>规则名称</label>
+            <input type="text" id="filterName" placeholder="请输入规则名称" style="width:160px">
+        </div>
+        <div class="filter-item">
+            <label>规则类型</label>
+            <select id="filterType">
+                <option value="">全部</option>
+                <option value="轮询分配">轮询分配</option>
+                <option value="加权轮询">加权轮询</option>
+                <option value="随机分配">随机分配</option>
+                <option value="最少任务优先">最少任务优先</option>
+                <option value="最长空闲优先">最长空闲优先</option>
+            </select>
+        </div>
+        <div class="filter-item" style="padding: 0; background: transparent; border: none;">
+            <label>仓库名称</label>
+            <!-- 可搜索仓库下拉组件 -->
+            <div class="searchable-select" id="warehouseFilterSelect">
+                <div class="searchable-select-input" id="warehouseFilterTrigger">
+                    <span id="selectedWarehouseText">全部仓库</span>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="searchable-dropdown" id="warehouseFilterDropdown">
+                    <div class="dropdown-search">
+                        <input type="text" id="warehouseSearchInput" placeholder="搜索仓库编号/名称...">
+                    </div>
+                    <div id="warehouseListContainer"></div>
+                </div>
+            </div>
+        </div>
+        <div class="filter-item">
+            <label>状态</label>
+            <select id="filterStatus">
+                <option value="">全部</option>
+                <option value="启用">启用</option>
+                <option value="禁用">禁用</option>
+                <option value="测试中">测试中</option>
+            </select>
+        </div>
+        <button class="search-btn" id="searchBtn">🔍 查询</button>
+        <button class="reset-btn" id="resetFilterBtn">重置</button>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="rule-table" id="ruleTable">
+            <thead>
+                <tr><th class="checkbox-col"><input type="checkbox" id="selectAllCheckbox"></th><th>规则名称</th><th>规则类型</th><th>仓库名称</th><th>仓库编号</th><th>优先级</th><th>状态</th><th>默认规则</th><th>创建人</th><th>创建时间</th><th>操作</th></tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+    <div class="pagination" id="paginationArea"></div>
+    <div class="footer-note">✅ 仓库下拉支持搜索（编号/名称） | 支持批量删除 | 编辑/新建跳转配置页</div>
+</div>
+
+<script>
+    // ---------- 仓库主数据（用于下拉搜索）----------
+    const masterWarehouseList = [
+        { code: "005", name: "物联网仓" }, { code: "007", name: "测试库" }, { code: "shanxi_cang", name: "陕西仓" },
+        { code: "WS", name: "测试111" }, { code: "WS001", name: "WS01" }, { code: "GZ", name: "广州仓" },
+        { code: "cs01", name: "测试仓库1号" }, { code: "RM-INV", name: "材料仓" }, { code: "FG-INV", name: "产成品仓" },
+        { code: "11", name: "测试库-zzx" }, { code: "CHN0001", name: "中国区光明仓" }
+    ];
+
+    // 规则数据
+    let rulesData = [
+        { id: "rule_001", ruleName: "规则名称001", ruleType: "轮询分配", warehouseName: "物联网仓", warehouseCode: "005", areaCodes: ["A区","C区","D区"], priority: 0, status: "测试中", isDefault: false, creator: "admin", createTime: "2025-03-10 14:32:00" },
+        { id: "rule_002", ruleName: "大促加权轮询", ruleType: "加权轮询", warehouseName: "广州仓", warehouseCode: "GZ", areaCodes: ["GZ-黄埔","GZ-南沙"], priority: 2, status: "启用", isDefault: true, creator: "张明", createTime: "2025-03-15 09:21:00" },
+        { id: "rule_003", ruleName: "夜班最少任务策略", ruleType: "最少任务优先", warehouseName: "材料仓", warehouseCode: "RM-INV", areaCodes: ["原料区","包材区"], priority: 5, status: "启用", isDefault: false, creator: "李芳", createTime: "2025-03-18 16:45:00" },
+        { id: "rule_004", ruleName: "华东区随机分配", ruleType: "随机分配", warehouseName: "中国区光明仓", warehouseCode: "CHN0001", areaCodes: ["光明A库","光明B库"], priority: 3, status: "禁用", isDefault: false, creator: "王启航", createTime: "2025-03-20 11:02:00" },
+        { id: "rule_005", ruleName: "产成品最长空闲优先", ruleType: "最长空闲优先", warehouseName: "产成品仓", warehouseCode: "FG-INV", areaCodes: ["成品区","待检区"], priority: 1, status: "启用", isDefault: false, creator: "赵一航", createTime: "2025-03-22 08:30:00" },
+        { id: "rule_006", ruleName: "测试库轮询默认", ruleType: "轮询分配", warehouseName: "测试库", warehouseCode: "007", areaCodes: ["T1区","T2区"], priority: 4, status: "测试中", isDefault: false, creator: "testuser", createTime: "2025-03-25 13:20:00" },
+        { id: "rule_007", ruleName: "陕西仓波次规则", ruleType: "轮询分配", warehouseName: "陕西仓", warehouseCode: "shanxi_cang", areaCodes: ["SX北区","SX南区"], priority: 6, status: "启用", isDefault: false, creator: "运营组", createTime: "2025-03-28 09:15:00" }
+    ];
+
+    let currentPage = 1;
+    const pageSize = 8;
+    let filteredData = [...rulesData];
+    let selectedWarehouseFilter = "";   // 存储选中的仓库名称 (空字符串表示全部)
+
+    // ---------- 可搜索仓库下拉渲染逻辑 ----------
+    function renderWarehouseDropdown(filterText = "") {
+        const container = document.getElementById("warehouseListContainer");
+        const filtered = masterWarehouseList.filter(w => 
+            w.code.toLowerCase().includes(filterText.toLowerCase()) || 
+            w.name.toLowerCase().includes(filterText.toLowerCase())
+        );
+        if(filtered.length === 0) {
+            container.innerHTML = `<div class="no-result">暂无匹配仓库</div>`;
+            return;
+        }
+        container.innerHTML = "";
+        // 添加“全部仓库”选项
+        const allItem = document.createElement("div"); allItem.className = "dropdown-item";
+        allItem.innerHTML = `<span class="wh-code">全部</span><span class="wh-name">所有仓库</span>`;
+        allItem.addEventListener("click", (e) => {
+            e.stopPropagation();
+            selectedWarehouseFilter = "";
+            document.getElementById("selectedWarehouseText").innerText = "全部仓库";
+            document.getElementById("warehouseFilterDropdown").classList.remove("show");
+            applyFilter(); // 选择后自动触发筛选
+        });
+        container.appendChild(allItem);
+        filtered.forEach(wh => {
+            const itemDiv = document.createElement("div"); itemDiv.className = "dropdown-item";
+            itemDiv.innerHTML = `<span class="wh-code">${wh.code}</span> <span class="wh-name">${wh.name}</span>`;
+            itemDiv.addEventListener("click", (e) => {
+                e.stopPropagation();
+                selectedWarehouseFilter = wh.name;
+                document.getElementById("selectedWarehouseText").innerText = `${wh.name} (${wh.code})`;
+                document.getElementById("warehouseFilterDropdown").classList.remove("show");
+                applyFilter();
+            });
+            container.appendChild(itemDiv);
+        });
+    }
+
+    function bindWarehouseDropdownEvents() {
+        const trigger = document.getElementById("warehouseFilterTrigger");
+        const dropdown = document.getElementById("warehouseFilterDropdown");
+        const searchInput = document.getElementById("warehouseSearchInput");
+        trigger.addEventListener("click", (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle("show");
+            if(dropdown.classList.contains("show")) {
+                renderWarehouseDropdown("");
+                searchInput.value = "";
+                searchInput.focus();
+            }
+        });
+        searchInput.addEventListener("input", (e) => {
+            renderWarehouseDropdown(e.target.value);
+        });
+        document.addEventListener("click", function(e) {
+            if(!trigger.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove("show");
+            }
+        });
+    }
+
+    // 筛选逻辑 (包含可搜索仓库下拉的值)
+    function applyFilter() {
+        const nameFilter = document.getElementById('filterName').value.trim().toLowerCase();
+        const typeFilter = document.getElementById('filterType').value;
+        const statusFilter = document.getElementById('filterStatus').value;
+        filteredData = rulesData.filter(rule => {
+            if(nameFilter && !rule.ruleName.toLowerCase().includes(nameFilter)) return false;
+            if(typeFilter && rule.ruleType !== typeFilter) return false;
+            if(selectedWarehouseFilter && rule.warehouseName !== selectedWarehouseFilter) return false;
+            if(statusFilter && rule.status !== statusFilter) return false;
+            return true;
+        });
+        currentPage = 1;
+        renderTable();
+        renderPagination();
+    }
+
+    function resetFilter() {
+        document.getElementById('filterName').value = '';
+        document.getElementById('filterType').value = '';
+        document.getElementById('filterStatus').value = '';
+        selectedWarehouseFilter = "";
+        document.getElementById("selectedWarehouseText").innerText = "全部仓库";
+        filteredData = [...rulesData];
+        currentPage = 1;
+        renderTable();
+        renderPagination();
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        const start = (currentPage - 1) * pageSize;
+        const pageData = filteredData.slice(start, start + pageSize);
+        if(pageData.length === 0) {
+            tbody.innerHTML = `<tr class="empty-row"><td colspan="11">暂无拣货分配规则数据，请点击“新建规则”创建</td></tr>`;
+            document.getElementById('selectAllCheckbox').checked = false;
+            return;
+        }
+        tbody.innerHTML = '';
+        pageData.forEach(rule => {
+            let statusClass = rule.status === '启用' ? 'status-enable' : (rule.status === '测试中' ? 'status-test' : 'status-disable');
+            const defaultHtml = rule.isDefault ? '<span class="default-badge">✓ 默认规则</span>' : '—';
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="checkbox-col"><input type="checkbox" class="row-checkbox" value="${rule.id}"></td>
+                <td><strong>${escapeHtml(rule.ruleName)}</strong></td>
+                <td>${escapeHtml(rule.ruleType)}</td>
+                <td>${escapeHtml(rule.warehouseName)}</td>
+                <td>${escapeHtml(rule.warehouseCode || '--')}</td>
+                <td>${rule.priority}</td>
+                <td><span class="status-badge ${statusClass}">${rule.status}</span></td>
+                <td>${defaultHtml}</td>
+                <td>${escapeHtml(rule.creator)}</td>
+                <td>${rule.createTime}</td>
+                <td class="action-buttons">
+                    <a class="action-link" data-id="${rule.id}" data-action="edit">编辑</a>
+                    <a class="action-link del" data-id="${rule.id}" data-action="delete">删除</a>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+        document.querySelectorAll('.action-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                const id = link.getAttribute('data-id');
+                const action = link.getAttribute('data-action');
+                if(action === 'edit') editRuleById(id);
+                else if(action === 'delete') deleteSingleRule(id);
+            });
+        });
+        const allChecked = document.querySelectorAll('.row-checkbox:checked').length === pageData.length && pageData.length > 0;
+        document.getElementById('selectAllCheckbox').checked = allChecked;
+    }
+
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m) { if(m === '&') return '&amp;'; if(m === '<') return '&lt;'; if(m === '>') return '&gt;'; return m;}); }
+
+    function renderPagination() {
+        const total = filteredData.length;
+        const totalPages = Math.ceil(total / pageSize);
+        const paginationDiv = document.getElementById('paginationArea');
+        if(totalPages <= 1) {
+            paginationDiv.innerHTML = `<div style="flex:1; text-align:right; font-size:0.75rem; color:#8aa0b5;">共 ${total} 条记录</div>`;
+            return;
+        }
+        let paginationHtml = `<div style="flex:1; font-size:0.75rem; color:#5b6e8c;">共 ${total} 条</div><div style="display:flex; gap:8px;">`;
+        for(let i=1; i<=totalPages; i++) {
+            paginationHtml += `<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+        }
+        paginationHtml += `</div>`;
+        paginationDiv.innerHTML = paginationHtml;
+        document.querySelectorAll('.page-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const page = parseInt(btn.getAttribute('data-page'));
+                if(!isNaN(page)) { currentPage = page; renderTable(); renderPagination(); }
+            });
+        });
+    }
+
+    function batchDelete() {
+        const checkedBoxes = document.querySelectorAll('.row-checkbox:checked');
+        if(checkedBoxes.length === 0) { alert("请至少选择一条规则进行删除"); return; }
+        if(confirm(`确定要删除选中的 ${checkedBoxes.length} 条规则吗？`)) {
+            const idsToDelete = Array.from(checkedBoxes).map(cb => cb.value);
+            rulesData = rulesData.filter(rule => !idsToDelete.includes(rule.id));
+            filteredData = filteredData.filter(rule => !idsToDelete.includes(rule.id));
+            if(filteredData.length === 0 && currentPage > 1) currentPage = 1;
+            renderTable(); renderPagination();
+            alert("删除成功");
+        }
+    }
+
+    function deleteSingleRule(id) {
+        if(confirm("确认删除该拣货分配规则吗？")) {
+            rulesData = rulesData.filter(rule => rule.id !== id);
+            filteredData = filteredData.filter(rule => rule.id !== id);
+            if(filteredData.length === 0 && currentPage > 1) currentPage = 1;
+            renderTable(); renderPagination();
+            alert("已删除规则");
+        }
+    }
+
+    function editRuleById(id) {
+        const rule = rulesData.find(r => r.id === id);
+        if(rule) {
+            sessionStorage.setItem('editRule', JSON.stringify(rule));
+            alert(`编辑规则: ${rule.ruleName}\n演示跳转至配置页面 (实际项目可打开编辑页)`);
+            console.log("编辑规则数据", rule);
+        } else { alert("规则不存在"); }
+    }
+
+    function createNewRule() { alert("新建拣货分配规则，将跳转至配置页面"); console.log("跳转新建规则页面"); }
+    function refreshData() { filteredData = [...rulesData]; currentPage = 1; renderTable(); renderPagination(); alert("数据已刷新"); }
+
+    function bindSelectAll() {
+        const selectAllChk = document.getElementById('selectAllCheckbox');
+        selectAllChk.addEventListener('change', (e) => {
+            const isChecked = e.target.checked;
+            document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = isChecked);
+        });
+        document.getElementById('tableBody').addEventListener('change', (e) => {
+            if(e.target && e.target.classList && e.target.classList.contains('row-checkbox')) {
+                const allRows = document.querySelectorAll('.row-checkbox');
+                const allChecked = Array.from(allRows).every(cb => cb.checked);
+                selectAllChk.checked = allChecked && allRows.length > 0;
+            }
+        });
+    }
+
+    function bindEvents() {
+        document.getElementById('searchBtn').addEventListener('click', applyFilter);
+        document.getElementById('resetFilterBtn').addEventListener('click', resetFilter);
+        document.getElementById('refreshBtn').addEventListener('click', refreshData);
+        document.getElementById('createRuleBtn').addEventListener('click', createNewRule);
+        document.getElementById('batchDeleteBtn').addEventListener('click', batchDelete);
+    }
+
+    function init() {
+        filteredData = [...rulesData];
+        currentPage = 1;
+        renderTable();
+        renderPagination();
+        bindEvents();
+        bindSelectAll();
+        bindWarehouseDropdownEvents();
+    }
+    init();
+</script>
+</body>
+</html>

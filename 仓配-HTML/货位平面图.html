@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>WMS通道布局 | 三货架组 · 竖向贯穿 | 横向通道编号 | 统一通道高度 | 双向拣选通道</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #eef2f7;
+            font-family: "Segoe UI", "Roboto", system-ui, -apple-system, sans-serif;
+            padding: 28px 20px;
+        }
+
+        .wms-container {
+            max-width: 1480px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 34px;
+            box-shadow: 0 20px 32px -12px rgba(0, 0, 0, 0.12);
+            overflow-x: auto;
+            padding: 20px 22px 32px 22px;
+        }
+
+        /* 货架表格紧凑样式 */
+        .rack-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: "SF Mono", "Cascadia Code", monospace;
+            font-size: 0.68rem;
+            margin: 0;
+            padding: 0;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .rack-table td {
+            border: 1px solid #d4e2d4;
+            padding: 8px 4px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        /* A/B 面色调 */
+        .rack-a {
+            background: #eff6ff;
+            color: #075985;
+            font-weight: 500;
+        }
+
+        .rack-b {
+            background: #fdf2f8;
+            color: #9f1239;
+            font-weight: 500;
+        }
+
+        /* 横向通道 (统一紧凑高度) 增加编号标识 */
+        .horizontal-aisle,
+        .shared-aisle {
+            background: #cfe6dc;
+            text-align: center;
+            font-weight: 800;
+            color: #1e5631;
+            border-top: 2px solid #2e7d32;
+            border-bottom: 2px solid #a5d6a7;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+            padding: 4px 6px;
+            line-height: 1.3;
+            white-space: nowrap;
+        }
+
+        /* 竖向通道 (贯穿统一宽度40px) */
+        .vertical-aisle {
+            background: #cfe6dc;
+            text-align: center;
+            font-weight: 800;
+            color: #1e5631;
+            font-size: 0.65rem;
+            letter-spacing: 1px;
+            writing-mode: vertical-lr;
+            text-orientation: mixed;
+            padding: 8px 4px;
+            width: 40px;
+            vertical-align: middle;
+            border: 1px solid #c0dbc4;
+        }
+
+        /* 垂直侧标 (货架面标识 A/B) */
+        .vertical-label {
+            writing-mode: vertical-lr;
+            text-orientation: mixed;
+            padding: 12px 5px;
+            font-weight: 800;
+            font-size: 0.7rem;
+            text-align: center;
+            vertical-align: middle;
+            width: 52px;
+        }
+
+        .vert-a {
+            background: #ecf7ff;
+            color: #0369a1;
+            border-right: 1px solid #cde2f5;
+        }
+
+        .vert-b {
+            background: #fdf2f8;
+            color: #be185d;
+            border-right: 1px solid #f5d0e1;
+        }
+
+        /* 叠放分隔区 (背靠背标识) */
+        .mid-divider {
+            background: #fef9e3;
+            text-align: center;
+            font-size: 0.6rem;
+            padding: 3px 2px;
+            color: #b45309;
+            font-weight: 500;
+            border-left: 1px solid #fde68a;
+            border-right: 1px solid #fde68a;
+        }
+
+        /* 共用通道单元格紧凑样式 (用于共用通道及底部通道) */
+        .shared-cell {
+            background: #cfe6dc;
+            text-align: center;
+            font-weight: 800;
+            color: #1e5631;
+            font-size: 0.7rem;
+            padding: 4px 6px;
+            border: 1px solid #c0dbc4;
+            white-space: nowrap;
+        }
+
+        /* 库区与规则说明卡片 */
+        .legend-note {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 10px 18px;
+            margin-bottom: 24px;
+            font-size: 0.75rem;
+            display: inline-block;
+            color: #0f3b2c;
+            border-left: 4px solid #2e7d32;
+            font-family: monospace;
+        }
+        .legend-note strong {
+            color: #1e5631;
+        }
+        .code-example {
+            background: #eef2ff;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-family: monospace;
+            font-weight: 600;
+            font-size: 0.7rem;
+        }
+        /* 辅助边缘微调 */
+        .rack-table + .rack-table {
+            margin-top: 0;
+        }
+        .channel-spacer {
+            background: transparent;
+            border: none;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="wms-container">
+    <!-- 货位编码规则展示 -->
+    <div class="legend-note">
+        📦 货位编码规则： <strong>{库区}-{货架组}{货架面}{层}{列}</strong> <br/>
+        &nbsp;&nbsp;▶ 库区：<strong>WH01</strong> (主仓库区) &nbsp;|&nbsp;
+        货架组：01 / 02 / 03 (背靠背货架) &nbsp;|&nbsp;
+        货架面：A (前)/ B (后) &nbsp;|&nbsp;
+        层：01~04 (由下至上) &nbsp;|&nbsp;
+        列：01~10<br/>
+        &nbsp;&nbsp;✅ 示例：<span class="code-example">WH01-02A0305</span> 表示 WH01库区 / 02货架组 / A面 / 第03层 / 第05列<br/>
+        &nbsp;&nbsp;🚶 通道设计：顶部主通道 <strong>(U01)</strong>、中部共用双向通道 <strong>(C02 / C03)</strong>、底部主通道 <strong>(U04)</strong>，全部统一高度，满足双向拣选。
+    </div>
+
+    <!-- ================= 货架 01 ================= -->
+    <table class="rack-table">
+        <tbody>
+        <!-- 顶部横向通道：编号 T01 (顶部通道) -->
+        <tr>
+            <td rowspan="10" class="vertical-aisle">⬆️ 竖向 ⬇️</td>
+            <td colspan="11" class="horizontal-aisle">
+                🚶 ⬆️ 顶部通道 · U01 (货架01 A面拣选主通道) ⬆️ 🚶
+            </td>
+            <td rowspan="10" class="vertical-aisle">⬆️ 竖向 ⬇️</td>
+        </tr>
+        <!-- 货架01 A面 (货架组01 + A面) 共4层，每层10列 -->
+        <tr>
+            <td rowspan="4" class="vertical-label vert-a">
+                货架01<br />A面
+            </td>
+            <td class="rack-a">WH01-01A0401</td><td class="rack-a">WH01-01A0402</td>
+            <td class="rack-a">WH01-01A0403</td><td class="rack-a">WH01-01A0404</td>
+            <td class="rack-a">WH01-01A0405</td><td class="rack-a">WH01-01A0406</td>
+            <td class="rack-a">WH01-01A0407</td><td class="rack-a">WH01-01A0408</td>
+            <td class="rack-a">WH01-01A0409</td><td class="rack-a">WH01-01A0410</td>
+        </tr>
+        <tr>
+            <td class="rack-a">WH01-01A0301</td><td class="rack-a">WH01-01A0302</td>
+            <td class="rack-a">WH01-01A0303</td><td class="rack-a">WH01-01A0304</td>
+            <td class="rack-a">WH01-01A0305</td><td class="rack-a">WH01-01A0306</td>
+            <td class="rack-a">WH01-01A0307</td><td class="rack-a">WH01-01A0308</td>
+            <td class="rack-a">WH01-01A0309</td><td class="rack-a">WH01-01A0310</td>
+        </tr>
+        <tr>
+            <td class="rack-a">WH01-01A0201</td><td class="rack-a">WH01-01A0202</td>
+            <td class="rack-a">WH01-01A0203</td><td class="rack-a">WH01-01A0204</td>
+            <td class="rack-a">WH01-01A0205</td><td class="rack-a">WH01-01A0206</td>
+            <td class="rack-a">WH01-01A0207</td><td class="rack-a">WH01-01A0208</td>
+            <td class="rack-a">WH01-01A0209</td><td class="rack-a">WH01-01A0210</td>
+        </tr>
+        <tr>
+            <td class="rack-a">WH01-01A0101</td><td class="rack-a">WH01-01A0102</td>
+            <td class="rack-a">WH01-01A0103</td><td class="rack-a">WH01-01A0104</td>
+            <td class="rack-a">WH01-01A0105</td><td class="rack-a">WH01-01A0106</td>
+            <td class="rack-a">WH01-01A0107</td><td class="rack-a">WH01-01A0108</td>
+            <td class="rack-a">WH01-01A0109</td><td class="rack-a">WH01-01A0110</td>
+        </tr>
+        <!-- 实体叠放区 -->
+        <tr>
+            <td colspan="11" class="mid-divider">
+                🔗 实体叠放区 · A/B面背靠背 (共用立柱)
+            </td>
+        </tr>
+        <!-- 货架01 B面 -->
+        <tr>
+            <td rowspan="4" class="vertical-label vert-b">
+                货架01<br />B面
+            </td>
+            <td class="rack-b">WH01-01B0401</td><td class="rack-b">WH01-01B0402</td>
+            <td class="rack-b">WH01-01B0403</td><td class="rack-b">WH01-01B0404</td>
+            <td class="rack-b">WH01-01B0405</td><td class="rack-b">WH01-01B0406</td>
+            <td class="rack-b">WH01-01B0407</td><td class="rack-b">WH01-01B0408</td>
+            <td class="rack-b">WH01-01B0409</td><td class="rack-b">WH01-01B0410</td>
+        </tr>
+        <tr>
+            <td class="rack-b">WH01-01B0301</td><td class="rack-b">WH01-01B0302</td>
+            <td class="rack-b">WH01-01B0303</td><td class="rack-b">WH01-01B0304</td>
+            <td class="rack-b">WH01-01B0305</td><td class="rack-b">WH01-01B0306</td>
+            <td class="rack-b">WH01-01B0307</td><td class="rack-b">WH01-01B0308</td>
+            <td class="rack-b">WH01-01B0309</td><td class="rack-b">WH01-01B0310</td>
+        </tr>
+        <tr>
+            <td class="rack-b">WH01-01B0201</td><td class="rack-b">WH01-01B0202</td>
+            <td class="rack-b">WH01-01B0203</td><td class="rack-b">WH01-01B0204</td>
+            <td class="rack-b">WH01-01B0205</td><td class="rack-b">WH01-01B0206</td>
+            <td class="rack-b">WH01-01B0207</td><td class="rack-b">WH01-01B0208</td>
+            <td class="rack-b">WH01-01B0209</td><td class="rack-b">WH01-01B0210</td>
+        </tr>
+        <tr>
+            <td class="rack-b">WH01-01B0101</td><td class="rack-b">WH01-01B0102</td>
+            <td class="rack-b">WH01-01B0103</td><td class="rack-b">WH01-01B0104</td>
+            <td class="rack-b">WH01-01B0105</td><td class="rack-b">WH01-01B0106</td>
+            <td class="rack-b">WH01-01B0107</td><td class="rack-b">WH01-01B0108</td>
+            <td class="rack-b">WH01-01B0109</td><td class="rack-b">WH01-01B0110</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- ========= 共用通道1 (货架01与货架02之间) 编号 C01 ========= -->
+    <table class="rack-table" style="margin-top: 0; margin-bottom: 0; border: none;">
+        <tbody>
+        <tr style="line-height: 1">
+            <td class="vertical-aisle" style="width: 40px">⬆️ 通道 ⬇️</td>
+            <td colspan="11" class="shared-cell" style="text-align: center;">
+                🚶 🔄 共用通道 · C02 (货架01 B面 ↔ 货架02 A面 · 双向拣选) 🚶
+            </td>
+            <td class="vertical-aisle" style="width: 40px">⬆️ 通道 ⬇️</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- ================= 货架 02 ================= -->
+    <table class="rack-table">
+        <tbody>
+        <tr>
+            <td rowspan="10" class="vertical-aisle">⬆️ 竖向 ⬇️</td>
+            <td rowspan="4" class="vertical-label vert-a">
+                货架02<br />A面
+            </td>
+            <td class="rack-a">WH01-02A0401</td><td class="rack-a">WH01-02A0402</td>
+            <td class="rack-a">WH01-02A0403</td><td class="rack-a">WH01-02A0404</td>
+            <td class="rack-a">WH01-02A0405</td><td class="rack-a">WH01-02A0406</td>
+            <td class="rack-a">WH01-02A0407</td><td class="rack-a">WH01-02A0408</td>
+            <td class="rack-a">WH01-02A0409</td><td class="rack-a">WH01-02A0410</td>
+            <td rowspan="10" class="vertical-aisle">⬆️ 竖向 ⬇️</td>
+        </tr>
+        <tr>
+            <td class="rack-a">WH01-02A0301</td><td class="rack-a">WH01-02A0302</td>
+            <td class="rack-a">WH01-02A0303</td><td class="rack-a">WH01-02A0304</td>
+            <td class="rack-a">WH01-02A0305</td><td class="rack-a">WH01-02A0306</td>
+            <td class="rack-a">WH01-02A0307</td><td class="rack-a">WH01-02A0308</td>
+            <td class="rack-a">WH01-02A0309</td><td class="rack-a">WH01-02A0310</td>
+        </tr>
+        <tr>
+            <td class="rack-a">WH01-02A0201</td><td class="rack-a">WH01-02A0202</td>
+            <td class="rack-a">WH01-02A0203</td><td class="rack-a">WH01-02A0204</td>
+            <td class="rack-a">WH01-02A0205</td><td class="rack-a">WH01-02A0206</td>
+            <td class="rack-a">WH01-02A0207</td><td class="rack-a">WH01-02A0208</td>
+            <td class="rack-a">WH01-02A0209</td><td class="rack-a">WH01-02A0210</td>
+        </tr>
+        <tr>
+            <td class="rack-a">WH01-02A0101</td><td class="rack-a">WH01-02A0102</td>
+            <td class="rack-a">WH01-02A0103</td><td class="rack-a">WH01-02A0104</td>
+            <td class="rack-a">WH01-02A0105</td><td class="rack-a">WH01-02A0106</td>
+            <td class="rack-a">WH01-02A0107</td><td class="rack-a">WH01-02A0108</td>
+            <td class="rack-a">WH01-02A0109</td><td class="rack-a">WH01-02A0110</td>
+        </tr>
+        <tr>
+            <td colspan="11" class="mid-divider">
+                🔗 实体叠放区 · A/B共用立柱
+            </td>
+        </tr>
+        <tr>
+            <td rowspan="4" class="vertical-label vert-b">
+                货架02<br />B面
+            </td>
+            <td class="rack-b">WH01-02B0401</td><td class="rack-b">WH01-02B0402</td>
+            <td class="rack-b">WH01-02B0403</td><td class="rack-b">WH01-02B0404</td>
+            <td class="rack-b">WH01-02B0405</td><td class="rack-b">WH01-02B0406</td>
+            <td class="rack-b">WH01-02B0407</td><td class="rack-b">WH01-02B0408</td>
+            <td class="rack-b">WH01-02B0409</td><td class="rack-b">WH01-02B0410</td>
+        </tr>
+        <tr>
+            <td class="rack-b">WH01-02B0301</td><td class="rack-b">WH01-02B0302</td>
+            <td class="rack-b">WH01-02B0303</td><td class="rack-b">WH01-02B0304</td>
+            <td class="rack-b">WH01-02B0305</td><td class="rack-b">WH01-02B0306</td>
+            <td class="rack-b">WH01-02B0307</td><td class="rack-b">WH01-02B0308</td>
+            <td class="rack-b">WH01-02B0309</td><td class="rack-b">WH01-02B0310</td>
+        </tr>
+        <tr>
+            <td class="rack-b">WH01-02B0201</td><td class="rack-b">WH01-02B0202</td>
+            <td class="rack-b">WH01-02B0203</td><td class="rack-b">WH01-02B0204</td>
+            <td class="rack-b">WH01-02B0205</td><td class="rack-b">WH01-02B0206</td>
+            <td class="rack-b">WH01-02B0207</td><td class="rack-b">WH01-02B0208</td>
+            <td class="rack-b">WH01-02B0209</td><td class="rack-b">WH01-02B0210</td>
+        </tr>
+        <tr>
+            <td class="rack-b">WH01-02B0101</td><td class="rack-b">WH01-02B0102</td>
+            <td class="rack-b">WH01-02B0103</td><td class="rack-b">WH01-02B0104</td>
+            <td class="rack-b">WH01-02B0105</td><td class="rack-b">WH01-02B0106</td>
+            <td class="rack-b">WH01-02B0107</td><td class="rack-b">WH01-02B0108</td>
+            <td class="rack-b">WH01-02B0109</td><td class="rack-b">WH01-02B0110</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- ========= 共用通道2 (货架02与货架03之间) 编号 C02 ========= -->
+    <table class="rack-table" style="margin-top: 0; margin-bottom: 0; border: none;">
+        <tbody>
+        <tr style="line-height: 1">
+            <td class="vertical-aisle" style="width: 40px">⬆️ 通道 ⬇️</td>
+            <td colspan="11" class="shared-cell" style="text-align: center;">
+                🚶 🔄 共用通道 · C03 (货架02 B面 ↔ 货架03 A面 · 双向拣选) 🚶
+            </td>
+            <td class="vertical-aisle" style="width: 40px">⬆️ 通道 ⬇️</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- ================= 货架 03 ================= -->
+    <table class="rack-table">
+        <tbody>
+        <tr>
+            <td rowspan="10" class="vertical-aisle">⬆️ 竖向 ⬇️</td>
+            <td rowspan="4" class="vertical-label vert-a">
+                货架03<br />A面
+            </td>
+            <td class="rack-a">WH01-03A0401</td><td class="rack-a">WH01-03A0402</td>
+            <td class="rack-a">WH01-03A0403</td><td class="rack-a">WH01-03A0404</td>
+            <td class="rack-a">WH01-03A0405</td><td class="rack-a">WH01-03A0406</td>
+            <td class="rack-a">WH01-03A0407</td><td class="rack-a">WH01-03A0408</td>
+            <td class="rack-a">WH01-03A0409</td><td class="rack-a">WH01-03A0410</td>
+            <td rowspan="10" class="vertical-aisle">⬆️ 竖向 ⬇️</td>
+        </tr>
+        <tr>
+            <td class="rack-a">WH01-03A0301</td><td class="rack-a">WH01-03A0302</td>
+            <td class="rack-a">WH01-03A0303</td><td class="rack-a">WH01-03A0304</td>
+            <td class="rack-a">WH01-03A0305</td><td class="rack-a">WH01-03A0306</td>
+            <td class="rack-a">WH01-03A0307</td><td class="rack-a">WH01-03A0308</td>
+            <td class="rack-a">WH01-03A0309</td><td class="rack-a">WH01-03A0310</td>
+        </tr>
+        <tr>
+            <td class="rack-a">WH01-03A0201</td><td class="rack-a">WH01-03A0202</td>
+            <td class="rack-a">WH01-03A0203</td><td class="rack-a">WH01-03A0204</td>
+            <td class="rack-a">WH01-03A0205</td><td class="rack-a">WH01-03A0206</td>
+            <td class="rack-a">WH01-03A0207</td><td class="rack-a">WH01-03A0208</td>
+            <td class="rack-a">WH01-03A0209</td><td class="rack-a">WH01-03A0210</td>
+        </tr>
+        <tr>
+            <td class="rack-a">WH01-03A0101</td><td class="rack-a">WH01-03A0102</td>
+            <td class="rack-a">WH01-03A0103</td><td class="rack-a">WH01-03A0104</td>
+            <td class="rack-a">WH01-03A0105</td><td class="rack-a">WH01-03A0106</td>
+            <td class="rack-a">WH01-03A0107</td><td class="rack-a">WH01-03A0108</td>
+            <td class="rack-a">WH01-03A0109</td><td class="rack-a">WH01-03A0110</td>
+        </tr>
+        <tr>
+            <td colspan="11" class="mid-divider">
+                🔗 实体叠放区 · A/B共用立柱
+            </td>
+        </tr>
+        <tr>
+            <td rowspan="4" class="vertical-label vert-b">
+                货架03<br />B面
+            </td>
+            <td class="rack-b">WH01-03B0401</td><td class="rack-b">WH01-03B0402</td>
+            <td class="rack-b">WH01-03B0403</td><td class="rack-b">WH01-03B0404</td>
+            <td class="rack-b">WH01-03B0405</td><td class="rack-b">WH01-03B0406</td>
+            <td class="rack-b">WH01-03B0407</td><td class="rack-b">WH01-03B0408</td>
+            <td class="rack-b">WH01-03B0409</td><td class="rack-b">WH01-03B0410</td>
+        </tr>
+        <tr>
+            <td class="rack-b">WH01-03B0301</td><td class="rack-b">WH01-03B0302</td>
+            <td class="rack-b">WH01-03B0303</td><td class="rack-b">WH01-03B0304</td>
+            <td class="rack-b">WH01-03B0305</td><td class="rack-b">WH01-03B0306</td>
+            <td class="rack-b">WH01-03B0307</td><td class="rack-b">WH01-03B0308</td>
+            <td class="rack-b">WH01-03B0309</td><td class="rack-b">WH01-03B0310</td>
+        </tr>
+        <tr>
+            <td class="rack-b">WH01-03B0201</td><td class="rack-b">WH01-03B0202</td>
+            <td class="rack-b">WH01-03B0203</td><td class="rack-b">WH01-03B0204</td>
+            <td class="rack-b">WH01-03B0205</td><td class="rack-b">WH01-03B0206</td>
+            <td class="rack-b">WH01-03B0207</td><td class="rack-b">WH01-03B0208</td>
+            <td class="rack-b">WH01-03B0209</td><td class="rack-b">WH01-03B0210</td>
+        </tr>
+        <tr>
+            <td class="rack-b">WH01-03B0101</td><td class="rack-b">WH01-03B0102</td>
+            <td class="rack-b">WH01-03B0103</td><td class="rack-b">WH01-03B0104</td>
+            <td class="rack-b">WH01-03B0105</td><td class="rack-b">WH01-03B0106</td>
+            <td class="rack-b">WH01-03B0107</td><td class="rack-b">WH01-03B0108</td>
+            <td class="rack-b">WH01-03B0109</td><td class="rack-b">WH01-03B0110</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- ========= 底部通道 (位于货架03下方) 编号 B01 双向拣选风格 ========= -->
+    <table class="rack-table" style="margin-top: 0; margin-bottom: 0; border: none;">
+        <tbody>
+        <tr style="line-height: 1">
+            <td class="vertical-aisle" style="width: 40px">⬆️ 竖向 ⬇️</td>
+            <td colspan="11" class="shared-cell" style="text-align: center;">
+                🚶 ⬇️ 底部通道 · U04 (货架03 B面拣选主通道) ⬇️ 🚶
+            </td>
+            <td class="vertical-aisle" style="width: 40px">⬆️ 竖向 ⬇️</td>
+        </tr>
+        </tbody>
+    </table>
+    <!-- 补充说明：所有横向通道均已编号(T01/C01/C02/B01)，竖向贯穿，统一通道高度，满足双向拣选规范 -->
+</div>
+</body>
+</html>

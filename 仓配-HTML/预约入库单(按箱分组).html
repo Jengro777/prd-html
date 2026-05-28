@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>亚马逊FBA · 智能发/补货工作台 v12</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #f0f4f8;
+      font-family: 'Inter', 'Segoe UI', 'Roboto', system-ui, sans-serif;
+      padding: 20px;
+      color: #1a2332;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* ========== 头部 ========== */
+    .amazon-header {
+      background: linear-gradient(135deg, #131a22 0%, #232f3e 100%);
+      margin: -20px -20px 0 -20px;
+      padding: 14px 24px;
+      border-bottom: 3px solid #ff9900;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .logo-area h1 {
+      color: white;
+      font-weight: 500;
+      font-size: 1.35rem;
+    }
+    .logo-area h1 span {
+      color: #ff9900;
+      font-weight: 700;
+    }
+    .logo-area p {
+      color: #8d99a8;
+      font-size: 0.7rem;
+      margin-top: 1px;
+    }
+    .fba-badge {
+      background: #ff9900;
+      color: #0f171e;
+      padding: 7px 16px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.73rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ========== 全局设置 ========== */
+    .global-settings-card {
+      background: white;
+      border-radius: 14px;
+      padding: 16px 18px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.03);
+      border: 1px solid #e2e8f0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .setting-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      min-width: 150px;
+    }
+    .setting-group.address-group {
+      flex: 2.5;
+      min-width: 280px;
+      align-items: flex-start;
+    }
+    .setting-group label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #4a5568;
+      text-transform: uppercase;
+      white-space: nowrap;
+      padding-top: 6px;
+    }
+    .setting-group select {
+      flex: 1;
+      padding: 9px 10px;
+      border: 1px solid #d1d9e6;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      background: #fafbfc;
+      min-width: 0;
+    }
+    .setting-group select:focus {
+      border-color: #ff9900;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.1);
+    }
+    .setting-group textarea {
+      flex: 1;
+      padding: 8px 10px;
+      border: 1px solid #d1d9e6;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      background: #fafbfc;
+      resize: vertical;
+      min-height: 36px;
+      max-height: 72px;
+      font-family: inherit;
+      line-height: 1.4;
+    }
+    .setting-group textarea:focus {
+      border-color: #ff9900;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.1);
+    }
+    .setting-divider {
+      width: 1px;
+      height: 36px;
+      background: #e2e8f0;
+      margin: 0 2px;
+      align-self: center;
+    }
+    .fc-address-bar {
+      width: 100%;
+      padding: 8px 12px;
+      background: #f0f9ff;
+      border-radius: 8px;
+      border: 1px solid #bae6fd;
+      font-size: 0.72rem;
+      color: #0369a1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .fc-address-bar.hidden {
+      display: none;
+    }
+
+    /* ========== 卡片 ========== */
+    .card {
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.03);
+      border: 1px solid #e8edf3;
+    }
+    .card-header {
+      padding: 12px 18px;
+      background: #fafbfc;
+      border-bottom: 1px solid #edf2f7;
+      font-weight: 700;
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #1a2332;
+      border-radius: 14px 14px 0 0;
+    }
+    .card-header .badge {
+      background: #e8edf3;
+      font-size: 0.62rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-left: auto;
+      font-weight: 600;
+    }
+    .card-body {
+      padding: 14px 18px;
+      overflow: visible;
+    }
+
+    /* ========== 按钮 ========== */
+    .btn {
+      padding: 8px 15px;
+      border-radius: 22px;
+      font-weight: 600;
+      font-size: 0.74rem;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: #ff9900;
+      color: #0f171e;
+      box-shadow: 0 2px 8px rgba(255, 153, 0, 0.2);
+    }
+    .btn-primary:hover {
+      background: #e58a00;
+    }
+    .btn-outline {
+      background: white;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+    }
+    .btn-outline:hover {
+      background: #f8fafc;
+    }
+    .btn-danger {
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+    .btn-danger:hover {
+      background: #fee2e2;
+    }
+    .btn-xs {
+      padding: 4px 10px;
+      font-size: 0.66rem;
+      border-radius: 12px;
+    }
+    .btn-icon {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #64748b;
+      padding: 4px 7px;
+      border-radius: 6px;
+      transition: 0.2s;
+    }
+    .btn-icon:hover {
+      background: #f1f5f9;
+      color: #dc2626;
+    }
+
+    /* ========== 箱子配置表单 ========== */
+    .box-form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .box-form-row input {
+      padding: 7px 6px;
+      border: 1px solid #d1d9e6;
+      border-radius: 8px;
+      font-size: 0.76rem;
+      text-align: center;
+    }
+    .box-form-row .name-input {
+      width: 140px;
+      text-align: left;
+      flex: 1;
+      min-width: 100px;
+    }
+    .box-form-row .size-input {
+      width: 55px;
+    }
+    .box-form-row .count-input {
+      width: 48px;
+    }
+    .box-form-row .weight-input {
+      width: 60px;
+    }
+    .box-form-row .form-label {
+      font-size: 0.66rem;
+      color: #64748b;
+      white-space: nowrap;
+    }
+
+    /* ========== 箱子列表 ========== */
+    .carton-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow: visible;
+    }
+    .carton-item {
+      background: #fafbfc;
+      border: 2px solid #e8edf3;
+      border-radius: 12px;
+      overflow: visible;
+      transition: all 0.15s;
+      cursor: pointer;
+    }
+    .carton-item:hover {
+      border-color: #d1d9e6;
+    }
+    .carton-item.selected {
+      border-color: #ff9900;
+      background: #fffef9;
+      box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.06);
+    }
+
+    .carton-item-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      flex-wrap: wrap;
+    }
+    .carton-item-header .carton-name {
+      font-weight: 700;
+      font-size: 0.85rem;
+      min-width: 100px;
+      flex: 1;
+    }
+    .carton-item-header .carton-name input {
+      width: 100%;
+      font-weight: 700;
+      font-size: 0.85rem;
+      border: 1px solid transparent;
+      background: transparent;
+      padding: 3px 5px;
+      border-radius: 5px;
+    }
+    .carton-item-header .carton-name input:focus {
+      border-color: #ff9900;
+      background: white;
+      outline: none;
+    }
+    .carton-item-header .carton-spec {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-size: 0.75rem;
+      color: #475569;
+      flex-wrap: wrap;
+    }
+    .carton-item-header .carton-spec input {
+      width: 50px;
+      padding: 3px 4px;
+      border: 1px solid transparent;
+      background: transparent;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #475569;
+    }
+    .carton-item-header .carton-spec input:focus {
+      border-color: #ff9900;
+      background: white;
+      outline: none;
+    }
+    .carton-item-header .carton-actions {
+      display: flex;
+      gap: 4px;
+    }
+    .warning-chip {
+      background: #fef3c7;
+      color: #92400e;
+      font-size: 0.62rem;
+      padding: 2px 7px;
+      border-radius: 8px;
+    }
+
+    .carton-item-body {
+      padding: 0 16px 14px 16px;
+      border-top: 1px solid #edf2f7;
+      display: block;
+      overflow: visible;
+    }
+
+    /* ========== 商品列表表格 ========== */
+    .product-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0;
+      font-size: 0.74rem;
+    }
+    .product-table th {
+      text-align: left;
+      padding: 8px 6px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      border-bottom: 2px solid #edf2f7;
+      white-space: nowrap;
+    }
+    .product-table td {
+      padding: 8px 6px;
+      border-bottom: 1px solid #f8fafc;
+      vertical-align: middle;
+    }
+    .product-table .prod-name {
+      font-weight: 600;
+      color: #1a2332;
+    }
+    .product-table .prod-fnsku {
+      color: #64748b;
+      font-size: 0.68rem;
+    }
+    .product-table .prod-spec {
+      color: #64748b;
+      font-size: 0.68rem;
+    }
+    .product-table input {
+      padding: 4px 5px;
+      border: 1px solid #d1d9e6;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      text-align: center;
+    }
+    .product-table input:focus {
+      border-color: #ff9900;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(255, 153, 0, 0.1);
+    }
+    .product-table .qty-input {
+      width: 55px;
+    }
+    .product-table .spec-input {
+      width: 55px;
+      text-align: left;
+      font-size: 0.68rem;
+    }
+    .product-table .size-input-cell {
+      width: 70px;
+      text-align: left;
+      font-size: 0.68rem;
+    }
+    .product-table .batch-input {
+      width: 95px;
+      text-align: left;
+    }
+    .product-table .over-limit-row td {
+      background: #fffbfb;
+    }
+    .product-table .warn-text {
+      color: #dc2626;
+      font-weight: 600;
+      font-size: 0.66rem;
+    }
+
+    .add-product-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin: 10px 0;
+      flex-wrap: wrap;
+      overflow: visible;
+    }
+    .add-product-row .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #475569;
+      white-space: nowrap;
+    }
+
+    /* ========== 搜索下拉框 ========== */
+    .searchable-select {
+      position: relative;
+      display: inline-block;
+      min-width: 220px;
+      flex: 1;
+      z-index: 10;
+    }
+    .searchable-select .search-display {
+      width: 100%;
+      padding: 8px 30px 8px 10px;
+      border: 1px solid #d1d9e6;
+      border-radius: 8px;
+      font-size: 0.76rem;
+      background: white;
+      cursor: pointer;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: #94a3b8;
+    }
+    .searchable-select .dropdown-arrow {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 0.65rem;
+      pointer-events: none;
+      transition: 0.2s;
+    }
+    .searchable-select.open .dropdown-arrow {
+      transform: translateY(-50%) rotate(180deg);
+    }
+    .searchable-select.open {
+      z-index: 9999;
+    }
+    .searchable-select .dropdown-panel {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      z-index: 9999;
+      background: white;
+      border: 1px solid #ff9900;
+      border-radius: 8px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+      max-height: 260px;
+      overflow-y: auto;
+      display: none;
+    }
+    .searchable-select.open .dropdown-panel {
+      display: block;
+    }
+    .searchable-select .dropdown-search {
+      padding: 6px;
+      position: sticky;
+      top: 0;
+      background: white;
+      border-bottom: 1px solid #f1f5f9;
+      z-index: 1;
+    }
+    .searchable-select .dropdown-search input {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 0.7rem;
+    }
+    .searchable-select .dropdown-option {
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 0.72rem;
+      border-bottom: 1px solid #f8fafc;
+      transition: background 0.1s;
+    }
+    .searchable-select .dropdown-option:hover {
+      background: #f0f9ff;
+    }
+    .searchable-select .dropdown-option .opt-name {
+      font-weight: 600;
+      color: #1a2332;
+    }
+    .searchable-select .dropdown-option .opt-meta {
+      color: #64748b;
+      font-size: 0.64rem;
+      display: flex;
+      gap: 6px;
+      margin-top: 1px;
+    }
+
+    /* ========== 底部汇总 ========== */
+    .summary-footer {
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.03);
+      border: 1px solid #e8edf3;
+      padding: 16px 20px;
+    }
+    .summary-title {
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: #1a2332;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .stat-item {
+      flex: 1;
+      min-width: 75px;
+      text-align: center;
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .stat-value {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #1a2332;
+    }
+    .stat-label {
+      font-size: 0.58rem;
+      color: #64748b;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+    .summary-warnings {
+      font-size: 0.68rem;
+      color: #92400e;
+      background: #fffbeb;
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-bottom: 10px;
+    }
+    .summary-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .toast-msg {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0f172a;
+      color: white;
+      padding: 10px 28px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      z-index: 10000;
+      animation: fadeInUp 0.3s ease;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0;
+        transform: translateX(-50%) translateY(10px); }
+      to { opacity: 1;
+        transform: translateX(-50%) translateY(0); }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 30px;
+      color: #94a3b8;
+    }
+    .empty-state i {
+      font-size: 2rem;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .inline-hint {
+      font-size: 0.64rem;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    /* 箱唛弹窗 */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 3000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    .label-preview {
+      border: 2px dashed #d1d9e6;
+      border-radius: 10px;
+      padding: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.66rem;
+      line-height: 1.5;
+      background: #fffef9;
+      white-space: pre-wrap;
+      color: #1a2332;
+    }
+  </style>
+</head>
+<body>
+
+<div class="amazon-header">
+  <div class="logo-area">
+    <h1><i class="fas fa-boxes"></i> Amazon <span>FBA</span> · 智能货件工作台</h1>
+    <p>完整 Send to Amazon 流程 | 全局设置 → 箱子配置 → 装箱分配 → 箱唛打印</p>
+  </div>
+  <div class="fba-badge"><i class="fas fa-check-circle"></i> 专业卖家 · 一站式发货</div>
+</div>
+
+<div class="container">
+
+  <!-- 全局设置 -->
+  <div class="global-settings-card">
+    <div class="setting-group address-group">
+      <label><i class="fas fa-map-marker-alt"></i> 发货地址</label>
+      <textarea id="shipFrom" rows="2" placeholder="输入发货地址">深圳市光明区公明街道上村莲塘同富裕旭发科技园7栋5楼</textarea>
+    </div>
+    <div class="setting-divider"></div>
+    <div class="setting-group">
+      <label><i class="fas fa-warehouse"></i> 目标FC</label>
+      <select id="targetFC"></select>
+    </div>
+    <div class="setting-divider"></div>
+    <div class="setting-group">
+      <label>预处理</label>
+      <select id="prepType">
+        <option value="SHIPPER">货主预处理</option>
+        <option value="AMAZON">亚马逊预处理(付费)</option>
+      </select>
+    </div>
+    <div class="setting-divider"></div>
+    <div class="setting-group">
+      <label>贴标方</label>
+      <select id="labelType">
+        <option value="SHIPPER">货主</option>
+        <option value="AMAZON">亚马逊</option>
+      </select>
+    </div>
+    <div class="fc-address-bar hidden" id="fcAddressBar">
+      <i class="fas fa-location-dot"></i>
+      <span id="fcAddressText"></span>
+    </div>
+  </div>
+
+  <!-- 箱子规格配置 -->
+  <div class="card">
+    <div class="card-header"><i class="fas fa-tape"></i> 📐 添加箱子规格</div>
+    <div class="card-body">
+      <form id="boxForm" class="box-form-row">
+        <input type="text" id="boxName" placeholder="箱子名称" class="name-input" required>
+        <span class="form-label">同款</span>
+        <input type="number" id="sameBoxCount" value="1" min="1" class="count-input" required>
+        <span class="form-label">箱</span>
+        <span class="form-label">长</span>
+        <input type="number" id="boxLength" step="0.1" value="50" class="size-input" required>
+        <span class="form-label">宽</span>
+        <input type="number" id="boxWidth" step="0.1" value="40" class="size-input" required>
+        <span class="form-label">高</span>
+        <input type="number" id="boxHeight" step="0.1" value="30" class="size-input" required>
+        <span class="form-label">cm</span>
+        <span class="form-label">毛重</span>
+        <input type="number" id="boxWeight" step="0.01" value="12" class="weight-input" required>
+        <span class="form-label">kg</span>
+        <button type="submit" class="btn btn-primary btn-xs" id="submitBoxBtn"><i class="fas fa-plus"></i> 添加</button>
+        <button type="button" class="btn btn-outline btn-xs" id="clearBoxFormBtn">重置</button>
+        <span id="editModeHint" style="font-size:0.62rem;color:#92400e;display:none;"></span>
+      </form>
+    </div>
+  </div>
+
+  <!-- 箱子清单 -->
+  <div class="card" style="overflow:visible;">
+    <div class="card-header">
+      <i class="fas fa-clipboard-list"></i> 🧾 箱子清单 & 装箱明细
+      <span class="badge" id="cartonCountBadge">0 组箱子</span>
+    </div>
+    <div class="card-body" style="overflow:visible;">
+      <div id="cartonListContainer" class="carton-list">
+        <div class="empty-state"><i class="fas fa-box"></i>暂无箱子，请在上面添加箱子规格</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 货件汇总 -->
+  <div class="summary-footer">
+    <div class="summary-title"><i class="fas fa-chart-bar"></i> 📊 货件汇总</div>
+    <div class="stats-row">
+      <div class="stat-item"><div class="stat-value" id="totalGroups">0</div><div class="stat-label">箱子组</div></div>
+      <div class="stat-item"><div class="stat-value" id="totalCartons">0</div><div class="stat-label">总箱数</div></div>
+      <div class="stat-item"><div class="stat-value" id="totalUnits">0</div><div class="stat-label">商品总件</div></div>
+      <div class="stat-item"><div class="stat-value" id="totalWeight">0.00</div><div class="stat-label">总毛重(kg)</div></div>
+      <div class="stat-item"><div class="stat-value" id="totalVolume">0.000</div><div class="stat-label">总体积(m³)</div></div>
+    </div>
+    <div class="summary-warnings" id="shipmentWarnings"></div>
+    <div class="summary-actions">
+      <button class="btn btn-outline" id="printBoxLabelsBtn"><i class="fas fa-print"></i> 打印箱唛</button>
+      <button class="btn btn-outline" id="exportShipmentBtn"><i class="fas fa-file-csv"></i> 导出货件CSV</button>
+      <button class="btn btn-danger" id="clearAllCartonsBtn"><i class="fas fa-trash-alt"></i> 清空所有箱子</button>
+    </div>
+  </div>
+</div>
+
+<!-- 箱唛弹窗 -->
+<div id="labelModal" style="display:none;" class="modal-overlay" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal-content">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <h3><i class="fas fa-tag"></i> FBA 箱唛预览</h3>
+      <button class="btn btn-outline btn-xs" onclick="document.getElementById('labelModal').style.display='none'">关闭</button>
+    </div>
+    <div class="label-preview" id="labelContent"></div>
+    <div style="margin-top:10px;text-align:right;">
+      <button class="btn btn-primary btn-xs" onclick="window.print()"><i class="fas fa-print"></i> 打印</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const fcData = [
+      { code: 'FTW1', name: '达拉斯', address: '33333 LBJ Fwy, Dallas, TX 75241' },
+      { code: 'ONT8', name: '圣贝纳迪诺', address: '24300 Nandina Ave, Moreno Valley, CA 92551' },
+      { code: 'LAX9', name: '洛杉矶', address: '11263 Oleander Ave, Fontana, CA 92337' },
+      { code: 'CLT2', name: '夏洛特', address: '10240 Old Dowd Rd, Charlotte, NC 28214' },
+      { code: 'MDW2', name: '芝加哥', address: '250 Emerald Dr, Joliet, IL 60433' },
+      { code: 'MEM1', name: '孟菲斯', address: '3292 Holmes Rd, Memphis, TN 38118' },
+      { code: 'PHL7', name: '费城', address: '650 Boulder Dr, Breinigsville, PA 18031' },
+      { code: 'SDF8', name: '路易斯维尔', address: '900 Patrol Rd, Jeffersonville, IN 47130' },
+      { code: 'MCO1', name: '奥兰多', address: '4020 N Haul Rd, Davenport, FL 33897' },
+      { code: 'SMF3', name: '萨克拉门托', address: '4723 S Koster Rd, Stockton, CA 95206' },
+      { code: 'RFD2', name: '罗克福德', address: '7003 N Alpine Rd, Loves Park, IL 61111' },
+      { code: 'ABE8', name: '阿伦敦', address: '705 Boulder Dr, Breinigsville, PA 18031' },
+      { code: 'TEB9', name: '新泽西', address: '8003 Industrial Ave, Carteret, NJ 07008' },
+      { code: 'SCK4', name: '斯托克顿', address: '4650 Newcastle Rd, Stockton, CA 95215' },
+      { code: 'IND9', name: '印第安纳波利斯', address: '715 Airtech Pkwy, Plainfield, IN 46168' }
+    ];
+
+    const productMaster = [
+      { id: 'p1', name: '高端降噪耳机', fnsku: 'X00123ABC', weight: '0.35kg', size: '18×12×8cm', maxPerCarton: 30 },
+      { id: 'p2', name: '无线充电宝', fnsku: 'X00987XYZ', weight: '0.28kg', size: '10×7×3cm', maxPerCarton: 50 },
+      { id: 'p3', name: 'USB-C数据线', fnsku: 'X00555USB', weight: '0.05kg', size: '100cm线长', maxPerCarton: 100 },
+      { id: 'p4', name: '手机保护壳', fnsku: 'X00888CASE', weight: '0.08kg', size: '16×8×2cm', maxPerCarton: 80 },
+      { id: 'p5', name: '蓝牙音箱', fnsku: 'X00222SPK', weight: '0.55kg', size: '20×10×10cm', maxPerCarton: 20 },
+      { id: 'p6', name: '快充适配器', fnsku: 'X00666CHG', weight: '0.12kg', size: '6×5×3cm', maxPerCarton: 60 },
+      { id: 'p7', name: '平板保护套', fnsku: 'X00777TAB', weight: '0.25kg', size: '28×22×2cm', maxPerCarton: 40 },
+      { id: 'p8', name: '车载手机支架', fnsku: 'X00444CAR', weight: '0.18kg', size: '12×8×8cm', maxPerCarton: 45 },
+    ];
+
+    let cartonGroups = [];
+    let nextCartonId = 1;
+    let editCartonId = null;
+    let selectedRowId = null;
+
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => document.querySelectorAll(sel);
+    const escapeHtml = (str) => {
+      if (!str) return '';
+      return String(str).replace(/[&<>]/g, m => ({ '&': '&lt;', '<': '&lt;', '>': '&gt;' })[m]);
+    };
+
+    function showMessage(msg, bg = '#0f172a') {
+      const toast = document.createElement('div');
+      toast.className = 'toast-msg';
+      toast.textContent = msg;
+      toast.style.background = bg;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2200);
+    }
+
+    function getProductById(id) { return productMaster.find(p => p.id === id); }
+
+    function generateBoxCode() {
+      const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      let code = '';
+      for (let i = 0; i < 16; i++) code += chars[Math.floor(Math.random() * chars.length)];
+      return code;
+    }
+
+    // FC
+    function initFCSelect() {
+      const select = $('#targetFC');
+      select.innerHTML = '<option value="">-- 选择运营中心 --</option>' +
+        fcData.map(fc => `<option value="${fc.code}">${fc.code} - ${fc.name}</option>`).join('');
+      select.value = 'FTW1';
+      updateFCAddress();
+    }
+
+    function updateFCAddress() {
+      const code = $('#targetFC').value;
+      const bar = $('#fcAddressBar');
+      const text = $('#fcAddressText');
+      if (!code) { bar.classList.add('hidden'); return; }
+      const fc = fcData.find(f => f.code === code);
+      if (fc) {
+        bar.classList.remove('hidden');
+        text.innerHTML = `<strong>${fc.code} (${fc.name})</strong> — ${escapeHtml(fc.address)}`;
+      } else bar.classList.add('hidden');
+    }
+    $('#targetFC').addEventListener('change', updateFCAddress);
+
+    // 箱子表单
+    function resetBoxForm() {
+      editCartonId = null;
+      $('#boxName').value = '';
+      $('#sameBoxCount').value = '1';
+      $('#boxLength').value = '50';
+      $('#boxWidth').value = '40';
+      $('#boxHeight').value = '30';
+      $('#boxWeight').value = '12';
+      $('#submitBoxBtn').innerHTML = '<i class="fas fa-plus"></i> 添加';
+      $('#editModeHint').style.display = 'none';
+    }
+
+    $('#boxForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = $('#boxName').value.trim();
+      if (!name) return showMessage('请输入箱子名称', '#dc2626');
+      const sameCount = Math.max(1, parseInt($('#sameBoxCount').value) || 1);
+      const l = parseFloat($('#boxLength').value);
+      const w = parseFloat($('#boxWidth').value);
+      const h = parseFloat($('#boxHeight').value);
+      const wt = parseFloat($('#boxWeight').value);
+      if ([l, w, h, wt].some(v => isNaN(v) || v <= 0)) return showMessage('尺寸和重量必须大于0', '#dc2626');
+
+      if (editCartonId) {
+        const idx = cartonGroups.findIndex(g => g.id === editCartonId);
+        if (idx !== -1) {
+          cartonGroups[idx] = { ...cartonGroups[idx], name, length: l, width: w, height: h, weightPerBox: wt,
+            sameBoxCount: sameCount };
+        }
+        showMessage(`箱子 "${name}" 已更新`);
+        selectedRowId = editCartonId;
+      } else {
+        const newId = nextCartonId++;
+        cartonGroups.push({
+          id: newId, name, length: l, width: w, height: h, weightPerBox: wt,
+          sameBoxCount: sameCount, items: [], boxCode: generateBoxCode()
+        });
+        showMessage(`箱子 "${name}" 已添加`);
+        selectedRowId = newId;
+      }
+      resetBoxForm();
+      renderAllCartons();
+    });
+    $('#clearBoxFormBtn').addEventListener('click', () => {
+      if (editCartonId && !confirm('放弃编辑？')) return;
+      resetBoxForm();
+    });
+
+    // 搜索下拉
+    function buildSearchableSelectHtml(cartonId) {
+      return `
+        <div class="searchable-select" id="searchSelect_${cartonId}">
+          <div class="search-display" onclick="window.toggleSearchDropdown('${cartonId}')" tabindex="0">+ 搜索添加商品…</div>
+          <span class="dropdown-arrow"><i class="fas fa-chevron-down"></i></span>
+          <div class="dropdown-panel">
+            <div class="dropdown-search"><input type="text" placeholder="输入名称/FNSKU搜索…" oninput="window.filterSearchOptions('${cartonId}', this.value)"></div>
+            <div class="dropdown-list" id="dropdownList_${cartonId}">
+              ${productMaster.map(p => `
+                <div class="dropdown-option" data-pid="${p.id}" onclick="window.selectSearchProduct('${cartonId}', '${p.id}')">
+                  <span class="opt-name">${escapeHtml(p.name)}</span>
+                  <span class="opt-meta"><span>FNSKU: ${escapeHtml(p.fnsku)}</span><span>${escapeHtml(p.weight)}</span><span>${escapeHtml(p.size)}</span><span>上限: ${p.maxPerCarton}</span></span>
+                </div>`).join('')}
+            </div>
+          </div>
+        </div>`;
+    }
+
+    window.toggleSearchDropdown = function(cartonId) {
+      const el = document.getElementById(`searchSelect_${cartonId}`);
+      if (!el) return;
+      const isOpen = el.classList.contains('open');
+      $$('.searchable-select.open').forEach(s => s.classList.remove('open'));
+      if (!isOpen) {
+        el.classList.add('open');
+        setTimeout(() => { const inp = el.querySelector('.dropdown-search input'); if (inp) inp.focus(); }, 50);
+      }
+    };
+    window.filterSearchOptions = function(cartonId, query) {
+      const list = document.getElementById(`dropdownList_${cartonId}`);
+      if (!list) return;
+      const q = query.toLowerCase().trim();
+      const options = list.querySelectorAll('.dropdown-option');
+      let hasResult = false;
+      options.forEach(opt => { const m = !q || opt.textContent.toLowerCase().includes(q);
+        opt.style.display = m ? '' : 'none'; if (m) hasResult = true; });
+      let nr = list.querySelector('.no-result');
+      if (!hasResult && !nr) { nr = document.createElement('div');
+        nr.className = 'no-result';
+        nr.style.cssText = 'padding:12px;text-align:center;color:#94a3b8;font-size:0.7rem;';
+        nr.textContent = '无匹配商品';
+        list.appendChild(nr); } else if (hasResult && nr) nr.remove();
+    };
+    window.selectSearchProduct = function(cartonId, productId) {
+      const group = cartonGroups.find(g => g.id === parseInt(cartonId));
+      if (!group) return;
+      const product = getProductById(productId);
+      if (!product) return;
+      const exists = group.items.findIndex(it => it.productId === productId);
+      if (exists !== -1) { showMessage(`"${product.name}" 已在此箱中`, '#92400e'); } else {
+        group.items.push({
+          productId,
+          quantity: 0,
+          maxPerCarton: product.maxPerCarton,
+          batchNo: '',
+          // 从productMaster复制规格，后续可独立编辑
+          itemWeight: product.weight,
+          itemSize: product.size
+        });
+        showMessage(`已添加 "${product.name}"`); }
+      const el = document.getElementById(`searchSelect_${cartonId}`);
+      if (el) el.classList.remove('open');
+      renderAllCartons();
+    };
+    document.addEventListener('click', e => { if (!e.target.closest('.searchable-select')) $$(
+        '.searchable-select.open').forEach(s => s.classList.remove('open')); });
+
+    // 列表事件
+    const listContainer = document.getElementById('cartonListContainer');
+
+    listContainer.addEventListener('click', (e) => {
+      if (e.target.closest('button') || e.target.closest('.searchable-select') || e.target.closest('input') || e
+        .target.closest('select')) return;
+      const item = e.target.closest('.carton-item');
+      if (!item) return;
+      const cartonId = parseInt(item.dataset.cartonId);
+      selectedRowId = (selectedRowId === cartonId) ? null : cartonId;
+      renderAllCartons();
+    });
+
+    listContainer.addEventListener('input', (e) => {
+      const cartonItem = e.target.closest('.carton-item');
+      if (!cartonItem) return;
+      const cartonId = parseInt(cartonItem.dataset.cartonId);
+      const group = cartonGroups.find(g => g.id === cartonId);
+      if (!group) return;
+      const cls = e.target.classList;
+      if (cls.contains('inline-name')) group.name = e.target.value.trim() || group.name;
+      else if (cls.contains('inline-length')) group.length = parseFloat(e.target.value) || group.length;
+      else if (cls.contains('inline-width')) group.width = parseFloat(e.target.value) || group.width;
+      else if (cls.contains('inline-height')) group.height = parseFloat(e.target.value) || group.height;
+      else if (cls.contains('inline-weight')) group.weightPerBox = parseFloat(e.target.value) || group.weightPerBox;
+      else if (cls.contains('inline-count')) group.sameBoxCount = Math.max(1, parseInt(e.target.value) || 1);
+      else if (cls.contains('item-qty-input')) { const idx = parseInt(e.target.dataset.itemIdx); if (group.items[
+          idx]) group.items[idx].quantity = Math.max(0, parseInt(e.target.value) || 0); } else if (cls.contains(
+          'item-max-input')) { const idx = parseInt(e.target.dataset.itemIdx); if (group.items[idx]) group.items[
+          idx].maxPerCarton = Math.max(1, parseInt(e.target.value) || 1); } else if (cls.contains(
+        'item-batch-input')) { const idx = parseInt(e.target.dataset.itemIdx); if (group.items[idx]) group.items[
+          idx].batchNo = e.target.value.trim(); }
+      // 规格编辑
+      else if (cls.contains('item-weight-input')) { const idx = parseInt(e.target.dataset.itemIdx); if (group
+          .items[idx]) group.items[idx].itemWeight = e.target.value.trim(); } else if (cls.contains(
+          'item-size-input')) { const idx = parseInt(e.target.dataset.itemIdx); if (group.items[idx]) group.items[
+          idx].itemSize = e.target.value.trim(); }
+      updateStatsAndWarnings();
+    });
+
+    listContainer.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      if (btn.classList.contains('remove-item-btn')) {
+        e.stopPropagation();
+        const cartonId = parseInt(btn.dataset.cartonId);
+        const itemIdx = parseInt(btn.dataset.itemIdx);
+        const group = cartonGroups.find(g => g.id === cartonId);
+        if (!group || !group.items[itemIdx]) return;
+        const product = getProductById(group.items[itemIdx].productId);
+        group.items.splice(itemIdx, 1);
+        renderAllCartons();
+        showMessage(`已移除 "${product?.name || '商品'}"`);
+        return;
+      }
+      if (btn.classList.contains('delete-carton-btn')) {
+        e.stopPropagation();
+        const cartonId = parseInt(btn.dataset.cartonId);
+        const group = cartonGroups.find(g => g.id === cartonId);
+        if (!group) return;
+        if (confirm(`删除箱子 "${group.name}"？`)) {
+          cartonGroups = cartonGroups.filter(g => g.id !== cartonId);
+          if (editCartonId === cartonId) resetBoxForm();
+          if (selectedRowId === cartonId) selectedRowId = null;
+          renderAllCartons();
+          showMessage(`已删除 "${group.name}"`);
+        }
+      }
+    });
+
+    // 渲染
+    function renderAllCartons() {
+      const container = document.getElementById('cartonListContainer');
+      if (!container) return;
+      if (cartonGroups.length === 0) {
+        container.innerHTML =
+          '<div class="empty-state"><i class="fas fa-box"></i>暂无箱子，请在上面添加箱子规格</div>';
+        $('#cartonCountBadge').textContent = '0 组箱子';
+        updateStatsAndWarnings();
+        return;
+      }
+      $('#cartonCountBadge').textContent = `${cartonGroups.length} 组箱子`;
+
+      const html = cartonGroups.map(g => {
+        const isSelected = selectedRowId === g.id;
+        const oversize = g.length > 63.5 || g.width > 63.5 || g.height > 63.5;
+        const overweight = g.weightPerBox > 23;
+        let warns = '';
+        if (oversize) warns += '<span class="warning-chip">📐 超规</span> ';
+        if (overweight) warns += '<span class="warning-chip">⚖️ 超重</span> ';
+
+        let totalQty = 0;
+        let productRows = '';
+        if (g.items.length > 0) {
+          productRows = `
+            <table class="product-table">
+              <thead><tr><th>商品名称</th><th>FNSKU</th><th>重量</th><th>尺寸</th><th>装箱数量</th><th>上限</th><th>批次号</th><th>状态</th><th></th></tr></thead>
+              <tbody>
+                ${g.items.map((item, idx) => {
+                  const product = getProductById(item.productId);
+                  const overMax = item.maxPerCarton > 0 && item.quantity > item.maxPerCarton;
+                  totalQty += item.quantity;
+                  const displayWeight = item.itemWeight || product?.weight || '';
+                  const displaySize = item.itemSize || product?.size || '';
+                  return `
+                    <tr class="${overMax ? 'over-limit-row' : ''}">
+                      <td class="prod-name">${escapeHtml(product?.name || '未知')}</td>
+                      <td class="prod-fnsku">${escapeHtml(product?.fnsku || '?')}</td>
+                      <td><input type="text" class="item-weight-input spec-input" data-item-idx="${idx}" value="${escapeHtml(displayWeight)}" placeholder="例: 0.35kg"></td>
+                      <td><input type="text" class="item-size-input size-input-cell" data-item-idx="${idx}" value="${escapeHtml(displaySize)}" placeholder="例: 18×12×8cm"></td>
+                      <td><input type="number" class="item-qty-input qty-input" data-item-idx="${idx}" value="${item.quantity}" min="0"></td>
+                      <td><input type="number" class="item-max-input qty-input" data-item-idx="${idx}" value="${item.maxPerCarton}" min="1"></td>
+                      <td><input type="text" class="item-batch-input batch-input" data-item-idx="${idx}" value="${escapeHtml(item.batchNo || '')}" placeholder="批次号"></td>
+                      <td>${overMax ? '<span class="warn-text">⚠️ 超限</span>' : '<span style="color:#16a34a;">✅</span>'}</td>
+                      <td><button class="btn-icon remove-item-btn" data-carton-id="${g.id}" data-item-idx="${idx}" title="移除">🗑️</button></td>
+                    </tr>`;
+                }).join('')}
+              </tbody>
+            </table>`;
+        }
+
+        return `
+          <div class="carton-item ${isSelected ? 'selected' : ''}" data-carton-id="${g.id}">
+            <div class="carton-item-header">
+              <div class="carton-name">
+                <i class="fas fa-box" style="color:#ff9900;margin-right:4px;"></i>
+                <input type="text" class="inline-name" value="${escapeHtml(g.name)}" title="点击编辑名称">
+              </div>
+              <div class="carton-spec">
+                <span>📐 <input type="number" class="inline-length" value="${g.length.toFixed(1)}" step="0.1">×<input type="number" class="inline-width" value="${g.width.toFixed(1)}" step="0.1">×<input type="number" class="inline-height" value="${g.height.toFixed(1)}" step="0.1"> cm</span>
+                <span>⚖️ <input type="number" class="inline-weight" value="${g.weightPerBox.toFixed(2)}" step="0.01"> kg</span>
+                <span>📦 <input type="number" class="inline-count" value="${g.sameBoxCount}" min="1"> 箱</span>
+                <span><strong>${totalQty * g.sameBoxCount}</strong> 件</span>
+              </div>
+              ${warns ? '<div>' + warns + '</div>' : ''}
+              <div class="carton-actions">
+                <button class="btn-icon delete-carton-btn" data-carton-id="${g.id}" title="删除">🗑️</button>
+              </div>
+            </div>
+            <div class="carton-item-body">
+              ${productRows || '<div style="color:#94a3b8;font-size:0.7rem;margin:6px 0;">暂无商品，使用下方搜索框添加</div>'}
+              <div class="add-product-row">
+                <span class="section-label"><i class="fas fa-plus-circle"></i> 添加商品：</span>
+                ${buildSearchableSelectHtml(g.id)}
+              </div>
+              <div class="inline-hint">💡 点击行选中后可直接编辑箱子信息、商品数量/上限/批次号/重量/尺寸</div>
+            </div>
+          </div>`;
+      }).join('');
+
+      container.innerHTML = html;
+      updateStatsAndWarnings();
+    }
+
+    function updateStatsAndWarnings() {
+      let tc = 0,
+        tu = 0,
+        tw = 0,
+        tv = 0;
+      const aw = [];
+      cartonGroups.forEach(g => {
+        const vs = (g.length * g.width * g.height) / 1_000_000;
+        tc += g.sameBoxCount;
+        const bu = g.items.reduce((a, i) => a + i.quantity, 0);
+        tu += bu * g.sameBoxCount;
+        tw += g.weightPerBox * g.sameBoxCount;
+        tv += vs * g.sameBoxCount;
+        g.items.forEach(item => {
+          const p = getProductById(item.productId);
+          if (p && item.maxPerCarton > 0 && item.quantity > item.maxPerCarton) aw.push(
+            `${g.name}: "${p.name}" ${item.quantity}>${item.maxPerCarton}`);
+        });
+      });
+      $('#totalGroups').textContent = cartonGroups.length;
+      $('#totalCartons').textContent = tc;
+      $('#totalUnits').textContent = tu;
+      $('#totalWeight').textContent = tw.toFixed(2);
+      $('#totalVolume').textContent = tv.toFixed(4);
+      let wh = aw.map(w => `<div>⚠️ ${escapeHtml(w)}</div>`).join('');
+      if (cartonGroups.some(g => g.length > 63.5 || g.width > 63.5 || g.height > 63.5)) wh +=
+        '<div>📐 存在单边超过63.5cm的箱子</div>';
+      if (cartonGroups.some(g => g.weightPerBox > 23)) wh += '<div>⚖️ 单箱超过23kg需贴"机械搬运"标签</div>';
+      if (!wh && cartonGroups.length > 0) wh = '<div style="color:#16a34a;">✅ 所有箱子符合亚马逊标准</div>';
+      if (cartonGroups.length === 0) wh = '📦 尚未添加箱子';
+      $('#shipmentWarnings').innerHTML = wh;
+    }
+
+    // 箱唛 & 导出
+    function generateBoxLabel(group, boxIndex) {
+      const targetFC = $('#targetFC').value;
+      const fcInfo = fcData.find(f => f.code === targetFC);
+      const shipFrom = $('#shipFrom').value.replace(/\n/g, ' ');
+      const now = new Date();
+      const ds = now.toISOString().split('T')[0];
+      const ts = now.toTimeString().split(' ')[0];
+      const code = group.boxCode || generateBoxCode();
+      const items = group.items.map(it => { const p = getProductById(it.productId); return p ? { name: p.name,
+          fnsku: p.fnsku, qty: it.quantity, batch: it.batchNo || '-' } : null; }).filter(Boolean);
+      const tq = items.reduce((a, b) => a + b.qty, 0);
+      const nw = group.weightPerBox.toFixed(2);
+      const cbm = ((group.length * group.width * group.height) / 1_000_000).toFixed(4);
+      let label = `┌──────────────────────────────┐\n`;
+      label += `│      FBA 箱唛标签            │\n`;
+      label += `│ Box ${String(boxIndex).padStart(2)}/${String(group.sameBoxCount).padStart(2)}  Gross: ${nw} KG │\n`;
+      label += `├──────────────────────────────┤\n`;
+      label += `│ SHIP TO: ${(fcInfo ? fcInfo.address : targetFC).substring(0, 28).padEnd(28)}│\n`;
+      label += `│ SHIP FROM: ${shipFrom.substring(0, 28).padEnd(28)}│\n`;
+      label += `├──────────────────────────────┤\n│ ${ds} ${ts} UTC 0 │\n`;
+      label += `├──────────────────────────────┤\n│ ${code.padEnd(36)}│\n`;
+      label += `├──────────────────────────────┤\n`;
+      label +=
+        `│ Net: ${nw.padStart(6)} KG  QTY: ${String(tq).padStart(3)} PCS   │\n│ CBM: ${cbm.padStart(8)}  Size: ${group.length}×${group.width}×${group.height} cm│\n`;
+      if (items.length > 0) {
+        label += `├──────────────────────────────┤\n`;
+        items.forEach(it => label +=
+          `│ ${it.name.substring(0, 16).padEnd(16)} ×${String(it.qty).padStart(3)} ${it.batch.padEnd(8)}│\n`);
+      }
+      label += `└──────────────────────────────┘`;
+      return label;
+    }
+
+    $('#printBoxLabelsBtn').addEventListener('click', () => {
+      if (!cartonGroups.length) return showMessage('无数据', '#dc2626');
+      let all = '';
+      cartonGroups.forEach(g => { for (let i = 1; i <= g.sameBoxCount; i++) all += generateBoxLabel(g, i) +
+          '\n\n'; });
+      $('#labelContent').textContent = all;
+      $('#labelModal').style.display = 'flex';
+    });
+
+    $('#exportShipmentBtn').addEventListener('click', () => {
+      if (!cartonGroups.length) return showMessage('无数据', '#dc2626');
+      const sf = $('#shipFrom').value.replace(/\n/g, ' ');
+      const fc = $('#targetFC').value;
+      const fi = fcData.find(f => f.code === fc);
+      let csv =
+        `FBA货件,发货地:${sf},目标FC:${fi ? fi.code + ' - ' + fi.name : fc}\n箱子,规格,单箱重,箱数,商品,FNSKU,重量,尺寸,数量,批次,总件数\n`;
+      cartonGroups.forEach(g => {
+        if (!g.items.length) csv +=
+          `${g.name},${g.length}×${g.width}×${g.height},${g.weightPerBox},${g.sameBoxCount},空,,,,,0\n`;
+        else g.items.forEach(it => { const p = getProductById(it.productId);
+          csv +=
+            `${g.name},${g.length}×${g.width}×${g.height},${g.weightPerBox},${g.sameBoxCount},${p?.name||'?'},${p?.fnsku||'?'},${it.itemWeight||p?.weight||''},${it.itemSize||p?.size||''},${it.quantity},${it.batchNo||'-'},${it.quantity*g.sameBoxCount}\n`; });
+      });
+      const b = new Blob(['\uFEFF' + csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(b);
+      a.download = `FBA_${Date.now()}.csv`;
+      a.click();
+      showMessage('CSV已导出', '#16a34a');
+    });
+
+    $('#clearAllCartonsBtn').addEventListener('click', () => {
+      if (!cartonGroups.length) return;
+      if (confirm('清空所有箱子？')) { cartonGroups = [];
+        selectedRowId = null;
+        resetBoxForm();
+        renderAllCartons();
+        showMessage('已清空'); }
+    });
+
+    function initDemo() {
+      initFCSelect();
+      cartonGroups.push({
+        id: nextCartonId++, name: '主箱A1', length: 50, width: 40, height: 32,
+        weightPerBox: 14.5, sameBoxCount: 2, boxCode: '07CXF295R0PODBZYVE',
+        items: [
+          { productId: 'p1', quantity: 25, maxPerCarton: 30, batchNo: 'BT2024-001', itemWeight: '0.35kg',
+            itemSize: '18×12×8cm' },
+          { productId: 'p3', quantity: 60, maxPerCarton: 100, batchNo: 'BT2024-002', itemWeight: '0.05kg',
+            itemSize: '100cm线长' }
+        ]
+      });
+      cartonGroups.push({
+        id: nextCartonId++, name: '配件箱B', length: 45, width: 35, height: 28,
+        weightPerBox: 11.2, sameBoxCount: 1, boxCode: '08DYD296S1QPEACZXW',
+        items: [
+          { productId: 'p2', quantity: 40, maxPerCarton: 50, batchNo: 'BT2024-003', itemWeight: '0.28kg',
+            itemSize: '10×7×3cm' }
+        ]
+      });
+      cartonGroups.push({
+        id: nextCartonId++, name: '超大件箱C', length: 70, width: 50, height: 45,
+        weightPerBox: 25, sameBoxCount: 1, boxCode: '09EZG307T2RQFBDYAX', items: []
+      });
+      renderAllCartons();
+    }
+    initDemo();
+  })();
+</script>
+</body>
+</html>

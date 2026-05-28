@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>WMS/TMS 签名计算 | 全接口调试工具</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', monospace;
+            background: #f0f4f8;
+            margin: 0;
+            padding: 24px 20px;
+        }
+        .dashboard {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            gap: 28px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+        .api-sidebar {
+            flex: 0 0 340px;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            overflow-y: auto;
+            position: sticky;
+            top: 24px;
+            max-height: calc(100vh - 48px);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e9edf2;
+            scrollbar-width: thin;
+        }
+        .api-sidebar::-webkit-scrollbar {
+            width: 4px;
+            background: transparent;
+        }
+        .api-sidebar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .sidebar-header {
+            background: #fafcff;
+            padding: 20px 20px 12px 20px;
+            border-bottom: 2px solid #eef2f6;
+            flex-shrink: 0;
+        }
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0a2540;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar-header p {
+            margin: 8px 0 0 0;
+            font-size: 12px;
+            color: #5c6f87;
+        }
+        .api-list {
+            flex: 1;
+            padding: 8px 0 20px 0;
+        }
+        .api-item {
+            padding: 14px 20px;
+            margin: 4px 12px;
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #ffffff;
+            border: 1px solid #edf2f7;
+        }
+        .api-item:hover {
+            background: #f1f9fe;
+            border-color: #bdd9ff;
+            transform: translateX(3px);
+        }
+        .api-item.active {
+            background: #eef4ff;
+            border-left: 4px solid #2563eb;
+            border-color: #2563eb #eef4ff #eef4ff #eef4ff;
+            box-shadow: 0 2px 6px rgba(37,99,235,0.08);
+        }
+        .api-method {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 40px;
+            margin-right: 12px;
+            background: #eef2ff;
+            color: #1e40af;
+            letter-spacing: 0.3px;
+        }
+        .api-method.post { background: #dbeafe; color: #1e3a8a; }
+        .api-method.get { background: #dcfce7; color: #166534; }
+        .api-path {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            color: #1f2a44;
+            word-break: break-all;
+        }
+        .api-desc {
+            font-size: 11px;
+            color: #5b6e8c;
+            margin-top: 8px;
+            padding-left: 4px;
+        }
+        .card {
+            flex: 1;
+            min-width: 540px;
+            background: white;
+            border-radius: 28px;
+            padding: 28px 28px 32px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+            border: 1px solid #eef2f8;
+        }
+        label {
+            font-weight: 600;
+            font-size: 13px;
+            display: block;
+            margin: 18px 0 6px 0;
+            color: #1e2f44;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #cfdfed;
+            border-radius: 16px;
+            font-family: 'SF Mono', 'Menlo', monospace;
+            font-size: 13px;
+            background: #ffffff;
+            transition: 0.2s;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+        }
+        textarea {
+            height: 200px;
+            font-family: monospace;
+            font-size: 12px;
+            line-height: 1.45;
+            resize: vertical;
+        }
+        .row {
+            display: flex;
+            gap: 18px;
+            margin-bottom: 4px;
+        }
+        .row > div {
+            flex: 1;
+        }
+        button {
+            background: #1f5fcf;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 16px;
+            margin-right: 12px;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #0f4bb3;
+            transform: translateY(-1px);
+        }
+        .btn-outline {
+            background: #f2f5f9;
+            color: #1f2f4e;
+            border: 1px solid #cfdfed;
+        }
+        .btn-outline:hover {
+            background: #e6edf6;
+        }
+        .btn-copy {
+            background: #0f6e4a;
+        }
+        .btn-copy:hover {
+            background: #0b5a3e;
+        }
+        .btn-test {
+            background: #dc5f13;
+        }
+        .btn-test:hover {
+            background: #b84c0c;
+        }
+        .btn-format {
+            background: #4f46e5;
+        }
+        .style-group {
+            background: #fafcff;
+            padding: 12px 16px;
+            border-radius: 24px;
+            margin: 16px 0 12px;
+            border: 1px solid #e6edf4;
+        }
+        .style-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .style-btn {
+            background: #eef2fa;
+            color: #1f2f4e;
+            margin-top: 0;
+            font-size: 12px;
+            padding: 5px 14px;
+        }
+        .style-btn.active {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 2px 6px rgba(37,99,235,0.3);
+        }
+        pre {
+            background: #0f172f;
+            color: #eef2ff;
+            padding: 18px;
+            border-radius: 20px;
+            overflow-x: auto;
+            font-size: 12px;
+            font-family: monospace;
+            margin-top: 12px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 24px 0 10px 0;
+        }
+        .info-tip {
+            background: #ecfdf5;
+            padding: 12px 18px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 28px;
+            color: #115e59;
+            border-left: 4px solid #14b8a6;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            backdrop-filter: blur(4px);
+        }
+        .toast.show {
+            opacity: 1;
+        }
+        .toast.success { background: #0e7c4b; }
+        .toast.error { background: #c2412c; }
+        .test-result-area {
+            margin-top: 24px;
+            background: #f8fafd;
+            border-radius: 24px;
+            padding: 18px;
+            border: 1px solid #e2edf7;
+            display: none;
+        }
+        .test-result-area.show {
+            display: block;
+        }
+        .trace-log {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: 11px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin-top: 12px;
+        }
+        .response-body {
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 16px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            border: 1px solid #e2edf7;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .doc-link {
+            background: #f0f4fa;
+            padding: 6px 14px;
+            border-radius: 60px;
+            font-size: 12px;
+            text-decoration: none;
+            color: #2c5f9a;
+            font-weight: 500;
+        }
+        .key-panel {
+            background: #f8fafd;
+            border-radius: 24px;
+            padding: 16px 20px;
+            margin: 8px 0 6px;
+            border: 1px solid #e2edf7;
+        }
+        .key-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+            background: #ffffffd9;
+            padding: 10px 14px;
+            border-radius: 20px;
+        }
+        .current-key-badge {
+            font-family: monospace;
+            font-size: 12px;
+            background: #eef2ff;
+            padding: 4px 12px;
+            border-radius: 60px;
+            color: #1e3a8a;
+        }
+        .preset-title {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 12px;
+            color: #1e2f44;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .preset-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .preset-btn {
+            background: #eef2fa;
+            color: #1e2f44;
+            border: 2px solid transparent;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 0;
+            transition: 0.1s;
+        }
+        .preset-btn.active-preset {
+            background: #2563eb;
+            color: white;
+            border-color: #1e40af;
+            box-shadow: 0 2px 6px rgba(37,99,235,0.3);
+        }
+        .preset-btn:hover {
+            background: #dfe6f0;
+            transform: translateY(0);
+        }
+        .custom-key-area {
+            margin-top: 8px;
+            border-top: 1px solid #e2edf7;
+            padding-top: 16px;
+        }
+        .custom-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .custom-row input {
+            flex: 1;
+            min-width: 180px;
+        }
+        .small-btn {
+            margin-top: 0;
+            padding: 6px 16px;
+            background: #4b6a8f;
+        }
+        .key-hint {
+            font-size: 11px;
+            color: #4b6a8f;
+            margin-top: 8px;
+        }
+        .inline-icon {
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 8px;
+            user-select: none;
+        }
+        @media (max-width: 860px) {
+            .dashboard { flex-direction: column; }
+            .api-sidebar { flex: auto; width: 100%; position: relative; top: 0; max-height: 380px; }
+            .card { min-width: auto; }
+        }
+        .category-tag {
+            font-size: 11px;
+            font-weight: 600;
+            background: #e9edf2;
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 30px;
+            margin-left: 8px;
+            color: #2c3e5c;
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+    <div class="api-sidebar">
+        <div class="sidebar-header">
+            <h3>📚 接口示例库 <span style="font-size:12px;">WMS + TMS</span></h3>
+            <p>基于官方文档 · 点击自动填充并触发签名</p>
+        </div>
+        <div class="api-list" id="apiListContainer"></div>
+    </div>
+
+    <div class="card">
+        <div class="flex-between">
+            <div>
+                <h2 style="margin:0 0 4px; font-size:1.7rem;">📦 WMS/TMS 签名+API请求</h2>
+                <div class="sub" style="color:#4b5e7c;">HMAC-SHA256 · 仓库/库区/商品/库存/出库 + TMS运单全接口</div>
+            </div>
+            <a href="http://dev.wms.kim/docs/01.api/03.wms/base-storage-add/" target="_blank" class="doc-link">📖 官方文档</a>
+        </div>
+
+        <div class="row">
+            <div>
+                <label>请求方法 🔧</label>
+                <select id="method" class="method-select">
+                    <option value="POST">POST</option>
+                    <option value="GET">GET</option>
+                </select>
+            </div>
+            <div>
+                <label>请求路径 (PATH)</label>
+                <input type="text" id="path" value="/open/v1/wms/base/storage/list" spellcheck="false">
+            </div>
+        </div>
+
+        <!-- 密钥管理区域：一键填充测试密钥 + 自定义密钥内置为独立类型 -->
+        <div class="key-panel">
+            <div class="key-status">
+                <span style="font-weight:500;">🔑 当前使用的密钥</span>
+                <div>
+                    <span id="activeKeyLabel" class="current-key-badge">📦 WMS中台 (默认)</span>
+                    <span id="keyVisibilityIcon" class="inline-icon" title="点击显示/隐藏 SecretKey">👁️</span>
+                </div>
+            </div>
+            <div style="background:#f1f5f9; border-radius: 20px; padding: 10px 14px; margin-bottom: 14px; font-family: monospace; font-size:12px;">
+                <div><strong>AccessKey:</strong> <span id="displayAk">AKF1PF78EFCJVZWQCRFYU7XCT8TDBCU</span></div>
+                <div><strong>SecretKey:</strong> <span id="displaySk" data-secret="qejWz0JrUfxIL7miKe4LnKSNSXJB2RTe">••••••••••••••••••••••</span></div>
+            </div>
+            <div class="preset-title">🔐 一键填充测试密钥</div>
+            <div class="preset-buttons" id="presetKeysContainer"></div>
+            
+            <!-- 自定义密钥区域 —— 作为一个独立的“自定义密钥类型” -->
+            <div class="custom-key-area">
+                <div style="font-size:12px; font-weight:500; margin-bottom:10px;">✏️ 自定义密钥类型</div>
+                <div class="custom-row">
+                    <input type="text" id="customAk" placeholder="输入自定义 AccessKey" value="">
+                    <input type="text" id="customSk" placeholder="输入自定义 SecretKey" value="">
+                    <button id="applyCustomKeyBtn" class="small-btn">⚡ 应用为当前密钥</button>
+                </div>
+                <div class="key-hint">💡 上方预设按钮快速填充，也可手动输入任意AK/SK并应用；激活的密钥按钮会高亮显示。</div>
+            </div>
+        </div>
+
+        <div class="style-group">
+            <div style="font-weight:500; font-size:13px;">🔁 字段命名风格 (快速调整参数映射)</div>
+            <div class="style-buttons" id="styleButtons">
+                <button type="button" class="style-btn" data-style="camelCase">🐫 小驼峰</button>
+                <button type="button" class="style-btn" data-style="lowercase">🔡 全小写</button>
+                <button type="button" class="style-btn" data-style="snakeCase">🐍 下划线</button>
+                <button type="button" class="style-btn" data-style="pascalCase">📌 首字母大写</button>
+                <button type="button" class="style-btn" data-style="minimal">📄 仅必填</button>
+            </div>
+        </div>
+
+        <div class="body-header flex-between">
+            <label>📄 请求体 (JSON) <span id="bodyHint" style="font-weight:normal; font-size:11px;">POST/GET签名规范</span></label>
+            <button class="btn-format" style="margin-top:0; padding:4px 14px;" onclick="formatJsonBody()">✨ 格式化</button>
+        </div>
+        <textarea id="body">{
+  "pageIndex": 1,
+  "pageSize": 20,
+  "storageName": "华东"
+}</textarea>
+
+        <div>
+            <button id="genSignBtn" onclick="handleGenerateAndRefresh()">✨ 生成签名</button>
+            <button class="btn-outline" onclick="resetToDefault()">🔄 重置示例</button>
+            <button class="btn-copy" id="copyCurlBtn">📎 复制 cURL (自动刷新签名)</button>
+            <button class="btn-test" id="testApiBtn">🚀 一键测试API (自动刷新签名)</button>
+        </div>
+
+        <div class="result-header">
+            <h4>🔐 签名结果 & 请求头</h4>
+        </div>
+        <pre id="result">点击「生成签名」计算签名...</pre>
+        
+        <div id="testResult" class="test-result-area"></div>
+
+        <div class="info-tip">
+            💡 <strong>智能调试助手 (WMS + TMS)</strong><br>
+            • 左侧API库已分类整合WMS仓储接口和TMS运单接口。<br>
+            • 密钥管理包含预设密钥 + <strong>自定义密钥类型</strong>，支持任意AK/SK手动输入并应用。<br>
+            • 点击「复制cURL」或「一键测试API」会自动基于当前密钥刷新签名。<br>
+            • 默认选中WMS中台密钥，预设按钮高亮跟随选中。
+        </div>
+    </div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+    // ======================= 接口定义库 =======================
+    // 新增 商品库存查询 (根据官方文档 /open/v1/wms/inventory/product/query)
+    const WMS_API_EXAMPLES = [
+        { name: "仓库列表", method: "POST", path: "/open/v1/wms/base/storage/list", desc: "分页模糊查询仓库", category: "WMS", body: { pageIndex:1, pageSize:20, storageName:"华东" } },
+        { name: "仓库查询", method: "POST", path: "/open/v1/wms/base/storage/query", desc: "按编码/名称精确查询", category: "WMS", body: { storageCode:"WH01" } },
+        { name: "仓库新增/更新", method: "POST", path: "/open/v1/wms/base/storage/add", desc: "存在则更新，否则新增", category: "WMS", body: { storageCode:"WH01", storageName:"华东一号仓", storageAdress:"上海市浦东新区", enable:1 } },
+        { name: "库区列表", method: "POST", path: "/open/v1/wms/base/storageArea/list", desc: "库区分页查询", category: "WMS", body: { pageIndex:1, pageSize:20, storageName:"华东" } },
+        { name: "库区查询", method: "POST", path: "/open/v1/wms/base/storageArea/query", desc: "根据仓库名称+库区编码查询", category: "WMS", body: { storageName:"华东一号仓", areaCode:"A001" } },
+        { name: "商品列表", method: "POST", path: "/open/v1/wms/base/product/list", desc: "商品分页 + 货主过滤", category: "WMS", body: { pageIndex:1, pageSize:20, consignorCode:"CONS001", productName:"牛奶" } },
+        { name: "库存明细查询", method: "POST", path: "/open/v1/wms/inventory/query", desc: "库存明细查询", category: "WMS", body: { productCode:"20221026002", storageName:"", pageIndex:1, pageSize:20 } },
+        // 新增商品库存聚合查询接口 (符合官方文档 open/v1/wms/inventory/product/query)
+        { name: "商品库存查询", method: "POST", path: "/open/v1/wms/inventory/product/query", desc: "商品库存查询", category: "WMS", body: { pageIndex:1, pageSize:15, minProductStorage:0, consignorName:"", storageName:"", productCode:"20221026002", productName:"", productModel:"", productSpec:"", produceDate:"", batchNumber:"", plateCode:"", containerNo:"", positionTypeList:[1,2,3] } },
+        { name: "出库单新增", method: "POST", path: "/open/v1/wms/out/order/add", desc: "创建出库单及明细", category: "WMS", body: { storeOrderCode:"ERP2026001", storageName:"华东一号仓", clientCode:"CLT001", consignorCode:"C001", totalAmount:299.9, detailList:[{ productCode:"P1001", quantityOrder:2, salePrice:99.9 }] } },
+        { name: "货主列表", method: "POST", path: "/open/v1/wms/base/consignor/list", desc: "货主分页查询", category: "WMS", body: { pageIndex:1, pageSize:20 } },
+        { name: "出库单查询", method: "POST", path: "/open/v1/wms/out/order/query", desc: "根据订单号查询出库单", category: "WMS", body: { orderCode:"OUT20260001" } },
+        { name: "货主查询", method: "POST", path: "/open/v1/wms/base/consignor/query", desc: "根据货主编码查询", category: "WMS", body: { consignorCode:"CONS001" } },
+        { name: "库位列表", method: "POST", path: "/open/v1/wms/base/position/list", desc: "货位列表", category: "WMS", body: { pageIndex:1, pageSize:20, storageName:"华东" } }
+    ];
+
+    const TMS_API_EXAMPLES = [
+        { name: "运单新增", method: "POST", path: "/open/v1/tms/waybill/add", desc: "创建运单及明细", category: "TMS", body: { "consignorName": "示例货主有限公司", "orderType": "销售出库", "consigneeName": "张三", "consigneeMobile": "13800138000", "provinceName": "浙江省", "cityName": "湖州市", "regionName": "吴兴区", "consigneeAddress": "某某路 88 号", "applyDate": "2026-04-06", "transportMode": "快递", "storageName": "华东一号仓", "sourceCode": "ERP-SN-202604060001", "detailList": [ { "productCode": "SKU001", "quantityOrder": 10, "salePrice": 99.5, "outStation": "WH01" } ] } },
+        { name: "运单查询", method: "POST", path: "/open/v1/tms/waybill/query", desc: "根据系统运单号查询", category: "TMS", body: { "wayBillCode": "YD2025040600001" } },
+        { name: "运单列表", method: "POST", path: "/open/v1/tms/waybill/list", desc: "分页查询运单", category: "TMS", body: { "pageIndex": 1, "pageSize": 20, "wayBillCode": "YD2025", "orderStatus": "待装车" } }
+    ];
+
+    const FULL_API_LIST = [...WMS_API_EXAMPLES, ...TMS_API_EXAMPLES];
+    
+    // 预设密钥配置 (包含 WMS/TMS 常用)
+    const PRESET_CREDENTIALS = [
+        { label: "📦 WMS中台 (默认)", ak: "AKF1PF78EFCJVZWQCRFYU7XCT8TDBCU", sk: "qejWz0JrUfxIL7miKe4LnKSNSXJB2RTe", desc: "租户:2-000000" },
+        { label: "🏢 TMS-企业用户端", ak: "AKNHZVLWRP88O8IKAIZ3H2HHATHQ3FC", sk: "4UXRsfOdUeRK5XecHZ0NikuIW409uLYN", desc: "credentialId:6" },
+        { label: "🏭 TMS中台", ak: "AK2CLZX5MUVXO2THOVI2MLSUPZPA4PQ", sk: "duiH7LESoOAwlg7IISIppEKUjBp0cmUF", desc: "租户:3-000000" },
+        { label: "🧾 WMS货主端", ak: "AKQKI6BADBQYIHKDS8QEMESICHSJ65Q", sk: "ZtfSmaizyVdurypwIbQMmKadHCm9iXJn", desc: "credentialId:11" }
+    ];
+
+    let currentAccessKey = PRESET_CREDENTIALS[0].ak;
+    let currentSecretKey = PRESET_CREDENTIALS[0].sk;
+    let currentLabel = PRESET_CREDENTIALS[0].label;
+    let activePresetIndex = 0;  // 当前激活的预设索引，-1 表示自定义密钥类型
+
+    function updateKeyUI() {
+        document.getElementById('displayAk').innerText = currentAccessKey;
+        const skSpan = document.getElementById('displaySk');
+        skSpan.setAttribute('data-secret', currentSecretKey);
+        const isMasked = skSpan.innerText.includes('•');
+        if (isMasked) {
+            skSpan.innerText = '••••••••••••••••••••••';
+        } else {
+            skSpan.innerText = currentSecretKey;
+        }
+        document.getElementById('activeKeyLabel').innerHTML = currentLabel;
+    }
+
+    function highlightPresetButton(highlightIndex) {
+        const allPresetBtns = document.querySelectorAll('.preset-btn');
+        allPresetBtns.forEach((btn, idx) => {
+            if (idx === highlightIndex) {
+                btn.classList.add('active-preset');
+            } else {
+                btn.classList.remove('active-preset');
+            }
+        });
+    }
+
+    function clearPresetHighlight() {
+        const allPresetBtns = document.querySelectorAll('.preset-btn');
+        allPresetBtns.forEach(btn => btn.classList.remove('active-preset'));
+    }
+
+    function setKeys(ak, sk, label, presetIdx = null) {
+        currentAccessKey = ak;
+        currentSecretKey = sk;
+        currentLabel = label || "自定义密钥";
+        updateKeyUI();
+        
+        if (presetIdx !== null && presetIdx >= 0) {
+            activePresetIndex = presetIdx;
+            highlightPresetButton(presetIdx);
+        } else {
+            activePresetIndex = -1;
+            clearPresetHighlight();
+        }
+        calculateSignature();
+        showToast(`已切换至: ${currentLabel}`, "success");
+    }
+
+    function toggleSecretVisibility() {
+        const skSpan = document.getElementById('displaySk');
+        if (skSpan.innerText.includes('•')) {
+            skSpan.innerText = currentSecretKey;
+        } else {
+            skSpan.innerText = '••••••••••••••••••••••';
+        }
+    }
+
+    function renderApiSidebar() {
+        const container = document.getElementById('apiListContainer');
+        if (!container) return;
+        container.innerHTML = '';
+        FULL_API_LIST.forEach((api, idx) => {
+            const div = document.createElement('div');
+            div.className = 'api-item';
+            const categoryBadge = api.category === 'TMS' ? '<span class="category-tag" style="background:#e9f0fa;">🚚 TMS</span>' : '<span class="category-tag" style="background:#eef2fa;">📦 WMS</span>';
+            div.innerHTML = `<div><span class="api-method ${api.method.toLowerCase()}">${api.method}</span><span class="api-path">${api.path}</span>${categoryBadge}</div><div class="api-desc">${api.desc}</div>`;
+            div.addEventListener('click', () => {
+                document.getElementById('method').value = api.method;
+                document.getElementById('path').value = api.path;
+                document.getElementById('body').value = JSON.stringify(api.body || {}, null, 2);
+                calculateSignature();
+                document.querySelectorAll('.api-item').forEach(item => item.classList.remove('active'));
+                div.classList.add('active');
+                showToast(`已加载: ${api.name} [${api.category}]`, 'success');
+            });
+            container.appendChild(div);
+        });
+    }
+
+    function initPresetButtons() {
+        const container = document.getElementById('presetKeysContainer');
+        if (!container) return;
+        container.innerHTML = '';
+        PRESET_CREDENTIALS.forEach((preset, idx) => {
+            const btn = document.createElement('button');
+            btn.textContent = preset.label;
+            btn.className = 'preset-btn';
+            if (idx === 0) btn.classList.add('active-preset');
+            btn.addEventListener('click', () => {
+                setKeys(preset.ak, preset.sk, preset.label, idx);
+            });
+            container.appendChild(btn);
+        });
+    }
+
+    // 自定义密钥类型应用（独立于预设，应用后清除预设高亮）
+    function applyCustomKey() {
+        const customAk = document.getElementById('customAk').value.trim();
+        const customSk = document.getElementById('customSk').value.trim();
+        if (!customAk || !customSk) {
+            showToast("请填写完整的 AccessKey 和 SecretKey", "error");
+            return;
+        }
+        setKeys(customAk, customSk, "🔧 自定义密钥", null);
+        // 清空输入框便于下一次输入
+        document.getElementById('customAk').value = '';
+        document.getElementById('customSk').value = '';
+        showToast("自定义密钥已应用，签名已刷新", "success");
+    }
+
+    function calculateSignature() {
+        try {
+            let method = document.getElementById('method').value.trim().toUpperCase();
+            let path = document.getElementById('path').value.trim();
+            if (!path.startsWith('/')) path = '/' + path;
+            if (!currentAccessKey || !currentSecretKey) throw new Error("密钥未设置");
+            const rawBody = document.getElementById('body').value;
+            let compactBody = '';
+            let bodyForHash = '';
+            if (method === 'GET') {
+                bodyForHash = '';
+                compactBody = '';
+            } else {
+                compactBody = toCompactJson(rawBody);
+                bodyForHash = compactBody;
+            }
+            const timestamp = String(Math.floor(Date.now() / 1000));
+            const bodyHash = CryptoJS.SHA256(bodyForHash).toString(CryptoJS.enc.Hex);
+            const canonicalString = `${method}\n${path}\n${bodyHash}\n${timestamp}`;
+            const signature = CryptoJS.HmacSHA256(canonicalString, currentSecretKey).toString(CryptoJS.enc.Base64);
+            const headers = { "Content-Type": "application/json", "X-Access-Key": currentAccessKey, "X-Timestamp": timestamp, "X-Signature": signature };
+            const resultView = { timestamp, method, path, bodyHash, signature, headers, note: method === 'GET' ? "GET签名基于空字符串Body" : "POST基于请求体", currentKey: currentLabel };
+            document.getElementById('result').textContent = JSON.stringify(resultView, null, 2);
+            window.__lastGen = { timestamp, signature, bodyRawCompact: compactBody, method, path, headers, accessKeyUsed: currentAccessKey, secretKeyUsed: currentSecretKey, isGet: method === 'GET' };
+            return true;
+        } catch (err) {
+            document.getElementById('result').textContent = "❌ 签名错误: " + err.message;
+            showToast(err.message, "error");
+            return false;
+        }
+    }
+
+    function handleGenerateAndRefresh() { calculateSignature(); }
+    
+    async function copyCurlWithFreshSign() {
+        if (!calculateSignature()) return;
+        const last = window.__lastGen;
+        if (!last || !last.timestamp) { showToast("签名生成失败", "error"); return; }
+        const { method, path, timestamp, signature, accessKeyUsed, bodyRawCompact } = last;
+        const fullUrl = `http://dev-api.wms.kim${path}`;
+        let dataPart = '';
+        if (method === 'POST' && bodyRawCompact) {
+            const escaped = bodyRawCompact.replace(/'/g, "'\\''");
+            dataPart = `--data-raw '${escaped}' \\`;
+        } else {
+            dataPart = `--data-raw '' \\   # GET请求body为空`;
+        }
+        const curl = `curl --location --request ${method} '${fullUrl}' \\
+--header 'Content-Type: application/json' \\
+--header 'X-Access-Key: ${accessKeyUsed}' \\
+--header 'X-Timestamp: ${timestamp}' \\
+--header 'X-Signature: ${signature}' \\
+${dataPart}
+--trace curl_trace_${Date.now()}.log`;
+        await navigator.clipboard.writeText(curl);
+        showToast("cURL已复制 (含最新签名)", "success");
+    }
+
+    async function testApiWithFreshSign() {
+        if (!calculateSignature()) return;
+        const last = window.__lastGen;
+        if (!last || !last.timestamp) { showToast("请检查密钥或请求体", "error"); return; }
+        const testDiv = document.getElementById('testResult');
+        try {
+            const { method, path, timestamp, signature, accessKeyUsed, secretKeyUsed, bodyRawCompact } = last;
+            if (currentAccessKey !== accessKeyUsed || currentSecretKey !== secretKeyUsed) { showToast("密钥不一致，请重新生成签名", "error"); return; }
+            const fullUrl = `http://dev-api.wms.kim${path}`;
+            const fetchOptions = { method, headers: { "Content-Type": "application/json", "X-Access-Key": accessKeyUsed, "X-Timestamp": timestamp, "X-Signature": signature } };
+            if (method === 'POST' && bodyRawCompact) fetchOptions.body = bodyRawCompact;
+            testDiv.innerHTML = `<div><span>⏳ 发送请求中...</span></div>`;
+            testDiv.classList.add('show');
+            const start = performance.now();
+            const response = await fetch(fullUrl, fetchOptions);
+            const elapsed = (performance.now() - start).toFixed(2);
+            let respText = await response.text();
+            let prettyResp = "";
+            try { prettyResp = JSON.stringify(JSON.parse(respText), null, 2); } catch(e) { prettyResp = respText; }
+            const traceLog = buildTraceLog(method, path, accessKeyUsed, timestamp, signature, bodyRawCompact || '', response, prettyResp, elapsed);
+            window.__lastTraceLog = traceLog;
+            const statusIcon = response.ok ? '✅' : '❌';
+            testDiv.innerHTML = `<div class="flex-between"><span>📡 API 测试结果</span><button class="btn-copy-result" style="background:#475569; padding:4px 12px; border-radius:30px; color:white; border:none;" onclick="window.copyTraceLog()">📋 复制完整日志</button></div><div><span style="background:${response.ok ? '#e0f2e9' : '#ffe6e5'}; padding:6px 12px; border-radius:30px; display:inline-block;">${statusIcon} ${response.status} ${response.statusText}  ⏱️ ${elapsed}ms</span></div><div style="margin-top:14px;"><strong>📦 响应体</strong><div class="response-body">${escapeHtml(prettyResp)}</div></div><div style="margin-top:18px;"><strong>🔍 HTTP 交互日志 (Trace)</strong><div class="trace-log">${escapeHtml(traceLog)}</div></div>`;
+            showToast(response.ok ? "请求成功" : `HTTP ${response.status}`, response.ok ? "success" : "error");
+        } catch(err) {
+            testDiv.innerHTML = `<div>❌ 异常: ${escapeHtml(err.message)}</div>`;
+            testDiv.classList.add('show');
+            showToast(err.message, "error");
+        }
+    }
+
+    function buildTraceLog(method, path, ak, ts, sig, reqBody, response, prettyResp, elapsed) {
+        let lines = [`=== HTTP Request/Response Trace ===`, `> ${method} ${path} HTTP/1.1`, `> Host: dev-api.wms.kim`, `> X-Access-Key: ${ak}`, `> X-Timestamp: ${ts}`, `> X-Signature: ${sig}`, `> Content-Type: application/json`];
+        if (method === 'POST' && reqBody) { lines.push(`> Content-Length: ${reqBody.length}`); lines.push(`> `); try { JSON.parse(reqBody); const pretty = JSON.stringify(JSON.parse(reqBody), null, 2); pretty.split('\n').forEach(l => lines.push(`> ${l}`)); } catch(e) { lines.push(`> ${reqBody}`); } } else { lines.push(`> `); lines.push(`> [GET Request - No Body]`); }
+        lines.push(`< HTTP/1.1 ${response.status} ${response.statusText}`);
+        response.headers.forEach((v,k) => lines.push(`< ${k}: ${v}`));
+        lines.push(`< `);
+        prettyResp.split('\n').forEach(l => lines.push(`< ${l}`));
+        lines.push(`* Request completed in ${elapsed}ms`);
+        return lines.join('\n');
+    }
+    window.copyTraceLog = function() { if(window.__lastTraceLog) { navigator.clipboard.writeText(window.__lastTraceLog); showToast("日志已复制", "success"); } else showToast("暂无测试记录", "error"); };
+    function escapeHtml(str) { return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+    function toCompactJson(str) { try { return JSON.stringify(JSON.parse(str)); } catch(e) { throw new Error("JSON解析失败: " + e.message); } }
+    function formatJsonBody() { const ta = document.getElementById('body'); try { const parsed = JSON.parse(ta.value); ta.value = JSON.stringify(parsed, null, 2); showToast("格式化完成", "success"); } catch(e) { showToast("JSON无效", "error"); } }
+    function resetToDefault() { document.getElementById('method').value = "POST"; document.getElementById('path').value = "/open/v1/wms/base/storage/add"; document.getElementById('body').value = JSON.stringify({ storageCode: "WH01", storageName: "华东一号仓", storageAdress: "上海市浦东新区", enable: 1 }, null, 2); calculateSignature(); showToast("已重置为标准WMS仓库示例", "info"); }
+    function applyNamingStyle(style) { let base = { storageCode: "WH01", storageName: "华东一号仓", storageAdress: "上海市浦东新区", enable: 1 }; let newObj = {}; if(style === 'camelCase') newObj = {...base}; else if(style === 'lowercase') newObj = { storagecode: base.storageCode, storagename: base.storageName, storageadress: base.storageAdress, enable: base.enable }; else if(style === 'snakeCase') newObj = { storage_code: base.storageCode, storage_name: base.storageName, storage_adress: base.storageAdress, enable: base.enable }; else if(style === 'pascalCase') newObj = { StorageCode: base.storageCode, StorageName: base.storageName, StorageAdress: base.storageAdress, Enable: base.enable }; else if(style === 'minimal') newObj = { storageCode: base.storageCode, storageName: base.storageName }; else newObj = {...base}; document.getElementById('body').value = JSON.stringify(newObj, null, 2); calculateSignature(); }
+    function showToast(msg, type) { const toast = document.getElementById('toast'); toast.textContent = msg; toast.className = `toast ${type}`; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2200); }
+
+    // 事件绑定
+    window.formatJsonBody = formatJsonBody;
+    window.resetToDefault = resetToDefault;
+    window.handleGenerateAndRefresh = handleGenerateAndRefresh;
+    window.calculateSignature = calculateSignature;
+    window.applyNamingStyle = applyNamingStyle;
+    document.getElementById('copyCurlBtn').addEventListener('click', copyCurlWithFreshSign);
+    document.getElementById('testApiBtn').addEventListener('click', testApiWithFreshSign);
+    document.getElementById('genSignBtn').addEventListener('click', () => calculateSignature());
+    document.getElementById('method').addEventListener('change', () => calculateSignature());
+    document.getElementById('path').addEventListener('input', () => calculateSignature());
+    document.getElementById('body').addEventListener('blur', () => calculateSignature());
+    document.getElementById('applyCustomKeyBtn').addEventListener('click', applyCustomKey);
+    document.getElementById('keyVisibilityIcon').addEventListener('click', toggleSecretVisibility);
+    
+    document.querySelectorAll('.style-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const style = btn.getAttribute('data-style');
+            if(style) applyNamingStyle(style);
+            document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+    
+    renderApiSidebar();
+    initPresetButtons();
+    // 默认激活第一个预设
+    setKeys(PRESET_CREDENTIALS[0].ak, PRESET_CREDENTIALS[0].sk, PRESET_CREDENTIALS[0].label, 0);
+    calculateSignature();
+    document.querySelector('.style-btn[data-style="camelCase"]')?.classList.add('active');
+</script>
+</body>
+</html>

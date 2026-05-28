@@ -1,0 +1,2989 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, user-scalable=no"
+        />
+        <title>商品列表 | 按SPU编码自动分组</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    "Helvetica Neue", sans-serif;
+                background: #f1f5f9;
+                color: #0f172a;
+            }
+
+            .navbar {
+                background: white;
+                border-bottom: 1px solid #e2e8f0;
+                padding: 0 32px;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+            }
+
+            .nav-container {
+                max-width: 1400px;
+                margin: 0 auto;
+                display: flex;
+                gap: 32px;
+                align-items: center;
+            }
+
+            .nav-item {
+                padding: 16px 0;
+                font-weight: 500;
+                cursor: pointer;
+                border-bottom: 2px solid transparent;
+                transition: all 0.2s;
+                color: #475569;
+            }
+
+            .nav-item.active {
+                color: #3b82f6;
+                border-bottom-color: #3b82f6;
+            }
+
+            /* 在售/不可售 选项卡 */
+            .sale-tab {
+                padding: 14px 20px;
+                font-weight: 500;
+                font-size: 0.85rem;
+                cursor: pointer;
+                border-bottom: 2px solid transparent;
+                transition: all 0.2s;
+                color: #64748b;
+                user-select: none;
+            }
+
+            .sale-tab:hover {
+                color: #334155;
+            }
+
+            .sale-tab.active {
+                color: #3b82f6;
+                border-bottom-color: #3b82f6;
+            }
+
+            .sale-tab-count {
+                background: #e2e8f0;
+                padding: 1px 8px;
+                border-radius: 10px;
+                font-size: 0.7rem;
+                margin-left: 6px;
+                color: #475569;
+            }
+
+            .sale-tab.active .sale-tab-count {
+                background: #dbeafe;
+                color: #1e40af;
+            }
+
+            .container {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 28px 24px;
+            }
+
+            .card {
+                background: white;
+                border-radius: 20px;
+                border: 1px solid #e2e8f0;
+                overflow: hidden;
+                margin-bottom: 24px;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+            }
+
+            .card-header {
+                padding: 18px 24px;
+                background: #fafcff;
+                border-bottom: 1px solid #eef2ff;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .card-title {
+                font-weight: 600;
+                font-size: 1.1rem;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .card-body {
+                padding: 24px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                border-radius: 40px;
+                font-weight: 500;
+                font-size: 0.85rem;
+                cursor: pointer;
+                border: none;
+                transition: all 0.2s;
+            }
+
+            .btn-outline {
+                background: white;
+                border: 1px solid #cbd5e1;
+                color: #334155;
+            }
+
+            .btn-outline:hover {
+                background: #f8fafc;
+                border-color: #94a3b8;
+            }
+
+            .btn-sm {
+                padding: 6px 14px;
+                font-size: 0.75rem;
+            }
+
+            .badge {
+                background: #e2e8f0;
+                padding: 4px 10px;
+                border-radius: 20px;
+                font-size: 0.7rem;
+            }
+
+            .empty-state {
+                text-align: center;
+                padding: 60px 24px;
+                color: #94a3b8;
+            }
+
+            /* SPU卡片样式 */
+            .spu-card {
+                background: white;
+                border-radius: 20px;
+                border: 1px solid #e2e8f0;
+                margin-bottom: 24px;
+                overflow: hidden;
+                transition: all 0.2s;
+            }
+
+            .spu-card.selected {
+                border-color: #3b82f6;
+                box-shadow:
+                    0 0 0 1px #3b82f6,
+                    0 4px 12px rgba(59, 130, 246, 0.1);
+            }
+
+            .spu-header {
+                padding: 8px 20px;
+                background: linear-gradient(135deg, #f8fafc, #ffffff);
+                border-bottom: 1px solid #e2e8f0;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .spu-header-main-wrap {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .spu-code {
+                font-size: 0.95rem;
+                font-weight: 700;
+                font-family: monospace;
+                color: #3b82f6;
+                width: 9em;
+                flex-shrink: 0;
+                white-space: nowrap;
+            }
+
+            .spu-stats {
+                font-size: 0.7rem;
+                color: #64748b;
+            }
+
+            /* 平铺SKU网格 */
+            .sku-tile-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 8px;
+            }
+
+            /* 卡片模式下，图片占满宽度并保持方形，属性流式排列 */
+            .sku-tile-grid .sku-tile {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .sku-tile-grid .sku-tile-img {
+                width: 80px;
+                aspect-ratio: 1 / 1;
+                margin: 0;
+                border-radius: 4px;
+            }
+
+            .sku-tile-grid .sku-tile-specs {
+                margin-bottom: 0;
+            }
+
+            .sku-tile-grid .sku-tile-name {
+                margin-bottom: 0;
+            }
+
+            .sku-tile-grid .sku-tile-meta {
+                flex-wrap: wrap;
+                border-top: none;
+                padding-top: 0;
+            }
+
+            .sku-tile-grid .sku-tile-meta > span:last-child {
+                width: 100%;
+                justify-content: flex-end;
+                padding-top: 3px;
+                margin-top: 2px;
+                border-top: 1px solid #e2e8f0;
+            }
+
+            .sku-tile {
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 6px;
+                padding: 6px 8px;
+                transition: all 0.2s;
+                cursor: pointer;
+            }
+
+            .sku-tile:hover {
+                border-color: #94a3b8;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+            }
+
+            .sku-tile.selected {
+                border-color: #3b82f6;
+                background: #eff6ff;
+                box-shadow: 0 0 0 1px #3b82f6;
+            }
+
+            .sku-tile.selected .sku-tile-name::before {
+                content: "✓";
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 16px;
+                height: 16px;
+                background: #3b82f6;
+                color: white;
+                border-radius: 3px;
+                font-size: 0.65rem;
+                flex-shrink: 0;
+                margin-right: 2px;
+            }
+
+            /* SKU tile 复选框：仅列表模式显示，放在最左侧 */
+            .sku-tile-cb-label {
+                display: none;
+                align-items: center;
+                cursor: pointer;
+                flex-shrink: 0;
+                padding: 0 2px 0 4px;
+            }
+
+            .sku-tile-cb-label input[type="checkbox"] {
+                width: 15px;
+                height: 15px;
+                cursor: pointer;
+                accent-color: #3b82f6;
+            }
+
+            .sku-tile-list .sku-tile-cb-label {
+                display: flex;
+                order: -1;
+            }
+
+            .sku-tile-list .sku-tile .sku-tile-name::before {
+                display: none;
+            }
+
+            .sku-tile-xsin {
+                font-size: 0.6rem;
+                color: #94a3b8;
+                font-family: monospace;
+                line-height: 1.2;
+                margin-top: 1px;
+            }
+
+            .spu-header {
+                cursor: pointer;
+                user-select: none;
+            }
+
+            .spu-header:hover {
+                background: linear-gradient(135deg, #f1f5f9, #f8fafc);
+            }
+
+            .spu-collapse-arrow {
+                font-size: 0.65rem;
+                color: #94a3b8;
+                transition: transform 0.2s;
+                flex-shrink: 0;
+            }
+
+            .spu-select-all-label {
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+                padding: 0 2px 0 4px;
+                flex-shrink: 0;
+            }
+
+            .spu-select-all-label input[type="checkbox"] {
+                width: 15px;
+                height: 15px;
+                cursor: pointer;
+                accent-color: #3b82f6;
+            }
+
+            .set-default-badge {
+                background: #e2e8f0 !important;
+                color: #64748b !important;
+                cursor: pointer;
+                transition: all 0.15s;
+                font-size: 0.6rem !important;
+                padding: 1px 6px !important;
+            }
+
+            .set-default-badge:hover {
+                background: #cbd5e1 !important;
+                color: #334155 !important;
+            }
+
+            .sku-tile-name {
+                font-weight: 600;
+                font-size: 0.75rem;
+                margin-bottom: 2px;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            .sku-tile-specs {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 3px;
+                margin-bottom: 4px;
+            }
+
+            .sku-tile-img {
+                width: 72px;
+                aspect-ratio: 1 / 1;
+                border-radius: 8px;
+                overflow: hidden;
+                background: #f1f5f9;
+                margin: 0 auto 4px;
+            }
+
+            .sku-tile-img img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+            }
+
+            .sku-tile-img-placeholder {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 2rem;
+                color: #94a3b8;
+            }
+
+            .spec-tag {
+                background: #f1f5f9;
+                color: #475569;
+                padding: 1px 6px;
+                border-radius: 12px;
+                font-size: 0.65rem;
+                font-weight: 500;
+            }
+
+            .sku-tile-meta {
+                font-size: 0.7rem;
+                color: #475569;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-top: 4px;
+                border-top: 1px solid #e2e8f0;
+            }
+
+            .sku-view-btn {
+                padding: 1px 6px;
+                border-radius: 8px;
+                border: 1px solid #cbd5e1;
+                background: white;
+                font-size: 0.65rem;
+                cursor: pointer;
+                transition: all 0.15s;
+                color: #475569;
+            }
+
+            .sku-view-btn:hover {
+                background: #3b82f6;
+                color: white;
+                border-color: #3b82f6;
+            }
+
+            .sku-clone-btn {
+                padding: 1px 6px;
+                border-radius: 8px;
+                border: 1px solid #cbd5e1;
+                background: white;
+                font-size: 0.65rem;
+                cursor: pointer;
+                transition: all 0.15s;
+                color: #475569;
+            }
+
+            .sku-clone-btn:hover {
+                background: #475569;
+                color: white;
+                border-color: #475569;
+            }
+
+            /* SPU头部主内容区（图片 + 名称 + 说明） */
+            .spu-header-main {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-top: 2px;
+            }
+
+            .spu-hero-img {
+                width: 48px;
+                height: 48px;
+                border-radius: 6px;
+                overflow: hidden;
+                background: #f1f5f9;
+                flex-shrink: 0;
+            }
+
+            .spu-hero-img img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+            }
+
+            /* 查看更多卡片 */
+            .sku-tile-more {
+                background: #f8fafc;
+                border: 2px dashed #cbd5e1;
+                border-radius: 6px;
+                padding: 10px 12px;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-height: 160px;
+                gap: 4px;
+                color: #64748b;
+            }
+
+            .sku-tile-more:hover {
+                border-color: #3b82f6;
+                background: #f0f4ff;
+                color: #3b82f6;
+            }
+
+            .sku-tile-more-count {
+                font-size: 1.5rem;
+                font-weight: 700;
+            }
+
+            .sku-tile-more-label {
+                font-size: 0.85rem;
+            }
+
+            /* 模态弹窗 */
+            .modal-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 24px;
+                animation: fadeIn 0.2s ease;
+            }
+
+            .modal-content {
+                background: white;
+                border-radius: 20px;
+                max-width: 1200px;
+                width: 100%;
+                max-height: 90vh;
+                overflow-y: auto;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+                animation: scaleIn 0.2s ease;
+            }
+
+            .modal-header {
+                padding: 20px 24px;
+                border-bottom: 1px solid #e2e8f0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                position: sticky;
+                top: 0;
+                background: white;
+                border-radius: 20px 20px 0 0;
+                z-index: 1;
+            }
+
+            .modal-header-title {
+                font-size: 1.1rem;
+                font-weight: 600;
+            }
+
+            .modal-close {
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                border: none;
+                background: #f1f5f9;
+                cursor: pointer;
+                font-size: 1.2rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.15s;
+            }
+
+            .modal-close:hover {
+                background: #e2e8f0;
+            }
+
+            .modal-body {
+                padding: 24px;
+            }
+
+            /* ===== 列表模式 ===== */
+            .sku-tile-list {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .sku-tile-list .sku-tile {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 5px 10px;
+                flex-direction: row;
+                cursor: pointer;
+            }
+
+            .sku-tile-list .sku-tile-img {
+                width: 36px;
+                height: 36px;
+                margin: 0;
+                flex-shrink: 0;
+                aspect-ratio: 1/1;
+                order: -1;
+            }
+
+            .sku-tile-list .sku-tile-name {
+                min-width: 100px;
+                max-width: 160px;
+                margin-bottom: 0;
+                flex-shrink: 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .sku-tile-list .sku-tile-specs {
+                flex: 1;
+                min-width: 120px;
+                margin-bottom: 0;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+
+            .sku-tile-list .sku-tile-specs::-webkit-scrollbar {
+                display: none;
+            }
+
+            .sku-tile-list .sku-tile-meta {
+                flex-shrink: 0;
+                min-width: 110px;
+                padding-top: 0;
+                border-top: none;
+                gap: 6px;
+            }
+
+            .sku-tile-list .spec-tag {
+                white-space: nowrap;
+            }
+
+            .sku-tile-list .sku-tile-more {
+                flex-direction: row;
+                min-height: 36px;
+                padding: 5px 12px;
+                gap: 6px;
+            }
+
+            .sku-tile-list .sku-tile-more-count {
+                font-size: 0.95rem;
+            }
+
+            .sku-tile-list .sku-tile-more-label {
+                font-size: 0.8rem;
+            }
+
+            /* 视图切换按钮组 */
+            .view-toggle-group {
+                display: flex;
+                border: 1px solid #cbd5e1;
+                border-radius: 6px;
+                overflow: hidden;
+            }
+
+            .view-toggle-btn {
+                padding: 4px 10px;
+                background: white;
+                border: none;
+                cursor: pointer;
+                font-size: 0.85rem;
+                color: #64748b;
+                transition: all 0.15s;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                line-height: 1;
+            }
+
+            .view-toggle-btn:not(:last-child) {
+                border-right: 1px solid #cbd5e1;
+            }
+
+            .view-toggle-btn:hover {
+                background: #f1f5f9;
+            }
+
+            .view-toggle-btn.active {
+                background: #3b82f6;
+                color: white;
+            }
+
+            .view-toggle-btn.active:hover {
+                background: #2563eb;
+            }
+
+            /* ===== 搜索面板 ===== */
+            .search-panel {
+                background: white;
+                border-radius: 20px;
+                border: 1px solid #e2e8f0;
+                overflow: visible;
+                margin-bottom: 20px;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+            }
+
+            .search-panel .card-header {
+                cursor: pointer;
+                user-select: none;
+            }
+
+            .search-panel .card-header:hover {
+                background: #f1f5f9;
+            }
+
+            .search-toggle-icon {
+                transition: transform 0.2s ease;
+                font-size: 0.7rem;
+                color: #94a3b8;
+            }
+
+            .search-panel.collapsed .search-toggle-icon {
+                transform: rotate(-90deg);
+            }
+
+            .search-body {
+                overflow: hidden;
+                transition:
+                    max-height 0.3s ease,
+                    padding 0.3s ease;
+                max-height: 600px;
+                padding: 16px 20px 20px;
+            }
+
+            .search-panel.collapsed .search-body {
+                max-height: 0;
+                padding: 0 20px;
+            }
+
+            .search-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px 20px;
+            }
+
+            .search-field {
+                display: flex;
+                flex-direction: column;
+                gap: 3px;
+            }
+
+            .search-field.search-full {
+                grid-column: 1 / -1;
+            }
+
+            .search-field label {
+                font-size: 0.75rem;
+                font-weight: 500;
+                color: #475569;
+            }
+
+            .search-field input,
+            .search-field select {
+                padding: 7px 10px;
+                border: 1px solid #cbd5e1;
+                border-radius: 6px;
+                font-size: 0.8rem;
+                outline: none;
+                transition: border-color 0.15s;
+                background: white;
+            }
+
+            .search-field input:focus,
+            .search-field select:focus {
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+            }
+
+            .search-actions {
+                display: flex;
+                gap: 8px;
+                margin-top: 14px;
+                padding-top: 14px;
+                border-top: 1px solid #f1f5f9;
+            }
+
+            .btn-primary {
+                background: #3b82f6;
+                color: white;
+                border: none;
+            }
+
+            .btn-primary:hover {
+                background: #2563eb;
+            }
+
+            /* ===== 多选下拉搜索组件 ===== */
+            .ms-container {
+                position: relative;
+                z-index: 10;
+            }
+
+            .ms-container.ms-open {
+                z-index: 100;
+            }
+
+            .ms-trigger {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+                align-items: center;
+                min-height: 32px;
+                padding: 3px 6px;
+                border: 1px solid #cbd5e1;
+                border-radius: 6px;
+                background: white;
+                cursor: pointer;
+                transition: border-color 0.15s;
+            }
+
+            .ms-trigger:hover {
+                border-color: #94a3b8;
+            }
+
+            .ms-open .ms-trigger {
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+            }
+
+            .ms-tag {
+                display: inline-flex;
+                align-items: center;
+                gap: 3px;
+                background: #dbeafe;
+                color: #1e40af;
+                font-size: 0.72rem;
+                padding: 1px 6px;
+                border-radius: 4px;
+                white-space: nowrap;
+                max-width: 120px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .ms-tag-remove {
+                cursor: pointer;
+                font-size: 0.7rem;
+                line-height: 1;
+                opacity: 0.6;
+            }
+
+            .ms-tag-remove:hover {
+                opacity: 1;
+            }
+
+            .ms-placeholder {
+                color: #94a3b8;
+                font-size: 0.8rem;
+                padding: 2px 4px;
+            }
+
+            .ms-dropdown {
+                display: none;
+                position: absolute;
+                top: calc(100% + 4px);
+                left: 0;
+                right: 0;
+                background: white;
+                border: 1px solid #cbd5e1;
+                border-radius: 8px;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+                max-height: 260px;
+                overflow: hidden;
+                z-index: 200;
+                animation: dropIn 0.15s ease;
+            }
+
+            .ms-open .ms-dropdown {
+                display: block;
+            }
+
+            @keyframes dropIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-4px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .ms-filter-box {
+                padding: 8px;
+                border-bottom: 1px solid #f1f5f9;
+                position: sticky;
+                top: 0;
+                background: white;
+            }
+
+            .ms-filter-input {
+                width: 100%;
+                padding: 6px 8px;
+                border: 1px solid #e2e8f0;
+                border-radius: 5px;
+                font-size: 0.78rem;
+                outline: none;
+            }
+
+            .ms-filter-input:focus {
+                border-color: #3b82f6;
+            }
+
+            .ms-options {
+                max-height: 180px;
+                overflow-y: auto;
+                padding: 4px 0;
+            }
+
+            .ms-option {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                padding: 6px 12px;
+                font-size: 0.8rem;
+                cursor: pointer;
+                transition: background 0.1s;
+                user-select: none;
+            }
+
+            .ms-option:hover {
+                background: #f1f5f9;
+            }
+
+            .ms-option input[type="checkbox"] {
+                accent-color: #3b82f6;
+                flex-shrink: 0;
+            }
+
+            .ms-option.ms-hidden {
+                display: none;
+            }
+
+            .ms-option .ms-indent {
+                display: inline-block;
+                width: 16px;
+                flex-shrink: 0;
+            }
+
+            .ms-clear-all {
+                display: block;
+                width: 100%;
+                padding: 5px;
+                font-size: 0.72rem;
+                color: #94a3b8;
+                text-align: center;
+                cursor: pointer;
+                border-top: 1px solid #f1f5f9;
+                transition: color 0.15s;
+            }
+
+            .ms-clear-all:hover {
+                color: #ef4444;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+
+            @keyframes scaleIn {
+                from {
+                    transform: scale(0.95);
+                    opacity: 0;
+                }
+                to {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+            }
+
+            /* ===== 分页器 ===== */
+            .paginator {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 16px 0 4px;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .paginator-info {
+                font-size: 0.8rem;
+                color: #64748b;
+            }
+
+            .paginator-btns {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            .paginator-btn {
+                min-width: 32px;
+                height: 32px;
+                padding: 0 8px;
+                border: 1px solid #e2e8f0;
+                border-radius: 6px;
+                background: white;
+                font-size: 0.8rem;
+                color: #334155;
+                cursor: pointer;
+                transition: all 0.15s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                user-select: none;
+            }
+
+            .paginator-btn:hover:not(:disabled):not(.active) {
+                background: #f1f5f9;
+                border-color: #94a3b8;
+            }
+
+            .paginator-btn.active {
+                background: #3b82f6;
+                color: white;
+                border-color: #3b82f6;
+            }
+
+            .paginator-btn:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+            }
+
+            .paginator-btn-prev,
+            .paginator-btn-next {
+                font-size: 0.75rem;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="navbar">
+            <div class="nav-container">
+                <div class="nav-item active">🔗 商品列表</div>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- 搜索面板 -->
+            <div class="search-panel collapsed">
+                <div class="card-header" onclick="toggleSearch()">
+                    <div class="card-title">
+                        🔍 搜索 / 筛选
+                        <span class="search-toggle-icon">▼</span>
+                    </div>
+                </div>
+                <div class="search-body">
+                    <div class="search-grid">
+                        <div class="search-field search-full">
+                            <label>商品标题</label>
+                            <input
+                                type="text"
+                                id="filterTitle"
+                                placeholder="输入商品标题"
+                            />
+                        </div>
+                        <div class="search-field">
+                            <label>商品类目</label>
+                            <div id="ms-category"></div>
+                        </div>
+                        <div class="search-field">
+                            <label>品牌</label>
+                            <div id="ms-brand"></div>
+                        </div>
+                        <div class="search-field">
+                            <label>状态</label>
+                            <div id="ms-status"></div>
+                        </div>
+                        <div class="search-field">
+                            <label>原产地</label>
+                            <div id="ms-origin"></div>
+                        </div>
+                        <div class="search-field">
+                            <label>店铺名称</label>
+                            <input
+                                type="text"
+                                id="filterShopName"
+                                placeholder="输入店铺名称"
+                            />
+                        </div>
+                        <div class="search-field">
+                            <label>店铺编码</label>
+                            <input
+                                type="text"
+                                id="filterShopCode"
+                                placeholder="输入店铺编码"
+                            />
+                        </div>
+                        <div class="search-field search-full">
+                            <label>创建时间</label>
+                            <div
+                                style="
+                                    display: flex;
+                                    gap: 8px;
+                                    align-items: center;
+                                "
+                            >
+                                <input
+                                    type="date"
+                                    id="filterDateFrom"
+                                    style="flex: 1"
+                                />
+                                <span
+                                    style="
+                                        color: #94a3b8;
+                                        font-size: 0.8rem;
+                                        flex-shrink: 0;
+                                    "
+                                    >至</span
+                                >
+                                <input
+                                    type="date"
+                                    id="filterDateTo"
+                                    style="flex: 1"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search-actions">
+                        <button
+                            class="btn btn-primary btn-sm"
+                            onclick="applyFilters()"
+                        >
+                            🔍 搜索
+                        </button>
+                        <button
+                            class="btn btn-outline btn-sm"
+                            onclick="resetFilters()"
+                        >
+                            ↺ 重置
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header" style="padding: 0 24px">
+                    <div style="display: flex; align-items: center; gap: 0">
+                        <div
+                            class="sale-tab active"
+                            data-tab="selling"
+                            onclick="switchSaleTab('selling')"
+                        >
+                            可售
+                            <span class="sale-tab-count" id="tabSellingCount"
+                                >0</span
+                            >
+                        </div>
+                        <div
+                            class="sale-tab"
+                            data-tab="unsellable"
+                            onclick="switchSaleTab('unsellable')"
+                        >
+                            不可售
+                            <span class="sale-tab-count" id="tabUnsellableCount"
+                                >0</span
+                            >
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px">
+                        <div class="view-toggle-group">
+                            <button
+                                class="view-toggle-btn active"
+                                data-view="card"
+                                onclick="toggleViewMode('card')"
+                                title="卡片模式"
+                            >
+                                ▦ 卡片
+                            </button>
+                            <button
+                                class="view-toggle-btn"
+                                data-view="list"
+                                onclick="toggleViewMode('list')"
+                                title="列表模式"
+                            >
+                                ☰ 列表
+                            </button>
+                        </div>
+                        <button
+                            class="btn btn-outline btn-sm"
+                            onclick="renderAll()"
+                        >
+                            刷新
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="spuListContainer"></div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // ========== 数据模型 ==========
+            let skus = []; // SKU库: { id, xsin, name, price, stock, image, specs, spuCode, category, brand, status, shopName, shopCode, origin, createdAt, endDate }
+            let nextSkuId = 100;
+
+            // ========== 演示数据 ==========
+            function initDemoData() {
+                skus = [
+                    {
+                        id: nextSkuId++,
+                        xsin: "XSIN" + String(nextSkuId - 1).padStart(6, "0"),
+                        name: "iPhone 15 Pro",
+                        price: 6999,
+                        stock: 15,
+                        image: "https://picsum.photos/seed/sku100/400/400",
+                        spuCode: "SPU-IP15-001",
+                        category: "手机",
+                        brand: "Apple",
+                        status: "上架",
+                        shopName: "Apple官方旗舰店",
+                        shopCode: "SH-APPLE-001",
+                        origin: "中国",
+                        createdAt: "2025-01-15",
+                        endDate: "2026-12-31",
+                        specs: [
+                            { type: "颜色", value: "黑色" },
+                            { type: "容量", value: "128G" },
+                            { type: "型号", value: "Pro" },
+                        ],
+                    },
+                    {
+                        id: nextSkuId++,
+                        xsin: "XSIN" + String(nextSkuId - 1).padStart(6, "0"),
+                        name: "iPhone 15 Pro",
+                        price: 7899,
+                        stock: 8,
+                        image: "https://picsum.photos/seed/sku101/400/400",
+                        spuCode: "SPU-IP15-001",
+                        category: "手机",
+                        brand: "Apple",
+                        status: "上架",
+                        shopName: "Apple官方旗舰店",
+                        shopCode: "SH-APPLE-001",
+                        origin: "中国",
+                        createdAt: "2025-01-15",
+                        endDate: "2026-12-31",
+                        specs: [
+                            { type: "颜色", value: "黑色" },
+                            { type: "容量", value: "256G" },
+                            { type: "型号", value: "Pro" },
+                        ],
+                    },
+                    {
+                        id: nextSkuId++,
+                        xsin: "XSIN" + String(nextSkuId - 1).padStart(6, "0"),
+                        name: "iPhone 15 Pro",
+                        price: 6999,
+                        stock: 12,
+                        image: "https://picsum.photos/seed/sku102/400/400",
+                        spuCode: "SPU-IP15-001",
+                        category: "手机",
+                        brand: "Apple",
+                        status: "上架",
+                        shopName: "Apple官方旗舰店",
+                        shopCode: "SH-APPLE-001",
+                        origin: "中国",
+                        createdAt: "2025-01-15",
+                        endDate: "2026-12-31",
+                        specs: [
+                            { type: "颜色", value: "蓝色" },
+                            { type: "容量", value: "128G" },
+                            { type: "型号", value: "Pro" },
+                        ],
+                    },
+                    {
+                        id: nextSkuId++,
+                        xsin: "XSIN" + String(nextSkuId - 1).padStart(6, "0"),
+                        name: "iPhone 15 Pro",
+                        price: 7899,
+                        stock: 5,
+                        image: "https://picsum.photos/seed/sku103/400/400",
+                        spuCode: "SPU-IP15-001",
+                        category: "手机",
+                        brand: "Apple",
+                        status: "上架",
+                        shopName: "Apple官方旗舰店",
+                        shopCode: "SH-APPLE-001",
+                        origin: "中国",
+                        createdAt: "2025-01-15",
+                        endDate: "2026-12-31",
+                        specs: [
+                            { type: "颜色", value: "蓝色" },
+                            { type: "容量", value: "256G" },
+                            { type: "型号", value: "Pro" },
+                        ],
+                    },
+                    {
+                        id: nextSkuId++,
+                        xsin: "XSIN" + String(nextSkuId - 1).padStart(6, "0"),
+                        name: "iPhone 15 Pro Max",
+                        price: 8999,
+                        stock: 6,
+                        image: "https://picsum.photos/seed/sku104/400/400",
+                        spuCode: "SPU-IP15-001",
+                        category: "手机",
+                        brand: "Apple",
+                        status: "上架",
+                        shopName: "Apple官方旗舰店",
+                        shopCode: "SH-APPLE-001",
+                        origin: "中国",
+                        createdAt: "2025-02-01",
+                        endDate: "2026-12-31",
+                        specs: [
+                            { type: "颜色", value: "金色" },
+                            { type: "容量", value: "256G" },
+                            { type: "型号", value: "Pro Max" },
+                        ],
+                    },
+                    {
+                        id: nextSkuId++,
+                        xsin: "XSIN" + String(nextSkuId - 1).padStart(6, "0"),
+                        name: "Apple Watch Ultra",
+                        price: 6299,
+                        stock: 10,
+                        image: "https://picsum.photos/seed/sku105/400/400",
+                        spuCode: "SPU-AWU-001",
+                        category: "智能穿戴",
+                        brand: "Apple",
+                        status: "上架",
+                        shopName: "Apple官方旗舰店",
+                        shopCode: "SH-APPLE-001",
+                        origin: "中国",
+                        createdAt: "2025-02-20",
+                        endDate: "2026-12-31",
+                        specs: [
+                            { type: "颜色", value: "黑色" },
+                            { type: "尺寸", value: "49mm" },
+                            { type: "表带", value: "高山" },
+                        ],
+                    },
+                    {
+                        id: nextSkuId++,
+                        xsin: "XSIN" + String(nextSkuId - 1).padStart(6, "0"),
+                        name: "Apple Watch Ultra",
+                        price: 6299,
+                        stock: 7,
+                        image: "https://picsum.photos/seed/sku106/400/400",
+                        spuCode: "SPU-AWU-001",
+                        category: "智能穿戴",
+                        brand: "Apple",
+                        status: "上架",
+                        shopName: "Apple官方旗舰店",
+                        shopCode: "SH-APPLE-001",
+                        origin: "中国",
+                        createdAt: "2025-02-20",
+                        endDate: "2026-12-31",
+                        specs: [
+                            { type: "颜色", value: "银色" },
+                            { type: "尺寸", value: "49mm" },
+                            { type: "表带", value: "海洋" },
+                        ],
+                    },
+                    {
+                        id: nextSkuId++,
+                        xsin: "XSIN" + String(nextSkuId - 1).padStart(6, "0"),
+                        name: "手工马克杯",
+                        price: 129,
+                        stock: 3,
+                        image: "https://picsum.photos/seed/sku107/400/400",
+                        spuCode: "",
+                        category: "家居用品",
+                        brand: "手工坊",
+                        status: "上架",
+                        shopName: "匠心手作",
+                        shopCode: "SH-ART-001",
+                        origin: "中国",
+                        createdAt: "2025-03-10",
+                        endDate: "2026-12-31",
+                        specs: [
+                            { type: "材质", value: "陶瓷" },
+                            { type: "容量", value: "350ml" },
+                        ],
+                    },
+                    {
+                        id: nextSkuId++,
+                        xsin: "XSIN" + String(nextSkuId - 1).padStart(6, "0"),
+                        name: "手工帆布包",
+                        price: 89,
+                        stock: 22,
+                        image: "https://picsum.photos/seed/sku119/400/400",
+                        spuCode: "",
+                        category: "家居用品",
+                        brand: "手工坊",
+                        status: "上架",
+                        shopName: "匠心手作",
+                        shopCode: "SH-ART-001",
+                        origin: "中国",
+                        createdAt: "2025-05-15",
+                        endDate: "2026-12-31",
+                        specs: [
+                            { type: "颜色", value: "米白" },
+                            { type: "尺寸", value: "均码" },
+                        ],
+                    },
+                    {
+                        id: nextSkuId++,
+                        xsin: "XSIN" + String(nextSkuId - 1).padStart(6, "0"),
+                        name: "Samsung Galaxy S24",
+                        price: 5999,
+                        stock: 20,
+                        image: "https://picsum.photos/seed/sku108/400/400",
+                        spuCode: "SPU-SAM-001",
+                        category: "手机",
+                        brand: "三星",
+                        status: "上架",
+                        shopName: "三星官方旗舰店",
+                        shopCode: "SH-SAM-001",
+                        origin: "韩国",
+                        createdAt: "2025-04-01",
+                        endDate: "2026-12-31",
+                        specs: [
+                            { type: "颜色", value: "墨黑" },
+                            { type: "容量", value: "256G" },
+                        ],
+                    },
+                    {
+                        id: nextSkuId++,
+                        xsin: "XSIN" + String(nextSkuId - 1).padStart(6, "0"),
+                        name: "Samsung Galaxy S24",
+                        price: 6799,
+                        stock: 12,
+                        image: "https://picsum.photos/seed/sku109/400/400",
+                        spuCode: "SPU-SAM-001",
+                        category: "手机",
+                        brand: "三星",
+                        status: "上架",
+                        shopName: "三星官方旗舰店",
+                        shopCode: "SH-SAM-001",
+                        origin: "韩国",
+                        createdAt: "2025-04-01",
+                        endDate: "2026-12-31",
+                        specs: [
+                            { type: "颜色", value: "墨黑" },
+                            { type: "容量", value: "512G" },
+                        ],
+                    },
+                    {
+                        id: nextSkuId++,
+                        xsin: "XSIN" + String(nextSkuId - 1).padStart(6, "0"),
+                        name: "Samsung Galaxy S24",
+                        price: 5999,
+                        stock: 18,
+                        image: "https://picsum.photos/seed/sku110/400/400",
+                        spuCode: "SPU-SAM-001",
+                        category: "手机",
+                        brand: "三星",
+                        status: "上架",
+                        shopName: "三星官方旗舰店",
+                        shopCode: "SH-SAM-001",
+                        origin: "韩国",
+                        createdAt: "2025-04-01",
+                        endDate: "2026-12-31",
+                        specs: [
+                            { type: "颜色", value: "玉石绿" },
+                            { type: "容量", value: "256G" },
+                        ],
+                    },
+                    {
+                        id: nextSkuId++,
+                        xsin: "XSIN" + String(nextSkuId - 1).padStart(6, "0"),
+                        name: "MacBook Pro 14",
+                        price: 14999,
+                        stock: 6,
+                        image: "https://picsum.photos/seed/sku111/400/400",
+                        spuCode: "SPU-MBP-001",
+                        category: "电脑",
+                        brand: "Apple",
+                        status: "上架",
+                        shopName: "Apple官方旗舰店",
+                        shopCode: "SH-APPLE-001",
+                        origin: "中国",
+                        createdAt: "2025-03-15",
+                        endDate: "2026-12-31",
+                        specs: [
+                            { type: "芯片", value: "M4 Pro" },
+                            { type: "内存", value: "24G" },
+                        ],
+                    },
+                    {
+                        id: nextSkuId++,
+                        xsin: "XSIN" + String(nextSkuId - 1).padStart(6, "0"),
+                        name: "MacBook Pro 14",
+                        price: 19999,
+                        stock: 3,
+                        image: "https://picsum.photos/seed/sku112/400/400",
+                        spuCode: "SPU-MBP-001",
+                        category: "电脑",
+                        brand: "Apple",
+                        status: "上架",
+                        shopName: "Apple官方旗舰店",
+                        shopCode: "SH-APPLE-001",
+                        origin: "中国",
+                        createdAt: "2025-03-15",
+                        endDate: "2026-12-31",
+                        specs: [
+                            { type: "芯片", value: "M4 Max" },
+                            { type: "内存", value: "48G" },
+                        ],
+                    },
+                    {
+                        id: nextSkuId++,
+                        xsin: "XSIN" + String(nextSkuId - 1).padStart(6, "0"),
+                        name: "iPad Air M3",
+                        price: 4799,
+                        stock: 14,
+                        image: "https://picsum.photos/seed/sku113/400/400",
+                        spuCode: "SPU-IPAD-001",
+                        category: "电脑",
+                        brand: "Apple",
+                        status: "上架",
+                        shopName: "Apple官方旗舰店",
+                        shopCode: "SH-APPLE-001",
+                        origin: "中国",
+                        createdAt: "2025-04-10",
+                        endDate: "2026-12-31",
+                        specs: [
+                            { type: "颜色", value: "星光色" },
+                            { type: "容量", value: "128G" },
+                        ],
+                    },
+                    {
+                        id: nextSkuId++,
+                        xsin: "XSIN" + String(nextSkuId - 1).padStart(6, "0"),
+                        name: "iPad Air M3",
+                        price: 5599,
+                        stock: 9,
+                        image: "https://picsum.photos/seed/sku114/400/400",
+                        spuCode: "SPU-IPAD-001",
+                        category: "电脑",
+                        brand: "Apple",
+                        status: "上架",
+                        shopName: "Apple官方旗舰店",
+                        shopCode: "SH-APPLE-001",
+                        origin: "中国",
+                        createdAt: "2025-04-10",
+                        endDate: "2026-12-31",
+                        specs: [
+                            { type: "颜色", value: "星光色" },
+                            { type: "容量", value: "256G" },
+                        ],
+                    },
+                    {
+                        id: nextSkuId++,
+                        xsin: "XSIN" + String(nextSkuId - 1).padStart(6, "0"),
+                        name: "AirPods Pro 2",
+                        price: 1899,
+                        stock: 25,
+                        image: "https://picsum.photos/seed/sku115/400/400",
+                        spuCode: "SPU-AP-001",
+                        category: "配件",
+                        brand: "Apple",
+                        status: "上架",
+                        shopName: "Apple官方旗舰店",
+                        shopCode: "SH-APPLE-001",
+                        origin: "中国",
+                        createdAt: "2025-05-01",
+                        endDate: "2026-12-31",
+                        specs: [
+                            { type: "型号", value: "USB-C" },
+                            { type: "颜色", value: "白色" },
+                        ],
+                    },
+                    {
+                        id: nextSkuId++,
+                        xsin: "XSIN" + String(nextSkuId - 1).padStart(6, "0"),
+                        name: "AirPods Pro 2",
+                        price: 1999,
+                        stock: 10,
+                        image: "https://picsum.photos/seed/sku116/400/400",
+                        spuCode: "SPU-AP-001",
+                        category: "配件",
+                        brand: "Apple",
+                        status: "上架",
+                        shopName: "Apple官方旗舰店",
+                        shopCode: "SH-APPLE-001",
+                        origin: "中国",
+                        createdAt: "2025-05-01",
+                        endDate: "2026-12-31",
+                        specs: [
+                            { type: "型号", value: "Lightning" },
+                            { type: "颜色", value: "白色" },
+                        ],
+                    },
+                    {
+                        id: nextSkuId++,
+                        xsin: "XSIN" + String(nextSkuId - 1).padStart(6, "0"),
+                        name: "Sony WH-1000XM5",
+                        price: 2499,
+                        stock: 8,
+                        image: "https://picsum.photos/seed/sku117/400/400",
+                        spuCode: "SPU-SNY-001",
+                        category: "配件",
+                        brand: "索尼",
+                        status: "上架",
+                        shopName: "索尼官方旗舰店",
+                        shopCode: "SH-SNY-001",
+                        origin: "日本",
+                        createdAt: "2025-04-20",
+                        endDate: "2026-12-31",
+                        specs: [{ type: "颜色", value: "黑色" }],
+                    },
+                    {
+                        id: nextSkuId++,
+                        xsin: "XSIN" + String(nextSkuId - 1).padStart(6, "0"),
+                        name: "Sony WH-1000XM5",
+                        price: 2499,
+                        stock: 5,
+                        image: "https://picsum.photos/seed/sku118/400/400",
+                        spuCode: "SPU-SNY-001",
+                        category: "配件",
+                        brand: "索尼",
+                        status: "下架",
+                        shopName: "索尼官方旗舰店",
+                        shopCode: "SH-SNY-001",
+                        origin: "日本",
+                        createdAt: "2025-04-20",
+                        endDate: "2026-06-30",
+                        specs: [{ type: "颜色", value: "银色" }],
+                    },
+                ];
+
+                renderAll();
+                initMultiSelects();
+            }
+
+            // ========== 初始化多选下拉搜索组件 ==========
+            function initMultiSelects() {
+                var categoryOpts = [
+                    { value: "手机", label: "手机" },
+                    { value: "手机>智能手机", label: "  智能手机", indent: 1 },
+                    { value: "手机>功能机", label: "  功能机", indent: 1 },
+                    { value: "电脑", label: "电脑" },
+                    { value: "电脑>笔记本", label: "  笔记本", indent: 1 },
+                    { value: "电脑>台式机", label: "  台式机", indent: 1 },
+                    { value: "智能穿戴", label: "智能穿戴" },
+                    { value: "家居用品", label: "家居用品" },
+                    { value: "配件", label: "配件" },
+                    { value: "配件>充电器", label: "  充电器", indent: 1 },
+                    { value: "配件>手机壳", label: "  手机壳", indent: 1 },
+                ];
+                createMultiSelect({
+                    id: "category",
+                    options: categoryOpts,
+                    placeholder: "选择类目",
+                });
+
+                var brandOpts = [
+                    { value: "Apple", label: "Apple" },
+                    { value: "华为", label: "华为" },
+                    { value: "小米", label: "小米" },
+                    { value: "三星", label: "三星" },
+                    { value: "手工坊", label: "手工坊" },
+                ];
+                createMultiSelect({
+                    id: "brand",
+                    options: brandOpts,
+                    placeholder: "选择品牌",
+                });
+
+                var statusOpts = [
+                    { value: "上架", label: "上架" },
+                    { value: "下架", label: "下架" },
+                    { value: "待审核", label: "待审核" },
+                ];
+                createMultiSelect({
+                    id: "status",
+                    options: statusOpts,
+                    placeholder: "选择状态",
+                });
+
+                var originOpts = [
+                    { value: "中国", label: "中国" },
+                    { value: "美国", label: "美国" },
+                    { value: "日本", label: "日本" },
+                    { value: "德国", label: "德国" },
+                    { value: "韩国", label: "韩国" },
+                ];
+                createMultiSelect({
+                    id: "origin",
+                    options: originOpts,
+                    placeholder: "选择产地",
+                });
+            }
+
+            // ========== SPU分组 ==========
+            function groupSkusBySpuCode(skuArray) {
+                var arr = skuArray || skus;
+                var groups = {};
+                arr.forEach(function (sku) {
+                    var code = sku.spuCode || "__未分组__";
+                    if (!groups[code]) groups[code] = [];
+                    groups[code].push(sku);
+                });
+                return groups;
+            }
+
+            // 用户可自定义每个SPU组的默认SKU
+            var spuDefaultMap = {};
+            var viewMode = "card"; // 'card' | 'list'
+            var selectedSkuIds = {}; // { skuId: true } 选中状态
+            var saleTab = "selling"; // 'selling' | 'unsellable'
+            var currentPage = 1;
+            var pageSize = 5;
+            var expandedSpuCodes = {};
+
+            // ========== 多选下拉搜索组件 ==========
+            var msState = {}; // { msId: { selected: {value: true}, opts: [...] } }
+
+            function createMultiSelect(config) {
+                var id = config.id;
+                var options = config.options || []; // [{value, label, indent}]
+                var placeholder = config.placeholder || "请选择";
+                var container = document.getElementById("ms-" + id);
+                if (!container) return;
+
+                var state = {
+                    selected: {},
+                    opts: options,
+                    placeholder: placeholder,
+                };
+                msState[id] = state;
+
+                function renderTags() {
+                    var keys = Object.keys(state.selected);
+                    var html = "";
+                    if (keys.length === 0) {
+                        html =
+                            '<span class="ms-placeholder">' +
+                            placeholder +
+                            "</span>";
+                    } else {
+                        keys.forEach(function (v) {
+                            var label = v;
+                            for (var i = 0; i < options.length; i++) {
+                                if (options[i].value === v) {
+                                    label = options[i].label;
+                                    break;
+                                }
+                            }
+                            html +=
+                                '<span class="ms-tag" data-value="' +
+                                v.replace(/"/g, "&quot;") +
+                                '">' +
+                                escapeHtml(label) +
+                                '<span class="ms-tag-remove" data-ms-id="' +
+                                id +
+                                '" data-value="' +
+                                v.replace(/"/g, "&quot;") +
+                                '">✕</span></span>';
+                        });
+                    }
+                    return html;
+                }
+
+                function renderOptions(filter) {
+                    var html = "";
+                    for (var i = 0; i < options.length; i++) {
+                        var opt = options[i];
+                        var checked = state.selected[opt.value]
+                            ? "checked"
+                            : "";
+                        var hidden =
+                            filter &&
+                            opt.label
+                                .toLowerCase()
+                                .indexOf(filter.toLowerCase()) === -1
+                                ? " ms-hidden"
+                                : "";
+                        var indent = opt.indent
+                            ? '<span class="ms-indent"></span>'.repeat(
+                                  opt.indent,
+                              )
+                            : "";
+                        html +=
+                            '<label class="ms-option' +
+                            hidden +
+                            '" data-value="' +
+                            opt.value.replace(/"/g, "&quot;") +
+                            '">' +
+                            '<input type="checkbox" value="' +
+                            opt.value.replace(/"/g, "&quot;") +
+                            '" ' +
+                            checked +
+                            " onchange=\"toggleMSOption('" +
+                            id +
+                            "','" +
+                            opt.value.replace(/'/g, "\\'") +
+                            "')\" />" +
+                            indent +
+                            escapeHtml(opt.label) +
+                            "</label>";
+                    }
+                    return html;
+                }
+
+                container.innerHTML =
+                    '<div class="ms-container" id="ms-cont-' +
+                    id +
+                    '">' +
+                    '<div class="ms-trigger" onclick="event.stopPropagation();toggleMSDropdown(\'' +
+                    id +
+                    "')\">" +
+                    '<div class="ms-tags" id="ms-tags-' +
+                    id +
+                    '">' +
+                    renderTags() +
+                    "</div>" +
+                    "</div>" +
+                    '<div class="ms-dropdown" id="ms-dd-' +
+                    id +
+                    '">' +
+                    '<div class="ms-filter-box"><input class="ms-filter-input" placeholder="搜索..." oninput="filterMSOptions(\'' +
+                    id +
+                    "', this.value)\" /></div>" +
+                    '<div class="ms-options" id="ms-opts-' +
+                    id +
+                    '">' +
+                    renderOptions("") +
+                    "</div>" +
+                    '<div class="ms-clear-all" onclick="clearMS(\'' +
+                    id +
+                    "')\">清除选择</div>" +
+                    "</div>" +
+                    "</div>";
+
+                // Tag remove click handlers
+                container
+                    .querySelectorAll(".ms-tag-remove")
+                    .forEach(function (el) {
+                        el.addEventListener("click", function (e) {
+                            e.stopPropagation();
+                            var mid = el.dataset.msId;
+                            var val = el.dataset.value;
+                            if (msState[mid]) {
+                                delete msState[mid].selected[val];
+                                refreshMS(mid);
+                            }
+                        });
+                    });
+            }
+
+            function toggleMSDropdown(id) {
+                var cont = document.getElementById("ms-cont-" + id);
+                if (!cont) return;
+                var isOpen = cont.classList.contains("ms-open");
+                // Close all
+                document
+                    .querySelectorAll(".ms-container.ms-open")
+                    .forEach(function (c) {
+                        c.classList.remove("ms-open");
+                    });
+                if (!isOpen) cont.classList.add("ms-open");
+                // Reset filter
+                var fi = cont.querySelector(".ms-filter-input");
+                if (fi) {
+                    fi.value = "";
+                    filterMSOptions(id, "");
+                }
+            }
+
+            function filterMSOptions(id, filter) {
+                var opts = document.getElementById("ms-opts-" + id);
+                if (!opts) return;
+                opts.querySelectorAll(".ms-option").forEach(function (el) {
+                    var label = el.textContent || "";
+                    el.classList.toggle(
+                        "ms-hidden",
+                        filter &&
+                            label
+                                .toLowerCase()
+                                .indexOf(filter.toLowerCase()) === -1,
+                    );
+                });
+            }
+
+            function toggleMSOption(id, value) {
+                if (!msState[id]) return;
+                if (msState[id].selected[value]) {
+                    delete msState[id].selected[value];
+                } else {
+                    msState[id].selected[value] = true;
+                }
+                refreshMS(id);
+            }
+
+            function clearMS(id) {
+                if (!msState[id]) return;
+                msState[id].selected = {};
+                refreshMS(id);
+            }
+
+            function refreshMS(id) {
+                if (!msState[id]) return;
+                var tags = document.getElementById("ms-tags-" + id);
+                var opts = document.getElementById("ms-opts-" + id);
+                if (!tags || !opts) return;
+                var state = msState[id];
+                // Update tags
+                var keys = Object.keys(state.selected);
+                var html = "";
+                if (keys.length === 0) {
+                    html =
+                        '<span class="ms-placeholder">' +
+                        (msState[id] && msState[id].placeholder
+                            ? msState[id].placeholder
+                            : "请选择") +
+                        "</span>";
+                } else {
+                    keys.forEach(function (v) {
+                        var label = v;
+                        for (var i = 0; i < state.opts.length; i++) {
+                            if (state.opts[i].value === v) {
+                                label = state.opts[i].label;
+                                break;
+                            }
+                        }
+                        html +=
+                            '<span class="ms-tag" data-value="' +
+                            v.replace(/"/g, "&quot;") +
+                            '">' +
+                            escapeHtml(label) +
+                            '<span class="ms-tag-remove" data-ms-id="' +
+                            id +
+                            '" data-value="' +
+                            v.replace(/"/g, "&quot;") +
+                            '">✕</span></span>';
+                    });
+                }
+                tags.innerHTML = html;
+                // Re-bind tag remove
+                tags.querySelectorAll(".ms-tag-remove").forEach(function (el) {
+                    el.addEventListener("click", function (e) {
+                        e.stopPropagation();
+                        var mid = el.dataset.msId;
+                        var val = el.dataset.value;
+                        if (msState[mid]) {
+                            delete msState[mid].selected[val];
+                            refreshMS(mid);
+                        }
+                    });
+                });
+                // Update checkboxes
+                opts.querySelectorAll(
+                    ".ms-option input[type=checkbox]",
+                ).forEach(function (cb) {
+                    cb.checked = !!state.selected[cb.value];
+                });
+            }
+
+            // Close dropdowns on outside click
+            document.addEventListener("click", function () {
+                document
+                    .querySelectorAll(".ms-container.ms-open")
+                    .forEach(function (c) {
+                        c.classList.remove("ms-open");
+                    });
+            });
+
+            // ========== 搜索/筛选逻辑 ==========
+            function getMSValues(id) {
+                if (!msState[id]) return [];
+                return Object.keys(msState[id].selected);
+            }
+
+            function getFilterValue(id) {
+                var el = document.getElementById(id);
+                return el ? el.value.trim() : "";
+            }
+
+            function filterSkus() {
+                var title = getFilterValue("filterTitle").toLowerCase();
+                var categories = getMSValues("category");
+                var brands = getMSValues("brand");
+                var statuses = getMSValues("status");
+                var origins = getMSValues("origin");
+                var shopName = getFilterValue("filterShopName").toLowerCase();
+                var shopCode = getFilterValue("filterShopCode").toLowerCase();
+                var dateFrom = getFilterValue("filterDateFrom");
+                var dateTo = getFilterValue("filterDateTo");
+
+                var noText = !title && !shopName && !shopCode;
+                var noMS =
+                    categories.length === 0 &&
+                    brands.length === 0 &&
+                    statuses.length === 0 &&
+                    origins.length === 0;
+                var noDate = !dateFrom && !dateTo;
+
+                if (noText && noMS && noDate) return skus;
+
+                return skus.filter(function (sku) {
+                    // 在售/不可售 主选项卡过滤
+                    if (saleTab === "selling" && sku.status !== "上架")
+                        return false;
+                    if (saleTab === "unsellable" && sku.status === "上架")
+                        return false;
+
+                    if (
+                        title &&
+                        (sku.name || "").toLowerCase().indexOf(title) === -1
+                    )
+                        return false;
+                    if (
+                        shopName &&
+                        (sku.shopName || "").toLowerCase().indexOf(shopName) ===
+                            -1
+                    )
+                        return false;
+                    if (
+                        shopCode &&
+                        (sku.shopCode || "").toLowerCase().indexOf(shopCode) ===
+                            -1
+                    )
+                        return false;
+                    if (
+                        categories.length > 0 &&
+                        categories.indexOf(sku.category || "") === -1
+                    )
+                        return false;
+                    if (
+                        brands.length > 0 &&
+                        brands.indexOf(sku.brand || "") === -1
+                    )
+                        return false;
+                    if (
+                        statuses.length > 0 &&
+                        statuses.indexOf(sku.status || "") === -1
+                    )
+                        return false;
+                    if (
+                        origins.length > 0 &&
+                        origins.indexOf(sku.origin || "") === -1
+                    )
+                        return false;
+                    if (dateFrom && (sku.createdAt || "") < dateFrom)
+                        return false;
+                    if (dateTo && (sku.createdAt || "") > dateTo) return false;
+                    return true;
+                });
+            }
+
+            function applyFilters() {
+                currentPage = 1;
+                renderAll();
+            }
+
+            function toggleSearch() {
+                document
+                    .querySelector(".search-panel")
+                    .classList.toggle("collapsed");
+            }
+
+            function resetFilters() {
+                currentPage = 1;
+                // Clear text/date inputs
+                [
+                    "filterTitle",
+                    "filterShopName",
+                    "filterShopCode",
+                    "filterDateFrom",
+                    "filterDateTo",
+                ].forEach(function (id) {
+                    var el = document.getElementById(id);
+                    if (el) el.value = "";
+                });
+                // Clear multi-selects
+                Object.keys(msState).forEach(function (id) {
+                    msState[id].selected = {};
+                    refreshMS(id);
+                });
+                renderAll();
+            }
+
+            // ========== 渲染SPU列表（平铺SKU卡片，可点击切换默认） ==========
+            function renderSpuList() {
+                var container = document.getElementById("spuListContainer");
+                var groups = groupSkusBySpuCode(filterSkus());
+                var groupKeys = Object.keys(groups).filter(function (k) {
+                    return k !== "__未分组__";
+                });
+
+                if (groupKeys.length === 0) {
+                    container.innerHTML =
+                        '<div class="empty-state">暂无SPU组合，请在SKU编辑中填写"SPU组合码"</div>';
+                    return;
+                }
+
+                // 分页
+                var totalPages = Math.ceil(groupKeys.length / pageSize) || 1;
+                if (currentPage > totalPages) currentPage = totalPages;
+                var start = (currentPage - 1) * pageSize;
+                var pageKeys = groupKeys.slice(start, start + pageSize);
+
+                var html = "";
+                for (var g = 0; g < pageKeys.length; g++) {
+                    var code = pageKeys[g];
+                    var skuList = groups[code];
+
+                    // 按销量降序排列，作为默认兜底
+                    skuList.sort(function (a, b) {
+                        return b.stock - a.stock;
+                    });
+
+                    // 优先使用用户指定的默认SKU，否则取销量最高的
+                    var defaultSku = null;
+                    var storedId = spuDefaultMap[code];
+                    if (storedId) {
+                        for (var i = 0; i < skuList.length; i++) {
+                            if (skuList[i].id === storedId) {
+                                defaultSku = skuList[i];
+                                break;
+                            }
+                        }
+                    }
+                    if (!defaultSku) {
+                        defaultSku = skuList[0];
+                        spuDefaultMap[code] = defaultSku.id;
+                    }
+
+                    // 收集所有规格类型
+                    var dimTypes = [];
+                    skuList.forEach(function (sku) {
+                        sku.specs.forEach(function (spec) {
+                            if (dimTypes.indexOf(spec.type) === -1) {
+                                dimTypes.push(spec.type);
+                            }
+                        });
+                    });
+
+                    // 默认SKU的名称作为SPU名称
+                    var spuName = defaultSku
+                        ? escapeHtml(defaultSku.name)
+                        : "未命名";
+
+                    var MAX_PREVIEW = 3;
+
+                    // 平铺SKU卡片（最多展示一行）
+                    var tilesHtml = "";
+                    var previewCount = Math.min(skuList.length, MAX_PREVIEW);
+                    for (var s = 0; s < previewCount; s++) {
+                        var sku = skuList[s];
+                        var isDefault = defaultSku && sku.id === defaultSku.id;
+
+                        var specsHtml = "";
+                        for (var sp = 0; sp < sku.specs.length; sp++) {
+                            specsHtml +=
+                                '<span class="spec-tag">' +
+                                escapeHtml(sku.specs[sp].type) +
+                                ": " +
+                                escapeHtml(sku.specs[sp].value) +
+                                "</span>";
+                        }
+
+                        tilesHtml +=
+                            '<div class="sku-tile' +
+                            (selectedSkuIds[sku.id] ? " selected" : "") +
+                            '" data-spu-code="' +
+                            escapeHtml(code) +
+                            '" data-sku-id="' +
+                            sku.id +
+                            '">' +
+                            '<label class="sku-tile-cb-label">' +
+                            '<input type="checkbox" class="sku-tile-cb"' +
+                            (selectedSkuIds[sku.id] ? " checked" : "") +
+                            ">" +
+                            "</label>" +
+                            '<div class="sku-tile-img">' +
+                            (sku.image
+                                ? '<img src="' +
+                                  escapeHtml(sku.image) +
+                                  '" alt="" loading="lazy" />'
+                                : '<div class="sku-tile-img-placeholder">📷</div>') +
+                            "</div>" +
+                            '<div class="sku-tile-name">' +
+                            escapeHtml(sku.name) +
+                            (sku.xsin
+                                ? '<div class="sku-tile-xsin">' +
+                                  escapeHtml(sku.xsin) +
+                                  "</div>"
+                                : "") +
+                            "</div>" +
+                            '<div class="sku-tile-specs">' +
+                            specsHtml +
+                            "</div>" +
+                            '<div class="sku-tile-meta">' +
+                            "<span>¥" +
+                            sku.price +
+                            "</span>" +
+                            "<span>库存: " +
+                            (sku.stock > 0 ? sku.stock : "充足") +
+                            "</span>" +
+                            '<span style="display:flex;gap:4px;align-items:center;">' +
+                            (isDefault
+                                ? '<span class="badge" style="background:#dbeafe;color:#1e40af;font-size:0.6rem;padding:1px 6px;">默认</span>'
+                                : '<span class="badge set-default-badge" style="font-size:0.6rem;padding:1px 6px;">设为默认</span>') +
+                            '<button class="sku-view-btn" data-sku-id="' +
+                            sku.id +
+                            '">查看</button>' +
+                            '<button class="sku-clone-btn" data-sku-id="' +
+                            sku.id +
+                            '">克隆</button>' +
+                            "</span>" +
+                            "</div>" +
+                            "</div>";
+                    }
+
+                    // 如果超过预览数量，添加"查看更多"卡片
+                    if (skuList.length > MAX_PREVIEW) {
+                        var remaining = skuList.length - MAX_PREVIEW;
+                        tilesHtml +=
+                            '<div class="sku-tile-more" data-spu-code="' +
+                            escapeHtml(code) +
+                            '">' +
+                            '<div class="sku-tile-more-count">+' +
+                            remaining +
+                            "</div>" +
+                            '<div class="sku-tile-more-label">查看全部 ' +
+                            skuList.length +
+                            " 个SKU</div>" +
+                            "</div>";
+                    }
+
+                    // 计算该SPU组中已选数量
+                    var selCount = 0;
+                    for (var si = 0; si < skuList.length; si++) {
+                        if (selectedSkuIds[skuList[si].id]) selCount++;
+                    }
+
+                    html +=
+                        '<div class="spu-card">' +
+                        '<div class="spu-header" data-spu="' +
+                        escapeHtml(code) +
+                        '">' +
+                        '<label class="spu-select-all-label" title="全选/取消全选">' +
+                        '<input type="checkbox" class="spu-select-all-cb" data-spu-code="' +
+                        escapeHtml(code) +
+                        '"' +
+                        (selCount === skuList.length ? " checked" : "") +
+                        ">" +
+                        "</label>" +
+                        '<div class="spu-header-main-wrap">' +
+                        '<div class="spu-header-main">' +
+                        '<div class="spu-code">' +
+                        escapeHtml(code) +
+                        "</div>" +
+                        (defaultSku && defaultSku.image
+                            ? '<div class="spu-hero-img"><img src="' +
+                              escapeHtml(defaultSku.image) +
+                              '" alt="" /></div>'
+                            : '<div class="spu-hero-img" style="display:none;"></div>') +
+                        '<div style="flex:1;min-width:0;">' +
+                        '<div style="font-size:0.9rem;font-weight:600;color:#0f172a;">' +
+                        spuName +
+                        "</div>" +
+                        '<div class="spu-stats">' +
+                        skuList.length +
+                        " 个SKU | " +
+                        dimTypes.length +
+                        " 种规格" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>" +
+                        '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto;">' +
+                        '<div class="spu-stats">' +
+                        "默认SKU: " +
+                        (defaultSku
+                            ? "¥" +
+                              defaultSku.price +
+                              " | " +
+                              escapeHtml(
+                                  defaultSku.specs
+                                      .map(function (sp) {
+                                          return sp.value;
+                                      })
+                                      .join(" / "),
+                              )
+                            : "自动取销量最高") +
+                        "</div>" +
+                        '<span class="spu-collapse-arrow">▶</span>' +
+                        "</div>" +
+                        "</div>" +
+                        '<div class="card-body spu-card-body" style="display:' +
+                        (expandedSpuCodes[code] ? "block" : "none") +
+                        ';padding:10px 16px 16px;">' +
+                        '<div class="' +
+                        (viewMode === "list"
+                            ? "sku-tile-list"
+                            : "sku-tile-grid") +
+                        '">' +
+                        tilesHtml +
+                        "</div>" +
+                        "</div>" +
+                        "</div>";
+                }
+
+                // SPU组渲染完成，与分页拼接
+                container.innerHTML = html;
+
+                // 点击"设为默认"徽章切换默认SKU
+                container
+                    .querySelectorAll(".set-default-badge")
+                    .forEach(function (badge) {
+                        badge.addEventListener("click", function (e) {
+                            e.stopPropagation();
+                            var tile = badge.closest(".sku-tile");
+                            if (!tile) return;
+                            var code = tile.dataset.spuCode;
+                            if (!code) return;
+                            var skuId = parseInt(tile.dataset.skuId, 10);
+                            if (spuDefaultMap[code] !== skuId) {
+                                spuDefaultMap[code] = skuId;
+                                renderAll();
+                            }
+                        });
+                    });
+
+                // 点击SPU全选复选框（独立于折叠交互）
+                container
+                    .querySelectorAll(".spu-select-all-cb")
+                    .forEach(function (cb) {
+                        cb.addEventListener("click", function (e) {
+                            e.stopPropagation();
+                            var code = cb.dataset.spuCode;
+                            if (!code) return;
+                            var card = cb.closest(".spu-card");
+                            if (!card) return;
+                            var tiles = card.querySelectorAll(
+                                ".sku-tile[data-sku-id]",
+                            );
+                            var ids = [];
+                            tiles.forEach(function (t) {
+                                ids.push(parseInt(t.dataset.skuId, 10));
+                            });
+                            if (cb.checked) {
+                                ids.forEach(function (id) {
+                                    selectedSkuIds[id] = true;
+                                });
+                            } else {
+                                ids.forEach(function (id) {
+                                    delete selectedSkuIds[id];
+                                });
+                            }
+                            renderAll();
+                        });
+                    });
+
+                // 点击SKU卡片切换选中状态（多选）
+                container
+                    .querySelectorAll(".sku-tile")
+                    .forEach(function (tile) {
+                        tile.addEventListener("click", function (e) {
+                            // 如果点击的是内部按钮/徽章/复选框，不触发选中切换
+                            if (
+                                e.target.closest(".set-default-badge") ||
+                                e.target.closest(".sku-view-btn") ||
+                                e.target.closest(".sku-clone-btn") ||
+                                e.target.closest(".sku-tile-cb-label")
+                            )
+                                return;
+                            var skuId = parseInt(tile.dataset.skuId, 10);
+                            if (selectedSkuIds[skuId]) {
+                                delete selectedSkuIds[skuId];
+                            } else {
+                                selectedSkuIds[skuId] = true;
+                            }
+                            renderAll();
+                        });
+                    });
+
+                // 点击SKU复选框（独立于卡片点击）
+                container
+                    .querySelectorAll(".sku-tile-cb")
+                    .forEach(function (cb) {
+                        cb.addEventListener("click", function (e) {
+                            e.stopPropagation();
+                            var tile = cb.closest(".sku-tile");
+                            if (!tile) return;
+                            var skuId = parseInt(tile.dataset.skuId, 10);
+                            if (selectedSkuIds[skuId]) {
+                                delete selectedSkuIds[skuId];
+                            } else {
+                                selectedSkuIds[skuId] = true;
+                            }
+                            renderAll();
+                        });
+                    });
+
+                // 点击SPU头部：展开/折叠（仅折叠，不含全选）
+                container
+                    .querySelectorAll(".spu-header")
+                    .forEach(function (header) {
+                        header.addEventListener("click", function () {
+                            var card = header.closest(".spu-card");
+                            if (!card) return;
+
+                            // 展开/折叠（使用状态变量，避免renderAll重置）
+                            var code = header.dataset.spu;
+                            if (code) {
+                                if (expandedSpuCodes[code]) {
+                                    delete expandedSpuCodes[code];
+                                } else {
+                                    expandedSpuCodes[code] = true;
+                                }
+                            }
+
+                            renderAll();
+                        });
+                    });
+
+                // 点击"查看更多"打开弹窗
+                container
+                    .querySelectorAll(".sku-tile-more")
+                    .forEach(function (more) {
+                        more.addEventListener("click", function () {
+                            openSkuModal(more.dataset.spuCode);
+                        });
+                    });
+
+                // 点击"查看"按钮跳转编辑页
+                container
+                    .querySelectorAll(".sku-view-btn")
+                    .forEach(function (btn) {
+                        btn.addEventListener("click", function (e) {
+                            e.stopPropagation();
+                            var skuId = parseInt(btn.dataset.skuId, 10);
+                            viewSku(skuId);
+                        });
+                    });
+
+                // 点击"克隆"按钮
+                container
+                    .querySelectorAll(".sku-clone-btn")
+                    .forEach(function (btn) {
+                        btn.addEventListener("click", function (e) {
+                            e.stopPropagation();
+                            var skuId = parseInt(btn.dataset.skuId, 10);
+                            cloneSku(skuId);
+                        });
+                    });
+            }
+
+            // ========== 大弹窗展示全部SKU ==========
+            function openSkuModal(spuCode) {
+                var groups = groupSkusBySpuCode(filterSkus());
+                var skuList = groups[spuCode];
+                if (!skuList) return;
+
+                skuList.sort(function (a, b) {
+                    return b.stock - a.stock;
+                });
+
+                var defaultSku = null;
+                var storedId = spuDefaultMap[spuCode];
+                if (storedId) {
+                    for (var i = 0; i < skuList.length; i++) {
+                        if (skuList[i].id === storedId) {
+                            defaultSku = skuList[i];
+                            break;
+                        }
+                    }
+                }
+                if (!defaultSku) {
+                    defaultSku = skuList[0];
+                }
+
+                var tilesHtml = "";
+                for (var s = 0; s < skuList.length; s++) {
+                    var sku = skuList[s];
+                    var isDefault = defaultSku && sku.id === defaultSku.id;
+
+                    var specsHtml = "";
+                    for (var sp = 0; sp < sku.specs.length; sp++) {
+                        specsHtml +=
+                            '<span class="spec-tag">' +
+                            escapeHtml(sku.specs[sp].type) +
+                            ": " +
+                            escapeHtml(sku.specs[sp].value) +
+                            "</span>";
+                    }
+
+                    tilesHtml +=
+                        '<div class="sku-tile' +
+                        (selectedSkuIds[sku.id] ? " selected" : "") +
+                        '" data-spu-code="' +
+                        escapeHtml(spuCode) +
+                        '" data-sku-id="' +
+                        sku.id +
+                        '">' +
+                        '<div class="sku-tile-img">' +
+                        (sku.image
+                            ? '<img src="' +
+                              escapeHtml(sku.image) +
+                              '" alt="" loading="lazy" />'
+                            : '<div class="sku-tile-img-placeholder">📷</div>') +
+                        "</div>" +
+                        '<div class="sku-tile-name">' +
+                        escapeHtml(sku.name) +
+                        (sku.xsin
+                            ? '<div class="sku-tile-xsin">' +
+                              escapeHtml(sku.xsin) +
+                              "</div>"
+                            : "") +
+                        "</div>" +
+                        '<div class="sku-tile-specs">' +
+                        specsHtml +
+                        "</div>" +
+                        '<div class="sku-tile-meta">' +
+                        "<span>¥" +
+                        sku.price +
+                        "</span>" +
+                        "<span>库存: " +
+                        (sku.stock > 0 ? sku.stock : "充足") +
+                        "</span>" +
+                        '<span style="display:flex;gap:4px;align-items:center;">' +
+                        (isDefault
+                            ? '<span class="badge" style="background:#dbeafe;color:#1e40af;font-size:0.6rem;padding:1px 6px;">默认</span>'
+                            : '<span class="badge set-default-badge" style="font-size:0.6rem;padding:1px 6px;">设为默认</span>') +
+                        '<button class="sku-view-btn" data-sku-id="' +
+                        sku.id +
+                        '">查看</button>' +
+                        '<button class="sku-clone-btn" data-sku-id="' +
+                        sku.id +
+                        '">克隆</button>' +
+                        "</span>" +
+                        "</div>" +
+                        "</div>";
+                }
+
+                var overlay = document.createElement("div");
+                overlay.className = "modal-overlay";
+                overlay.innerHTML =
+                    '<div class="modal-content">' +
+                    '<div class="modal-header">' +
+                    '<span class="modal-header-title">' +
+                    escapeHtml(spuCode) +
+                    " — 全部 " +
+                    skuList.length +
+                    " 个SKU</span>" +
+                    '<button class="modal-close">✕</button>' +
+                    "</div>" +
+                    '<div class="modal-body">' +
+                    '<div class="' +
+                    (viewMode === "list" ? "sku-tile-list" : "sku-tile-grid") +
+                    '">' +
+                    tilesHtml +
+                    "</div>" +
+                    "</div>" +
+                    "</div>";
+
+                document.body.appendChild(overlay);
+
+                // 关闭弹窗
+                overlay
+                    .querySelector(".modal-close")
+                    .addEventListener("click", function () {
+                        document.body.removeChild(overlay);
+                    });
+                overlay.addEventListener("click", function (e) {
+                    if (e.target === overlay) {
+                        document.body.removeChild(overlay);
+                    }
+                });
+
+                // 弹窗内点击"设为默认"切换默认
+                overlay
+                    .querySelectorAll(".set-default-badge")
+                    .forEach(function (badge) {
+                        badge.addEventListener("click", function (e) {
+                            e.stopPropagation();
+                            var tile = badge.closest(".sku-tile");
+                            if (!tile) return;
+                            var code = tile.dataset.spuCode;
+                            var skuId = parseInt(tile.dataset.skuId, 10);
+                            if (spuDefaultMap[code] !== skuId) {
+                                spuDefaultMap[code] = skuId;
+                                document.body.removeChild(overlay);
+                                renderAll();
+                            }
+                        });
+                    });
+
+                // 弹窗内点击SKU卡片切换选中状态
+                overlay.querySelectorAll(".sku-tile").forEach(function (tile) {
+                    tile.addEventListener("click", function (e) {
+                        if (
+                            e.target.closest(".set-default-badge") ||
+                            e.target.closest(".sku-view-btn") ||
+                            e.target.closest(".sku-clone-btn")
+                        )
+                            return;
+                        var skuId = parseInt(tile.dataset.skuId, 10);
+                        if (selectedSkuIds[skuId]) {
+                            delete selectedSkuIds[skuId];
+                        } else {
+                            selectedSkuIds[skuId] = true;
+                        }
+                        document.body.removeChild(overlay);
+                        renderAll();
+                    });
+                });
+
+                // 弹窗内"查看"按钮
+                overlay
+                    .querySelectorAll(".sku-view-btn")
+                    .forEach(function (btn) {
+                        btn.addEventListener("click", function (e) {
+                            e.stopPropagation();
+                            var skuId = parseInt(btn.dataset.skuId, 10);
+                            document.body.removeChild(overlay);
+                            viewSku(skuId);
+                        });
+                    });
+
+                // 弹窗内"克隆"按钮
+                overlay
+                    .querySelectorAll(".sku-clone-btn")
+                    .forEach(function (btn) {
+                        btn.addEventListener("click", function (e) {
+                            e.stopPropagation();
+                            var skuId = parseInt(btn.dataset.skuId, 10);
+                            document.body.removeChild(overlay);
+                            cloneSku(skuId);
+                        });
+                    });
+            }
+
+            // ========== 工具函数 ==========
+            function escapeHtml(str) {
+                if (!str) return "";
+                return String(str).replace(/[&<>]/g, function (m) {
+                    if (m === "&") return "&amp;";
+                    if (m === "<") return "&lt;";
+                    if (m === ">") return "&gt;";
+                    return m;
+                });
+            }
+
+            // ========== 查看SKU（跳转编辑页） ==========
+            function viewSku(skuId) {
+                var sku = null;
+                for (var i = 0; i < skus.length; i++) {
+                    if (skus[i].id === skuId) {
+                        sku = skus[i];
+                        break;
+                    }
+                }
+                if (!sku) return;
+                localStorage.setItem("editingSku", JSON.stringify(sku));
+                window.location.href = "SKU新增编辑.html";
+            }
+
+            // ========== 克隆SKU（跳转编辑页，预填充数据） ==========
+            function cloneSku(skuId) {
+                var sku = null;
+                for (var i = 0; i < skus.length; i++) {
+                    if (skus[i].id === skuId) {
+                        sku = skus[i];
+                        break;
+                    }
+                }
+                if (!sku) return;
+                var clone = JSON.parse(JSON.stringify(sku));
+                clone.id = nextSkuId++;
+                clone.xsin = "";
+                localStorage.setItem("editingSku", JSON.stringify(clone));
+                window.location.href = "SKU新增编辑.html";
+            }
+
+            // ========== 渲染未聚合SKU（每个独立卡片，与SPU同级） ==========
+            function renderUngroupedList() {
+                var container = document.getElementById("spuListContainer");
+                var groups = groupSkusBySpuCode(filterSkus());
+                var ungrouped = groups["__未分组__"];
+
+                if (!ungrouped || ungrouped.length === 0) return;
+
+                var html = "";
+                for (var u = 0; u < ungrouped.length; u++) {
+                    var usku = ungrouped[u];
+                    var specsHtml = "";
+                    for (var up = 0; up < usku.specs.length; up++) {
+                        specsHtml +=
+                            '<span class="spec-tag">' +
+                            escapeHtml(usku.specs[up].type) +
+                            ": " +
+                            escapeHtml(usku.specs[up].value) +
+                            "</span>";
+                    }
+                    var isSelected = selectedSkuIds[usku.id];
+                    html +=
+                        '<div class="spu-card' +
+                        (isSelected ? " selected" : "") +
+                        '" data-sku-id="' +
+                        usku.id +
+                        '" style="cursor:pointer;">' +
+                        '<div class="spu-header">' +
+                        '<label class="spu-select-all-label" title="选择/取消选择">' +
+                        '<input type="checkbox" class="spu-select-all-cb" data-sku-id="' +
+                        usku.id +
+                        '"' +
+                        (isSelected ? " checked" : "") +
+                        ">" +
+                        "</label>" +
+                        '<div class="spu-header-main-wrap">' +
+                        '<div class="spu-header-main">' +
+                        '<div class="spu-hero-img">' +
+                        (usku.image
+                            ? '<img src="' +
+                              escapeHtml(usku.image) +
+                              '" alt="" loading="lazy" />'
+                            : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#94a3b8;">📷</div>') +
+                        "</div>" +
+                        "<div>" +
+                        '<div style="font-size:0.9rem;font-weight:600;color:#0f172a;">' +
+                        escapeHtml(usku.name) +
+                        "</div>" +
+                        '<div class="spu-stats">未聚合 · 无SPU编码</div>' +
+                        "</div>" +
+                        "</div>" +
+                        "</div>" +
+                        '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;white-space:nowrap;">' +
+                        (usku.xsin
+                            ? '<span style="font-size:0.7rem;color:#94a3b8;font-family:monospace;">' +
+                              escapeHtml(usku.xsin) +
+                              "</span>"
+                            : "") +
+                        specsHtml +
+                        '<span style="font-size:0.8rem;font-weight:600;color:#0f172a;">¥' +
+                        usku.price +
+                        "</span>" +
+                        '<span style="font-size:0.75rem;color:#64748b;">库存: ' +
+                        (usku.stock > 0 ? usku.stock : "充足") +
+                        "</span>" +
+                        '<button class="sku-view-btn" data-sku-id="' +
+                        usku.id +
+                        '">查看</button>' +
+                        '<button class="sku-clone-btn" data-sku-id="' +
+                        usku.id +
+                        '">克隆</button>' +
+                        "</div>" +
+                        "</div>" +
+                        "</div>";
+                }
+
+                container.insertAdjacentHTML("beforeend", html);
+
+                // 绑定事件：点击卡片选中/取消
+                var cards = container.querySelectorAll(
+                    ".spu-card[data-sku-id]",
+                );
+                cards.forEach(function (card) {
+                    card.addEventListener("click", function (e) {
+                        if (
+                            e.target.closest(".sku-view-btn") ||
+                            e.target.closest(".sku-clone-btn")
+                        )
+                            return;
+                        var skuId = parseInt(card.dataset.skuId, 10);
+                        if (selectedSkuIds[skuId]) {
+                            delete selectedSkuIds[skuId];
+                        } else {
+                            selectedSkuIds[skuId] = true;
+                        }
+                        renderAll();
+                    });
+                });
+
+                // 查看按钮
+                cards.querySelectorAll(".sku-view-btn").forEach(function (btn) {
+                    btn.addEventListener("click", function (e) {
+                        e.stopPropagation();
+                        viewSku(parseInt(btn.dataset.skuId, 10));
+                    });
+                });
+
+                // 克隆按钮
+                cards
+                    .querySelectorAll(".sku-clone-btn")
+                    .forEach(function (btn) {
+                        btn.addEventListener("click", function (e) {
+                            e.stopPropagation();
+                            cloneSku(parseInt(btn.dataset.skuId, 10));
+                        });
+                    });
+
+                // 未聚合卡片复选框（独立于卡片点击）
+                container
+                    .querySelectorAll(
+                        ".spu-card[data-sku-id] .spu-select-all-cb",
+                    )
+                    .forEach(function (cb) {
+                        cb.addEventListener("click", function (e) {
+                            e.stopPropagation();
+                            var skuId = parseInt(cb.dataset.skuId, 10);
+                            if (selectedSkuIds[skuId]) {
+                                delete selectedSkuIds[skuId];
+                            } else {
+                                selectedSkuIds[skuId] = true;
+                            }
+                            renderAll();
+                        });
+                    });
+            }
+
+            // ========== 切换视图模式 ==========
+            function toggleViewMode(mode) {
+                viewMode = mode;
+                document
+                    .querySelectorAll(".view-toggle-btn")
+                    .forEach(function (btn) {
+                        btn.classList.toggle(
+                            "active",
+                            btn.dataset.view === mode,
+                        );
+                    });
+                renderAll();
+            }
+
+            // ========== 切换在售/不可售选项卡 ==========
+            function switchSaleTab(tab) {
+                saleTab = tab;
+                currentPage = 1;
+                document.querySelectorAll(".sale-tab").forEach(function (el) {
+                    el.classList.toggle("active", el.dataset.tab === tab);
+                });
+                renderAll();
+            }
+
+            // ========== 渲染全部（聚合SPU + 未聚合SKU） ==========
+            function renderAll() {
+                // 更新选项卡计数（基于全部SKU）
+                var totalSelling = 0,
+                    totalUnsellable = 0;
+                skus.forEach(function (s) {
+                    if (s.status === "上架") totalSelling++;
+                    else totalUnsellable++;
+                });
+                var sellingEl = document.getElementById("tabSellingCount");
+                if (sellingEl) sellingEl.textContent = totalSelling;
+                var unsellableEl =
+                    document.getElementById("tabUnsellableCount");
+                if (unsellableEl) unsellableEl.textContent = totalUnsellable;
+
+                renderSpuList();
+                renderUngroupedList();
+                renderPaginator();
+            }
+
+            // ========== 分页器 ==========
+            function renderPaginator() {
+                var container = document.getElementById("spuListContainer");
+                var groups = groupSkusBySpuCode(filterSkus());
+                var groupKeys = Object.keys(groups).filter(function (k) {
+                    return k !== "__未分组__";
+                });
+                var ungrouped = groups["__未分组__"];
+                var total =
+                    groupKeys.length +
+                    (ungrouped && ungrouped.length > 0 ? 1 : 0);
+                var totalPages = Math.ceil(total / pageSize) || 1;
+                if (totalPages <= 1) return;
+
+                var infoHtml =
+                    "共 <strong>" +
+                    total +
+                    "</strong> 项" +
+                    (ungrouped && ungrouped.length > 0
+                        ? "（含未聚合SKU）"
+                        : "") +
+                    "，" +
+                    "<strong>" +
+                    currentPage +
+                    "/" +
+                    totalPages +
+                    "</strong> 页";
+
+                var btnsHtml = "";
+                // 上一页
+                btnsHtml +=
+                    '<button class="paginator-btn paginator-btn-prev" onclick="goToPage(' +
+                    (currentPage - 1) +
+                    ')"' +
+                    (currentPage <= 1 ? " disabled" : "") +
+                    ">‹ 上一页</button>";
+
+                // 页码
+                var maxVisible = 7;
+                var half = Math.floor(maxVisible / 2);
+                var startP = Math.max(1, currentPage - half);
+                var endP = Math.min(totalPages, startP + maxVisible - 1);
+                if (endP - startP < maxVisible - 1) {
+                    startP = Math.max(1, endP - maxVisible + 1);
+                }
+
+                if (startP > 1) {
+                    btnsHtml +=
+                        '<button class="paginator-btn" onclick="goToPage(1)">1</button>';
+                    if (startP > 2)
+                        btnsHtml +=
+                            '<button class="paginator-btn" disabled>…</button>';
+                }
+                for (var p = startP; p <= endP; p++) {
+                    btnsHtml +=
+                        '<button class="paginator-btn' +
+                        (p === currentPage ? " active" : "") +
+                        '" onclick="goToPage(' +
+                        p +
+                        ')">' +
+                        p +
+                        "</button>";
+                }
+                if (endP < totalPages) {
+                    if (endP < totalPages - 1)
+                        btnsHtml +=
+                            '<button class="paginator-btn" disabled>…</button>';
+                    btnsHtml +=
+                        '<button class="paginator-btn" onclick="goToPage(' +
+                        totalPages +
+                        ')">' +
+                        totalPages +
+                        "</button>";
+                }
+
+                // 下一页
+                btnsHtml +=
+                    '<button class="paginator-btn paginator-btn-next" onclick="goToPage(' +
+                    (currentPage + 1) +
+                    ')"' +
+                    (currentPage >= totalPages ? " disabled" : "") +
+                    ">下一页 ›</button>";
+
+                container.insertAdjacentHTML(
+                    "beforeend",
+                    '<div class="paginator">' +
+                        '<div class="paginator-info">' +
+                        infoHtml +
+                        "</div>" +
+                        '<div class="paginator-btns">' +
+                        btnsHtml +
+                        "</div>" +
+                        "</div>",
+                );
+            }
+
+            function goToPage(page) {
+                var groups = groupSkusBySpuCode(skus);
+                var groupKeys = Object.keys(groups).filter(function (k) {
+                    return k !== "__未分组__";
+                });
+                var ungrouped = groups["__未分组__"];
+                var total =
+                    groupKeys.length +
+                    (ungrouped && ungrouped.length > 0 ? 1 : 0);
+                var totalPages = Math.ceil(total / pageSize) || 1;
+                if (page < 1 || page > totalPages) return;
+                currentPage = page;
+                renderAll();
+            }
+
+            // ========== 初始化 ==========
+            initDemoData();
+        </script>
+    </body>
+</html>

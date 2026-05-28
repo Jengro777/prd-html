@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>三方平台集成中心 | 租户密钥管理</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #ecf3fa 0%, #dee6f0 100%);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 1.5rem;
+            color: #1a2634;
+        }
+
+        .hub-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .logo-area h1 {
+            font-size: 1.7rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0a2e42, #1b5e7a);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .logo-area p {
+            font-size: 0.75rem;
+            color: #5b6e8c;
+        }
+
+        .category-section {
+            background: white;
+            border-radius: 28px;
+            padding: 0.6rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03), 0 0 0 1px #eef2f8;
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .category-tab {
+            padding: 0.6rem 1.5rem;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f1f5f9;
+            color: #4a627a;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-tab.active {
+            background: linear-gradient(105deg, #1a4d6b, #0f3b53);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 10px rgba(26, 77, 107, 0.25);
+        }
+
+        .category-tab:hover:not(.active) {
+            background: #e6edf6;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1rem 1.2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03), 0 0 0 1px #eef2f8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-info h4 {
+            font-size: 0.7rem;
+            color: #7f8fa4;
+            text-transform: uppercase;
+        }
+
+        .stat-number {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #1e2f41;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            color: #2a6f97;
+            opacity: 0.6;
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 1.2rem;
+        }
+
+        .btn-add-global {
+            background: white;
+            border: 1px solid #cbdde9;
+            border-radius: 40px;
+            padding: 0.6rem 1.4rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #2c6e9e;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .btn-add-global:hover {
+            background: #e6f0f9;
+            border-color: #8bb4d0;
+            transform: translateY(-1px);
+        }
+
+        .data-table-container {
+            background: white;
+            border-radius: 20px;
+            overflow-x: auto;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05), 0 0 0 1px #eef2f8;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            min-width: 1100px;
+        }
+
+        .data-table th {
+            background: #f8fafd;
+            padding: 0.9rem 1rem;
+            text-align: left;
+            font-weight: 700;
+            color: #2c5a7a;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.8rem;
+        }
+
+        .data-table td {
+            padding: 0.9rem 1rem;
+            border-bottom: 1px solid #edf2f7;
+            vertical-align: middle;
+        }
+
+        .data-table tr:hover {
+            background: #fafcff;
+        }
+
+        .platform-badge {
+            display: inline-block;
+            background: #eef2fc;
+            padding: 0.2rem 0.7rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #1f6392;
+            margin-top: 4px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0.2rem 0.7rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .status-badge.valid {
+            background: #e0f2e9;
+            color: #1e7b48;
+        }
+
+        .status-badge.invalid {
+            background: #fee9e3;
+            color: #bd5a2c;
+        }
+
+        .readonly-text {
+            background: #f8fafc;
+            padding: 0.3rem 0.6rem;
+            border-radius: 16px;
+            display: inline-block;
+            font-size: 0.75rem;
+            color: #2c5a7a;
+            max-width: 200px;
+            word-break: break-all;
+        }
+
+        .remark-text {
+            max-width: 180px;
+            word-break: break-word;
+            white-space: normal;
+            line-height: 1.4;
+            color: #4b6f8c;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.7rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 30px;
+            transition: 0.1s;
+            font-weight: 500;
+        }
+
+        .btn-bind {
+            background: #eef2fc;
+            color: #1f6392;
+        }
+        .btn-bind:hover { background: #e0e9f5; }
+
+        .btn-unbind {
+            color: #c46832;
+            text-decoration: underline;
+        }
+        .btn-remove {
+            color: #b91c1c;
+        }
+        .btn-edit {
+            background: #fef3c7;
+            color: #b45309;
+        }
+        .btn-edit:hover { background: #fde68a; }
+        .btn-validate {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+        .btn-validate:hover { background: #bae6fd; }
+
+        .action-cell {
+            white-space: nowrap;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .empty-row td {
+            text-align: center;
+            padding: 2rem;
+            color: #8ba0b8;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
+
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-card {
+            background: white;
+            width: 90%;
+            max-width: 520px;
+            border-radius: 2rem;
+            padding: 1.8rem;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-card select, .modal-card input, .modal-card textarea {
+            width: 100%;
+            padding: 0.7rem;
+            margin: 0.6rem 0;
+            border-radius: 1rem;
+            border: 1px solid #cfdfed;
+            font-family: inherit;
+        }
+
+        .modal-card textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 1rem;
+        }
+
+        .global-toast {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e2a36e6;
+            backdrop-filter: blur(8px);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 48px;
+            font-size: 0.85rem;
+            opacity: 0;
+            transition: 0.2s;
+            pointer-events: none;
+            z-index: 1200;
+            white-space: nowrap;
+            max-width: 90vw;
+            text-align: center;
+        }
+
+        .global-toast.show {
+            opacity: 1;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.7rem;
+            color: #6c86a0;
+        }
+        .info-note {
+            font-size: 0.7rem;
+            color: #6c86a0;
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="hub-container">
+    <div class="header">
+        <div class="logo-area">
+            <h1><i class="fas fa-plug"></i> 三方平台集成中心</h1>
+            <p>租户密钥独立管理 · 多货主/多承运商</p>
+        </div>
+    </div>
+
+    <div class="category-section">
+        <div class="category-tabs" id="categoryTabs">
+            <div class="category-tab active" data-category="wms"><i class="fas fa-warehouse"></i> WMS 仓储类</div>
+            <div class="category-tab" data-category="tms"><i class="fas fa-truck"></i> TMS 运输类</div>
+        </div>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-card"><div class="stat-info"><h4>平台数量</h4><div class="stat-number" id="platformCount">0</div></div><i class="fas fa-building-columns stat-icon"></i></div>
+        <div class="stat-card"><div class="stat-info"><h4>租户密钥总数</h4><div class="stat-number" id="totalKeysCount">0</div></div><i class="fas fa-key stat-icon"></i></div>
+        <div class="stat-card"><div class="stat-info"><h4>有效密钥</h4><div class="stat-number" id="validKeysCount">0</div></div><i class="fas fa-check-circle stat-icon"></i></div>
+    </div>
+
+    <div class="action-bar">
+        <button class="btn-add-global" id="globalAddTenantBtn"><i class="fas fa-plus-circle"></i> 新增租户密钥</button>
+    </div>
+
+    <div class="data-table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 150px">平台名称</th>
+                    <th style="width: 140px">租户信息</th>
+                    <th style="width: 200px">租户密钥</th>
+                    <th style="width: 80px">状态</th>
+                    <th style="width: 160px">备注</th>
+                    <th style="width: 240px">操作</th>
+                </tr>
+            </thead>
+            <tbody id="keysTableBody">
+                <tr class="empty-row"><td colspan="6">加载中...</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="info-note">
+        <i class="fas fa-info-circle"></i> 租户信息由平台根据密钥返回，仅展示；密钥不可在列表中直接编辑，请使用「编辑」功能修改。
+    </div>
+    <footer>⚡ 状态说明：有效(密钥已通过平台规则校验) / 无效(未校验或校验失败)</footer>
+</div>
+
+<!-- 新增租户弹窗 -->
+<div id="addTenantModal" class="modal-overlay">
+    <div class="modal-card">
+        <h3><i class="fas fa-user-plus"></i> 新增租户密钥</h3>
+        <label style="font-size:0.8rem; font-weight:600;">选择目标平台</label>
+        <select id="targetPlatformSelect"></select>
+        <label style="font-size:0.8rem; font-weight:600;">平台密钥</label>
+        <input type="text" id="newTenantKey" placeholder="请输入平台密钥" autocomplete="off">
+        <label style="font-size:0.8rem; font-weight:600;">备注（自定义）</label>
+        <textarea id="newRemark" rows="2" placeholder="填写备注信息，如：杭州仓对接、顺丰月结账号等"></textarea>
+        <div class="helper-tip" style="font-size:0.7rem; color:#6c86a0;">密钥需先通过「校验」验证有效后方可添加，租户信息将由平台自动返回</div>
+        <div class="modal-actions">
+            <button id="cancelTenantBtn" style="background:#eef2f6; border:none; padding:0.5rem 1rem; border-radius:2rem;">取消</button>
+            <button id="preValidateBtn" style="background:#e0f2fe; color:#0369a1; border:none; padding:0.5rem 1rem; border-radius:2rem;">校验密钥</button>
+            <button id="confirmAddTenantBtn" style="background:#1b4f6e; color:white; border:none; padding:0.5rem 1rem; border-radius:2rem;" disabled>确认添加</button>
+        </div>
+        <div id="addValidateMsg" style="font-size:0.7rem; margin-top:8px; color:#6883a0;"></div>
+        <div id="fetchedTenantInfo" style="font-size:0.7rem; margin-top:6px; color:#1e7b48;"></div>
+    </div>
+</div>
+
+<!-- 编辑弹窗 -->
+<div id="editModal" class="modal-overlay">
+    <div class="modal-card">
+        <h3><i class="fas fa-edit"></i> 编辑租户密钥</h3>
+        <label style="font-size:0.8rem; font-weight:600;">租户信息（只读，平台返回）</label>
+        <input type="text" id="editTenantInfo" readonly style="background:#f5f7fa; cursor:not-allowed;">
+        <label style="font-size:0.8rem; font-weight:600;">平台密钥</label>
+        <input type="text" id="editKeyValue" placeholder="平台密钥">
+        <label style="font-size:0.8rem; font-weight:600;">备注（自定义）</label>
+        <textarea id="editRemark" rows="2" placeholder="备注信息"></textarea>
+        <div class="helper-tip" style="font-size:0.7rem; color:#6c86a0;">修改密钥后需要重新「校验」并「绑定」才会生效</div>
+        <div class="modal-actions">
+            <button id="cancelEditBtn" style="background:#eef2f6; border:none; padding:0.5rem 1rem; border-radius:2rem;">取消</button>
+            <button id="saveEditBtn" style="background:#1b4f6e; color:white; border:none; padding:0.5rem 1rem; border-radius:2rem;">保存修改</button>
+        </div>
+    </div>
+</div>
+
+<!-- 通用确认弹窗 -->
+<div id="confirmModal" class="modal-overlay">
+    <div class="modal-card">
+        <h3 id="confirmTitle"><i class="fas fa-question-circle"></i> 确认操作</h3>
+        <p id="confirmMessage" style="margin: 1rem 0;">确定要执行此操作吗？</p>
+        <div class="modal-actions">
+            <button id="confirmCancelBtn" style="background:#eef2f6; border:none; padding:0.5rem 1rem; border-radius:2rem;">取消</button>
+            <button id="confirmOkBtn" style="background:#c2410c; color:white; border:none; padding:0.5rem 1rem; border-radius:2rem;">确认</button>
+        </div>
+    </div>
+</div>
+
+<div id="globalToast" class="global-toast"></div>
+
+<script>
+    let platforms = [];
+    let currentCategory = 'wms';
+    let pendingConfirm = null;
+
+    // 模拟根据密钥从平台获取租户信息
+    function fetchTenantInfoFromPlatform(platformId, keyValue) {
+        // 模拟异步请求
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const platform = platforms.find(p => p.id === platformId);
+                if (!platform || !platform.validator(keyValue)) {
+                    resolve({ success: false, tenantInfo: '' });
+                    return;
+                }
+                // 根据密钥模拟租户名称
+                let tenantName = '';
+                if (keyValue.includes('shipper') || keyValue.includes('wms_shipper')) tenantName = '杭州云裳科技有限公司';
+                else if (keyValue.includes('abc123') || keyValue.includes('tenant')) tenantName = '义乌优选贸易商行';
+                else if (keyValue.includes('wh_10086') || keyValue.includes('wh')) tenantName = '华南中心仓';
+                else if (keyValue.includes('shanghai_wh')) tenantName = '上海嘉定仓';
+                else if (keyValue.includes('carrier_001')) tenantName = '顺丰速运（杭州）';
+                else if (keyValue.includes('fleet_889')) tenantName = '极兔车队华东区';
+                else if (keyValue.includes('sf_express')) tenantName = '京东物流华东分部';
+                else tenantName = `${platform.name} 租户`;
+                resolve({ success: true, tenantInfo: tenantName });
+            }, 300);
+        });
+    }
+
+    // 校验规则
+    function wmsValidator(key) {
+        if (!key || typeof key !== 'string') return false;
+        const trimmed = key.trim();
+        const wmsDemoSet = new Set(["dlz_wms_master_001", "wms_shipper_9f8a7b", "wms_tenant_abc123", "wms_货主_杭州仓", "wms_wh_10086", "wms_shanghai_wh"]);
+        if (wmsDemoSet.has(trimmed)) return true;
+        if (trimmed.startsWith("wms_") && trimmed.length >= 8) return true;
+        if (trimmed.startsWith("dlz_wms_") && trimmed.length >= 12) return true;
+        if (trimmed.length >= 10 && /货主|wh|warehouse/i.test(trimmed)) return true;
+        return false;
+    }
+
+    function tmsValidator(key) {
+        if (!key || typeof key !== 'string') return false;
+        const trimmed = key.trim();
+        const tmsDemoSet = new Set(["tms_carrier_001", "dlz_tms_express", "tms_tenant_shanghai", "tms_运力_主密钥", "tms_fleet_889", "tms_sf_express"]);
+        if (tmsDemoSet.has(trimmed)) return true;
+        if (trimmed.startsWith("tms_") && trimmed.length >= 8) return true;
+        if (trimmed.startsWith("dlz_tms_") && trimmed.length >= 12) return true;
+        if (trimmed.length >= 10 && /承运|运输|carrier/i.test(trimmed)) return true;
+        return false;
+    }
+
+    function getValidatorByCategory(category) {
+        return category === 'wms' ? wmsValidator : tmsValidator;
+    }
+
+    function generateKeyId() {
+        return 'key_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+    }
+
+    function initPlatforms() {
+        platforms = [
+            { id: 'delzoa-wms', name: 'Delzoa WMS', category: 'wms', validator: wmsValidator,
+              keys: [
+                  { id: generateKeyId(), tenantInfo: '杭州云裳科技有限公司', keyValue: 'wms_shipper_9f8a7b', bound: true, boundAt: new Date().toISOString(), remark: '主仓对接，日单量约5000' },
+                  { id: generateKeyId(), tenantInfo: '义乌优选贸易商行', keyValue: 'wms_tenant_abc123', bound: false, boundAt: null, remark: '测试租户' },
+                  { id: generateKeyId(), tenantInfo: '华南中心仓', keyValue: 'wms_wh_10086', bound: true, boundAt: new Date().toISOString(), remark: '华南区总仓' }
+              ] },
+            { id: 'smart-wms-pro', name: '智仓 WMS Pro', category: 'wms', validator: wmsValidator,
+              keys: [
+                  { id: generateKeyId(), tenantInfo: '上海嘉定仓', keyValue: 'wms_shanghai_wh', bound: true, boundAt: new Date().toISOString(), remark: '嘉定保税区' },
+                  { id: generateKeyId(), tenantInfo: '', keyValue: '', bound: false, boundAt: null, remark: '' }
+              ] },
+            { id: 'delzoa-tms', name: 'Delzoa TMS', category: 'tms', validator: tmsValidator,
+              keys: [
+                  { id: generateKeyId(), tenantInfo: '顺丰速运（杭州）', keyValue: 'tms_carrier_001', bound: true, boundAt: new Date().toISOString(), remark: '月结账号' },
+                  { id: generateKeyId(), tenantInfo: '', keyValue: '', bound: false, boundAt: null, remark: '' }
+              ] },
+            { id: 'logix-tms', name: 'LogiX TMS', category: 'tms', validator: tmsValidator,
+              keys: [
+                  { id: generateKeyId(), tenantInfo: '', keyValue: 'tms_fleet_889', bound: false, boundAt: null, remark: '待绑定车队' },
+                  { id: generateKeyId(), tenantInfo: '京东物流华东分部', keyValue: 'tms_sf_express', bound: true, boundAt: new Date().toISOString(), remark: '京东合作' }
+              ] }
+        ];
+    }
+
+    function updateStats() {
+        const filtered = platforms.filter(p => p.category === currentCategory);
+        const platformCount = filtered.length;
+        const allKeys = filtered.flatMap(p => p.keys);
+        const totalKeys = allKeys.length;
+        const validKeys = allKeys.filter(k => k.bound === true).length;
+        document.getElementById('platformCount').innerText = platformCount;
+        document.getElementById('totalKeysCount').innerText = totalKeys;
+        document.getElementById('validKeysCount').innerText = validKeys;
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('keysTableBody');
+        const filteredPlatforms = platforms.filter(p => p.category === currentCategory);
+        if (filteredPlatforms.length === 0) {
+            tbody.innerHTML = '<tr class="empty-row"><td colspan="6">暂无平台数据</td></tr>';
+            updateStats();
+            return;
+        }
+        let rowsHtml = '';
+        for (const platform of filteredPlatforms) {
+            for (const keyItem of platform.keys) {
+                const isValid = keyItem.bound;
+                const statusClass = isValid ? 'valid' : 'invalid';
+                const statusText = isValid ? '有效' : '无效';
+                const maskedKey = keyItem.keyValue ? '••••••' + keyItem.keyValue.slice(-6) : '未设置';
+                rowsHtml += `
+                    <tr data-platform-id="${platform.id}" data-key-id="${keyItem.id}">
+                        <td><strong>${escapeHtml(platform.name)}</strong><div class="platform-badge">${escapeHtml(platform.id)}</div></td>
+                        <td><span class="readonly-text">${escapeHtml(keyItem.tenantInfo || '-')}</span></td>
+                        <td><span class="readonly-text" title="${escapeHtml(keyItem.keyValue || '')}">${escapeHtml(maskedKey)}</span></td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td><div class="remark-text">${escapeHtml(keyItem.remark || '')}</div></td>
+                        <td class="action-cell">
+                            <button class="btn-icon btn-validate validate-key-btn" data-platform="${platform.id}" data-keyid="${keyItem.id}">校验</button>
+                            ${!isValid ? `<button class="btn-icon btn-bind bind-key-btn" data-platform="${platform.id}" data-keyid="${keyItem.id}">绑定</button>` : `<button class="btn-icon btn-unbind unbind-key-btn" data-platform="${platform.id}" data-keyid="${keyItem.id}">解绑</button>`}
+                            <button class="btn-icon btn-edit edit-key-btn" data-platform="${platform.id}" data-keyid="${keyItem.id}">编辑</button>
+                            <button class="btn-icon btn-remove remove-key-btn" data-platform="${platform.id}" data-keyid="${keyItem.id}">删除</button>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        tbody.innerHTML = rowsHtml;
+        attachTableEvents();
+        updateStats();
+    }
+
+    function attachTableEvents() {
+        document.querySelectorAll('.validate-key-btn').forEach(btn => { btn.removeEventListener('click', handleValidate); btn.addEventListener('click', handleValidate); });
+        document.querySelectorAll('.bind-key-btn').forEach(btn => { btn.removeEventListener('click', handleBind); btn.addEventListener('click', handleBind); });
+        document.querySelectorAll('.unbind-key-btn').forEach(btn => { btn.removeEventListener('click', handleUnbind); btn.addEventListener('click', handleUnbind); });
+        document.querySelectorAll('.edit-key-btn').forEach(btn => { btn.removeEventListener('click', handleEdit); btn.addEventListener('click', handleEdit); });
+        document.querySelectorAll('.remove-key-btn').forEach(btn => { btn.removeEventListener('click', handleRemove); btn.addEventListener('click', handleRemove); });
+    }
+
+    async function handleValidate(e) {
+        const platformId = e.currentTarget.dataset.platform;
+        const keyId = e.currentTarget.dataset.keyid;
+        const platform = platforms.find(p => p.id === platformId);
+        if (!platform) return;
+        const keyItem = platform.keys.find(k => k.id === keyId);
+        if (!keyItem) return;
+        const secretValue = keyItem.keyValue;
+        if (!secretValue) { showToast('密钥为空，请先编辑填写密钥', true); return; }
+        const isValid = platform.validator(secretValue);
+        if (isValid) {
+            showToast(`✅ 密钥校验有效`, false);
+            // 同时尝试获取租户信息（模拟平台返回）
+            const result = await fetchTenantInfoFromPlatform(platformId, secretValue);
+            if (result.success && result.tenantInfo) {
+                keyItem.tenantInfo = result.tenantInfo;
+                renderTable();
+                showToast(`已同步租户信息: ${result.tenantInfo}`, false);
+            }
+        } else {
+            showToast(`❌ 密钥无效，不符合${platform.name}规则`, true);
+        }
+    }
+
+    async function handleBind(e) {
+        const platformId = e.currentTarget.dataset.platform;
+        const keyId = e.currentTarget.dataset.keyid;
+        const platform = platforms.find(p => p.id === platformId);
+        if (!platform) return;
+        const keyItem = platform.keys.find(k => k.id === keyId);
+        if (!keyItem || keyItem.bound) { showToast('密钥已绑定', true); return; }
+        const secretValue = keyItem.keyValue;
+        if (!secretValue) { showToast('密钥为空，请先编辑填写密钥', true); return; }
+        const isValid = platform.validator(secretValue);
+        if (!isValid) { showToast(`密钥校验失败，请先点击「校验」`, true); return; }
+        // 获取租户信息
+        const result = await fetchTenantInfoFromPlatform(platformId, secretValue);
+        keyItem.bound = true;
+        if (result.success && result.tenantInfo) keyItem.tenantInfo = result.tenantInfo;
+        keyItem.boundAt = new Date().toISOString();
+        renderTable();
+        showToast(`✅ ${platform.name} 租户密钥绑定成功`, false);
+    }
+
+    function handleUnbind(e) {
+        const platformId = e.currentTarget.dataset.platform;
+        const keyId = e.currentTarget.dataset.keyid;
+        showConfirmDialog('解绑确认', '确定要解绑该租户密钥吗？解绑后状态将变为无效。', async () => {
+            const platform = platforms.find(p => p.id === platformId);
+            if (!platform) return;
+            const keyItem = platform.keys.find(k => k.id === keyId);
+            if (keyItem && keyItem.bound) {
+                keyItem.bound = false;
+                renderTable();
+                showToast(`已解除绑定`, false);
+            }
+        });
+    }
+
+    function handleEdit(e) {
+        const platformId = e.currentTarget.dataset.platform;
+        const keyId = e.currentTarget.dataset.keyid;
+        const platform = platforms.find(p => p.id === platformId);
+        if (!platform) return;
+        const keyItem = platform.keys.find(k => k.id === keyId);
+        if (!keyItem) return;
+        document.getElementById('editTenantInfo').value = keyItem.tenantInfo || '';
+        document.getElementById('editKeyValue').value = keyItem.keyValue || '';
+        document.getElementById('editRemark').value = keyItem.remark || '';
+        document.getElementById('editModal').classList.add('active');
+        window._editContext = { platformId, keyId };
+    }
+
+    function saveEdit() {
+        const context = window._editContext;
+        if (!context) return;
+        const platform = platforms.find(p => p.id === context.platformId);
+        if (!platform) return;
+        const keyItem = platform.keys.find(k => k.id === context.keyId);
+        if (!keyItem) return;
+        const newKeyValue = document.getElementById('editKeyValue').value.trim();
+        const newRemark = document.getElementById('editRemark').value;
+        const oldKeyValue = keyItem.keyValue;
+        keyItem.keyValue = newKeyValue;
+        keyItem.remark = newRemark;
+        if (oldKeyValue !== newKeyValue) {
+            keyItem.bound = false;
+            keyItem.tenantInfo = '';
+        }
+        document.getElementById('editModal').classList.remove('active');
+        renderTable();
+        showToast(`编辑保存成功`, false);
+    }
+
+    function handleRemove(e) {
+        const platformId = e.currentTarget.dataset.platform;
+        const keyId = e.currentTarget.dataset.keyid;
+        showConfirmDialog('删除确认', '确定要删除该租户密钥吗？删除后不可恢复。', () => {
+            const platform = platforms.find(p => p.id === platformId);
+            if (!platform) return;
+            const keyIndex = platform.keys.findIndex(k => k.id === keyId);
+            if (keyIndex !== -1) {
+                platform.keys.splice(keyIndex, 1);
+                renderTable();
+                showToast(`已删除租户密钥`, false);
+            }
+        });
+    }
+
+    // 新增租户弹窗逻辑
+    let pendingAddValidation = false;
+    let pendingAddPlatformId = null;
+    let pendingAddKeyValue = null;
+    let pendingFetchedTenant = '';
+
+    function openAddTenantModal() {
+        const availablePlatforms = platforms.filter(p => p.category === currentCategory);
+        if (availablePlatforms.length === 0) { showToast('当前分类下没有可用的平台', true); return; }
+        const selectEl = document.getElementById('targetPlatformSelect');
+        selectEl.innerHTML = '';
+        availablePlatforms.forEach(p => {
+            const option = document.createElement('option');
+            option.value = p.id;
+            option.textContent = `${p.name} (${p.id})`;
+            selectEl.appendChild(option);
+        });
+        document.getElementById('newTenantKey').value = '';
+        document.getElementById('newRemark').value = '';
+        document.getElementById('addValidateMsg').innerHTML = '';
+        document.getElementById('fetchedTenantInfo').innerHTML = '';
+        pendingAddValidation = false;
+        pendingAddPlatformId = null;
+        const confirmBtn = document.getElementById('confirmAddTenantBtn');
+        confirmBtn.disabled = true;
+        document.getElementById('addTenantModal').classList.add('active');
+    }
+
+    async function preValidateNewKey() {
+        const platformId = document.getElementById('targetPlatformSelect').value;
+        const keyValue = document.getElementById('newTenantKey').value.trim();
+        if (!platformId) { showToast('请选择平台', true); return; }
+        if (!keyValue) { showToast('请输入密钥', true); return; }
+        const platform = platforms.find(p => p.id === platformId);
+        if (!platform) return;
+        const isValid = platform.validator(keyValue);
+        const msgDiv = document.getElementById('addValidateMsg');
+        const tenantDiv = document.getElementById('fetchedTenantInfo');
+        if (isValid) {
+            msgDiv.innerHTML = '✅ 密钥校验通过，正在获取租户信息...';
+            msgDiv.style.color = '#1e7b48';
+            const result = await fetchTenantInfoFromPlatform(platformId, keyValue);
+            if (result.success && result.tenantInfo) {
+                tenantDiv.innerHTML = `🏢 平台返回租户：${result.tenantInfo}`;
+                pendingFetchedTenant = result.tenantInfo;
+                msgDiv.innerHTML = '✅ 密钥校验通过，可添加';
+                pendingAddValidation = true;
+                pendingAddPlatformId = platformId;
+                pendingAddKeyValue = keyValue;
+                document.getElementById('confirmAddTenantBtn').disabled = false;
+            } else {
+                tenantDiv.innerHTML = '⚠️ 未能获取租户信息，仍可添加';
+                pendingFetchedTenant = '';
+                pendingAddValidation = true;
+                pendingAddPlatformId = platformId;
+                pendingAddKeyValue = keyValue;
+                document.getElementById('confirmAddTenantBtn').disabled = false;
+            }
+        } else {
+            msgDiv.innerHTML = '❌ 密钥无效，不符合平台规则';
+            msgDiv.style.color = '#f97316';
+            tenantDiv.innerHTML = '';
+            pendingAddValidation = false;
+            document.getElementById('confirmAddTenantBtn').disabled = true;
+        }
+    }
+
+    function confirmAddTenant() {
+        if (!pendingAddValidation) { showToast('请先通过密钥校验', true); return; }
+        const platformId = pendingAddPlatformId;
+        const keyValue = pendingAddKeyValue;
+        const remark = document.getElementById('newRemark').value;
+        const platform = platforms.find(p => p.id === platformId);
+        if (!platform) { showToast('平台不存在', true); return; }
+        const exists = platform.keys.some(k => k.keyValue === keyValue && k.bound === true);
+        if (exists) { showToast(`该密钥已绑定，不可重复`, true); return; }
+        const newKey = {
+            id: generateKeyId(),
+            tenantInfo: pendingFetchedTenant || '',
+            keyValue: keyValue,
+            bound: true,
+            boundAt: new Date().toISOString(),
+            remark: remark
+        };
+        platform.keys.push(newKey);
+        renderTable();
+        showToast(`✨ 成功为 ${platform.name} 新增租户密钥并自动绑定`, false);
+        document.getElementById('addTenantModal').classList.remove('active');
+        pendingAddValidation = false;
+        pendingFetchedTenant = '';
+    }
+
+    function showConfirmDialog(title, message, onConfirm) {
+        document.getElementById('confirmTitle').innerHTML = `<i class="fas fa-question-circle"></i> ${title}`;
+        document.getElementById('confirmMessage').innerText = message;
+        document.getElementById('confirmModal').classList.add('active');
+        const okBtn = document.getElementById('confirmOkBtn');
+        const cancelBtn = document.getElementById('confirmCancelBtn');
+        const closeModal = () => document.getElementById('confirmModal').classList.remove('active');
+        const newOk = okBtn.cloneNode(true);
+        const newCancel = cancelBtn.cloneNode(true);
+        okBtn.parentNode.replaceChild(newOk, okBtn);
+        cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+        newOk.addEventListener('click', () => { onConfirm(); closeModal(); });
+        newCancel.addEventListener('click', closeModal);
+        document.getElementById('confirmModal').addEventListener('click', (e) => { if(e.target === document.getElementById('confirmModal')) closeModal(); }, { once: true });
+    }
+
+    function switchCategory(category) {
+        currentCategory = category;
+        document.querySelectorAll('.category-tab').forEach(tab => {
+            const cat = tab.dataset.category;
+            if (cat === category) tab.classList.add('active');
+            else tab.classList.remove('active');
+        });
+        renderTable();
+    }
+
+    let toastTimer = null;
+    function showToast(message, isError = true) {
+        const toast = document.getElementById('globalToast');
+        toast.style.backgroundColor = isError ? '#c2410ce6' : '#1e7b48e6';
+        toast.textContent = message;
+        toast.classList.add('show');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+    }
+
+    function escapeHtml(str) { if(!str) return ''; return String(str).replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' })[m]); }
+
+    // 事件绑定
+    document.getElementById('globalAddTenantBtn').addEventListener('click', openAddTenantModal);
+    document.getElementById('preValidateBtn').addEventListener('click', preValidateNewKey);
+    document.getElementById('confirmAddTenantBtn').addEventListener('click', confirmAddTenant);
+    document.getElementById('cancelTenantBtn').addEventListener('click', () => document.getElementById('addTenantModal').classList.remove('active'));
+    document.getElementById('cancelEditBtn').addEventListener('click', () => document.getElementById('editModal').classList.remove('active'));
+    document.getElementById('saveEditBtn').addEventListener('click', saveEdit);
+    document.querySelectorAll('.category-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => { const cat = tab.dataset.category; if (cat) switchCategory(cat); });
+    });
+    [document.getElementById('addTenantModal'), document.getElementById('editModal'), document.getElementById('confirmModal')].forEach(modal => {
+        modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
+    });
+
+    initPlatforms();
+    renderTable();
+</script>
+</body>
+</html>

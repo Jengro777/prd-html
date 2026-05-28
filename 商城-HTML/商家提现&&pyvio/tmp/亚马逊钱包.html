@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>亚马逊卖家钱包 | 提现指南与操作说明</title>
+    <!-- 使用干净现代的字体与样式，提升可读性与专业感 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f5f7fc 0%, #eef2f8 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: #1a2634;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* 头部说明卡片 */
+        .hero-card {
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.02);
+            padding: 2rem 2rem 1.8rem;
+            margin-bottom: 2rem;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .hero-title {
+            font-size: 1.9rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #232f3e, #146eb4);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.3px;
+        }
+
+        .hero-sub {
+            font-size: 1rem;
+            color: #4a5b6e;
+            max-width: 85%;
+            border-left: 3px solid #ff9900;
+            padding-left: 1rem;
+            margin-top: 0.6rem;
+            font-weight: 400;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #f0f2f5;
+            padding: 0.2rem 0.7rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #2c3e50;
+            margin-top: 0.8rem;
+        }
+
+        /* 网格布局 */
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.8rem;
+            margin-bottom: 2rem;
+        }
+
+        /* 卡片通用样式 */
+        .card {
+            background: white;
+            border-radius: 1.75rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02), 0 2px 4px rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #e9edf2;
+            overflow: hidden;
+            backdrop-filter: blur(0px);
+        }
+
+        .card:hover {
+            box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .card-header {
+            padding: 1.5rem 1.8rem 0.5rem 1.8rem;
+            border-bottom: 1px solid #f0f2f6;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+            color: #0f1822;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+        }
+
+        .card-content {
+            padding: 1.4rem 1.8rem 1.8rem 1.8rem;
+        }
+
+        .step-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.6rem;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: #ff990010;
+            color: #ff9900;
+            font-weight: 700;
+            border-radius: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1rem;
+            border: 1px solid #ffeedd;
+        }
+
+        .step-text {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #1e2a36;
+            margin-bottom: 0.2rem;
+        }
+
+        .step-desc {
+            font-size: 0.9rem;
+            color: #4f5f6f;
+            line-height: 1.4;
+        }
+
+        .note-box {
+            background: #fef9e6;
+            border-radius: 1rem;
+            padding: 1rem 1.2rem;
+            margin-top: 1.5rem;
+            border-left: 4px solid #ffb347;
+            font-size: 0.85rem;
+            color: #7a6400;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+        }
+
+        .info-table td {
+            padding: 0.7rem 0;
+            border-bottom: 1px solid #edf2f7;
+            font-size: 0.9rem;
+        }
+
+        .info-table td:first-child {
+            font-weight: 600;
+            width: 38%;
+            color: #2c3f4f;
+        }
+
+        .info-table td:last-child {
+            color: #2c3e50;
+        }
+
+        .highlight {
+            background: #eef4ff;
+            border-radius: 12px;
+            padding: 0.2rem 0.4rem;
+            font-weight: 500;
+            color: #146eb4;
+        }
+
+        .warning-note {
+            background: #fff0f0;
+            border-radius: 1rem;
+            padding: 1rem 1.2rem;
+            margin-top: 1.2rem;
+            border-left: 4px solid #e47911;
+            font-size: 0.85rem;
+            color: #b45a1c;
+        }
+
+        .fee-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+
+        .fee-label {
+            font-weight: 500;
+        }
+
+        .fee-value {
+            font-weight: 600;
+            color: #1f6392;
+        }
+
+        .btn-mock {
+            background: #232f3e;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 60px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: default;
+            transition: 0.1s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        hr {
+            margin: 1rem 0;
+            border: none;
+            border-top: 1px solid #eef2f8;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #7c8b9c;
+            border-top: 1px solid #dfe6ef;
+            padding-top: 1.5rem;
+        }
+
+        @media (max-width: 780px) {
+            .grid-2col {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            .hero-sub {
+                max-width: 100%;
+            }
+            .card-header h2 {
+                font-size: 1.3rem;
+            }
+        }
+
+        .inline-code {
+            background: #f2f4f8;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .amazon-yellow {
+            color: #ff9900;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 头部信息：阐明默认结算方式 vs 亚马逊钱包 -->
+    <div class="hero-card">
+        <div class="hero-title">💰 亚马逊卖家钱包 · 提现全攻略</div>
+        <div class="hero-sub">
+            默认情况下，亚马逊会直接打款至您的绑定银行卡。若您开通「亚马逊卖家钱包」，款项将首先进入钱包余额。
+            那么，钱在亚马逊钱包里，卖家该如何高效、安全地提现至银行账户？ 以下为详细操作指南。
+        </div>
+        <div class="badge">⚡ 官方路径 | 多币种支持 | 灵活提现</div>
+    </div>
+
+    <!-- 两列主要信息：左侧提现步骤 + 右侧费率与细节 -->
+    <div class="grid-2col">
+        <!-- 左侧：详细提现步骤卡片 -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">🏦</span>
+                <h2>提现操作流程</h2>
+            </div>
+            <div class="card-content">
+                <ul class="step-list">
+                    <li class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-text">
+                            <div class="step-title">登录亚马逊卖家平台 (Seller Central)</div>
+                            <div class="step-desc">进入北美/欧洲/日本等对应站点，确保您拥有管理员权限。顶部导航找到 <strong class="highlight">“报告”</strong> → <strong class="highlight">“付款”</strong> 或直接点击 <strong>“亚马逊卖家钱包”</strong> 快捷入口。</div>
+                        </div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-text">
+                            <div class="step-title">进入「亚马逊卖家钱包」仪表板</div>
+                            <div class="step-desc">在付款控制面板中，点击 <strong>“亚马逊卖家钱包”</strong> 卡片。页面会展示当前可用余额（按币种分类，如USD, EUR, GBP, JPY等）。确认需要提现的金额。</div>
+                        </div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-text">
+                            <div class="step-title">选择“提现”或“转出资金”</div>
+                            <div class="step-desc">点击 <strong>“提现” (Withdraw)</strong> 按钮，选择目标币种。系统会引导您绑定或选择一个已添加的银行账户（支持本地银行转账或第三方支付合作渠道）。</div>
+                        </div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-number">4</div>
+                        <div class="step-text">
+                            <div class="step-title">输入提现金额并确认汇率/手续费</div>
+                            <div class="step-desc">填写需要转出的金额，亚马逊会显示预估到账金额、实时汇率（如有币种转换）以及相关服务费。确认后点击「继续」。</div>
+                        </div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-number">5</div>
+                        <div class="step-text">
+                            <div class="step-title">完成身份验证 & 提交申请</div>
+                            <div class="step-desc">根据安全策略，可能需要短信/邮箱验证码或二次验证。提交后提现申请即刻处理，资金通常在 <strong>1-3个工作日</strong> 内到达您的银行账户。</div>
+                        </div>
+                    </li>
+                </ul>
+                <div class="note-box">
+                    <strong>💡 卖家小贴士：</strong> 首次使用亚马逊钱包提现前，需在「账户信息」→「付款信息」中完善受益人银行账户详情。支持添加多个收款账户，灵活管理多站点营收。
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧：提现费率 / 时效 / 常见问题卡片 -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">📊</span>
+                <h2>提现费率 & 时效</h2>
+            </div>
+            <div class="card-content">
+                <table class="info-table">
+                    <tbody>
+                        <tr><td>提现手续费</td><td><strong class="amazon-yellow">0.3% ~ 1.5%</strong>（根据币种/站点/提现方式而异，部分活动期内可能减免）</td></tr>
+                        <tr><td>汇率透明度</td><td>使用亚马逊合作银行提供的当日参考汇率，无隐藏加价</td></tr>
+                        <tr><td>到账时间</td><td>美国/欧洲本地转账：1-2个工作日<br>跨境提现至国内银行卡：2-4个工作日</td></tr>
+                        <tr><td>最低提现金额</td><td>通常为 $10 USD / €10 EUR / ¥1000 JPY 等值货币</td></tr>
+                        <tr><td>提现上限</td><td>根据卖家账户等级及KYC验证，无硬性单日上限（大额需风控审核）</td></tr>
+                    </tbody>
+                </table>
+                <div class="fee-row">
+                    <span class="fee-label">🏧 亚马逊钱包自动结算周期</span>
+                    <span class="fee-value">每14天自动结算至钱包，可手动提现</span>
+                </div>
+                <div class="fee-row">
+                    <span class="fee-label">🔄 多币种转换</span>
+                    <span class="fee-value">支持币种间自由转换（汇率以当日为准）</span>
+                </div>
+                <hr>
+                <div class="flex-between">
+                    <span class="step-title" style="font-weight:600;">🌐 支持的收款银行</span>
+                    <span class="badge">中国本地/美国/欧洲/香港等</span>
+                </div>
+                <div class="step-desc" style="margin-top: 8px;">支持绑定企业或个人银行账户（美元账户、欧元账户或人民币账户），第三方收款平台（如Payoneer、WorldFirst）亦可通过亚马逊钱包直接提现到对应虚拟账户。</div>
+                <div class="warning-note">
+                    <strong>⚠️ 重要提示：</strong> 若您同时开启默认“银行卡结算”与“亚马逊钱包”，资金默认优先进入钱包。您可随时在“付款设置”中切换结算方式。钱包内资金若未及时提现，仍享受亚马逊资金安全保障，但不会产生利息。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第二行：补充演示 - 管理界面模拟以及常见问题FAQ -->
+    <div class="grid-2col">
+        <!-- 左侧模拟提现界面示意 -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">📱</span>
+                <h2>提现实例模拟</h2>
+            </div>
+            <div class="card-content">
+                <div style="background:#f9fafc; border-radius: 1.2rem; padding: 1rem; border:1px solid #eef2f8;">
+                    <div class="flex-between" style="margin-bottom: 12px;">
+                        <span style="font-weight: 600;">💰 亚马逊钱包余额 (USD)</span>
+                        <span style="font-size: 1.4rem; font-weight: 800; color:#146eb4;">$3,284.50</span>
+                    </div>
+                    <div style="margin: 12px 0; height: 1px; background:#e2e8f0;"></div>
+                    <div class="flex-between">
+                        <span style="font-size: 0.85rem;">选择提现币种</span>
+                        <span style="background:#eef2ff; padding:4px 12px; border-radius: 40px; font-size:0.8rem;">USD → CNY</span>
+                    </div>
+                    <div style="margin: 15px 0 8px;">
+                        <label style="font-size:0.8rem; font-weight:500;">提现金额</label>
+                        <div style="display: flex; gap: 8px; margin-top: 5px;">
+                            <span style="background: white; border:1px solid #ccd7e6; border-radius: 60px; padding: 0.4rem 1rem; font-size:0.9rem; flex:1;">$2,000.00</span>
+                            <span class="btn-mock" style="background:#ff9900; color:#1e2a36;">提现</span>
+                        </div>
+                    </div>
+                    <div style="font-size:0.75rem; color:#4b6b8f; margin-top: 12px;">
+                        预估到手: ≈ ¥14,260.00 (汇率 7.13, 手续费0.5%) <br>
+                        预计到账: 2026年4月2日 前
+                    </div>
+                </div>
+                <div class="step-desc" style="margin-top: 1rem;">
+                    🔹 实际提现时，亚马逊会展示实时汇率及详细费用明细，卖家确认后即可发起。支持批量提现或一键提取全部余额。
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧常见问题Q&A -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">❓</span>
+                <h2>常见问题解答</h2>
+            </div>
+            <div class="card-content">
+                <div style="margin-bottom: 1.2rem;">
+                    <div class="step-title" style="margin-bottom: 4px;">🔹 Q1: 开通亚马逊钱包后，还能改回直接打款到银行卡吗？</div>
+                    <div class="step-desc">可以。在卖家中心「付款设置」中，将默认存款方式切换回「银行账户」，后续结算周期款项会自动打入银行卡，但已进入钱包的余额仍需手动提现。</div>
+                </div>
+                <div style="margin-bottom: 1.2rem;">
+                    <div class="step-title" style="margin-bottom: 4px;">🔹 Q2: 提现失败最常见的原因？</div>
+                    <div class="step-desc">银行账户信息错误（账户名不匹配）、未完成KYC验证、单日提现超出风控限额。请检查银行证明文件及账户持有者名称与亚马逊注册主体一致。</div>
+                </div>
+                <div style="margin-bottom: 1.2rem;">
+                    <div class="step-title" style="margin-bottom: 4px;">🔹 Q3: 亚马逊钱包支持自动提现吗？</div>
+                    <div class="step-desc">目前暂未开放全自动定期提现，但您可以在后台设置「低余额提醒」，当钱包余额达到阈值时收到邮件通知，手动发起提现。</div>
+                </div>
+                <div style="margin-bottom: 0.2rem;">
+                    <div class="step-title" style="margin-bottom: 4px;">🔹 Q4: 提现是否有额外隐藏费用？</div>
+                    <div class="step-desc">亚马逊钱包合作银行明确费率，无隐藏费用。但收款行可能收取中转行或入账费用，建议咨询收款方银行。</div>
+                </div>
+                <div class="note-box" style="margin-top: 1rem;">
+                    📞 官方客服支持：卖家中心内联系“亚马逊支付团队”，可针对钱包提现问题提供一对一协助。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第三部分: 其他重要注意事项/总结 -->
+    <div class="card" style="margin-top: 0.2rem;">
+        <div class="card-header">
+            <span class="card-icon">📌</span>
+            <h2>提现注意事项 & 最佳实践</h2>
+        </div>
+        <div class="card-content">
+            <div style="display: flex; flex-wrap: wrap; gap: 1.2rem; justify-content: space-between;">
+                <div style="flex: 1; min-width: 200px;">
+                    <div class="step-title">✅ 货币转换提醒</div>
+                    <div class="step-desc">提现至非本国货币账户时，亚马逊将按照合作机构汇率转换，建议对比第三方汇率，大额提现可拆分多笔减少汇率波动影响。</div>
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <div class="step-title">✅ 税务合规</div>
+                    <div class="step-desc">亚马逊钱包提现不代扣任何所得税，卖家需根据所在地法规自行申报。保留所有交易记录备查。</div>
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <div class="step-title">✅ 提现时间选择</div>
+                    <div class="step-desc">避免在周末及节假日前提现，以免延迟到账。美国时间周一至周三提交通常处理最快。</div>
+                </div>
+            </div>
+            <hr>
+            <div class="flex-between">
+                <span class="step-title" style="font-weight: 500;">🔐 安全提示：</span>
+                <span>亚马逊官方绝不会通过邮件或电话索要您的提现验证码，谨防钓鱼诈骗。</span>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Ⓒ 亚马逊卖家钱包指南 · 基于官方帮助文档整理，仅供参考。实际提现界面与费率以亚马逊卖家平台最新政策为准。<br>
+        亚马逊及亚马逊卖家钱包为 Amazon.com, Inc. 或其关联公司的商标。
+    </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,1423 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes"
+        />
+        <title>结算单 · 类型清晰版</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    Helvetica, Arial, sans-serif;
+            }
+            body {
+                background-color: #f7f9fc;
+                padding: 24px;
+            }
+            .container {
+                max-width: 1440px;
+                margin: 0 auto;
+            }
+
+            /* 主色清新 */
+            .card {
+                background: #ffffff;
+                border-radius: 18px;
+                padding: 24px;
+                box-shadow: 0 4px 16px rgba(0, 20, 10, 0.02);
+                border: 1px solid #ecf0f5;
+                margin-bottom: 20px;
+            }
+
+            /* 金额网格 */
+            .amount-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 16px;
+                margin-bottom: 20px;
+            }
+            .amount-item {
+                background: #ffffff;
+                border-radius: 16px;
+                padding: 20px 22px;
+                border: 1px solid #e7ecf3;
+            }
+            .amount-label {
+                font-size: 14px;
+                font-weight: 500;
+                color: #5b708b;
+                margin-bottom: 8px;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+            .amount-value {
+                font-size: 32px;
+                font-weight: 550;
+                color: #1e3144; /* 统一深灰色 */
+                line-height: 1.2;
+            }
+            .amount-desc {
+                margin-top: 12px;
+                font-size: 13px;
+                color: #8196b0;
+                border-top: 1px dashed #e2eaf2;
+                padding-top: 12px;
+                display: flex;
+                justify-content: space-between;
+            }
+
+            /* 类型标签 - 统一为商品类目风格（浅灰底+深灰字） */
+            .type-badge {
+                display: inline-block;
+                padding: 5px 16px;
+                border-radius: 30px;
+                font-size: 12px;
+                font-weight: 530;
+                background: #f2f6fc; /* 统一浅灰底 */
+                border: 1px solid #dae2f0;
+                color: #2c405e; /* 统一深灰字 */
+            }
+            /* 保留特定颜色用于收入/奖励等正向类型，便于区分 */
+            .type-income {
+                background: #e6f4f0;
+                border-color: #bfe3d9;
+                color: #0b6859;
+            }
+            .type-reward {
+                background: #e8effd;
+                border-color: #cbd9f5;
+                color: #1d4685;
+            }
+            /* 抵扣、处罚、费用等全部使用通用类 type-badge，不再有特殊颜色 */
+
+            .badge-status {
+                background: #eaf3f1;
+                border: 1px solid #c6e0da;
+                color: #0f6d60;
+                padding: 5px 16px;
+                border-radius: 30px;
+                font-size: 12px;
+                font-weight: 500;
+                display: inline-block;
+            }
+
+            .invoice-badge {
+                background: #f0f5fc;
+                border: 1px solid #d6e2f2;
+                padding: 4px 14px;
+                border-radius: 30px;
+                font-size: 12px;
+                color: #34517c;
+            }
+
+            .tabs {
+                display: flex;
+                gap: 4px;
+                border-bottom: 1px solid #e7eef6;
+                margin: 24px 0 18px;
+            }
+            .tab {
+                padding: 10px 26px;
+                background: transparent;
+                border: none;
+                border-bottom: 3px solid transparent;
+                color: #60758e;
+                font-weight: 540;
+                cursor: pointer;
+                font-size: 14px;
+            }
+            .tab.active {
+                color: #1c3c57;
+                border-bottom-color: #14877a;
+                background: #f2f9fc;
+            }
+
+            .table-wrapper {
+                border-radius: 18px;
+                border: 1px solid #ecf2f7;
+                overflow-x: auto;
+                background: white;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                min-width: 1100px;
+                font-size: 14px;
+            }
+            th {
+                text-align: left;
+                padding: 16px 16px;
+                background: #fafdff;
+                font-weight: 600;
+                color: #1e3149;
+                border-bottom: 1px solid #e2eaf3;
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.2px;
+            }
+            td {
+                padding: 16px 16px;
+                border-bottom: 1px solid #f0f5fc;
+                vertical-align: middle;
+                color: #203549;
+            }
+            tr:hover td {
+                background: #f7fbfe;
+            }
+
+            /* 金额列：减少的金额不再显示红色，统一使用深灰色；只有正向金额保留绿色 */
+            .amount-positive {
+                color: #197a62;
+                font-weight: 530;
+            }
+            .amount-negative {
+                color: #1e3144; /* 改为深灰色，与普通文字一致 */
+                font-weight: 530;
+            }
+
+            .info-bar {
+                background: #f0f9f7;
+                border: 1px solid #cde3de;
+                border-radius: 16px;
+                padding: 16px 24px;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 18px;
+            }
+
+            /* 分页器 */
+            .pagination-bar {
+                margin-top: 28px;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                gap: 12px;
+                font-size: 14px;
+            }
+            .pagination-btn {
+                background: white;
+                border: 1px solid #d8e2ee;
+                border-radius: 30px;
+                padding: 8px 18px;
+                color: #2a405c;
+                font-weight: 500;
+                cursor: pointer;
+                transition: 0.1s;
+                font-size: 13px;
+            }
+            .pagination-btn:hover {
+                background: #f1f9fc;
+                border-color: #9dc0bb;
+            }
+            .pagination-btn:disabled {
+                opacity: 0.4;
+                pointer-events: none;
+            }
+            .page-info {
+                color: #2f4b70;
+                background: #f2f8fe;
+                padding: 6px 20px;
+                border-radius: 30px;
+                border: 1px solid #dae2f0;
+            }
+
+            .btn-outline {
+                background: white;
+                border: 1px solid #d2dfef;
+                padding: 8px 22px;
+                border-radius: 30px;
+                font-size: 13px;
+                font-weight: 520;
+                color: #2f4b70;
+                cursor: pointer;
+            }
+            .btn-outline:hover {
+                background: #f2f9ff;
+                border-color: #98c0bb;
+            }
+            .btn-normal {
+                background: white;
+                border: 1px solid #d2dfef;
+                padding: 8px 24px;
+                border-radius: 30px;
+                font-size: 13px;
+                font-weight: 520;
+                color: #2f4b70;
+                cursor: pointer;
+            }
+            .btn-normal:hover {
+                background: #f2f9ff;
+                border-color: #98c0bb;
+            }
+
+            .btn-link {
+                background: none;
+                border: none;
+                color: #166b5f;
+                font-weight: 520;
+                font-size: 13px;
+                cursor: pointer;
+                text-decoration: underline 1px dotted #9fc9c2;
+                text-underline-offset: 4px;
+            }
+
+            /* 模态框 */
+            .modal {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.15);
+                backdrop-filter: blur(2px);
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+            }
+            .modal-content {
+                background: white;
+                border-radius: 28px;
+                padding: 32px;
+                max-width: 720px;
+                width: 90%;
+                border: 1px solid #dee8f2;
+                box-shadow: 0 20px 30px -10px rgba(20, 50, 40, 0.08);
+            }
+            .modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 24px;
+                font-size: 18px;
+                font-weight: 600;
+                color: #1c3c57;
+            }
+            .modal-close {
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                color: #8f9fb2;
+            }
+            .modal-close:hover {
+                color: #333;
+            }
+
+            /* Excel风格预览 */
+            .excel-preview {
+                background: #ffffff;
+                border: 1px solid #d0ddee;
+                border-radius: 12px;
+                overflow: hidden;
+                margin: 20px 0;
+                font-size: 13px;
+                box-shadow: 0 2px 8px rgba(0, 20, 30, 0.04);
+            }
+            .excel-row {
+                display: grid;
+                grid-template-columns: 110px 170px 100px 90px 100px;
+                border-bottom: 1px solid #e6edf6;
+            }
+            .excel-row.header {
+                background: #f3f9ff;
+                font-weight: 600;
+                color: #1d3b5c;
+                border-bottom: 2px solid #cbd7e8;
+            }
+            .excel-cell {
+                padding: 12px 16px;
+                border-right: 1px solid #e0eaf5;
+                white-space: nowrap;
+            }
+            .excel-row:last-child {
+                border-bottom: none;
+            }
+            .excel-cell:last-child {
+                border-right: none;
+            }
+
+            /* 电子章样式 */
+            .seal {
+                display: inline-block;
+                border: 3px solid #c03d2f;
+                color: #c03d2f;
+                padding: 8px 18px;
+                border-radius: 30px 30px 30px 0;
+                font-weight: 700;
+                font-size: 22px;
+                transform: rotate(-5deg);
+                background: rgba(255, 240, 235, 0.25);
+                box-shadow: 2px 2px 6px rgba(170, 60, 40, 0.1);
+                font-family: "KaiTi", "楷体", "STKaiti", serif;
+                letter-spacing: 2px;
+                text-shadow: 1px 1px 0 rgba(190, 70, 50, 0.1);
+            }
+
+            .simple-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 20px 0;
+                font-size: 14px;
+                background: #fbfdff;
+                border-radius: 16px;
+                overflow: hidden;
+                border: 1px solid #dee9f2;
+            }
+            .simple-table th {
+                background: #f0f7fd;
+                padding: 14px 12px;
+                font-weight: 540;
+                color: #1b3a5c;
+                border-bottom: 1px solid #d2e0ed;
+            }
+            .simple-table td {
+                padding: 14px 12px;
+                border-bottom: 1px solid #e5eff8;
+            }
+            .simple-table tr:last-child td {
+                border-bottom: none;
+            }
+
+            .modal-footer {
+                margin-top: 28px;
+                display: flex;
+                justify-content: flex-end;
+                gap: 12px;
+            }
+
+            @media (max-width: 700px) {
+                .amount-grid {
+                    grid-template-columns: 1fr 1fr;
+                }
+                body {
+                    padding: 12px;
+                }
+            }
+            @media (max-width: 480px) {
+                .amount-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <!-- 头部 -->
+            <div
+                class="card"
+                style="
+                    display: flex;
+                    flex-wrap: wrap;
+                    align-items: center;
+                    justify-content: space-between;
+                "
+            >
+                <div
+                    style="
+                        display: flex;
+                        flex-wrap: wrap;
+                        align-items: center;
+                        gap: 18px;
+                    "
+                >
+                    <h1
+                        style="
+                            font-size: 24px;
+                            font-weight: 560;
+                            color: #1c3b50;
+                        "
+                    >
+                        ST-20260315-022
+                    </h1>
+                    <span class="badge-status" style="background: #e2f0e9"
+                        >✅ 已结算</span
+                    >
+                </div>
+                <div style="display: flex; gap: 12px">
+                    <button class="btn-outline" id="exportBtn">
+                        📥 导出明细
+                    </button>
+                    <button class="btn-normal" id="voucherBtn">
+                        📎 生成凭证
+                    </button>
+                </div>
+                <div
+                    style="
+                        width: 100%;
+                        margin-top: 16px;
+                        color: #5e7795;
+                        font-size: 14px;
+                        display: flex;
+                        gap: 32px;
+                    "
+                >
+                    <span>📅 结算周期: 2026-03-15 ~ 2026-03-21 (第12期)</span>
+                    <span>🏢 商家: 极简商贸</span>
+                </div>
+            </div>
+
+            <!-- 金额卡片 (数字无特殊颜色) -->
+            <div class="amount-grid">
+                <div class="amount-item">
+                    <div class="amount-label">💰 订单应收</div>
+                    <div class="amount-value">7,232.00</div>
+                    <div class="amount-desc">
+                        <span>8笔订单</span
+                        ><span class="type-badge" style="background: #f0f5fc"
+                            >含运费¥68</span
+                        >
+                    </div>
+                </div>
+                <div class="amount-item">
+                    <div class="amount-label">🔻 抵扣总额</div>
+                    <div class="amount-value">2,086.00</div>
+                    <div class="amount-desc">
+                        <span>售后+处罚+费用</span>
+                        <!--<span class="type-badge"></span>-->
+                    </div>
+                </div>
+                <div class="amount-item">
+                    <div class="amount-label">✨ 奖励总额</div>
+                    <div class="amount-value">150.00</div>
+                    <div class="amount-desc">
+                        <span>2笔奖励</span>
+                        <!--<span class="type-badge"></span>-->
+                    </div>
+                </div>
+                <div class="amount-item">
+                    <div class="amount-label">💵 本期结算</div>
+                    <div class="amount-value">5,296.00</div>
+                    <div class="amount-desc">
+                        <span>已转入余额</span>
+                        <!--<span class="type-badge"></span>-->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 跨期待抵扣 -->
+            <div class="info-bar">
+                <span class="badge-status">🔄 跨期待抵扣</span>
+                <span
+                    ><strong>¥890.00</strong> 转入下期 · 售后延长期 ¥500 +
+                    处罚申诉 ¥390</span
+                >
+                <button
+                    class="btn-link"
+                    id="viewCarryoverBtn"
+                    style="margin-left: auto"
+                >
+                    📋 查看明细
+                </button>
+            </div>
+
+            <!-- 选项卡 -->
+            <div class="tabs">
+                <button class="tab active" id="tabAll">全部流水 (15笔)</button>
+                <button class="tab" id="tabIncome">收入 (8笔)</button>
+                <button class="tab" id="tabDeduction">抵扣 (6笔)</button>
+                <button class="tab" id="tabReward">奖励 (2笔)</button>
+                <button class="tab" id="tabFee">费用 (4笔)</button>
+            </div>
+
+            <!-- ================= 全部流水面板 ================= -->
+            <div id="panelAll">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>时间</th>
+                                <th>单据号 / 子订单</th>
+                                <th>商品/项目</th>
+                                <th>类型</th>
+                                <th>金额(元)</th>
+                                <th>账期归属</th>
+                                <th>发票状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 收入类 (保持绿色) -->
+                            <tr>
+                                <td>2026-03-18</td>
+                                <td>
+                                    ORD-20260315-001<br /><span
+                                        style="font-size: 11px; color: #6f8aa6"
+                                        >子单 S001-1</span
+                                    >
+                                </td>
+                                <td>清风抽纸24包 x2</td>
+                                <td>
+                                    <span class="type-badge type-income"
+                                        >订单收入</span
+                                    >
+                                </td>
+                                <td class="amount-positive">+834.05</td>
+                                <td>本期应结</td>
+                                <td>
+                                    <span class="invoice-badge">未开票</span>
+                                </td>
+                                <td><button class="btn-link">详情</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-19</td>
+                                <td>ORD-20260316-042</td>
+                                <td>运动鞋42码 1双</td>
+                                <td>
+                                    <span class="type-badge type-income"
+                                        >订单收入</span
+                                    >
+                                </td>
+                                <td class="amount-positive">+1,186.00</td>
+                                <td>本期应结</td>
+                                <td>
+                                    <span class="invoice-badge">未开票</span>
+                                </td>
+                                <td><button class="btn-link">详情</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-20</td>
+                                <td>ORD-20260317-088</td>
+                                <td>保温杯500ml 3个</td>
+                                <td>
+                                    <span class="type-badge type-income"
+                                        >订单收入</span
+                                    >
+                                </td>
+                                <td class="amount-positive">+357.00</td>
+                                <td>本期应结</td>
+                                <td>
+                                    <span class="invoice-badge">未开票</span>
+                                </td>
+                                <td><button class="btn-link">详情</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-20</td>
+                                <td>ORD-20260317-091</td>
+                                <td>数据线2m 5条</td>
+                                <td>
+                                    <span class="type-badge type-income"
+                                        >订单收入</span
+                                    >
+                                </td>
+                                <td class="amount-positive">+445.00</td>
+                                <td>本期应结</td>
+                                <td>
+                                    <span class="invoice-badge">未开票</span>
+                                </td>
+                                <td><button class="btn-link">详情</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-21</td>
+                                <td>ORD-20260318-102</td>
+                                <td>笔记本A5 10本</td>
+                                <td>
+                                    <span class="type-badge type-income"
+                                        >订单收入</span
+                                    >
+                                </td>
+                                <td class="amount-positive">+680.00</td>
+                                <td>本期应结</td>
+                                <td>
+                                    <span class="invoice-badge">未开票</span>
+                                </td>
+                                <td><button class="btn-link">详情</button></td>
+                            </tr>
+                            <!-- 抵扣类：全部使用通用type-badge (无特殊颜色) 且金额负数无红色 -->
+                            <tr>
+                                <td>2026-03-19</td>
+                                <td>
+                                    AF20260318-333<br /><span
+                                        style="font-size: 11px"
+                                        >关联ORD-015</span
+                                    >
+                                </td>
+                                <td>运动鞋42码(退货)</td>
+                                <td>
+                                    <span class="type-badge">售后抵扣</span>
+                                </td>
+                                <td class="amount-negative">-560.00</td>
+                                <td>本期抵扣</td>
+                                <td>
+                                    <span class="invoice-badge">无需开票</span>
+                                </td>
+                                <td><button class="btn-link">申诉</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-22</td>
+                                <td>AF20260321-456</td>
+                                <td>保温杯(仅退款)</td>
+                                <td>
+                                    <span class="type-badge">售后抵扣</span>
+                                </td>
+                                <td class="amount-negative">-890.00</td>
+                                <td>
+                                    <span
+                                        class="badge-status"
+                                        style="background: #f0f2f5"
+                                        >下期待定</span
+                                    >
+                                </td>
+                                <td>
+                                    <span class="invoice-badge">无需开票</span>
+                                </td>
+                                <td><button class="btn-link">处理</button></td>
+                            </tr>
+                            <!-- 处罚 -->
+                            <tr>
+                                <td>2026-03-20</td>
+                                <td>PEN-20260320-001</td>
+                                <td>延迟发货处罚</td>
+                                <td>
+                                    <span class="type-badge">平台处罚</span>
+                                </td>
+                                <td class="amount-negative">-200.00</td>
+                                <td>本期抵扣</td>
+                                <td>
+                                    <span class="invoice-badge">无需开票</span>
+                                </td>
+                                <td><button class="btn-link">申诉</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-20</td>
+                                <td>PEN-20260320-002</td>
+                                <td>虚假交易处罚</td>
+                                <td>
+                                    <span class="type-badge">平台处罚</span>
+                                </td>
+                                <td class="amount-negative">-190.00</td>
+                                <td>本期抵扣</td>
+                                <td>
+                                    <span class="invoice-badge">无需开票</span>
+                                </td>
+                                <td><button class="btn-link">申诉</button></td>
+                            </tr>
+                            <!-- 奖励 (保持蓝色系) -->
+                            <tr>
+                                <td>2026-03-21</td>
+                                <td>REW-20260321-001</td>
+                                <td>大促流量补贴</td>
+                                <td>
+                                    <span class="type-badge type-reward"
+                                        >平台奖励</span
+                                    >
+                                </td>
+                                <td class="amount-positive">+100.00</td>
+                                <td>本期已发放</td>
+                                <td>
+                                    <span class="invoice-badge">无需开票</span>
+                                </td>
+                                <td><button class="btn-link">详情</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-21</td>
+                                <td>REW-20260321-002</td>
+                                <td>物流时效达标</td>
+                                <td>
+                                    <span class="type-badge type-reward"
+                                        >平台奖励</span
+                                    >
+                                </td>
+                                <td class="amount-positive">+50.00</td>
+                                <td>本期已发放</td>
+                                <td>
+                                    <span class="invoice-badge">无需开票</span>
+                                </td>
+                                <td><button class="btn-link">详情</button></td>
+                            </tr>
+                            <!-- 费用类：全部通用type-badge -->
+                            <tr>
+                                <td>2026-03-15</td>
+                                <td>COM-平台佣金</td>
+                                <td>5% 佣金</td>
+                                <td>
+                                    <span class="type-badge">平台佣金</span>
+                                </td>
+                                <td class="amount-negative">-523.50</td>
+                                <td>本期抵扣</td>
+                                <td>
+                                    <span class="invoice-badge">待开票</span>
+                                </td>
+                                <td><button class="btn-link">查看</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-15</td>
+                                <td>COM-技术服务</td>
+                                <td>软件服务费</td>
+                                <td>
+                                    <span class="type-badge">技术服务费</span>
+                                </td>
+                                <td class="amount-negative">-156.50</td>
+                                <td>本期抵扣</td>
+                                <td>
+                                    <span class="invoice-badge">已开票</span>
+                                </td>
+                                <td><button class="btn-link">查看</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-15</td>
+                                <td>LOG-快递费</td>
+                                <td>发货物流费</td>
+                                <td>
+                                    <span class="type-badge">快递费用</span>
+                                </td>
+                                <td class="amount-negative">-180.00</td>
+                                <td>本期抵扣</td>
+                                <td>
+                                    <span class="invoice-badge">待开票</span>
+                                </td>
+                                <td><button class="btn-link">查看</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-15</td>
+                                <td>INS-运费险</td>
+                                <td>保险扣费</td>
+                                <td><span class="type-badge">运费险</span></td>
+                                <td class="amount-negative">-89.00</td>
+                                <td>本期抵扣</td>
+                                <td>
+                                    <span class="invoice-badge">无需开票</span>
+                                </td>
+                                <td><button class="btn-link">查看</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 收入面板 (8笔) -->
+            <div id="panelIncome" style="display: none">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>时间</th>
+                                <th>单据号</th>
+                                <th>商品</th>
+                                <th>类型</th>
+                                <th>金额</th>
+                                <th>账期</th>
+                                <th>发票</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2026-03-18</td>
+                                <td>ORD-20260315-001</td>
+                                <td>清风抽纸24包</td>
+                                <td>
+                                    <span class="type-badge type-income"
+                                        >订单收入</span
+                                    >
+                                </td>
+                                <td class="amount-positive">+834.05</td>
+                                <td>本期应结</td>
+                                <td>未开票</td>
+                                <td><button class="btn-link">详情</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-19</td>
+                                <td>ORD-20260316-042</td>
+                                <td>运动鞋42码</td>
+                                <td>
+                                    <span class="type-badge type-income"
+                                        >订单收入</span
+                                    >
+                                </td>
+                                <td class="amount-positive">+1,186.00</td>
+                                <td>本期应结</td>
+                                <td>未开票</td>
+                                <td><button class="btn-link">详情</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-20</td>
+                                <td>ORD-20260317-088</td>
+                                <td>保温杯500ml</td>
+                                <td>
+                                    <span class="type-badge type-income"
+                                        >订单收入</span
+                                    >
+                                </td>
+                                <td class="amount-positive">+357.00</td>
+                                <td>本期应结</td>
+                                <td>未开票</td>
+                                <td><button class="btn-link">详情</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-20</td>
+                                <td>ORD-20260317-091</td>
+                                <td>数据线2m</td>
+                                <td>
+                                    <span class="type-badge type-income"
+                                        >订单收入</span
+                                    >
+                                </td>
+                                <td class="amount-positive">+445.00</td>
+                                <td>本期应结</td>
+                                <td>未开票</td>
+                                <td><button class="btn-link">详情</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-21</td>
+                                <td>ORD-20260318-102</td>
+                                <td>笔记本A5</td>
+                                <td>
+                                    <span class="type-badge type-income"
+                                        >订单收入</span
+                                    >
+                                </td>
+                                <td class="amount-positive">+680.00</td>
+                                <td>本期应结</td>
+                                <td>未开票</td>
+                                <td><button class="btn-link">详情</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-21</td>
+                                <td>REW-001</td>
+                                <td>大促补贴</td>
+                                <td>
+                                    <span class="type-badge type-reward"
+                                        >平台奖励</span
+                                    >
+                                </td>
+                                <td class="amount-positive">+100.00</td>
+                                <td>已发放</td>
+                                <td>无需开票</td>
+                                <td><button class="btn-link">详情</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-21</td>
+                                <td>REW-002</td>
+                                <td>物流奖励</td>
+                                <td>
+                                    <span class="type-badge type-reward"
+                                        >平台奖励</span
+                                    >
+                                </td>
+                                <td class="amount-positive">+50.00</td>
+                                <td>已发放</td>
+                                <td>无需开票</td>
+                                <td><button class="btn-link">详情</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- 抵扣面板 (6笔) 全部使用通用标签 -->
+            <div id="panelDeduction" style="display: none">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>时间</th>
+                                <th>单据号</th>
+                                <th>项目</th>
+                                <th>类型</th>
+                                <th>金额</th>
+                                <th>账期</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2026-03-19</td>
+                                <td>AF20260318-333</td>
+                                <td>运动鞋退货</td>
+                                <td>
+                                    <span class="type-badge">售后抵扣</span>
+                                </td>
+                                <td class="amount-negative">-560.00</td>
+                                <td>本期抵扣</td>
+                                <td><button class="btn-link">申诉</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-22</td>
+                                <td>AF20260321-456</td>
+                                <td>保温杯仅退款</td>
+                                <td>
+                                    <span class="type-badge">售后抵扣</span>
+                                </td>
+                                <td class="amount-negative">-890.00</td>
+                                <td>下期待定</td>
+                                <td><button class="btn-link">处理</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-20</td>
+                                <td>PEN-20260320-001</td>
+                                <td>延迟发货</td>
+                                <td>
+                                    <span class="type-badge">平台处罚</span>
+                                </td>
+                                <td class="amount-negative">-200.00</td>
+                                <td>本期抵扣</td>
+                                <td><button class="btn-link">申诉</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-20</td>
+                                <td>PEN-20260320-002</td>
+                                <td>虚假交易</td>
+                                <td>
+                                    <span class="type-badge">平台处罚</span>
+                                </td>
+                                <td class="amount-negative">-190.00</td>
+                                <td>本期抵扣</td>
+                                <td><button class="btn-link">申诉</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-15</td>
+                                <td>COM-平台佣金</td>
+                                <td>佣金</td>
+                                <td>
+                                    <span class="type-badge">平台佣金</span>
+                                </td>
+                                <td class="amount-negative">-523.50</td>
+                                <td>本期抵扣</td>
+                                <td><button class="btn-link">查看</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-15</td>
+                                <td>COM-技术服务</td>
+                                <td>服务费</td>
+                                <td>
+                                    <span class="type-badge">技术服务费</span>
+                                </td>
+                                <td class="amount-negative">-156.50</td>
+                                <td>本期抵扣</td>
+                                <td><button class="btn-link">查看</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- 奖励面板 (2笔) -->
+            <div id="panelReward" style="display: none">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>时间</th>
+                                <th>单据号</th>
+                                <th>奖励项目</th>
+                                <th>类型</th>
+                                <th>金额</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2026-03-21</td>
+                                <td>REW-20260321-001</td>
+                                <td>大促流量补贴</td>
+                                <td>
+                                    <span class="type-badge type-reward"
+                                        >平台奖励</span
+                                    >
+                                </td>
+                                <td class="amount-positive">+100.00</td>
+                                <td><button class="btn-link">详情</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-21</td>
+                                <td>REW-20260321-002</td>
+                                <td>物流时效达标</td>
+                                <td>
+                                    <span class="type-badge type-reward"
+                                        >平台奖励</span
+                                    >
+                                </td>
+                                <td class="amount-positive">+50.00</td>
+                                <td><button class="btn-link">详情</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- 费用面板 (4笔) 全部通用标签 -->
+            <div id="panelFee" style="display: none">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>时间</th>
+                                <th>费用项</th>
+                                <th>类型</th>
+                                <th>金额</th>
+                                <th>发票</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2026-03-15</td>
+                                <td>平台佣金 (5%)</td>
+                                <td>
+                                    <span class="type-badge">平台佣金</span>
+                                </td>
+                                <td class="amount-negative">-523.50</td>
+                                <td>待开票</td>
+                                <td><button class="btn-link">查看</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-15</td>
+                                <td>技术服务费</td>
+                                <td>
+                                    <span class="type-badge">技术服务费</span>
+                                </td>
+                                <td class="amount-negative">-156.50</td>
+                                <td>已开票</td>
+                                <td><button class="btn-link">查看</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-15</td>
+                                <td>快递费用</td>
+                                <td>
+                                    <span class="type-badge">快递费用</span>
+                                </td>
+                                <td class="amount-negative">-180.00</td>
+                                <td>待开票</td>
+                                <td><button class="btn-link">查看</button></td>
+                            </tr>
+                            <tr>
+                                <td>2026-03-15</td>
+                                <td>运费险</td>
+                                <td><span class="type-badge">运费险</span></td>
+                                <td class="amount-negative">-89.00</td>
+                                <td>无需开票</td>
+                                <td><button class="btn-link">查看</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 分页器 -->
+            <div class="pagination-bar">
+                <span class="page-info">第 1 / 2 页</span>
+                <button class="pagination-btn" disabled>⟨ 上一页</button>
+                <button class="pagination-btn">下一页 ⟩</button>
+                <button class="pagination-btn">跳转</button>
+            </div>
+        </div>
+
+        <!-- 导出明细弹窗 (Excel样式) -->
+        <div id="exportModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span>📥 导出预览 (Excel样式)</span>
+                    <button
+                        class="modal-close"
+                        onclick="closeModal('exportModal')"
+                    >
+                        &times;
+                    </button>
+                </div>
+                <div class="excel-preview">
+                    <div class="excel-row header">
+                        <div class="excel-cell">时间</div>
+                        <div class="excel-cell">单据号</div>
+                        <div class="excel-cell">类型</div>
+                        <div class="excel-cell">金额</div>
+                        <div class="excel-cell">账期归属</div>
+                    </div>
+                    <div class="excel-row">
+                        <div class="excel-cell">2026-03-18</div>
+                        <div class="excel-cell">ORD-20260315-001</div>
+                        <div class="excel-cell">订单收入</div>
+                        <div class="excel-cell" style="color: #197a62">
+                            834.05
+                        </div>
+                        <div class="excel-cell">本期</div>
+                    </div>
+                    <div class="excel-row">
+                        <div class="excel-cell">2026-03-19</div>
+                        <div class="excel-cell">AF20260318-333</div>
+                        <div class="excel-cell">售后抵扣</div>
+                        <div class="excel-cell" style="color: #1e3144">
+                            -560.00
+                        </div>
+                        <div class="excel-cell">本期</div>
+                    </div>
+                    <div class="excel-row">
+                        <div class="excel-cell">2026-03-21</div>
+                        <div class="excel-cell">REW-20260321-001</div>
+                        <div class="excel-cell">平台奖励</div>
+                        <div class="excel-cell" style="color: #197a62">
+                            100.00
+                        </div>
+                        <div class="excel-cell">本期</div>
+                    </div>
+                    <div class="excel-row">
+                        <div class="excel-cell">2026-03-22</div>
+                        <div class="excel-cell">AF20260321-456</div>
+                        <div class="excel-cell">售后抵扣</div>
+                        <div class="excel-cell" style="color: #1e3144">
+                            -890.00
+                        </div>
+                        <div class="excel-cell">下期待定</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button
+                        class="btn-outline"
+                        onclick="closeModal('exportModal')"
+                    >
+                        关闭
+                    </button>
+                    <button
+                        class="btn-normal"
+                        onclick="alert('模拟导出成功 (excel格式)')"
+                    >
+                        确认导出
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 凭证弹窗 (带电子章) -->
+        <div id="voucherModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span>📎 结算凭证</span>
+                    <button
+                        class="modal-close"
+                        onclick="closeModal('voucherModal')"
+                    >
+                        &times;
+                    </button>
+                </div>
+                <div style="padding: 10px 0; position: relative">
+                    <div
+                        style="
+                            background: #f9fdff;
+                            border-radius: 24px;
+                            padding: 28px;
+                            border: 1px solid #e2ecf5;
+                        "
+                    >
+                        <div
+                            style="
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: flex-start;
+                            "
+                        >
+                            <div>
+                                <p
+                                    style="
+                                        font-size: 22px;
+                                        font-weight: 600;
+                                        margin-bottom: 20px;
+                                    "
+                                >
+                                    ST-20260315-022
+                                </p>
+                                <p>
+                                    <span style="color: #4b698b">商家：</span
+                                    >极简商贸
+                                </p>
+                                <p>
+                                    <span style="color: #4b698b"
+                                        >结算周期：</span
+                                    >2026-03-15 ~ 2026-03-21
+                                </p>
+                                <p>
+                                    <span style="color: #4b698b"
+                                        >结算金额：</span
+                                    ><strong style="font-size: 26px"
+                                        >¥5,296.00</strong
+                                    >
+                                </p>
+                                <p>
+                                    <span style="color: #4b698b"
+                                        >付款账户：</span
+                                    >平台余额 · 结算款
+                                </p>
+                                <p>
+                                    <span style="color: #4b698b">凭证号：</span
+                                    >VOUCH-20260322-009
+                                </p>
+                            </div>
+                            <div class="seal" style="transform: rotate(-6deg)">
+                                电子印章
+                            </div>
+                        </div>
+                        <div
+                            style="
+                                margin-top: 28px;
+                                padding-top: 16px;
+                                border-top: 1px dashed #c0d6ea;
+                                color: #6b8bb0;
+                                font-size: 12px;
+                            "
+                        >
+                            系统生成，与纸质凭证具有同等效力
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button
+                        class="btn-outline"
+                        onclick="closeModal('voucherModal')"
+                    >
+                        关闭
+                    </button>
+                    <button class="btn-normal" onclick="alert('凭证已保存')">
+                        下载PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 跨期明细弹窗 -->
+        <div id="carryoverModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span>🔄 跨期待抵扣明细</span>
+                    <button
+                        class="modal-close"
+                        onclick="closeModal('carryoverModal')"
+                    >
+                        &times;
+                    </button>
+                </div>
+                <table class="simple-table">
+                    <thead>
+                        <tr>
+                            <th>单据号</th>
+                            <th>金额</th>
+                            <th>原因</th>
+                            <th>状态</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>AF20260321-456</td>
+                            <td class="amount-negative">-500.00</td>
+                            <td>售后延长期(退款待确认)</td>
+                            <td>
+                                <span
+                                    class="badge-status"
+                                    style="background: #f0f2f5"
+                                    >延长期</span
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>PEN-20260320-003</td>
+                            <td class="amount-negative">-390.00</td>
+                            <td>处罚申诉审核中</td>
+                            <td>
+                                <span
+                                    class="badge-status"
+                                    style="background: #f0f2f5"
+                                    >申诉中</span
+                                >
+                            </td>
+                        </tr>
+                        <tr style="background: #f6fcff">
+                            <td
+                                colspan="3"
+                                style="text-align: right; font-weight: 550"
+                            >
+                                合计转入下期：
+                            </td>
+                            <td><strong>¥890.00</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="modal-footer">
+                    <button
+                        class="btn-outline"
+                        onclick="closeModal('carryoverModal')"
+                    >
+                        关闭
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            (function () {
+                window.openModal = (id) =>
+                    (document.getElementById(id).style.display = "flex");
+                window.closeModal = (id) =>
+                    (document.getElementById(id).style.display = "none");
+
+                document
+                    .getElementById("exportBtn")
+                    .addEventListener("click", () => openModal("exportModal"));
+                document
+                    .getElementById("voucherBtn")
+                    .addEventListener("click", () => openModal("voucherModal"));
+                document
+                    .getElementById("viewCarryoverBtn")
+                    .addEventListener("click", () =>
+                        openModal("carryoverModal"),
+                    );
+
+                window.onclick = (e) => {
+                    if (e.target.classList.contains("modal"))
+                        e.target.style.display = "none";
+                };
+
+                // 选项卡激活
+                const tabs = [
+                    "tabAll",
+                    "tabIncome",
+                    "tabDeduction",
+                    "tabReward",
+                    "tabFee",
+                ];
+                const panels = [
+                    "panelAll",
+                    "panelIncome",
+                    "panelDeduction",
+                    "panelReward",
+                    "panelFee",
+                ];
+                function activate(id) {
+                    tabs.forEach((t) =>
+                        document.getElementById(t).classList.remove("active"),
+                    );
+                    panels.forEach((p) => {
+                        let el = document.getElementById(p);
+                        if (el) el.style.display = "none";
+                    });
+                    document.getElementById(id).classList.add("active");
+                    const map = {
+                        tabAll: "panelAll",
+                        tabIncome: "panelIncome",
+                        tabDeduction: "panelDeduction",
+                        tabReward: "panelReward",
+                        tabFee: "panelFee",
+                    };
+                    const panel = document.getElementById(map[id]);
+                    if (panel) panel.style.display = "block";
+                }
+                tabs.forEach((t) =>
+                    document
+                        .getElementById(t)
+                        .addEventListener("click", function () {
+                            activate(t);
+                        }),
+                );
+                activate("tabAll");
+
+                // 分页器演示
+                document.querySelectorAll(".pagination-btn").forEach((btn) => {
+                    btn.addEventListener("click", (e) => {
+                        if (!e.target.disabled)
+                            alert("分页演示，实际可加载更多");
+                    });
+                });
+            })();
+        </script>
+    </body>
+</html>

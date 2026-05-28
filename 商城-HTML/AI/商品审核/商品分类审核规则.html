@@ -1,0 +1,1768 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>商品分类审核规则 · 分类级配置</title>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        />
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family:
+                    system-ui,
+                    -apple-system,
+                    "Segoe UI",
+                    Roboto,
+                    "Helvetica Neue",
+                    sans-serif;
+            }
+            body {
+                background: #f5f7fa;
+                padding: 30px 20px;
+                color: #1f2d3d;
+            }
+            .container {
+                max-width: 1400px;
+                margin: 0 auto;
+            }
+            .breadcrumb {
+                font-size: 14px;
+                color: #8c9aa9;
+                margin-bottom: 24px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+            .breadcrumb a {
+                color: #3b9bff;
+                text-decoration: none;
+            }
+            .breadcrumb a:hover {
+                text-decoration: underline;
+            }
+            .page-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 28px;
+                flex-wrap: wrap;
+                gap: 16px;
+            }
+            .page-header h2 {
+                font-size: 20px;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .page-header h2 i {
+                color: #3b9bff;
+            }
+            .category-selector {
+                background: #fff;
+                border-radius: 12px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+                padding: 20px 24px;
+                margin-bottom: 28px;
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                flex-wrap: wrap;
+            }
+            .category-selector label {
+                font-weight: 500;
+                font-size: 14px;
+                color: #1f2d3d;
+                white-space: nowrap;
+            }
+            .category-selector label i {
+                color: #3b9bff;
+                margin-right: 6px;
+            }
+            .category-selector select {
+                flex: 1;
+                min-width: 200px;
+                padding: 10px 14px;
+                border: 1px solid #d9e0e8;
+                border-radius: 8px;
+                font-size: 14px;
+                background: #fff;
+                cursor: pointer;
+                color: #1f2d3d;
+            }
+            .category-selector select:focus {
+                outline: none;
+                border-color: #3b9bff;
+                box-shadow: 0 0 0 3px rgba(59, 155, 255, 0.15);
+            }
+            .inherit-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 12px;
+                padding: 4px 10px;
+                border-radius: 20px;
+                white-space: nowrap;
+            }
+            .inherit-badge.inherit {
+                background: #f0f5fa;
+                color: #5e7a93;
+            }
+            .inherit-badge.custom {
+                background: #e8f4fd;
+                color: #2d7be5;
+            }
+            .card {
+                background: #fff;
+                border-radius: 12px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+                padding: 20px 24px 24px;
+                margin-bottom: 28px;
+            }
+            .inherit-toggle-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px 0 16px;
+                border-bottom: 1px solid #eef2f7;
+                margin-bottom: 16px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .inherit-toggle-row .left {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .inherit-toggle-row .left .status-tag {
+                font-size: 12px;
+                padding: 3px 10px;
+                border-radius: 20px;
+                font-weight: 500;
+            }
+            .inherit-toggle-row .left .status-tag.inherit {
+                background: #f0f5fa;
+                color: #6a7f97;
+            }
+            .inherit-toggle-row .left .status-tag.override {
+                background: #e8f4fd;
+                color: #2d7be5;
+            }
+            .inherit-switch-wrap {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 13px;
+                color: #5e6f82;
+            }
+            .switch {
+                position: relative;
+                display: inline-block;
+                width: 44px;
+                height: 24px;
+                flex-shrink: 0;
+            }
+            .switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+            .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccd7e4;
+                transition: 0.2s;
+                border-radius: 24px;
+            }
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 18px;
+                width: 18px;
+                left: 3px;
+                bottom: 3px;
+                background-color: #fff;
+                transition: 0.2s;
+                border-radius: 50%;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+            }
+            input:checked + .slider {
+                background-color: #3b9bff;
+            }
+            input:checked + .slider:before {
+                transform: translateX(20px);
+            }
+            .inherit-switch-wrap .switch.small {
+                width: 36px;
+                height: 20px;
+            }
+            .inherit-switch-wrap .switch.small .slider:before {
+                height: 14px;
+                width: 14px;
+            }
+            .inherit-switch-wrap .switch.small input:checked + .slider:before {
+                transform: translateX(16px);
+            }
+            .table-wrap {
+                overflow-x: auto;
+            }
+            .config-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 14px;
+                min-width: 700px;
+            }
+            .config-table th {
+                text-align: left;
+                padding: 14px 12px 14px 0;
+                font-weight: 600;
+                color: #526479;
+                border-bottom: 1px solid #e9edf2;
+                letter-spacing: 0.3px;
+            }
+            .config-table td {
+                padding: 18px 12px 18px 0;
+                border-bottom: 1px solid #f0f3f7;
+                vertical-align: middle;
+            }
+            .config-table tr:last-child td {
+                border-bottom: none;
+            }
+            .config-label {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-weight: 500;
+                color: #1f2d3d;
+            }
+            .config-label i {
+                color: #7b8c9f;
+                font-size: 15px;
+                width: 18px;
+            }
+            .row-toggle {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .row-toggle .switch.tiny {
+                width: 36px;
+                height: 20px;
+            }
+            .row-toggle .switch.tiny .slider:before {
+                height: 14px;
+                width: 14px;
+            }
+            .row-toggle .switch.tiny input:checked + .slider:before {
+                transform: translateX(16px);
+            }
+            .row-toggle .toggle-label {
+                font-size: 12px;
+                color: #5e6f82;
+            }
+            .time-input-group {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                max-width: 180px;
+            }
+            .time-input-group input {
+                width: 64px;
+                padding: 8px;
+                border: 1px solid #d9e0e8;
+                border-radius: 8px;
+                font-size: 14px;
+                background: #fff;
+                transition: 0.2s;
+            }
+            .time-input-group input:focus {
+                outline: none;
+                border-color: #3b9bff;
+                box-shadow: 0 0 0 3px rgba(59, 155, 255, 0.2);
+            }
+            .time-input-group select {
+                padding: 8px 6px;
+                border: 1px solid #d9e0e8;
+                border-radius: 8px;
+                background: #fff;
+                font-size: 14px;
+                color: #1f2d3d;
+                cursor: pointer;
+            }
+            .note-text {
+                color: #5e6f82;
+                font-size: 13px;
+                line-height: 1.5;
+            }
+            .disabled-row {
+                opacity: 0.45;
+                pointer-events: none;
+            }
+            .ai-config-section {
+                background: #fff;
+                border-radius: 12px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+                padding: 20px 24px 24px;
+                margin-bottom: 28px;
+                border: 1px solid #e8edf5;
+            }
+            .flex-grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 28px 40px;
+                align-items: stretch;
+            }
+            .config-item {
+                background: #f9fbfd;
+                border-radius: 12px;
+                padding: 18px 20px 20px;
+                min-width: 220px;
+                flex: 1 0 200px;
+                border: 1px solid #eef2f7;
+                transition: 0.1s;
+                display: flex;
+                flex-direction: column;
+            }
+            .config-item:hover {
+                border-color: #d0dbe8;
+            }
+            .config-item .label {
+                font-weight: 500;
+                margin-bottom: 14px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: #1f2d3d;
+            }
+            .config-item .label i {
+                color: #62748a;
+                width: 22px;
+                font-size: 16px;
+            }
+            .toggle-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 12px;
+                padding: 4px 0;
+            }
+            .toggle-row span {
+                font-size: 14px;
+                color: #3b4b5e;
+            }
+            .toggle-row span i {
+                margin-right: 6px;
+                width: 18px;
+                text-align: center;
+            }
+            .provider-multi-wrap > label {
+                font-size: 13px;
+                color: #526479;
+                display: block;
+                margin-bottom: 6px;
+            }
+            .provider-list {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                min-height: 32px;
+            }
+            .provider-chip {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                background: #fff;
+                border: 1px solid #dce3ed;
+                border-radius: 8px;
+                padding: 6px 8px;
+                font-size: 13px;
+                color: #1f2d3d;
+                transition: 0.1s;
+            }
+            .provider-chip:hover {
+                border-color: #b0c1d6;
+                background: #fafcff;
+            }
+            .provider-chip .prio-badge {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 20px;
+                height: 20px;
+                background: #3b9bff;
+                color: #fff;
+                font-size: 11px;
+                font-weight: 600;
+                border-radius: 50%;
+                flex-shrink: 0;
+            }
+            .provider-chip .chip-name {
+                flex: 1;
+                font-weight: 500;
+            }
+            .provider-chip .chip-actions {
+                display: flex;
+                align-items: center;
+                gap: 2px;
+                flex-shrink: 0;
+            }
+            .provider-chip .chip-btn {
+                background: transparent;
+                border: none;
+                width: 24px;
+                height: 24px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 12px;
+                color: #6a7f97;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                transition: 0.1s;
+            }
+            .provider-chip .chip-btn:hover {
+                background: #eef2f7;
+                color: #1f2d3d;
+            }
+            .provider-chip .chip-btn.remove-btn:hover {
+                background: #ffe8e8;
+                color: #d63031;
+            }
+            .provider-chip .chip-btn:disabled {
+                opacity: 0.3;
+                cursor: not-allowed;
+                background: transparent;
+            }
+            .chip-edit-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 24px;
+                height: 24px;
+                border-radius: 6px;
+                background: transparent;
+                border: none;
+                font-size: 12px;
+                color: #6a7f97;
+                cursor: pointer;
+                transition: 0.1s;
+                text-decoration: none;
+            }
+            .chip-edit-btn:hover {
+                background: #e8f4fd;
+                color: #2d7be5;
+            }
+            .provider-add-row {
+                display: flex;
+                gap: 6px;
+                margin-top: 8px;
+            }
+            .provider-add-select {
+                flex: 1;
+                padding: 6px 8px;
+                border: 1px solid #d9e0e8;
+                border-radius: 8px;
+                font-size: 13px;
+                color: #1f2d3d;
+                background: #fff;
+                cursor: pointer;
+            }
+            .provider-add-select:focus {
+                outline: none;
+                border-color: #3b9bff;
+            }
+            .provider-add-btn {
+                background: #3b9bff;
+                border: none;
+                color: #fff;
+                font-size: 13px;
+                font-weight: 500;
+                padding: 6px 14px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: 0.15s;
+                white-space: nowrap;
+            }
+            .provider-add-btn:hover {
+                background: #2d7be5;
+            }
+            .provider-add-btn:disabled {
+                background: #b0c1d6;
+                cursor: not-allowed;
+            }
+            .provider-empty {
+                font-size: 12px;
+                color: #8c9aa9;
+                padding: 6px 0;
+                font-style: italic;
+            }
+            .status-badge {
+                margin-top: 10px;
+                padding: 6px 12px;
+                background: #f0f5fa;
+                border-radius: 30px;
+                font-size: 12px;
+                color: #3e6a7a;
+                display: inline-block;
+            }
+            .status-badge i {
+                margin-right: 4px;
+            }
+            .fallback-preview {
+                background: #f8fafc;
+                border-radius: 10px;
+                padding: 14px 18px;
+                margin-top: 18px;
+                font-size: 13px;
+                border: 1px dashed #d0dbe8;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+            .fallback-preview .label {
+                font-weight: 500;
+                color: #526479;
+                white-space: nowrap;
+            }
+            .fallback-preview .arrow {
+                color: #8c9aa9;
+            }
+            .fallback-preview .global-tag {
+                background: #eef2f7;
+                padding: 2px 8px;
+                border-radius: 4px;
+                color: #62748a;
+                font-size: 11px;
+            }
+            .global-save-bar {
+                position: sticky;
+                bottom: 0;
+                z-index: 100;
+                background: #fff;
+                border-top: 1px solid #e0e6ed;
+                box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+                padding: 14px 28px;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 16px;
+                border-radius: 12px 12px 0 0;
+                margin-top: 32px;
+            }
+            .global-save-bar .save-hint {
+                font-size: 13px;
+                color: #6a7f97;
+                margin-right: auto;
+            }
+            .global-save-bar .save-hint i {
+                margin-right: 6px;
+                color: #3b9bff;
+            }
+            .global-save-btn {
+                background: #3b9bff;
+                border: none;
+                color: #fff;
+                font-size: 15px;
+                font-weight: 600;
+                padding: 10px 36px;
+                border-radius: 10px;
+                cursor: pointer;
+                transition: 0.15s;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                letter-spacing: 0.5px;
+            }
+            .global-save-btn:hover {
+                background: #2d7be5;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(59, 155, 255, 0.3);
+            }
+            .global-save-btn:active {
+                transform: translateY(0);
+            }
+            .global-save-btn.saving {
+                opacity: 0.7;
+                pointer-events: none;
+            }
+            .toast {
+                position: fixed;
+                bottom: 100px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #1f2d3d;
+                color: #fff;
+                padding: 12px 28px;
+                border-radius: 10px;
+                font-size: 14px;
+                z-index: 9999;
+                box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+                transition: opacity 0.3s;
+            }
+            .dimmed-section {
+                opacity: 0.5;
+            }
+            @media (max-width: 700px) {
+                .flex-grid {
+                    gap: 16px;
+                }
+                .config-item {
+                    flex: 1 0 100%;
+                }
+                .config-table td,
+                .config-table th {
+                    padding-right: 6px;
+                }
+                .time-input-group {
+                    flex-wrap: wrap;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="商品审核设置.html"><span>审核规则</span></a>
+                <i class="fas fa-chevron-right"></i>
+                <span style="color: #1f2d3d; font-weight: 500"
+                    >分类审核规则</span
+                >
+            </div>
+            <div class="page-header">
+                <h2><i class="fas fa-layer-group"></i> 商品分类审核规则</h2>
+                <span
+                    style="
+                        font-size: 13px;
+                        color: #6a7f97;
+                        background: #f0f5fa;
+                        padding: 6px 16px;
+                        border-radius: 30px;
+                    "
+                >
+                    <i class="fas fa-info-circle" style="color: #3b9bff"></i>
+                    分类规则优先 &rang; 未配置则继承全局规则
+                </span>
+            </div>
+
+            <div class="category-selector">
+                <label><i class="fas fa-tag"></i> 选择分类</label>
+                <select id="categorySelect">
+                    <option value="">-- 请选择分类 --</option>
+                    <option value="electronics">📱 电子产品</option>
+                    <option value="clothing">👕 服装鞋帽</option>
+                    <option value="food">🍜 食品饮料</option>
+                    <option value="beauty">💄 美妆个护</option>
+                    <option value="home">🏠 家居用品</option>
+                    <option value="books">📚 图书文具</option>
+                    <option value="sports">⚽ 运动户外</option>
+                    <option value="toys">🎮 玩具乐器</option>
+                    <option value="auto">🚗 汽车用品</option>
+                    <option value="health">💊 医疗保健</option>
+                </select>
+                <span id="categoryStatus" class="inherit-badge inherit">
+                    <i class="fas fa-arrow-down"></i> 未配置，将使用全局规则
+                </span>
+            </div>
+
+            <!-- ====== 手动审核 ====== -->
+            <div class="card" id="manualSection">
+                <div class="inherit-toggle-row">
+                    <div class="left">
+                        <h4
+                            style="
+                                font-size: 15px;
+                                font-weight: 600;
+                                color: #1f2d3d;
+                            "
+                        >
+                            <i
+                                class="fas fa-clock"
+                                style="color: #3b9bff; margin-right: 6px"
+                            ></i>
+                            手动审核默认通过时间
+                        </h4>
+                        <span class="status-tag inherit" id="manualStatusTag"
+                            ><i class="fas fa-arrow-down"></i> 继承全局</span
+                        >
+                    </div>
+                    <div class="inherit-switch-wrap">
+                        <span>继承全局</span>
+                        <label class="switch small"
+                            ><input
+                                type="checkbox"
+                                id="manualOverrideToggle" /><span
+                                class="slider"
+                            ></span
+                        ></label>
+                        <span>自定义</span>
+                    </div>
+                </div>
+                <div class="table-wrap" id="manualContentArea">
+                    <table class="config-table">
+                        <thead>
+                            <tr>
+                                <th>审核类型</th>
+                                <th>自动通过</th>
+                                <th>时间</th>
+                                <th>备注</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-row-id="text">
+                                <td>
+                                    <div class="config-label">
+                                        <i class="fas fa-file-alt"></i> 文案审核
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row-toggle">
+                                        <label class="switch tiny"
+                                            ><input
+                                                type="checkbox"
+                                                checked
+                                                class="row-auto-toggle" /><span
+                                                class="slider"
+                                            ></span></label
+                                        ><span class="toggle-label">启用</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="time-input-group">
+                                        <input
+                                            type="number"
+                                            value="2"
+                                            min="0"
+                                            step="1"
+                                            class="time-input"
+                                        /><select class="time-unit">
+                                            <option>min</option>
+                                            <option>hour</option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="note-text">
+                                        文案审核超时后自动通过
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr data-row-id="image">
+                                <td>
+                                    <div class="config-label">
+                                        <i class="fas fa-image"></i> 图片审核
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row-toggle">
+                                        <label class="switch tiny"
+                                            ><input
+                                                type="checkbox"
+                                                checked
+                                                class="row-auto-toggle" /><span
+                                                class="slider"
+                                            ></span></label
+                                        ><span class="toggle-label">启用</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="time-input-group">
+                                        <input
+                                            type="number"
+                                            value="2"
+                                            min="0"
+                                            class="time-input"
+                                        /><select class="time-unit">
+                                            <option>min</option>
+                                            <option>hour</option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="note-text">
+                                        图片审核超时后自动通过
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr data-row-id="video">
+                                <td>
+                                    <div class="config-label">
+                                        <i class="fas fa-video"></i> 视频审核
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row-toggle">
+                                        <label class="switch tiny"
+                                            ><input
+                                                type="checkbox"
+                                                checked
+                                                class="row-auto-toggle" /><span
+                                                class="slider"
+                                            ></span></label
+                                        ><span class="toggle-label">启用</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="time-input-group">
+                                        <input
+                                            type="number"
+                                            value="2"
+                                            min="0"
+                                            class="time-input"
+                                        /><select class="time-unit">
+                                            <option>min</option>
+                                            <option>hour</option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="note-text">
+                                        视频审核超时后自动通过
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="fallback-preview" id="manualFallbackPreview">
+                    <span class="label"
+                        ><i class="fas fa-globe"></i> 全局默认值：</span
+                    >
+                    <span>文案 2min</span
+                    ><span class="arrow"
+                        ><i class="fas fa-arrow-right"></i
+                    ></span>
+                    <span>图片 2min</span
+                    ><span class="arrow"
+                        ><i class="fas fa-arrow-right"></i
+                    ></span>
+                    <span>视频 2min</span
+                    ><span class="global-tag">全部启用</span>
+                </div>
+            </div>
+
+            <!-- ====== AI 审核 ====== -->
+            <div class="ai-config-section" id="aiSection">
+                <div class="inherit-toggle-row">
+                    <div class="left">
+                        <h3 style="font-size: 16px; font-weight: 600">
+                            <i class="fas fa-robot" style="color: #3b9bff"></i>
+                            AI 自动审核 · 提供商配置
+                        </h3>
+                        <span class="status-tag inherit" id="aiStatusTag"
+                            ><i class="fas fa-arrow-down"></i> 继承全局</span
+                        >
+                    </div>
+                    <div class="inherit-switch-wrap">
+                        <span>继承全局</span>
+                        <label class="switch small"
+                            ><input
+                                type="checkbox"
+                                id="aiOverrideToggle" /><span
+                                class="slider"
+                            ></span
+                        ></label>
+                        <span>自定义</span>
+                    </div>
+                </div>
+                <div id="aiContentArea">
+                    <div class="flex-grid">
+                        <div class="config-item" data-review-type="text">
+                            <div class="label">
+                                <i class="fas fa-file-alt"></i> 文案审核
+                            </div>
+                            <div class="toggle-row">
+                                <span
+                                    ><i
+                                        class="fas fa-robot"
+                                        style="color: #3b9bff"
+                                    ></i>
+                                    启用 AI 审核</span
+                                >
+                                <label class="switch"
+                                    ><input type="checkbox" checked /><span
+                                        class="slider"
+                                    ></span
+                                ></label>
+                            </div>
+                            <div class="provider-multi-wrap">
+                                <label
+                                    >AI 提供商
+                                    <span
+                                        style="color: #8c9aa9; font-weight: 400"
+                                        >(优先级排序)</span
+                                    ></label
+                                >
+                                <div
+                                    class="provider-list"
+                                    data-review-type="text"
+                                ></div>
+                                <div class="provider-add-row">
+                                    <select class="provider-add-select">
+                                        <option value="deepseek">
+                                            DeepSeek
+                                        </option>
+                                        <option value="aliyun">阿里云</option>
+                                        <option value="openai">OpenAI</option>
+                                        <option value="baidu">百度文心</option>
+                                        <option value="qwen">通义千问</option>
+                                        <option value="volc">火山引擎</option>
+                                        <option value="tencent">腾讯云</option>
+                                    </select>
+                                    <button class="provider-add-btn">
+                                        ＋ 添加
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="status-badge">
+                                <i class="fas fa-microchip"></i> 优先: DeepSeek
+                            </div>
+                        </div>
+                        <div class="config-item" data-review-type="image">
+                            <div class="label">
+                                <i class="fas fa-image"></i> 图片审核
+                            </div>
+                            <div class="toggle-row">
+                                <span
+                                    ><i
+                                        class="fas fa-robot"
+                                        style="color: #3b9bff"
+                                    ></i>
+                                    启用 AI 审核</span
+                                >
+                                <label class="switch"
+                                    ><input type="checkbox" checked /><span
+                                        class="slider"
+                                    ></span
+                                ></label>
+                            </div>
+                            <div class="provider-multi-wrap">
+                                <label
+                                    >AI 提供商
+                                    <span
+                                        style="color: #8c9aa9; font-weight: 400"
+                                        >(优先级排序)</span
+                                    ></label
+                                >
+                                <div
+                                    class="provider-list"
+                                    data-review-type="image"
+                                ></div>
+                                <div class="provider-add-row">
+                                    <select class="provider-add-select">
+                                        <option value="aliyun">阿里云</option>
+                                        <option value="deepseek">
+                                            DeepSeek
+                                        </option>
+                                        <option value="openai">OpenAI</option>
+                                        <option value="baidu">百度智能</option>
+                                        <option value="qwen">通义千问</option>
+                                        <option value="tencent">腾讯云</option>
+                                        <option value="volc">火山引擎</option>
+                                    </select>
+                                    <button class="provider-add-btn">
+                                        ＋ 添加
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="status-badge">
+                                <i class="fas fa-microchip"></i> 优先: 阿里云
+                            </div>
+                        </div>
+                        <div class="config-item" data-review-type="video">
+                            <div class="label">
+                                <i class="fas fa-video"></i> 视频审核
+                            </div>
+                            <div class="toggle-row">
+                                <span
+                                    ><i
+                                        class="fas fa-robot"
+                                        style="color: #3b9bff"
+                                    ></i>
+                                    启用 AI 审核</span
+                                >
+                                <label class="switch"
+                                    ><input type="checkbox" /><span
+                                        class="slider"
+                                    ></span
+                                ></label>
+                            </div>
+                            <div class="provider-multi-wrap">
+                                <label
+                                    >AI 提供商
+                                    <span
+                                        style="color: #8c9aa9; font-weight: 400"
+                                        >(优先级排序)</span
+                                    ></label
+                                >
+                                <div
+                                    class="provider-list"
+                                    data-review-type="video"
+                                ></div>
+                                <div class="provider-add-row">
+                                    <select class="provider-add-select">
+                                        <option value="deepseek">
+                                            DeepSeek
+                                        </option>
+                                        <option value="aliyun">阿里云</option>
+                                        <option value="openai">OpenAI</option>
+                                        <option value="baidu">百度智能</option>
+                                        <option value="volc">火山引擎</option>
+                                        <option value="qwen">通义千问</option>
+                                        <option value="tencent">腾讯云</option>
+                                    </select>
+                                    <button class="provider-add-btn">
+                                        ＋ 添加
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="status-badge">
+                                <i class="fas fa-microchip"></i> 优先: DeepSeek
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        style="
+                            margin-top: 24px;
+                            padding-top: 18px;
+                            border-top: 1px solid #e6ecf3;
+                            display: flex;
+                            flex-wrap: wrap;
+                            align-items: center;
+                            gap: 12px 24px;
+                        "
+                    >
+                        <span
+                            style="
+                                font-weight: 500;
+                                color: #2d4055;
+                                font-size: 14px;
+                            "
+                            ><i class="fas fa-magic" style="color: #3b9bff"></i>
+                            快捷预设</span
+                        >
+                        <button
+                            class="preset-btn"
+                            style="
+                                background: #f2f6fc;
+                                border: none;
+                                padding: 6px 18px;
+                                border-radius: 30px;
+                                font-size: 13px;
+                                color: #2d4b75;
+                                cursor: pointer;
+                            "
+                            onclick="setAllAI()"
+                        >
+                            <i class="fas fa-check-circle"></i> 全部启用 AI
+                        </button>
+                        <button
+                            class="preset-btn"
+                            style="
+                                background: #f2f6fc;
+                                border: none;
+                                padding: 6px 18px;
+                                border-radius: 30px;
+                                font-size: 13px;
+                                color: #2d4b75;
+                                cursor: pointer;
+                            "
+                            onclick="setAllManual()"
+                        >
+                            <i class="fas fa-check-circle"></i> 全部仅手动
+                        </button>
+                        <button
+                            class="preset-btn"
+                            style="
+                                background: #f2f6fc;
+                                border: none;
+                                padding: 6px 18px;
+                                border-radius: 30px;
+                                font-size: 13px;
+                                color: #2d4b75;
+                                cursor: pointer;
+                            "
+                            onclick="setMixed()"
+                        >
+                            <i class="fas fa-random"></i> 混合推荐
+                        </button>
+                    </div>
+                </div>
+                <div class="fallback-preview" id="aiFallbackPreview">
+                    <span class="label"
+                        ><i class="fas fa-globe"></i> 全局默认值：</span
+                    >
+                    <span>文案 AI: DeepSeek</span
+                    ><span class="arrow"
+                        ><i class="fas fa-arrow-right"></i
+                    ></span>
+                    <span>图片 AI: 阿里云</span
+                    ><span class="arrow"
+                        ><i class="fas fa-arrow-right"></i
+                    ></span>
+                    <span>视频 AI: DeepSeek</span
+                    ><span class="global-tag">手动始终可用</span>
+                </div>
+            </div>
+
+            <div class="global-save-bar">
+                <span class="save-hint"
+                    ><i class="fas fa-info-circle"></i>
+                    分类规则仅在「自定义」状态下生效，未自定义的项自动继承全局配置</span
+                >
+                <button class="global-save-btn" id="globalSaveBtn">
+                    <i class="fas fa-check-circle"></i> 保存分类配置
+                </button>
+            </div>
+        </div>
+
+        <script>
+            // ========== 全局常量 ==========
+            const ALL_PROVIDERS = [
+                { id: "deepseek", name: "DeepSeek" },
+                { id: "aliyun", name: "阿里云" },
+                { id: "openai", name: "OpenAI" },
+                { id: "baidu", name: "百度文心" },
+                { id: "qwen", name: "通义千问" },
+                { id: "volc", name: "火山引擎" },
+                { id: "tencent", name: "腾讯云" },
+            ];
+            const DEFAULT_PROVIDERS = {
+                text: [{ id: "deepseek", name: "DeepSeek" }],
+                image: [{ id: "aliyun", name: "阿里云" }],
+                video: [{ id: "deepseek", name: "DeepSeek" }],
+            };
+            const GLOBAL_CONFIG = {
+                manual: {
+                    text: { autoPass: true, time: 2, unit: "min" },
+                    image: { autoPass: true, time: 2, unit: "min" },
+                    video: { autoPass: true, time: 2, unit: "min" },
+                },
+                ai: {
+                    text: {
+                        enabled: true,
+                        providers: [{ id: "deepseek", name: "DeepSeek" }],
+                    },
+                    image: {
+                        enabled: true,
+                        providers: [{ id: "aliyun", name: "阿里云" }],
+                    },
+                    video: {
+                        enabled: false,
+                        providers: [{ id: "deepseek", name: "DeepSeek" }],
+                    },
+                },
+            };
+
+            // ========== 数据持久化 ==========
+            let CATEGORY_DATA = {};
+            function loadCategoryData() {
+                try {
+                    const raw = localStorage.getItem("categoryReviewConfig");
+                    CATEGORY_DATA = raw ? JSON.parse(raw) || {} : {};
+                } catch (e) {
+                    CATEGORY_DATA = {};
+                }
+            }
+            function saveCategoryData() {
+                localStorage.setItem(
+                    "categoryReviewConfig",
+                    JSON.stringify(CATEGORY_DATA),
+                );
+            }
+            function getCategoryConfig(catId) {
+                return catId ? CATEGORY_DATA[catId] || null : null;
+            }
+            function setCategoryConfig(catId, data) {
+                if (catId) {
+                    CATEGORY_DATA[catId] = data;
+                    saveCategoryData();
+                }
+            }
+
+            // ========== 提供商操作（与参考文件一致） ==========
+            function getProviderList(type) {
+                const container = document.querySelector(
+                    `.provider-list[data-review-type="${type}"]`,
+                );
+                if (!container) return [];
+                const chips = container.querySelectorAll(".provider-chip");
+                return Array.from(chips).map((chip) => ({
+                    id: chip.dataset.providerId,
+                    name: chip.dataset.providerName,
+                }));
+            }
+
+            function updateStatusBadge(type) {
+                const item = document.querySelector(
+                    `.config-item[data-review-type="${type}"]`,
+                );
+                const badge = item && item.querySelector(".status-badge");
+                if (!badge) return;
+                const list = getProviderList(type);
+                if (list.length === 0) {
+                    badge.innerHTML =
+                        '<i class="fas fa-microchip"></i> 未配置提供商';
+                } else {
+                    badge.innerHTML = `<i class="fas fa-microchip"></i> 优先: ${list[0].name}`;
+                }
+            }
+
+            function renderProviderList(type) {
+                const container = document.querySelector(
+                    `.provider-list[data-review-type="${type}"]`,
+                );
+                if (!container) return;
+                const providers = container.__providers || [];
+
+                container.innerHTML = "";
+
+                if (providers.length === 0) {
+                    const empty = document.createElement("div");
+                    empty.className = "provider-empty";
+                    empty.textContent = "暂无提供商，请添加";
+                    container.appendChild(empty);
+                } else {
+                    providers.forEach((p, index) => {
+                        const chip = document.createElement("div");
+                        chip.className = "provider-chip";
+                        chip.dataset.providerId = p.id;
+                        chip.dataset.providerName = p.name;
+
+                        const prio = document.createElement("span");
+                        prio.className = "prio-badge";
+                        prio.textContent = index + 1;
+
+                        const name = document.createElement("span");
+                        name.className = "chip-name";
+                        name.textContent = p.name;
+
+                        const actions = document.createElement("div");
+                        actions.className = "chip-actions";
+
+                        // 编辑按钮（齿轮）
+                        const editBtn = document.createElement("a");
+                        editBtn.className = "chip-edit-btn";
+                        editBtn.style.textDecoration = "none";
+                        editBtn.style.display = "inline-flex";
+                        editBtn.style.alignItems = "center";
+                        editBtn.style.justifyContent = "center";
+                        const catId =
+                            document.getElementById("categorySelect").value;
+                        editBtn.href = `DeepSeek审核引擎.html?category=${encodeURIComponent(catId)}&type=${type}&provider=${encodeURIComponent(p.id)}`;
+                        editBtn.target = "_blank";
+                        editBtn.innerHTML = '<i class="fas fa-cog"></i>';
+                        editBtn.title = `为 ${p.name} 配置此分类的独立审核引擎`;
+
+                        // 上移
+                        const upBtn = document.createElement("button");
+                        upBtn.className = "chip-btn";
+                        upBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+                        upBtn.title = "提升优先级";
+                        upBtn.disabled = index === 0;
+                        upBtn.addEventListener("click", () =>
+                            moveProvider(type, index, -1),
+                        );
+
+                        // 下移
+                        const downBtn = document.createElement("button");
+                        downBtn.className = "chip-btn";
+                        downBtn.innerHTML =
+                            '<i class="fas fa-chevron-down"></i>';
+                        downBtn.title = "降低优先级";
+                        downBtn.disabled = index === providers.length - 1;
+                        downBtn.addEventListener("click", () =>
+                            moveProvider(type, index, 1),
+                        );
+
+                        // 移除
+                        const removeBtn = document.createElement("button");
+                        removeBtn.className = "chip-btn remove-btn";
+                        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                        removeBtn.title = "移除";
+                        removeBtn.addEventListener("click", () =>
+                            removeProvider(type, index),
+                        );
+
+                        actions.appendChild(editBtn);
+                        actions.appendChild(upBtn);
+                        actions.appendChild(downBtn);
+                        actions.appendChild(removeBtn);
+
+                        chip.appendChild(prio);
+                        chip.appendChild(name);
+                        chip.appendChild(actions);
+                        container.appendChild(chip);
+                    });
+                }
+
+                updateAddSelect(type);
+                updateStatusBadge(type);
+            }
+
+            function initProviderState(type, customProviders) {
+                const container = document.querySelector(
+                    `.provider-list[data-review-type="${type}"]`,
+                );
+                if (!container) return;
+                const list = customProviders || DEFAULT_PROVIDERS[type] || [];
+                container.__providers = list.map((p) => ({
+                    id: p.id,
+                    name: p.name,
+                }));
+                renderProviderList(type);
+            }
+
+            function updateAddSelect(type) {
+                const item = document.querySelector(
+                    `.config-item[data-review-type="${type}"]`,
+                );
+                const select =
+                    item && item.querySelector(".provider-add-select");
+                const addBtn = item && item.querySelector(".provider-add-btn");
+                if (!select || !addBtn) return;
+
+                const existing = getProviderList(type);
+                const existingIds = new Set(existing.map((p) => p.id));
+                select.innerHTML = "";
+                let hasAvailable = false;
+
+                ALL_PROVIDERS.forEach((p) => {
+                    if (!existingIds.has(p.id)) {
+                        hasAvailable = true;
+                        const opt = document.createElement("option");
+                        opt.value = p.id;
+                        opt.textContent = p.name;
+                        select.appendChild(opt);
+                    }
+                });
+                addBtn.disabled = !hasAvailable;
+                if (!hasAvailable) {
+                    const opt = document.createElement("option");
+                    opt.value = "";
+                    opt.textContent = "已添加全部";
+                    opt.disabled = true;
+                    select.appendChild(opt);
+                }
+            }
+
+            function addProvider(type) {
+                const item = document.querySelector(
+                    `.config-item[data-review-type="${type}"]`,
+                );
+                const select =
+                    item && item.querySelector(".provider-add-select");
+                if (!select || !select.value) return;
+
+                const container = document.querySelector(
+                    `.provider-list[data-review-type="${type}"]`,
+                );
+                if (!container) return;
+
+                const provider = ALL_PROVIDERS.find(
+                    (p) => p.id === select.value,
+                );
+                if (!provider) return;
+
+                container.__providers.push({
+                    id: provider.id,
+                    name: provider.name,
+                });
+                renderProviderList(type);
+            }
+
+            function removeProvider(type, index) {
+                const container = document.querySelector(
+                    `.provider-list[data-review-type="${type}"]`,
+                );
+                if (!container) return;
+                container.__providers.splice(index, 1);
+                renderProviderList(type);
+            }
+
+            function moveProvider(type, index, direction) {
+                const container = document.querySelector(
+                    `.provider-list[data-review-type="${type}"]`,
+                );
+                if (!container) return;
+                const providers = container.__providers;
+                const target = index + direction;
+                if (target < 0 || target >= providers.length) return;
+                [providers[index], providers[target]] = [
+                    providers[target],
+                    providers[index],
+                ];
+                renderProviderList(type);
+            }
+
+            // ========== 区域状态管理 ==========
+            function setSectionMode(section, override) {
+                const contentArea =
+                    section === "manual"
+                        ? document.getElementById("manualContentArea")
+                        : document.getElementById("aiContentArea");
+                const statusTag =
+                    section === "manual"
+                        ? document.getElementById("manualStatusTag")
+                        : document.getElementById("aiStatusTag");
+                const fallback =
+                    section === "manual"
+                        ? document.getElementById("manualFallbackPreview")
+                        : document.getElementById("aiFallbackPreview");
+
+                if (override) {
+                    contentArea.classList.remove("dimmed-section");
+                    statusTag.className = "status-tag override";
+                    statusTag.innerHTML = '<i class="fas fa-edit"></i> 自定义';
+                    fallback.style.display = "none";
+                } else {
+                    contentArea.classList.add("dimmed-section");
+                    statusTag.className = "status-tag inherit";
+                    statusTag.innerHTML =
+                        '<i class="fas fa-arrow-down"></i> 继承全局';
+                    fallback.style.display = "flex";
+                }
+            }
+
+            function ensureSectionOverride(section) {
+                const toggleId =
+                    section === "manual"
+                        ? "manualOverrideToggle"
+                        : "aiOverrideToggle";
+                const toggle = document.getElementById(toggleId);
+                if (toggle && !toggle.checked) {
+                    toggle.checked = true;
+                    setSectionMode(section, true);
+                }
+            }
+
+            // ========== 手动审核操作 ==========
+            function updateRowState(row, enabled) {
+                const toggleLabel = row.querySelector(".toggle-label");
+                if (enabled) {
+                    row.classList.remove("disabled-row");
+                    toggleLabel.textContent = "启用";
+                    toggleLabel.style.color = "#3b9bff";
+                } else {
+                    row.classList.add("disabled-row");
+                    toggleLabel.textContent = "停用";
+                    toggleLabel.style.color = "#8c9aa9";
+                }
+            }
+
+            function resetManualToDefaults() {
+                document
+                    .querySelectorAll("#manualContentArea tbody tr")
+                    .forEach((row, i) => {
+                        const type = ["text", "image", "video"][i] || "text";
+                        const cfg = GLOBAL_CONFIG.manual[type];
+                        if (!cfg) return;
+                        row.querySelector(".row-auto-toggle").checked =
+                            cfg.autoPass;
+                        row.querySelector(".time-input").value = cfg.time;
+                        row.querySelector(".time-unit").value = cfg.unit;
+                        updateRowState(row, cfg.autoPass);
+                    });
+            }
+
+            function resetAIToggles() {
+                ["text", "image", "video"].forEach((type) => {
+                    const cb = document.querySelector(
+                        `.config-item[data-review-type="${type}"] .toggle-row input[type="checkbox"]`,
+                    );
+                    if (cb) cb.checked = GLOBAL_CONFIG.ai[type].enabled;
+                });
+            }
+
+            function resetCategoryToDefaults() {
+                document.getElementById("manualOverrideToggle").checked = false;
+                setSectionMode("manual", false);
+                resetManualToDefaults();
+                document.getElementById("aiOverrideToggle").checked = false;
+                setSectionMode("ai", false);
+                ["text", "image", "video"].forEach((type) =>
+                    initProviderState(type),
+                );
+                resetAIToggles();
+            }
+
+            // ========== 加载分类配置 ==========
+            function loadCategory(catId) {
+                if (!catId) {
+                    document.getElementById("categoryStatus").className =
+                        "inherit-badge inherit";
+                    document.getElementById("categoryStatus").innerHTML =
+                        '<i class="fas fa-arrow-down"></i> 未配置，将使用全局规则';
+                    resetCategoryToDefaults();
+                    return;
+                }
+                const config = getCategoryConfig(catId);
+                if (!config) {
+                    document.getElementById("categoryStatus").className =
+                        "inherit-badge inherit";
+                    document.getElementById("categoryStatus").innerHTML =
+                        '<i class="fas fa-arrow-down"></i> 未配置，将使用全局规则';
+                    resetCategoryToDefaults();
+                    return;
+                }
+
+                // 标记已配置
+                document.getElementById("categoryStatus").className =
+                    "inherit-badge custom";
+                document.getElementById("categoryStatus").innerHTML =
+                    '<i class="fas fa-check-circle"></i> 已配置自定义规则';
+
+                // 手动审核
+                const manualCfg = config.manual || {};
+                if (manualCfg.override) {
+                    document.getElementById("manualOverrideToggle").checked =
+                        true;
+                    setSectionMode("manual", true);
+                    ["text", "image", "video"].forEach((type) => {
+                        const m = manualCfg[type];
+                        if (!m) return;
+                        const row = document.querySelector(
+                            `#manualContentArea tbody tr[data-row-id="${type}"]`,
+                        );
+                        if (!row) return;
+                        row.querySelector(".row-auto-toggle").checked =
+                            m.autoPass;
+                        row.querySelector(".time-input").value = m.time;
+                        row.querySelector(".time-unit").value = m.unit;
+                        updateRowState(row, m.autoPass);
+                    });
+                } else {
+                    document.getElementById("manualOverrideToggle").checked =
+                        false;
+                    setSectionMode("manual", false);
+                    resetManualToDefaults();
+                }
+
+                // AI 审核
+                const aiCfg = config.ai || {};
+                if (aiCfg.override) {
+                    document.getElementById("aiOverrideToggle").checked = true;
+                    setSectionMode("ai", true);
+                    ["text", "image", "video"].forEach((type) => {
+                        const a = aiCfg[type];
+                        if (!a) return;
+                        initProviderState(type, a.providers);
+                        const cb = document.querySelector(
+                            `.config-item[data-review-type="${type}"] .toggle-row input[type="checkbox"]`,
+                        );
+                        if (cb) cb.checked = a.enabled;
+                    });
+                } else {
+                    document.getElementById("aiOverrideToggle").checked = false;
+                    setSectionMode("ai", false);
+                    ["text", "image", "video"].forEach((type) =>
+                        initProviderState(type),
+                    );
+                    resetAIToggles();
+                }
+            }
+
+            // ========== 收集配置 ==========
+            function collectCurrentConfig() {
+                const catId = document.getElementById("categorySelect").value;
+                if (!catId) return null;
+
+                const manualOverride = document.getElementById(
+                    "manualOverrideToggle",
+                ).checked;
+                const aiOverride =
+                    document.getElementById("aiOverrideToggle").checked;
+                const config = {};
+
+                if (manualOverride) {
+                    config.manual = { override: true };
+                    document
+                        .querySelectorAll("#manualContentArea tbody tr")
+                        .forEach((row) => {
+                            const type = row.dataset.rowId;
+                            config.manual[type] = {
+                                autoPass:
+                                    row.querySelector(".row-auto-toggle")
+                                        .checked,
+                                time:
+                                    parseInt(
+                                        row.querySelector(".time-input").value,
+                                    ) || 0,
+                                unit: row.querySelector(".time-unit").value,
+                            };
+                        });
+                } else {
+                    config.manual = { override: false };
+                }
+
+                if (aiOverride) {
+                    config.ai = { override: true };
+                    ["text", "image", "video"].forEach((type) => {
+                        const cb = document.querySelector(
+                            `.config-item[data-review-type="${type}"] .toggle-row input[type="checkbox"]`,
+                        );
+                        config.ai[type] = {
+                            enabled: cb ? cb.checked : false,
+                            providers: getProviderList(type).map((p, i) => ({
+                                id: p.id,
+                                name: p.name,
+                                priority: i + 1,
+                            })),
+                        };
+                    });
+                } else {
+                    config.ai = { override: false };
+                }
+
+                return config;
+            }
+
+            // ========== Toast ==========
+            function showToast(msg) {
+                const old = document.querySelector(".toast");
+                if (old) old.remove();
+                const el = document.createElement("div");
+                el.className = "toast";
+                el.textContent = msg;
+                document.body.appendChild(el);
+                setTimeout(() => {
+                    el.style.opacity = "0";
+                    setTimeout(() => el.remove(), 300);
+                }, 2500);
+            }
+
+            // ========== 预设 ==========
+            function setAllAI() {
+                ["text", "image", "video"].forEach((type) => {
+                    const cb = document.querySelector(
+                        `.config-item[data-review-type="${type}"] .toggle-row input[type="checkbox"]`,
+                    );
+                    if (cb) cb.checked = true;
+                });
+            }
+            function setAllManual() {
+                ["text", "image", "video"].forEach((type) => {
+                    const cb = document.querySelector(
+                        `.config-item[data-review-type="${type}"] .toggle-row input[type="checkbox"]`,
+                    );
+                    if (cb) cb.checked = false;
+                });
+            }
+            function setMixed() {
+                const states = [true, true, false];
+                ["text", "image", "video"].forEach((type, i) => {
+                    const cb = document.querySelector(
+                        `.config-item[data-review-type="${type}"] .toggle-row input[type="checkbox"]`,
+                    );
+                    if (cb) cb.checked = states[i];
+                });
+            }
+
+            // ========== 页面初始化 ==========
+            document.addEventListener("DOMContentLoaded", function () {
+                // 加载持久化数据
+                loadCategoryData();
+
+                // 分类选择
+                const catSelect = document.getElementById("categorySelect");
+                catSelect.addEventListener("change", function () {
+                    loadCategory(this.value);
+                });
+
+                // 手动审核行
+                document
+                    .querySelectorAll("#manualContentArea tbody tr")
+                    .forEach((row) => {
+                        const toggle = row.querySelector(".row-auto-toggle");
+                        updateRowState(row, toggle.checked);
+                        toggle.addEventListener("change", function () {
+                            updateRowState(row, this.checked);
+                        });
+                    });
+
+                // 手动审核继承切换
+                document
+                    .getElementById("manualOverrideToggle")
+                    .addEventListener("change", function () {
+                        setSectionMode("manual", this.checked);
+                        if (!this.checked) resetManualToDefaults();
+                    });
+
+                // AI 提供商初始化 + 添加按钮（与参考文件一致）
+                ["text", "image", "video"].forEach((type) => {
+                    initProviderState(type);
+                    const item = document.querySelector(
+                        `.config-item[data-review-type="${type}"]`,
+                    );
+                    const addBtn =
+                        item && item.querySelector(".provider-add-btn");
+                    if (addBtn) {
+                        addBtn.addEventListener("click", function () {
+                            // 自动切换到自定义模式
+                            ensureSectionOverride("ai");
+                            addProvider(type);
+                        });
+                    }
+                });
+
+                // AI 继承切换
+                document
+                    .getElementById("aiOverrideToggle")
+                    .addEventListener("change", function () {
+                        setSectionMode("ai", this.checked);
+                        if (!this.checked) {
+                            ["text", "image", "video"].forEach((type) => {
+                                initProviderState(type);
+                            });
+                            resetAIToggles();
+                        }
+                    });
+
+                // 初始状态：继承全局
+                setSectionMode("manual", false);
+                setSectionMode("ai", false);
+
+                // 保存按钮
+                document
+                    .getElementById("globalSaveBtn")
+                    .addEventListener("click", function () {
+                        const catId =
+                            document.getElementById("categorySelect").value;
+                        if (!catId) {
+                            showToast("⚠️ 请先选择一个分类");
+                            return;
+                        }
+                        const config = collectCurrentConfig();
+                        if (!config) return;
+                        setCategoryConfig(catId, config);
+                        document.getElementById("categoryStatus").className =
+                            "inherit-badge custom";
+                        document.getElementById("categoryStatus").innerHTML =
+                            '<i class="fas fa-check-circle"></i> 已配置自定义规则';
+                        const btn = this;
+                        btn.classList.add("saving");
+                        btn.innerHTML =
+                            '<i class="fas fa-spinner fa-pulse"></i> 保存中...';
+                        setTimeout(() => {
+                            btn.classList.remove("saving");
+                            btn.innerHTML =
+                                '<i class="fas fa-check-circle"></i> 保存分类配置';
+                            showToast(
+                                `✅ 分类「${catSelect.options[catSelect.selectedIndex].text}」配置已保存`,
+                            );
+                        }, 600);
+                    });
+            });
+        </script>
+    </body>
+</html>
