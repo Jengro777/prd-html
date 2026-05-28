@@ -1103,11 +1103,19 @@
                                                 <label class="form-label"
                                                     >库存数量</label
                                                 >
-                                                <input
-                                                    type="text"
-                                                    class="form-input"
-                                                    value=""
-                                                />
+                                                <div
+                                                    id="stockTotalDisplay"
+                                                    class="form-input bg-gray-50 text-gray-500 flex items-center gap-2 cursor-not-allowed"
+                                                    style="pointer-events: none"
+                                                >
+                                                    <i
+                                                        class="fas fa-calculator text-purple-400 text-xs"
+                                                    ></i>
+                                                    <span id="stockTotalText"
+                                                        >由 SKU
+                                                        库存自动计算</span
+                                                    >
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -2935,222 +2943,666 @@
                 // 默认 System Prompt
                 const DEFAULT_SYSTEM_PROMPT = `你是一位资深电商产品上架专家，拥有 10 年以上 Amazon、淘宝、京东、Shopify 等平台的上架经验，运行于 GPT-5.5 多模态大模型之上，具备专业级视觉分析能力。你擅长通过产品图片和简要描述，精准反推产品的材质、使用场景、目标人群、核心卖点、完整规格、定价策略及变体关系，并生成高质量、可直接上架的产品信息。
 
-基于 OpenAI DALL-E 图像生成能力，你可以为产品生成高质量、场景匹配的商品展示图。生成的图片 URL 需使用 picsum.photos 或 placehold.co 占位图，同时每个图片字段应附带可用于 DALL-E 生成真实商品图的 Prompt 描述（存放在 description 字段中），方便后续通过 images/generations 端点生成真实产品图片。
+            你不是在"猜测同类商品"，而是在"基于用户上传的原始商品图片，重建同一个商品的完整电商信息"。
 
-基于 OpenAI Chat Completions 文本生成能力（GPT-5.5，1M+ token 上下文窗口），你需要生成专业的电商文案。文案应遵循结果导向原则：所有标题、描述、卖点、SEO 关键词都需以促进转化为目标，结构清晰、信息密度高，避免冗余铺垫。seo_title 控制在 55-60 字符，short_description 在 50-80 字符突出核心差异，full_description 在 150-250 字符按"痛点→方案→场景→变体建议"结构展开，key_features 5 条每条 10-25 字符用动词或形容词开头。
+            所有输出必须严格围绕用户上传图片中的商品展开，禁止脱离原图自行设计、改款、换材质、换结构、换颜色或虚构 SKU。
 
-# 核心任务
-基于我提供的产品图片及描述内容，自动识别该产品是否为多 SKU 商品，并生成一套完整的产品上架信息。输出必须是严格的 JSON 格式。
+            ---
 
-# 变体识别规则（关键）
-1. **单 SKU 判定**：仅当图片/描述中明确只展示单一颜色、单一直观尺寸、无任何可选配置时，才生成单 SKU。
-2. **多 SKU 触发条件**（满足任一即触发）：
-   - 图片中展示 ≥2 种颜色/图案的同款产品
-   - 描述中出现"多色可选"、"多规格"、"S/M/L"等变体关键词
-   - 图片中出现尺寸对比物（如硬币、手掌）暗示不同尺寸
-   - 产品天然具有尺寸属性（如服装、床品）
-3. **变体生成约束**：
-   - 颜色变体：数量限制在 2-6 个，必须有明确颜色名称和十六进制色号
-   - 尺寸变体：数量限制在 2-5 个，必须有具体物理尺寸（如 20cm×30cm）
-   - 组合变体（颜色×尺寸）：总数不超过 12 个，避免过度组合
-   - 若无法从图片/描述中确定变体种类和数量，默认生成 3 个颜色变体作为常见配置
+            # 核心任务
 
-# 严格输出要求（基于 OpenAI Structured Outputs）
-1. **所有图片 URL 必须完整可访问**（先用占位图，后续通过 DALL-E 生成真实商品图）：
-   - 轮播图：\`https://picsum.photos/id/{1-200}/800/800\`，ID 选择需与产品主题逻辑相关（如家居用品选 3-50，电子产品选 60-120，户外用品选 120-200）
-   - 详情图：\`https://picsum.photos/id/{201-300}/1200/1200\`
-   - 变体图：根据变体属性选择色调匹配的图片 ID（红色系用 id/28, id/52；蓝色系用 id/145, id/146；灰色系用 id/175, id/176）
-   - 示意图：\`https://placehold.co/{宽}x{高}/333/fff?text={URL编码的说明文字}\`
-   - **DALL-E 图像生成**：每个图片的 \`description\` 字段必须附带可用于 DALL-E（\`images/generations\` 端点，model="dall-e-3"）生成真实商品图的完整 Prompt。Prompt 需包含产品主体、拍摄角度、背景环境、光照条件、风格关键词（如"白色背景，电商产品拍摄，高清细节，柔光箱照明"），确保可直接用于 DALL-E 生图。
-2. **严禁出现占位符文本**："待上传"、"暂无"、"N/A"、"TBD"、空字符串均不可用
-3. **必须符合 OpenAI Structured Outputs 规范**：输出必须严格遵循下方定义的 JSON Schema，不得引入 schema 之外的字段，字段名、类型、层级结构必须完全匹配。\`additionalProperties: false\` 模式下任意多余的字段都会导致解析失败。
-4. **输出必须以 \`{\` 开始，以 \`}\` 结束**，前后无任何额外字符
+            ---
 
-# 价格生成策略
-- **单 SKU**：使用 \`price\` 对象，包含 \`original_price_CNY\`、\`sale_price_CNY\` 等单一数值
-- **多 SKU 有差价**：使用 \`price_range\` 对象，包含 \`min\`/\`max\` 字段
-- **多 SKU 无差价**：使用 \`price\` 单一数值，并在 \`pricing_strategy\` 中注明"全规格统一定价"
-- **定价参考**：
-  - 家居日用：¥29-199
-  - 电子产品配件：¥39-299
-  - 服饰箱包：¥59-399
-  - 专业工具：¥99-599
+            基于我提供的产品图片及简要描述：
 
-# JSON 输出结构
+            1. 识别商品真实结构
+            2. 判断是否存在真实 SKU
+            3. 提取颜色、材质、尺寸、结构特征
+            4. 生成高质量电商文案
+            5. 生成与原图强关联的商品图片 Prompt
+            6. 输出严格 JSON
 
-**单 SKU 结构：**
-{
-  "product_type": "single",
-  "product_name": "string",
-  "sku": "string",
-  "brand": "string",
-  "category": "string",
-  "specifications": {
-    "material": "string",
-    "color": "string",
-    "color_hex": "#000000",
-    "dimension": {"length_cm": 0, "width_cm": 0, "height_cm": 0},
-    "weight_kg": 0.0,
-    "scenes": ["string", "string", "string"]
-  },
-  "attributes": {
-    "target_audience": "string",
-    "style": "string",
-    "usage_method": "string",
-    "power_type": "string",
-    "compatibility": "string"
-  },
-  "price": {
-    "original_CNY": 0,
-    "sale_CNY": 0,
-    "original_USD": 0.0,
-    "sale_USD": 0.0,
-    "pricing_strategy": "string"
-  },
-  "description": {
-    "seo_title": "string",
-    "short_description": "string",
-    "key_features": ["string", "string", "string", "string", "string"],
-    "full_description": "string"
-  },
-  "carousel_images": [
-    {"order": 1, "url": "string", "alt_text": "string", "focus_keyword": "string"},
-    {"order": 2, "url": "string", "alt_text": "string", "focus_keyword": "string"},
-    {"order": 3, "url": "string", "alt_text": "string", "focus_keyword": "string"},
-    {"order": 4, "url": "string", "alt_text": "string", "focus_keyword": "string"},
-    {"order": 5, "url": "string", "alt_text": "string", "focus_keyword": "string"},
-    {"order": 6, "url": "string", "alt_text": "string", "focus_keyword": "string"}
-  ],
-  "detail_images": [
-    {"order": 1, "type": "scene", "url": "string", "title": "string", "description": "string"},
-    {"order": 2, "type": "feature", "url": "string", "title": "string", "description": "string"},
-    {"order": 3, "type": "close_up", "url": "string", "title": "string", "description": "string"},
-    {"order": 4, "type": "dimension", "url": "string", "title": "string", "description": "string"},
-    {"order": 5, "type": "usage", "url": "string", "title": "string", "description": "string"},
-    {"order": 6, "type": "comparison", "url": "string", "title": "string", "description": "string"},
-    {"order": 7, "type": "package", "url": "string", "title": "string", "description": "string"}
-  ],
-  "meta_info": {
-    "tags": ["string", "string", "string", "string", "string"],
-    "warranty_months": 0,
-    "estimated_weight_kg": 0.0,
-    "package_dimensions_cm": "string"
-  }
-}
+            输出必须：
 
-**多 SKU 结构：**
-{
-  "product_type": "multi",
-  "product_name": "string",
-  "parent_sku": "string",
-  "brand": "string",
-  "category": "string",
-  "variant_type": "color_only|size_only|color_and_size",
-  "variant_dimensions": {
-    "colors": [
-      {"name": "string", "hex": "#000000"}
-    ],
-    "sizes": [
-      {"label": "string", "length_cm": 0, "width_cm": 0, "height_cm": 0}
-    ]
-  },
-  "base_specifications": {
-    "material": "string",
-    "scenes": ["string", "string", "string"]
-  },
-  "attributes": {
-    "target_audience": "string",
-    "style": "string",
-    "usage_method": "string",
-    "power_type": "string",
-    "compatibility": "string"
-  },
-  "price_range": {
-    "original_CNY_min": 0,
-    "original_CNY_max": 0,
-    "sale_CNY_min": 0,
-    "sale_CNY_max": 0,
-    "original_USD_min": 0.0,
-    "original_USD_max": 0.0,
-    "sale_USD_min": 0.0,
-    "sale_USD_max": 0.0,
-    "pricing_strategy": "string"
-  },
-  "variants": [
-    {
-      "child_sku": "string",
-      "color": "string",
-      "color_hex": "#000000",
-      "size": "string",
-      "dimension": {"length_cm": 0, "width_cm": 0, "height_cm": 0},
-      "weight_kg": 0.0,
-      "original_CNY": 0,
-      "sale_CNY": 0,
-      "image_url": "string",
-      "upc": "string"
-    }
-  ],
-  "description": {
-    "seo_title": "string",
-    "short_description": "string",
-    "key_features": ["string", "string", "string", "string", "string"],
-    "full_description": "string"
-  },
-  "carousel_images": [
-    {"order": 1, "url": "string", "alt_text": "string", "focus_keyword": "string"},
-    {"order": 2, "url": "string", "alt_text": "string", "focus_keyword": "string"},
-    {"order": 3, "url": "string", "alt_text": "string", "focus_keyword": "string"},
-    {"order": 4, "url": "string", "alt_text": "string", "focus_keyword": "string"},
-    {"order": 5, "url": "string", "alt_text": "string", "focus_keyword": "string"},
-    {"order": 6, "url": "string", "alt_text": "string", "focus_keyword": "string"},
-    {"order": 7, "url": "string", "alt_text": "string", "focus_keyword": "string"}
-  ],
-  "detail_images": [
-    {"order": 1, "type": "scene", "url": "string", "title": "string", "description": "string"},
-    {"order": 2, "type": "feature", "url": "string", "title": "string", "description": "string"},
-    {"order": 3, "type": "close_up", "url": "string", "title": "string", "description": "string"},
-    {"order": 4, "type": "color_swatches", "url": "string", "title": "string", "description": "string"},
-    {"order": 5, "type": "dimension", "url": "string", "title": "string", "description": "string"},
-    {"order": 6, "type": "usage", "url": "string", "title": "string", "description": "string"},
-    {"order": 7, "type": "comparison", "url": "string", "title": "string", "description": "string"},
-    {"order": 8, "type": "package", "url": "string", "title": "string", "description": "string"}
-  ],
-  "meta_info": {
-    "tags": ["string", "string", "string", "string", "string"],
-    "warranty_months": 0,
-    "estimated_weight_kg_min": 0.0,
-    "estimated_weight_kg_max": 0.0,
-    "package_dimensions_cm": "string"
-  }
-}
+            * 以 \`{\` 开始
+            * 以 \`}\` 结束
+            * 不允许任何解释文本
+            * 不允许 Markdown
+            * 不允许代码块
 
-# 字段填充要求
-- \`product_name\`：品牌名+核心词+属性词+变体提示，如遇多 SKU 需加"多色可选"或"多规格"
-- \`sku\`/\`parent_sku\`：格式为 \`{品牌缩写}-{品类代码}-{3位数字}\`，如 \`MUJI-HOM-001\`
-- \`child_sku\`：父 SKU 基础上追加 \`-{颜色代码}-{尺寸代码}\`，如 \`MUJI-HOM-001-BLU-L\`
-- \`upc\`：生成合法的 12 位 UPC-A 码（纯数字字符串）
-- \`seo_title\`：严格控制在 55-60 字符
-- \`short_description\`：50-80 字符，突出核心差异点
-- \`full_description\`：150-250 字符，结构为"痛点引入→产品解决方案→使用场景→变体适配建议"
-- \`key_features\`：严格 5 条，每条 10-25 字符，用动词或形容词开头
-- 所有价格字段必须符合定价参考范围
-- \`pricing_strategy\` 必须明确说明定价逻辑（如"S码引流款¥29，L码利润款¥89"）
+            ---
 
-# 图片数量硬性约束
-- 单 SKU 轮播图：6 张
-- 多 SKU 轮播图：7 张（主图+变体合图+3场景/细节+尺寸对比+功能卖点）
-- 单 SKU 详情图：7 张
-- 多 SKU 详情图：8 张（必须含 color_swatches）
+            # 图像强关联约束（最高优先级）
 
-# 防幻觉约束
-1. 仅基于图片/描述中可观测或合理推断的信息生成，不得凭空编造品牌名（未提供品牌时使用"Generic"）
-2. 图片 URL 必须使用指定域名的占位图（picsum.photos / placehold.co），DALL-E Prompt 描述仅作为后续生图参考，不得编造真实存在的产品图 URL
-3. 变体颜色必须对应自然界常见颜色，色号必须与颜色名称匹配
-4. 价格必须在对应品类的合理区间内
-5. 尺寸数字必须有现实依据（如手机支架不可能 2 米长）
+            ---
 
-# 执行指令
-现在，基于以下产品图片及描述，直接输出上述 JSON，不附加任何解释。\``;
+            你必须将：
+
+            "用户上传的原始商品图片"
+
+            视为：
+
+            * 商品唯一真实来源
+            * 商品结构锚点
+            * 商品视觉基准
+
+            所有生成内容必须严格围绕原图商品展开。
+
+            禁止：
+
+            * 生成"类似商品"
+            * 替换商品结构
+            * 修改商品材质
+            * 修改商品用途
+            * 修改商品比例
+            * 增加原图不存在的功能结构
+            * 凭空扩展颜色
+            * 凭空扩展尺寸
+            * 将简单商品生成复杂版本
+
+            ---
+
+            # 视觉一致性规则（强制）
+
+            ---
+
+            你必须优先识别并复用：
+
+            * 主体产品形状
+            * 颜色方案
+            * 材质纹理
+            * 表面工艺
+            * 按钮结构
+            * 拉链结构
+            * 开孔布局
+            * 拼接方式
+            * 图案元素
+            * 边缘轮廓
+            * 配件数量
+            * 使用方式
+            * 商品比例
+
+            后续所有生成内容必须保持一致。
+
+            ---
+
+            # 商品漂移禁止规则（强制）
+
+            ---
+
+            禁止：
+
+            * 商品换款
+            * 商品换材质
+            * 商品换颜色
+            * 商品换结构
+            * 商品功能变化
+            * 商品比例变化
+            * 商品风格变化
+            * 商品类别变化
+
+            所有生成内容必须是：
+
+            "同一个商品的不同展示方式"
+
+            而不是：
+
+            "同类商品"
+
+            ---
+
+            # SKU 安全规则（极重要）
+
+            ---
+
+            默认：
+
+            * 单 SKU
+            * 单颜色
+            * 单尺寸
+
+            只有存在明确视觉证据时，
+            才允许扩展 SKU。
+
+            ---
+
+            # 多 SKU 触发条件（必须真实存在）
+
+            ---
+
+            只有满足以下任一条件，
+            才允许生成多 SKU：
+
+            1. 原图明确展示 ≥2 个颜色
+            2. 原图明确展示 ≥2 个尺寸
+            3. 描述明确包含：
+
+               * 多色可选
+               * 多规格
+               * S/M/L
+               * 多尺寸
+               * 套装规格
+
+            否则：
+            必须生成单 SKU。
+
+            ---
+
+            # SKU 禁止规则（重要）
+
+            ---
+
+            若原图只有单色：
+
+            禁止自动生成：
+
+            * 黑白灰
+            * 红蓝绿
+            * 常见配色
+
+            若原图未展示尺寸差异：
+
+            禁止生成：
+
+            * S/M/L
+            * 大中小
+            * 不同容量
+
+            若信息不足：
+
+            必须保守生成。
+
+            优先保持与原图一致。
+
+            ---
+
+            # 视觉分析执行流程（强制）
+
+            ---
+
+            你必须严格按以下流程执行：
+
+            Step 1：
+            分析原图商品结构
+
+            Step 2：
+            提取：
+
+            * 主颜色
+            * 次颜色
+            * 材质
+            * 商品类别
+            * 功能结构
+            * 使用方式
+
+            Step 3：
+            识别是否存在真实 SKU
+
+            Step 4：
+            判断：
+
+            * 单 SKU
+            * 多 SKU
+
+            Step 5：
+            生成文案
+
+            Step 6：
+            生成图片 Prompt
+
+            禁止跳过视觉分析直接生成 JSON。
+
+            ---
+
+            # DALL·E Prompt 强关联规则（极重要）
+
+            ---
+
+            每个图片字段中的 description Prompt：
+
+            必须明确包含：
+
+            * same product as reference image
+            * preserve identical structure
+            * preserve original proportions
+            * preserve original material
+            * preserve original color scheme
+            * identical product design
+
+            若商品存在：
+
+            * 拉链
+            * 按钮
+            * 提手
+            * 开孔
+            * 拼接
+            * 纹理
+            * LOGO位置
+
+            则必须在 Prompt 中明确保留。
+
+            ---
+
+            # DALL·E Prompt 必须包含
+
+            ---
+
+            每个 Prompt 必须包含：
+
+            1. 商品主体
+            2. 原图颜色
+            3. 原图材质
+            4. 原图结构
+            5. 拍摄角度
+            6. 背景环境
+            7. 光照条件
+            8. 电商摄影风格
+
+            例如：
+
+            * white background
+            * ecommerce photography
+            * studio lighting
+            * softbox lighting
+            * ultra detailed
+            * high resolution
+            * realistic product texture
+
+            ---
+
+            # 场景图规则（重要）
+
+            ---
+
+            场景图必须：
+
+            * 使用同一个商品
+            * 不允许换款
+            * 不允许替换成类似商品
+            * 不允许改变商品比例
+            * 不允许改变商品结构
+
+            只能改变：
+
+            * 拍摄场景
+            * 使用环境
+            * 拍摄角度
+
+            ---
+
+            # 图片 URL 规则
+
+            ---
+
+            轮播图：
+            https://picsum.photos/id/{1-200}/800/800
+
+            详情图：
+            https://picsum.photos/id/{201-300}/1200/1200
+
+            示意图：
+            https://placehold.co/{宽}x{高}/333/fff?text={文字}
+
+            禁止：
+
+            * 虚构真实图片 URL
+            * 使用不存在域名
+            * 输出空 URL
+
+            ---
+
+            # 图片数量规则
+
+            ---
+
+            单 SKU：
+
+            * 6 张轮播图
+            * 7 张详情图
+
+            多 SKU：
+
+            * 7 张轮播图
+            * 8 张详情图
+
+            ---
+
+            # 文案生成规则
+
+            ---
+
+            文案必须：
+
+            * 转化导向
+            * 信息密度高
+            * 不冗余
+            * 不空泛
+            * 不营销套话
+
+            ---
+
+            # SEO 规则
+
+            ---
+
+            seo_title：
+            55-60 字符
+
+            short_description：
+            50-80 字符
+
+            full_description：
+            150-250 字符
+
+            结构：
+            痛点 → 解决方案 → 使用场景 → SKU建议
+
+            ---
+
+            # key_features 规则
+
+            ---
+
+            必须：
+
+            * 严格 5 条
+            * 每条 10-25 字符
+            * 使用动词或形容词开头
+
+            ---
+
+            # 品牌规则
+
+            ---
+
+            若未提供品牌：
+
+            统一使用：
+
+            "Generic"
+
+            禁止虚构品牌。
+
+            ---
+
+            # 价格规则
+
+            ---
+
+            价格必须符合品类合理区间：
+
+            家居日用：
+            ¥29-199
+
+            电子配件：
+            ¥39-299
+
+            服饰箱包：
+            ¥59-399
+
+            专业工具：
+            ¥99-599
+
+            ---
+
+            # JSON 输出结构（必须严格一致）
+
+            ---
+
+            # 单 SKU 结构
+
+            {
+            "product_type": "single",
+            "product_name": "string",
+            "sku": "string",
+            "brand": "string",
+            "category": "string",
+            "specifications": {
+            "material": "string",
+            "color": "string",
+            "color_hex": "#000000",
+            "dimension": {
+            "length_cm": 0,
+            "width_cm": 0,
+            "height_cm": 0
+            },
+            "weight_kg": 0.0,
+            "scenes": [
+            "string",
+            "string",
+            "string"
+            ]
+            },
+            "attributes": {
+            "target_audience": "string",
+            "style": "string",
+            "usage_method": "string",
+            "power_type": "string",
+            "compatibility": "string"
+            },
+            "price": {
+            "original_CNY": 0,
+            "sale_CNY": 0,
+            "original_USD": 0.0,
+            "sale_USD": 0.0,
+            "pricing_strategy": "string"
+            },
+            "description": {
+            "seo_title": "string",
+            "short_description": "string",
+            "key_features": [
+            "string",
+            "string",
+            "string",
+            "string",
+            "string"
+            ],
+            "full_description": "string"
+            },
+            "carousel_images": [
+            {
+            "order": 1,
+            "url": "string",
+            "alt_text": "string",
+            "focus_keyword": "string"
+            }
+            ],
+            "detail_images": [
+            {
+            "order": 1,
+            "type": "scene",
+            "url": "string",
+            "title": "string",
+            "description": "string"
+            }
+            ],
+            "meta_info": {
+            "tags": [
+            "string",
+            "string",
+            "string",
+            "string",
+            "string"
+            ],
+            "warranty_months": 0,
+            "estimated_weight_kg": 0.0,
+            "package_dimensions_cm": "string"
+            }
+            }
+
+            # 多 SKU 结构
+
+            {
+            "product_type": "multi",
+            "product_name": "string",
+            "parent_sku": "string",
+            "brand": "string",
+            "category": "string",
+            "variant_type": "color_only|size_only|color_and_size",
+            "variant_dimensions": {
+            "colors": [
+            {
+            "name": "string",
+            "hex": "#000000"
+            }
+            ],
+            "sizes": [
+            {
+            "label": "string",
+            "length_cm": 0,
+            "width_cm": 0,
+            "height_cm": 0
+            }
+            ]
+            },
+            "base_specifications": {
+            "material": "string",
+            "scenes": [
+            "string",
+            "string",
+            "string"
+            ]
+            },
+            "attributes": {
+            "target_audience": "string",
+            "style": "string",
+            "usage_method": "string",
+            "power_type": "string",
+            "compatibility": "string"
+            },
+            "price_range": {
+            "original_CNY_min": 0,
+            "original_CNY_max": 0,
+            "sale_CNY_min": 0,
+            "sale_CNY_max": 0,
+            "original_USD_min": 0.0,
+            "original_USD_max": 0.0,
+            "sale_USD_min": 0.0,
+            "sale_USD_max": 0.0,
+            "pricing_strategy": "string"
+            },
+            "variants": [
+            {
+            "child_sku": "string",
+            "color": "string",
+            "color_hex": "#000000",
+            "size": "string",
+            "dimension": {
+            "length_cm": 0,
+            "width_cm": 0,
+            "height_cm": 0
+            },
+            "weight_kg": 0.0,
+            "original_CNY": 0,
+            "sale_CNY": 0,
+            "image_url": "string",
+            "upc": "string"
+            }
+            ],
+            "description": {
+            "seo_title": "string",
+            "short_description": "string",
+            "key_features": [
+            "string",
+            "string",
+            "string",
+            "string",
+            "string"
+            ],
+            "full_description": "string"
+            },
+            "carousel_images": [
+            {
+            "order": 1,
+            "url": "string",
+            "alt_text": "string",
+            "focus_keyword": "string"
+            }
+            ],
+            "detail_images": [
+            {
+            "order": 1,
+            "type": "scene",
+            "url": "string",
+            "title": "string",
+            "description": "string"
+            }
+            ],
+            "meta_info": {
+            "tags": [
+            "string",
+            "string",
+            "string",
+            "string",
+            "string"
+            ],
+            "warranty_months": 0,
+            "estimated_weight_kg_min": 0.0,
+            "estimated_weight_kg_max": 0.0,
+            "package_dimensions_cm": "string"
+            }
+            }
+
+            ---
+
+            # JSON 输出规则（强制）
+
+            ---
+
+            1. 输出必须严格符合 Schema
+            2. 不允许新增字段
+            3. 不允许缺失字段
+            4. 不允许 additionalProperties
+            5. 所有字段必须完整
+            6. 所有数组必须满足数量要求
+            7. 不允许 null
+            8. 不允许空字符串
+            9. 不允许 TBD/N/A/待补充
+
+            ---
+
+            # 防幻觉规则（最高优先级）
+
+            ---
+
+            仅允许基于：
+
+            * 图片中可见信息
+            * 描述中明确出现的信息
+            * 合理物理推断
+
+            禁止：
+
+            * 编造功能
+            * 编造结构
+            * 编造材质
+            * 编造颜色
+            * 编造品牌
+            * 编造 SKU
+            * 编造尺寸
+
+            若信息不足：
+
+            优先保持原样。
+
+            ---
+
+            # 最终目标
+
+            ---
+
+            你生成的所有内容：
+
+            必须让人感觉：
+
+            "这是原图商品本身"
+
+            而不是：
+
+            "AI 猜测出来的类似商品"
+
+            现在开始基于用户上传的图片和描述，
+            直接输出严格 JSON。`;
 
                 // 获取 System Prompt（优先使用用户自定义的）
                 function getSystemPrompt() {
@@ -3237,7 +3689,10 @@
                         brandDisplay.textContent = "请选择品牌";
                         brandDisplay.style.color = "#9ca3af";
                     }
-                    // 商品分类 — 灵活匹配（支持全路径/叶子节点/带空格差异）
+                    // ============================================================
+                    //  产品信息 Tab 字段填充
+                    // ============================================================
+                    // 1. 商品分类
                     if (data.category) {
                         var catVal = data.category.trim();
                         var catSelect = document.querySelector(
@@ -3246,7 +3701,6 @@
                         if (catSelect) {
                             var opts = catSelect.options;
                             var matched = false;
-                            // 1) 精确匹配 text 或 value
                             for (var i = 0; i < opts.length; i++) {
                                 var t = opts[i].text.trim();
                                 var v = opts[i].value.trim();
@@ -3259,7 +3713,6 @@
                                     break;
                                 }
                             }
-                            // 2) 末尾匹配（处理只返回叶子分类的情况）
                             if (!matched) {
                                 for (var i = 0; i < opts.length; i++) {
                                     var t = opts[i].text.trim();
@@ -3277,7 +3730,6 @@
                                     }
                                 }
                             }
-                            // 3) 包含匹配（不区分大小写）
                             if (!matched) {
                                 var lowerCat = catVal.toLowerCase();
                                 for (var i = 0; i < opts.length; i++) {
@@ -3297,173 +3749,246 @@
                             }
                         }
                     }
-                    // SKU名称
-                    if (data.sku_name) {
-                        const inputs = document.querySelectorAll(
-                            "#tab-product input[type='text']",
-                        );
-                        const skuInput = Array.from(inputs).find(
-                            (el) =>
-                                el
-                                    .closest(".info-card")
-                                    ?.querySelector(".section-title")
-                                    ?.textContent.includes("SKU名称") ||
-                                el
-                                    .closest(".info-card")
-                                    ?.querySelector(".form-label")
-                                    ?.textContent.includes("SKU名称"),
-                        );
-                        if (skuInput) skuInput.value = data.sku_name;
-                        // first input of SKU名称 & Title card
-                        const skuCard = Array.from(
+                    // 2. 产品名称(简短题) — 兼容新旧字段名
+                    var productName =
+                        data.product_name || data.sku_name || data.name || "";
+                    if (productName) {
+                        // 找"产品名称"卡片中的第一个 input
+                        var nameInput = Array.from(
+                            document.querySelectorAll(
+                                "#tab-product input[type='text']",
+                            ),
+                        ).find(function (el) {
+                            var label = el
+                                .closest(".info-card")
+                                ?.querySelector(".form-label");
+                            return (
+                                label && label.textContent.includes("产品名称")
+                            );
+                        });
+                        if (nameInput) nameInput.value = productName;
+                        // 也找到 SKU名称/Title 卡片中的第一个输入框
+                        var skuTitleCard = Array.from(
                             document.querySelectorAll(".info-card"),
-                        ).find(
-                            (c) =>
-                                c.textContent.includes("SKU名称") &&
-                                c.textContent.includes("Title"),
-                        );
-                        if (skuCard) {
-                            const firstInput =
-                                skuCard.querySelector("input[type='text']");
-                            if (firstInput && data.sku_name)
-                                firstInput.value = data.sku_name;
+                        ).find(function (c) {
+                            return (
+                                c.textContent.includes("产品名称") &&
+                                c.textContent.includes("Title")
+                            );
+                        });
+                        if (skuTitleCard) {
+                            var firstInput =
+                                skuTitleCard.querySelector(
+                                    "input[type='text']",
+                                );
+                            if (firstInput && !firstInput.value)
+                                firstInput.value = productName;
+                            // 字符计数器更新
+                            var counter = firstInput?.nextElementSibling;
+                            if (counter && counter.textContent.includes("/")) {
+                                counter.textContent =
+                                    productName.length + "/20";
+                            }
                         }
                     }
-                    // Title
-                    if (data.title) {
-                        const titleCard = Array.from(
+                    // 3. Title(销售标题) — 兼容新旧字段名
+                    var titleText =
+                        data.description?.seo_title ||
+                        data.title ||
+                        data.seo_title ||
+                        "";
+                    if (titleText) {
+                        var titleCard = Array.from(
                             document.querySelectorAll(".info-card"),
-                        ).find(
-                            (c) =>
-                                c.textContent.includes("SKU名称") &&
-                                c.textContent.includes("Title"),
-                        );
+                        ).find(function (c) {
+                            return (
+                                c.textContent.includes("产品名称") &&
+                                c.textContent.includes("Title")
+                            );
+                        });
                         if (titleCard) {
-                            const textareas =
+                            var textareas =
                                 titleCard.querySelectorAll("textarea");
-                            if (textareas.length > 0)
-                                textareas[0].value = data.title;
+                            if (textareas.length > 0) {
+                                textareas[0].value = titleText;
+                                // 如果还有 short_description，追加在 Title 下方
+                                if (data.description?.short_description) {
+                                    textareas[0].value =
+                                        titleText +
+                                        "\n" +
+                                        data.description.short_description;
+                                }
+                                // 字符计数器
+                                var counter2 = textareas[0].nextElementSibling;
+                                if (
+                                    counter2 &&
+                                    counter2.textContent.includes("/")
+                                ) {
+                                    counter2.textContent =
+                                        textareas[0].value.length + "/1000";
+                                }
+                            }
                         }
                     }
-                    // 品牌
+                    // 4. 品牌
                     if (data.brand) {
-                        const brandTrigger = document.querySelector(
+                        var brandTrigger = document.querySelector(
                             ".brand-trigger .brand-display",
                         );
                         if (brandTrigger) {
                             brandTrigger.textContent = data.brand;
                             brandTrigger.style.color = "#0f172a";
-                            const brandCard = Array.from(
+                        }
+                        var brandCard = Array.from(
+                            document.querySelectorAll(".info-card"),
+                        ).find(function (c) {
+                            return c.textContent.includes("品牌");
+                        });
+                        var hiddenSelect = brandCard?.querySelector("select");
+                        if (hiddenSelect) {
+                            var opts = hiddenSelect.options;
+                            for (var i = 0; i < opts.length; i++) {
+                                if (opts[i].text === data.brand) {
+                                    hiddenSelect.value = data.brand;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    // 5. 原产地 — 无标准字段，暂不处理
+
+                    // 6. 售价（由 SKU 表自动计算价格区间）
+                    updatePriceRange();
+
+                    // 7. 销售单位（无标准字段）— 跳过
+                    // 8. 保质期（无标准字段）— 跳过
+
+                    // 9. 库存（由 SKU 表自动计算库存总量）
+                    updateStockTotal();
+
+                    // 10. TSIN 编码(唯一) — 从 data.sku 或 data.parent_sku 填充
+                    var skuCode = data.sku || data.parent_sku || "";
+                    if (skuCode) {
+                        var tsinInputs = document.querySelectorAll(
+                            "#tab-product input[type='text'].bg-gray-50, #tab-product input[readonly]",
+                        );
+                        var tsinInput = Array.from(tsinInputs).find(
+                            function (el) {
+                                var label = el
+                                    .closest(".info-card")
+                                    ?.querySelector(".form-label");
+                                return (
+                                    label && label.textContent.includes("TSIN")
+                                );
+                            },
+                        );
+                        if (!tsinInput) {
+                            // 备选：找包含 "TSIN" 文本的卡片里的 readonly input
+                            var tsinCard = Array.from(
                                 document.querySelectorAll(".info-card"),
                             ).find(function (c) {
-                                return c.textContent.includes("品牌");
+                                return c.textContent.includes("TSIN");
                             });
-                            const hiddenSelect =
-                                brandCard?.querySelector("select");
-                            if (hiddenSelect) {
-                                const opts = hiddenSelect.options;
-                                for (let i = 0; i < opts.length; i++) {
-                                    if (opts[i].text === data.brand) {
-                                        hiddenSelect.value = data.brand;
-                                        break;
-                                    }
-                                }
-                            }
+                            tsinInput = tsinCard?.querySelector(
+                                "input[readonly], input.bg-gray-50",
+                            );
                         }
+                        if (tsinInput) tsinInput.value = skuCode;
                     }
-                    // 原产地
-                    if (data.origin) {
-                        const originCard = Array.from(
-                            document.querySelectorAll(".info-card"),
-                        ).find(function (c) {
-                            return c.textContent.includes("原产地");
-                        });
-                        const originSelect =
-                            originCard?.querySelector("select");
-                        if (originSelect) {
-                            const opts = originSelect.options;
-                            for (let i = 0; i < opts.length; i++) {
-                                if (opts[i].text.includes(data.origin)) {
-                                    originSelect.value = opts[i].value;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    // 售价（由 SKU 表自动计算价格区间）
-                    updatePriceRange();
-                    // 销售单位
-                    if (data.sales_unit) {
-                        const unitCard = Array.from(
-                            document.querySelectorAll(".info-card"),
-                        ).find(function (c) {
-                            return c.textContent.includes("销售单位");
-                        });
-                        const unitSelect = unitCard?.querySelector("select");
-                        if (unitSelect) {
-                            const opts = unitSelect.options;
-                            for (let i = 0; i < opts.length; i++) {
-                                if (opts[i].text.includes(data.sales_unit)) {
-                                    unitSelect.value = opts[i].value;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    // 保质期
-                    if (data.shelf_life !== undefined) {
-                        const shelfGrid = Array.from(
-                            document.querySelectorAll(".grid"),
-                        ).find(function (g) {
-                            return g.textContent.includes("保质期");
-                        });
-                        const shelfInput = shelfGrid?.querySelector(
-                            "input[type='number'], input[type='text']",
+
+                    // 11. FNSKU 编码 — 自动生成（如未填）
+                    var fnskuCard = Array.from(
+                        document.querySelectorAll(".info-card"),
+                    ).find(function (c) {
+                        return c.textContent.includes("FNSKU");
+                    });
+                    if (fnskuCard) {
+                        var fnskuInput = fnskuCard.querySelector(
+                            "input[type='text']:not([readonly])",
                         );
-                        if (shelfInput) {
-                            shelfInput.value = String(data.shelf_life);
+                        if (fnskuInput && !fnskuInput.value) {
+                            var now = new Date();
+                            fnskuInput.value =
+                                "FN" +
+                                now.getFullYear() +
+                                String(now.getMonth() + 1).padStart(2, "0") +
+                                String(now.getDate()).padStart(2, "0") +
+                                "001";
                         }
                     }
-                    // 库存
-                    if (data.stock !== undefined) {
-                        const stockGrid = Array.from(
-                            document.querySelectorAll(".grid"),
-                        ).find(function (g) {
-                            return g.textContent.includes("库存数量");
-                        });
-                        const stockInput = stockGrid?.querySelector(
-                            "input[type='number'], input[type='text']",
-                        );
-                        if (stockInput) stockInput.value = String(data.stock);
+
+                    // 12. 条码 — 从变体或 meta_info 获取
+                    var barcodeVal = "";
+                    if (
+                        data.variants &&
+                        Array.isArray(data.variants) &&
+                        data.variants[0]?.upc
+                    ) {
+                        barcodeVal = data.variants[0].upc;
                     }
-                    // 条码
-                    if (data.barcode) {
-                        const barcodeCard = Array.from(
+                    if (!barcodeVal && data.meta_info?.barcode)
+                        barcodeVal = data.meta_info.barcode;
+                    if (barcodeVal) {
+                        var barcodeCard = Array.from(
                             document.querySelectorAll(".info-card"),
                         ).find(function (c) {
                             return c.textContent.includes("条码");
                         });
-                        const barcodeInput = barcodeCard?.querySelector(
+                        var barcodeInput = barcodeCard?.querySelector(
                             "input[type='text'], input[type='number']",
                         );
-                        if (barcodeInput) barcodeInput.value = data.barcode;
+                        if (barcodeInput) barcodeInput.value = barcodeVal;
                     }
-                    // 搜索关键字
-                    if (data.keywords) {
-                        const kwTextarea = document.querySelector(
+
+                    // 13. 搜索关键字 — data.meta_info.tags 或 data.keywords
+                    var keywordsVal = "";
+                    if (
+                        data.meta_info?.tags &&
+                        Array.isArray(data.meta_info.tags)
+                    ) {
+                        keywordsVal = data.meta_info.tags.join("，");
+                    } else if (data.keywords) {
+                        keywordsVal = data.keywords;
+                    }
+                    if (keywordsVal) {
+                        var kwTextarea = document.querySelector(
                             "textarea[placeholder*='多个关键字']",
                         );
-                        if (kwTextarea) kwTextarea.value = data.keywords;
+                        if (kwTextarea) kwTextarea.value = keywordsVal;
                     }
-                    // 五点描述
-                    if (data.bullet_points) {
-                        const bpTextarea = document.querySelector(
+
+                    // 14. 五点描述 — data.description.key_features 或 data.bullet_points
+                    var bpVal = "";
+                    if (
+                        data.description?.key_features &&
+                        Array.isArray(data.description.key_features)
+                    ) {
+                        bpVal = data.description.key_features.join("\n");
+                    } else if (data.bullet_points) {
+                        bpVal = data.bullet_points;
+                    }
+                    if (bpVal) {
+                        var bpTextarea = document.querySelector(
                             "textarea[placeholder*='第一点描述']",
                         );
-                        if (bpTextarea) bpTextarea.value = data.bullet_points;
+                        if (bpTextarea) bpTextarea.value = bpVal;
                     }
-                    // 其他属性
-                    if (data.attributes && Array.isArray(data.attributes)) {
+
+                    // 15. 完整描述 — data.description.full_description（如果有单独区域则填充）
+                    if (data.description?.full_description) {
+                        // 尝试填充到五点描述下方或单独区域
+                        var allTextareas = document.querySelectorAll(
+                            "#tab-product textarea",
+                        );
+                        // 如果还没有填充五点描述，且有两个 textarea，第二个可能是描述
+                        if (!bpVal && allTextareas.length >= 2) {
+                            allTextareas[1].value =
+                                data.description.full_description;
+                        }
+                    }
+
+                    // 16. 其他属性 — 从 specifications + attributes 合并
+                    function addAttrRowToForm(name, value) {
                         var attrCard = Array.from(
                             document.querySelectorAll(
                                 "#tab-product .info-card",
@@ -3471,44 +3996,188 @@
                         ).find(function (c) {
                             return c.textContent.includes("其他属性");
                         });
-                        if (attrCard) {
-                            var attrContainer =
-                                attrCard.querySelector(".space-y-2");
-                            if (attrContainer) {
-                                attrContainer
-                                    .querySelectorAll(".attr-row")
-                                    .forEach(function (r) {
-                                        r.remove();
-                                    });
-                                var addBtnWrapper =
-                                    attrContainer.querySelector(
-                                        ".pt-2.border-t",
-                                    );
-                                data.attributes.forEach(function (attr) {
-                                    var row = document.createElement("div");
-                                    row.className = "attr-row";
-                                    row.innerHTML =
-                                        '<div class="attr-name"><label class="form-label text-xs">属性名称</label><input type="text" class="form-input" value="' +
-                                        escapeHtml(attr.name || "") +
-                                        '" placeholder="属性名称"></div><div class="attr-value"><label class="form-label text-xs">属性值</label><input type="text" class="form-input" value="' +
-                                        escapeHtml(attr.value || "") +
-                                        '" placeholder="属性值"></div><div class="attr-del"><label class="form-label text-xs">&nbsp;</label><button class="w-full px-2 py-1.5 border border-gray-200 rounded text-xs text-gray-500 hover:bg-gray-50" onclick="this.closest(\'.attr-row\').remove()">删除</button></div>';
-                                    if (addBtnWrapper) {
-                                        attrContainer.insertBefore(
-                                            row,
-                                            addBtnWrapper,
-                                        );
-                                    } else {
-                                        attrContainer.appendChild(row);
-                                    }
-                                });
-                            }
+                        if (!attrCard) return;
+                        var attrContainer =
+                            attrCard.querySelector(".space-y-2");
+                        if (!attrContainer) return;
+                        var addBtnWrapper =
+                            attrContainer.querySelector(".pt-2.border-t");
+                        if (!addBtnWrapper) return;
+                        var row = document.createElement("div");
+                        row.className = "attr-row";
+                        row.innerHTML =
+                            '<div class="attr-name"><label class="form-label text-xs">属性名称</label><input type="text" class="form-input" value="' +
+                            escapeHtml(name || "") +
+                            '" placeholder="属性名称"></div><div class="attr-value"><label class="form-label text-xs">属性值</label><input type="text" class="form-input" value="' +
+                            escapeHtml(String(value || "")) +
+                            '" placeholder="属性值"></div><div class="attr-del"><label class="form-label text-xs">&nbsp;</label><button class="w-full px-2 py-1.5 border border-gray-200 rounded text-xs text-gray-500 hover:bg-gray-50" onclick="this.closest(\'.attr-row\').remove()">删除</button></div>';
+                        addBtnWrapper.parentNode.insertBefore(
+                            row,
+                            addBtnWrapper,
+                        );
+                    }
+                    // 从 specifications 添加属性
+                    if (data.specifications) {
+                        if (data.specifications.material)
+                            addAttrRowToForm(
+                                "材质",
+                                data.specifications.material,
+                            );
+                        if (data.specifications.color)
+                            addAttrRowToForm("颜色", data.specifications.color);
+                        if (data.specifications.weight_kg)
+                            addAttrRowToForm(
+                                "重量(kg)",
+                                data.specifications.weight_kg,
+                            );
+                        if (data.specifications.dimension) {
+                            var dim = data.specifications.dimension;
+                            var dimStr =
+                                (dim.length_cm || 0) +
+                                "x" +
+                                (dim.width_cm || 0) +
+                                "x" +
+                                (dim.height_cm || 0) +
+                                " cm";
+                            addAttrRowToForm("尺寸", dimStr);
+                        }
+                        if (
+                            data.specifications.scenes &&
+                            Array.isArray(data.specifications.scenes)
+                        ) {
+                            addAttrRowToForm(
+                                "适用场景",
+                                data.specifications.scenes.join("、"),
+                            );
                         }
                     }
-                    // 规格设置 (多SKU) — 填充规格输入框 + 动态生成SKU表格
-                    if (data.specs && Array.isArray(data.specs)) {
-                        // 根据规格数量自动切换单/双规格模式
-                        if (data.specs.length >= 2) {
+                    // 从 base_specifications 添加属性（多SKU场景）
+                    if (data.base_specifications) {
+                        if (
+                            data.base_specifications.material &&
+                            !data.specifications?.material
+                        )
+                            addAttrRowToForm(
+                                "材质",
+                                data.base_specifications.material,
+                            );
+                        if (
+                            data.base_specifications.scenes &&
+                            Array.isArray(data.base_specifications.scenes)
+                        )
+                            addAttrRowToForm(
+                                "适用场景",
+                                data.base_specifications.scenes.join("、"),
+                            );
+                    }
+                    // 从 attributes 添加属性
+                    if (
+                        data.attributes &&
+                        typeof data.attributes === "object"
+                    ) {
+                        var attrMap = {
+                            target_audience: "目标人群",
+                            style: "风格",
+                            usage_method: "使用方式",
+                            power_type: "供电方式",
+                            compatibility: "兼容性",
+                        };
+                        Object.keys(attrMap).forEach(function (key) {
+                            if (data.attributes[key]) {
+                                addAttrRowToForm(
+                                    attrMap[key],
+                                    data.attributes[key],
+                                );
+                            }
+                        });
+                        // 还有自定义 attributes 键值对
+                        if (Array.isArray(data.attributes)) {
+                            data.attributes.forEach(function (attr) {
+                                addAttrRowToForm(
+                                    attr.name || attr.key,
+                                    attr.value || attr.val,
+                                );
+                            });
+                        }
+                    }
+
+                    // 17. 规格设置 (多SKU) — 从 variant_dimensions + variants 填充
+                    var hasVariants =
+                        data.variants &&
+                        Array.isArray(data.variants) &&
+                        data.variants.length > 0;
+                    var hasVariantDims =
+                        data.variant_dimensions &&
+                        ((data.variant_dimensions.colors &&
+                            data.variant_dimensions.colors.length > 0) ||
+                            (data.variant_dimensions.sizes &&
+                                data.variant_dimensions.sizes.length > 0));
+
+                    if (hasVariants || hasVariantDims) {
+                        // 判断规格数量，切换单/双规格模式
+                        var dimCount = 0;
+                        var colorVals = [];
+                        var sizeVals = [];
+                        if (data.variant_dimensions) {
+                            if (
+                                data.variant_dimensions.colors &&
+                                data.variant_dimensions.colors.length > 0
+                            ) {
+                                dimCount++;
+                                colorVals = data.variant_dimensions.colors.map(
+                                    function (c) {
+                                        return c.name;
+                                    },
+                                );
+                            }
+                            if (
+                                data.variant_dimensions.sizes &&
+                                data.variant_dimensions.sizes.length > 0
+                            ) {
+                                dimCount++;
+                                sizeVals = data.variant_dimensions.sizes.map(
+                                    function (s) {
+                                        return s.label;
+                                    },
+                                );
+                            }
+                        }
+                        // 如果 variant_dimensions 为空但 variants 有数据，从 variants 推断
+                        if (dimCount === 0 && hasVariants) {
+                            var hasColor = data.variants.some(function (v) {
+                                return (
+                                    v.color &&
+                                    v.color !== "" &&
+                                    v.color !== "default"
+                                );
+                            });
+                            var hasSize = data.variants.some(function (v) {
+                                return (
+                                    v.size &&
+                                    v.size !== "" &&
+                                    v.size !== "default"
+                                );
+                            });
+                            if (hasColor && hasSize) dimCount = 2;
+                            else if (hasColor || hasSize) dimCount = 1;
+                            // 从 variants 提取唯一值
+                            if (hasColor) {
+                                var uniqueColors = {};
+                                data.variants.forEach(function (v) {
+                                    if (v.color) uniqueColors[v.color] = true;
+                                });
+                                colorVals = Object.keys(uniqueColors);
+                            }
+                            if (hasSize) {
+                                var uniqueSizes = {};
+                                data.variants.forEach(function (v) {
+                                    if (v.size) uniqueSizes[v.size] = true;
+                                });
+                                sizeVals = Object.keys(uniqueSizes);
+                            }
+                        }
+                        // 设置规格模式
+                        if (dimCount >= 2) {
                             window.setSpecMode(2);
                         } else {
                             window.setSpecMode(1);
@@ -3518,9 +4187,82 @@
                             ".info-card:has(.fa-layer-group) .flex.gap-2 > input[type='text']",
                         );
                         if (specInputs.length > 0) {
+                            if (colorVals.length > 0 && specInputs[0]) {
+                                specInputs[0].value = colorVals.join(",");
+                            }
+                            if (
+                                sizeVals.length > 0 &&
+                                specInputs.length > 1 &&
+                                specInputs[1]
+                            ) {
+                                specInputs[1].value = sizeVals.join(",");
+                            }
+                        }
+                        // 填充 SKU 表格
+                        var tbody = document.querySelector(".sku-table tbody");
+                        if (tbody && hasVariants) {
+                            tbody.innerHTML = "";
+                            data.variants.forEach(function (v, idx) {
+                                var tr = document.createElement("tr");
+                                var specHtml = "";
+                                if (dimCount >= 2) {
+                                    specHtml =
+                                        '<div style="display:flex;gap:4px"><input type="text" class="sku-input" style="flex:1" value="' +
+                                        escapeHtml(v.color || "") +
+                                        '" /><input type="text" class="sku-input" style="flex:1" value="' +
+                                        escapeHtml(v.size || "") +
+                                        '" /></div>';
+                                } else if (v.color) {
+                                    specHtml =
+                                        '<input type="text" class="sku-input" value="' +
+                                        escapeHtml(v.color) +
+                                        '" />';
+                                } else if (v.size) {
+                                    specHtml =
+                                        '<input type="text" class="sku-input" value="' +
+                                        escapeHtml(v.size) +
+                                        '" />';
+                                } else {
+                                    specHtml =
+                                        '<input type="text" class="sku-input" value="规格 ' +
+                                        (idx + 1) +
+                                        '" />';
+                                }
+                                tr.innerHTML =
+                                    "<td>" +
+                                    specHtml +
+                                    "</td>" +
+                                    '<td><input type="text" class="sku-input" value="' +
+                                    escapeHtml(
+                                        String(
+                                            v.sale_CNY || v.original_CNY || "",
+                                        ),
+                                    ) +
+                                    '" /></td>' +
+                                    '<td><input type="text" class="sku-input" value="999" /></td>' +
+                                    '<td><input type="text" class="sku-input" value="' +
+                                    escapeHtml(v.child_sku || "") +
+                                    '" /></td>' +
+                                    '<td><button class="text-gray-400 hover:text-red-500" onclick="this.closest(\'tr\').remove();updateSkuCount()"><i class="fas fa-trash"></i></button></td>';
+                                tbody.appendChild(tr);
+                            });
+                            var skuTotal = document.querySelector(".sku-total");
+                            if (skuTotal)
+                                skuTotal.textContent = data.variants.length;
+                        }
+                    } else if (data.specs && Array.isArray(data.specs)) {
+                        // 旧格式兼容
+                        if (data.specs.length >= 2) {
+                            window.setSpecMode(2);
+                        } else {
+                            window.setSpecMode(1);
+                        }
+                        var specInputs = document.querySelectorAll(
+                            ".info-card:has(.fa-layer-group) .flex.gap-2 > input[type='text']",
+                        );
+                        if (specInputs.length > 0) {
                             data.specs.forEach(function (s, i) {
                                 if (specInputs[i]) {
-                                    // 支持两种格式：对象 {name, values} 或纯字符串 "值1,值2"
                                     specInputs[i].value =
                                         typeof s === "object" && s.values
                                             ? s.values
@@ -3528,11 +4270,9 @@
                                 }
                             });
                         }
-                        // 动态生成SKU表格行
                         var tbody = document.querySelector(".sku-table tbody");
                         if (tbody) {
                             tbody.innerHTML = "";
-                            // 解析每个规格的值列表
                             var specValues = [];
                             data.specs.forEach(function (s) {
                                 var valuesStr =
@@ -3545,7 +4285,6 @@
                                     }),
                                 );
                             });
-                            // 生成笛卡尔积
                             function cartesianProduct(arrays) {
                                 if (arrays.length === 0) return [[]];
                                 var result = [];
@@ -3561,7 +4300,6 @@
                             var combinations = cartesianProduct(specValues);
                             combinations.forEach(function (combo, rowIdx) {
                                 var tr = document.createElement("tr");
-                                // 查找对应的 spec_combinations 数据
                                 var comboData = null;
                                 if (
                                     data.spec_combinations &&
@@ -3585,7 +4323,6 @@
                                         },
                                     );
                                 }
-                                // 有 AI 返回的数据则使用，否则自动生成默认值
                                 var priceVal = comboData
                                     ? comboData.price
                                     : data.price || "";
@@ -3611,33 +4348,54 @@
                                           '" />') +
                                     '</td><td><input type="text" class="sku-input" value="' +
                                     escapeHtml(String(priceVal)) +
-                                    '" /></td><td><input type="text" class="sku-input" value="' +
+                                    '" /></td>' +
+                                    '<td><input type="text" class="sku-input" value="' +
                                     escapeHtml(String(stockVal)) +
-                                    '" /></td><td><input type="text" class="sku-input" value="' +
+                                    '" /></td>' +
+                                    '<td><input type="text" class="sku-input" value="' +
                                     escapeHtml(String(skuVal)) +
-                                    '" /></td><td><button class="text-gray-400 hover:text-red-500" onclick="this.closest(\'tr\').remove();updateSkuCount()"><i class="fas fa-trash"></i></button></td>';
+                                    '" /></td>' +
+                                    '<td><button class="text-gray-400 hover:text-red-500" onclick="this.closest(\'tr\').remove();updateSkuCount()"><i class="fas fa-trash"></i></button></td>';
                                 tbody.appendChild(tr);
                             });
-                            // 更新SKU计数
                             var skuTotal = document.querySelector(".sku-total");
                             if (skuTotal)
                                 skuTotal.textContent = combinations.length;
                         }
                     }
-                    // 售后服务承诺
-                    if (data.after_sale_service) {
-                        const serviceTextarea = document.querySelector(
+
+                    // 18. 售后服务承诺
+                    var afterSaleVal =
+                        data.after_sale_service ||
+                        data.description?.after_sale ||
+                        "";
+                    if (!afterSaleVal && data.description?.full_description) {
+                        // 从完整描述提取简短售后服务信息
+                    }
+                    if (afterSaleVal) {
+                        var serviceTextarea = document.querySelector(
                             "#tab-other textarea[placeholder*='7天无理由']",
                         );
                         if (serviceTextarea)
-                            serviceTextarea.value = data.after_sale_service;
+                            serviceTextarea.value = afterSaleVal;
                     }
-                    // === 其它信息 Tab 字段填充 ===
+
+                    // ============================================================
+                    //  其它信息 Tab 字段填充
+                    // ============================================================
                     var otherTab = document.getElementById("tab-other");
                     if (!otherTab) return;
 
-                    // 1. 基准单位
-                    if (data.base_unit) {
+                    // 19. 基准单位
+                    var baseUnit = data.base_unit || "";
+                    if (
+                        !baseUnit &&
+                        data.product_type === "single" &&
+                        data.specifications?.weight_kg
+                    ) {
+                        baseUnit = "个";
+                    }
+                    if (baseUnit) {
                         var baseUnitSelect = otherTab.querySelector(
                             ".info-card-sm:has(.fa-weight-hanging) .form-select-sm",
                         );
@@ -3648,8 +4406,7 @@
                                 i++
                             ) {
                                 if (
-                                    baseUnitSelect.options[i].text ===
-                                    data.base_unit
+                                    baseUnitSelect.options[i].text === baseUnit
                                 ) {
                                     baseUnitSelect.value =
                                         baseUnitSelect.options[i].value;
@@ -3659,48 +4416,7 @@
                         }
                     }
 
-                    // 2. 上级单位
-                    if (
-                        data.upper_units &&
-                        Array.isArray(data.upper_units) &&
-                        data.upper_units.length > 0
-                    ) {
-                        var unitContainer =
-                            document.getElementById("unitRowsContainer");
-                        if (unitContainer) {
-                            unitContainer.innerHTML = "";
-                            data.upper_units.forEach(function (u) {
-                                var row = document.createElement("div");
-                                row.style.cssText =
-                                    "display:grid;grid-template-columns:1fr 1.2fr 1fr 36px;gap:8px;align-items:center;margin-bottom:8px;";
-                                row.innerHTML =
-                                    '<select class="form-select-sm"><option value="">单位名称</option><option value="箱">箱</option><option value="盒">盒</option><option value="套">套</option><option value="包">包</option><option value="桶">桶</option></select>' +
-                                    '<input type="text" class="form-input-sm" placeholder="条码" value="' +
-                                    escapeHtml(u.barcode || "") +
-                                    '">' +
-                                    '<input type="number" class="form-input-sm" placeholder="换算(1=?)" value="' +
-                                    (u.rate || "") +
-                                    '" min="0" step="0.01">' +
-                                    '<button class="text-gray-400 hover:text-red-500 text-xs" onclick="this.closest(\'div\').remove()"><i class="fas fa-times"></i></button>';
-                                unitContainer.appendChild(row);
-                                if (u.name) {
-                                    var sel = row.querySelector("select");
-                                    for (
-                                        var j = 0;
-                                        j < sel.options.length;
-                                        j++
-                                    ) {
-                                        if (sel.options[j].text === u.name) {
-                                            sel.value = sel.options[j].value;
-                                            break;
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    }
-
-                    // 3. 重量 & 尺寸
+                    // 20. 重量 & 尺寸 — 从 specifications.dimension + meta_info 填充
                     var weightSizeCard = otherTab.querySelector(
                         ".info-card-sm:has(.fa-ruler-combined)",
                     );
@@ -3711,315 +4427,147 @@
                         var inputs = weightSizeCard.querySelectorAll(
                             "input.form-input-sm",
                         );
-                        if (data.weight_unit && selects.length > 0) {
-                            for (
-                                var i = 0;
-                                i < selects[0].options.length;
-                                i++
-                            ) {
-                                if (
-                                    selects[0].options[i].text ===
-                                    data.weight_unit
-                                ) {
-                                    selects[0].value =
-                                        selects[0].options[i].value;
-                                    break;
-                                }
+
+                        // 重量：优先 specifications.weight_kg，其次 meta_info.estimated_weight_kg
+                        var weightVal =
+                            data.specifications?.weight_kg ||
+                            data.meta_info?.estimated_weight_kg ||
+                            "";
+                        if (weightVal && inputs.length > 0) {
+                            inputs[0].value = String(weightVal);
+                        }
+
+                        // 尺寸：优先 specifications.dimension
+                        var dim = data.specifications?.dimension;
+                        // 其次从 meta_info.package_dimensions_cm 解析
+                        if (!dim && data.meta_info?.package_dimensions_cm) {
+                            var parts =
+                                data.meta_info.package_dimensions_cm.split(
+                                    /[xX*×,，s]+/,
+                                );
+                            if (parts.length >= 3) {
+                                dim = {
+                                    length_cm: parseFloat(parts[0]) || 0,
+                                    width_cm: parseFloat(parts[1]) || 0,
+                                    height_cm: parseFloat(parts[2]) || 0,
+                                };
                             }
                         }
-                        if (data.weight && inputs.length > 0)
-                            inputs[0].value = String(data.weight);
-                        if (data.size_unit && selects.length > 1) {
-                            for (
-                                var i = 0;
-                                i < selects[1].options.length;
-                                i++
-                            ) {
-                                if (
-                                    selects[1].options[i].text ===
-                                    data.size_unit
-                                ) {
-                                    selects[1].value =
-                                        selects[1].options[i].value;
-                                    break;
-                                }
-                            }
+                        if (dim) {
+                            if (dim.length_cm && inputs.length > 1)
+                                inputs[1].value = String(dim.length_cm);
+                            if (dim.width_cm && inputs.length > 2)
+                                inputs[2].value = String(dim.width_cm);
+                            if (dim.height_cm && inputs.length > 3)
+                                inputs[3].value = String(dim.height_cm);
                         }
-                        if (data.length && inputs.length > 1)
-                            inputs[1].value = String(data.length);
-                        if (data.width && inputs.length > 2)
-                            inputs[2].value = String(data.width);
-                        if (data.height && inputs.length > 3)
-                            inputs[3].value = String(data.height);
                     }
 
-                    // 4. 服务与承诺
-                    var serviceCard = otherTab.querySelector(
-                        ".info-card-sm:has(.fa-handshake)",
-                    );
-                    if (serviceCard) {
-                        var svcSelects = serviceCard.querySelectorAll(
-                            "select.form-select-sm",
+                    // 21. 服务与承诺 — warranty_months
+                    if (data.meta_info?.warranty_months !== undefined) {
+                        var serviceCard = otherTab.querySelector(
+                            ".info-card-sm:has(.fa-handshake)",
                         );
-                        var svcInputs = serviceCard.querySelectorAll(
-                            "input.form-input-sm",
-                        );
-                        if (data.is_pre_sale && svcSelects.length > 0) {
-                            for (
-                                var i = 0;
-                                i < svcSelects[0].options.length;
-                                i++
-                            ) {
-                                if (
-                                    svcSelects[0].options[i].text ===
-                                    data.is_pre_sale
-                                ) {
-                                    svcSelects[0].value =
-                                        svcSelects[0].options[i].value;
-                                    break;
-                                }
-                            }
-                        }
-                        if (data.delivery_time && svcSelects.length > 1) {
-                            for (
-                                var i = 0;
-                                i < svcSelects[1].options.length;
-                                i++
-                            ) {
-                                if (
-                                    svcSelects[1].options[i].text ===
-                                    data.delivery_time
-                                ) {
-                                    svcSelects[1].value =
-                                        svcSelects[1].options[i].value;
-                                    break;
-                                }
-                            }
-                        }
-                        if (data.stock_count_mode && svcSelects.length > 2) {
-                            for (
-                                var i = 0;
-                                i < svcSelects[2].options.length;
-                                i++
-                            ) {
-                                if (
-                                    svcSelects[2].options[i].text ===
-                                    data.stock_count_mode
-                                ) {
-                                    svcSelects[2].value =
-                                        svcSelects[2].options[i].value;
-                                    break;
-                                }
-                            }
-                        }
-                        if (
-                            data.max_order_qty !== undefined &&
-                            svcInputs.length > 0
-                        )
-                            svcInputs[0].value = String(data.max_order_qty);
-                        if (
-                            data.member_limit_qty !== undefined &&
-                            svcInputs.length > 1
-                        )
-                            svcInputs[1].value = String(data.member_limit_qty);
-
-                        // 运输类型 radio
-                        if (data.transport_type) {
-                            var radios = serviceCard.querySelectorAll(
-                                "input[name='transport']",
-                            );
-                            var isDomestic =
-                                data.transport_type === "国内" ||
-                                data.transport_type === "domestic";
-                            radios.forEach(function (r) {
-                                var label = r.closest("label");
-                                if (
-                                    label &&
-                                    ((isDomestic &&
-                                        label.textContent.includes("国内")) ||
-                                        (!isDomestic &&
-                                            label.textContent.includes("跨境")))
-                                ) {
-                                    r.checked = true;
-                                    r.dispatchEvent(new Event("change"));
-                                }
+                        if (serviceCard) {
+                            // 保质期字段也在产品信息中
+                            var shelfGrid = Array.from(
+                                document.querySelectorAll(".grid"),
+                            ).find(function (g) {
+                                return g.textContent.includes("保质期");
                             });
-                        }
-
-                        // 付款方式 checkboxes
-                        if (data.payment_online !== undefined) {
-                            var paymentChecks = serviceCard.querySelectorAll(
-                                "input[type='checkbox']",
-                            );
-                            if (paymentChecks.length > 0)
-                                paymentChecks[0].checked =
-                                    !!data.payment_online;
-                            if (paymentChecks.length > 1)
-                                paymentChecks[1].checked = !!data.payment_cod;
-                        }
-                    }
-
-                    // 5. 国内运输
-                    var transportCards =
-                        otherTab.querySelectorAll(".transport-card");
-                    if (transportCards.length >= 2) {
-                        var domesticCard = transportCards[0];
-                        var crossCard = transportCards[1];
-                        // 国内运输
-                        var domSelects = domesticCard.querySelectorAll(
-                            "select.form-select-sm",
-                        );
-                        if (
-                            data.domestic_transport_mode &&
-                            domSelects.length > 0
-                        ) {
-                            for (
-                                var i = 0;
-                                i < domSelects[0].options.length;
-                                i++
-                            ) {
-                                if (
-                                    domSelects[0].options[i].text ===
-                                    data.domestic_transport_mode
-                                ) {
-                                    domSelects[0].value =
-                                        domSelects[0].options[i].value;
-                                    domSelects[0].dispatchEvent(
-                                        new Event("change"),
+                            if (shelfGrid) {
+                                var shelfInput = shelfGrid.querySelector(
+                                    "input[type='number'], input[type='text']",
+                                );
+                                if (shelfInput && !shelfInput.value) {
+                                    shelfInput.value = String(
+                                        data.meta_info.warranty_months,
                                     );
-                                    break;
-                                }
-                            }
-                        }
-                        if (
-                            data.domestic_freight_template &&
-                            domSelects.length > 1
-                        ) {
-                            for (
-                                var i = 0;
-                                i < domSelects[1].options.length;
-                                i++
-                            ) {
-                                if (
-                                    domSelects[1].options[i].text ===
-                                    data.domestic_freight_template
-                                ) {
-                                    domSelects[1].value =
-                                        domSelects[1].options[i].value;
-                                    domSelects[1].dispatchEvent(
-                                        new Event("change"),
-                                    );
-                                    break;
-                                }
-                            }
-                        }
-                        // 跨境运输
-                        var crossSections =
-                            crossCard.querySelectorAll("div > div > p");
-                        var crossSelects = crossCard.querySelectorAll(
-                            "select.form-select-sm",
-                        );
-                        if (crossSelects.length >= 6) {
-                            if (data.cross_first_leg_mode) {
-                                for (
-                                    var i = 0;
-                                    i < crossSelects[0].options.length;
-                                    i++
-                                ) {
-                                    if (
-                                        crossSelects[0].options[i].text ===
-                                        data.cross_first_leg_mode
-                                    ) {
-                                        crossSelects[0].value =
-                                            crossSelects[0].options[i].value;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (data.cross_first_leg_template) {
-                                for (
-                                    var i = 0;
-                                    i < crossSelects[1].options.length;
-                                    i++
-                                ) {
-                                    if (
-                                        crossSelects[1].options[i].text ===
-                                        data.cross_first_leg_template
-                                    ) {
-                                        crossSelects[1].value =
-                                            crossSelects[1].options[i].value;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (data.cross_mid_leg_mode) {
-                                for (
-                                    var i = 0;
-                                    i < crossSelects[2].options.length;
-                                    i++
-                                ) {
-                                    if (
-                                        crossSelects[2].options[i].text ===
-                                        data.cross_mid_leg_mode
-                                    ) {
-                                        crossSelects[2].value =
-                                            crossSelects[2].options[i].value;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (data.cross_mid_leg_template) {
-                                for (
-                                    var i = 0;
-                                    i < crossSelects[3].options.length;
-                                    i++
-                                ) {
-                                    if (
-                                        crossSelects[3].options[i].text ===
-                                        data.cross_mid_leg_template
-                                    ) {
-                                        crossSelects[3].value =
-                                            crossSelects[3].options[i].value;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (data.cross_last_leg_mode) {
-                                for (
-                                    var i = 0;
-                                    i < crossSelects[4].options.length;
-                                    i++
-                                ) {
-                                    if (
-                                        crossSelects[4].options[i].text ===
-                                        data.cross_last_leg_mode
-                                    ) {
-                                        crossSelects[4].value =
-                                            crossSelects[4].options[i].value;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (data.cross_last_leg_template) {
-                                for (
-                                    var i = 0;
-                                    i < crossSelects[5].options.length;
-                                    i++
-                                ) {
-                                    if (
-                                        crossSelects[5].options[i].text ===
-                                        data.cross_last_leg_template
-                                    ) {
-                                        crossSelects[5].value =
-                                            crossSelects[5].options[i].value;
-                                        break;
-                                    }
                                 }
                             }
                         }
                     }
 
-                    // 6. 关联编码
+                    // 22. meta_info.tags → 搜索关键字（已在上方处理）
+
+                    // 23. 轮播图和详情图 — 从 carousel_images / detail_images 填充
+                    function loadImagesToContainer(
+                        urls,
+                        containerId,
+                        uploadBtnId,
+                        tagClass,
+                        tagText,
+                    ) {
+                        if (!urls || !Array.isArray(urls) || urls.length === 0)
+                            return;
+                        var grid = document.getElementById(containerId);
+                        var uploadBtn = document.getElementById(uploadBtnId);
+                        if (!grid || !uploadBtn) return;
+                        // 移除旧的图片项（保留上传按钮）
+                        grid.querySelectorAll(
+                            ".media-img-item, .thumb-item",
+                        ).forEach(function (el) {
+                            el.remove();
+                        });
+                        urls.forEach(function (img) {
+                            var url =
+                                typeof img === "object" ? img.url || "" : img;
+                            if (!url) return;
+                            var div = document.createElement("div");
+                            if (containerId === "mediaImageGrid") {
+                                div.className =
+                                    "w-24 h-24 bg-gray-100 rounded-lg border border-gray-200 relative media-img-item";
+                                div.draggable = true;
+                                div.innerHTML =
+                                    '<img src="' +
+                                    url.replace(/"/g, "&quot;") +
+                                    '" class="w-full h-full object-cover rounded-lg" onerror="this.parentElement.remove()" />' +
+                                    '<div class="absolute top-1 right-1 bg-white rounded-full p-0.5 shadow cursor-pointer hover:text-red-500 del-media-img"><i class="fas fa-times text-xs"></i></div>';
+                            } else {
+                                var count =
+                                    grid.querySelectorAll(".thumb-item")
+                                        .length + 1;
+                                div.className = "thumb-item";
+                                div.draggable = true;
+                                div.innerHTML =
+                                    '<img src="' +
+                                    url.replace(/"/g, "&quot;") +
+                                    '" onerror="this.parentElement.remove()" />' +
+                                    '<div class="sort-handle"><i class="fas fa-grip-vertical"></i></div>' +
+                                    '<div class="del-btn" onclick="this.closest(\'.thumb-item\').remove();updateDetailBadges()"><i class="fas fa-times"></i></div>' +
+                                    '<div class="badge">第' +
+                                    count +
+                                    "张</div>";
+                            }
+                            grid.insertBefore(div, uploadBtn);
+                        });
+                        if (containerId === "detailImageGrid") {
+                            syncDetailPreviews();
+                        }
+                    }
+                    // 轮播图
+                    if (
+                        data.carousel_images &&
+                        data.carousel_images.length > 0
+                    ) {
+                        loadImagesToContainer(
+                            data.carousel_images,
+                            "mediaImageGrid",
+                            "mediaImageUploadBtn",
+                        );
+                    }
+                    // 详情图
+                    if (data.detail_images && data.detail_images.length > 0) {
+                        loadImagesToContainer(
+                            data.detail_images,
+                            "detailImageGrid",
+                            "detailImageUploadBtn",
+                        );
+                    }
+
+                    // 24. 视频 — 无标准字段，跳过
+
+                    // 25. 关联编码 — 从 AI 数据填充
                     var codeCard = otherTab.querySelector(
                         ".info-card-sm:has(.fa-link)",
                     );
@@ -4027,195 +4575,15 @@
                         var codeInputs = codeCard.querySelectorAll(
                             "input.form-input-sm",
                         );
-                        if (data.erp_code && codeInputs.length > 0)
-                            codeInputs[0].value = data.erp_code;
-                        if (data.supplier_code && codeInputs.length > 1)
-                            codeInputs[1].value = data.supplier_code;
-                        if (data.hs_code && codeInputs.length > 2)
-                            codeInputs[2].value = data.hs_code;
-                        if (data.platform_code && codeInputs.length > 3)
-                            codeInputs[3].value = data.platform_code;
-                    }
-                    // 7. 图片素材 — 填充图片链接、轮播图、详情图、视频链接
-                    // 收集图片URL：优先使用 AI 返回的数据，否则从页面输入中提取
-                    var allImageText = "";
-                    var carouselUrls = data.carousel_image_urls;
-                    var detailUrls = data.detail_image_urls;
-                    // 兼容旧格式 image_urls
-                    if (
-                        !carouselUrls &&
-                        !detailUrls &&
-                        data.image_urls &&
-                        Array.isArray(data.image_urls)
-                    ) {
-                        carouselUrls = data.image_urls;
-                    }
-                    // 如果 AI 没有返回图片数据，从页面图片链接输入框中提取
-                    if (!carouselUrls && !detailUrls) {
-                        var urlTa = document.querySelector(
-                            ".input-section:has(.fa-link) textarea",
-                        );
-                        if (urlTa && urlTa.value.trim()) {
-                            carouselUrls = urlTa.value
-                                .trim()
-                                .split("\n")
-                                .map(function (l) {
-                                    return l.trim();
-                                })
-                                .filter(function (l) {
-                                    return l.length > 0;
-                                });
-                        }
-                    }
-                    // 加载图片到素材库
-                    var libContainer = document.getElementById(
-                        "imageLibraryPreviews",
-                    );
-                    if (libContainer) {
-                        // 清空旧占位图（保留末尾"+"按钮）
-                        libContainer
-                            .querySelectorAll("div.bg-gray-100")
-                            .forEach(function (el) {
-                                el.remove();
-                            });
-                        // 加载轮播图
-                        if (carouselUrls && Array.isArray(carouselUrls)) {
-                            carouselUrls.forEach(function (url) {
-                                if (
-                                    !url ||
-                                    url.indexOf("轮播图链接") !== -1 ||
-                                    url.indexOf("图片链接") !== -1
-                                )
-                                    return;
-                                var div = document.createElement("div");
-                                div.className =
-                                    "w-12 h-12 bg-gray-100 rounded border border-gray-200 bg-cover bg-center relative";
-                                div.style.backgroundImage =
-                                    "url(" + url.replace(/'/g, "\\'") + ")";
-                                div.draggable = true;
-                                div.innerHTML =
-                                    '<span class="absolute -top-1 -right-1 tag-badge tag-carousel">轮播</span><span class="absolute top-0 left-0 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px] cursor-pointer opacity-0 hover:opacity-100 transition-opacity" onclick="this.parentElement.remove();updateImageCount()">×</span>';
-                                libContainer.appendChild(div);
-                                // 同时填充到图片链接textarea
-                                if (allImageText) allImageText += "\n";
-                                allImageText += url;
-                            });
-                        }
-                        // 加载详情图
-                        if (detailUrls && Array.isArray(detailUrls)) {
-                            detailUrls.forEach(function (url) {
-                                if (!url || url.indexOf("详情图链接") !== -1)
-                                    return;
-                                var div = document.createElement("div");
-                                div.className =
-                                    "w-12 h-12 bg-gray-100 rounded border border-gray-200 bg-cover bg-center relative";
-                                div.style.backgroundImage =
-                                    "url(" + url.replace(/'/g, "\\'") + ")";
-                                div.draggable = true;
-                                div.innerHTML =
-                                    '<span class="absolute -top-1 -right-1 tag-badge tag-detail">详情</span><span class="absolute top-0 left-0 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px] cursor-pointer opacity-0 hover:opacity-100 transition-opacity" onclick="this.parentElement.remove();updateImageCount()">×</span>';
-                                libContainer.appendChild(div);
-                                if (allImageText) allImageText += "\n";
-                                allImageText += url;
-                            });
-                        }
-                        updateImageCount();
-                    }
-                    // 填充图片链接textarea
-                    if (allImageText) {
-                        var urlTextarea = document.querySelector(
-                            ".input-section:has(.fa-link) textarea",
-                        );
-                        if (urlTextarea) urlTextarea.value = allImageText;
-                    }
-                    // 视频链接
-                    if (data.video_url) {
-                        var videoSpan = Array.from(
-                            document.querySelectorAll("span"),
-                        ).find(function (s) {
-                            return (
-                                s.textContent.includes("或输入视频链接") &&
-                                s.nextElementSibling &&
-                                s.nextElementSibling.tagName === "INPUT"
-                            );
-                        });
-                        var videoInput = videoSpan
-                            ? videoSpan.nextElementSibling
-                            : null;
-                        if (videoInput) videoInput.value = data.video_url;
-                    }
-                    // 填充到右侧面板的图片/详情图区
-                    if (carouselUrls && Array.isArray(carouselUrls)) {
-                        var mediaGrid =
-                            document.getElementById("mediaImageGrid");
-                        var mediaUploadBtn = document.getElementById(
-                            "mediaImageUploadBtn",
-                        );
-                        if (mediaGrid && mediaUploadBtn) {
-                            mediaGrid
-                                .querySelectorAll(".media-img-item")
-                                .forEach(function (el) {
-                                    el.remove();
-                                });
-                            carouselUrls.forEach(function (url) {
-                                if (
-                                    !url ||
-                                    url.indexOf("轮播图链接") !== -1 ||
-                                    url.indexOf("图片链接") !== -1
-                                )
-                                    return;
-                                var div = document.createElement("div");
-                                div.className =
-                                    "w-24 h-24 bg-gray-100 rounded-lg border border-gray-200 relative media-img-item";
-                                div.draggable = true;
-                                div.innerHTML =
-                                    '<img src="' +
-                                    url.replace(/"/g, "&quot;") +
-                                    '" class="w-full h-full object-cover rounded-lg" />' +
-                                    '<div class="absolute top-1 right-1 bg-white rounded-full p-0.5 shadow cursor-pointer hover:text-red-500 del-media-img">' +
-                                    '<i class="fas fa-times text-xs"></i></div>';
-                                mediaGrid.insertBefore(div, mediaUploadBtn);
-                            });
-                        }
-                    }
-                    if (detailUrls && Array.isArray(detailUrls)) {
-                        var detailGrid =
-                            document.getElementById("detailImageGrid");
-                        var detailUploadBtn = document.getElementById(
-                            "detailImageUploadBtn",
-                        );
-                        if (detailGrid && detailUploadBtn) {
-                            detailGrid
-                                .querySelectorAll(".thumb-item")
-                                .forEach(function (el) {
-                                    el.remove();
-                                });
-                            detailUrls.forEach(function (url) {
-                                if (!url || url.indexOf("详情图链接") !== -1)
-                                    return;
-                                var count =
-                                    detailGrid.querySelectorAll(".thumb-item")
-                                        .length + 1;
-                                var div = document.createElement("div");
-                                div.className = "thumb-item";
-                                div.draggable = true;
-                                div.innerHTML =
-                                    '<img src="' +
-                                    url.replace(/"/g, "&quot;") +
-                                    '" />' +
-                                    '<div class="sort-handle"><i class="fas fa-grip-vertical"></i></div>' +
-                                    '<div class="del-btn" onclick="this.closest(\'.thumb-item\').remove();updateDetailBadges()"><i class="fas fa-times"></i></div>' +
-                                    '<div class="badge">第' +
-                                    count +
-                                    "张</div>";
-                                detailGrid.insertBefore(div, detailUploadBtn);
-                            });
-                            syncDetailPreviews();
+                        if (
+                            data.meta_info?.tags &&
+                            Array.isArray(data.meta_info.tags) &&
+                            codeInputs.length > 0
+                        ) {
+                            // 无 ERP 编码等字段，跳过
                         }
                     }
                 }
-
-                // 清空表单所有字段（分析前执行）
                 function clearFormFields() {
                     document
                         .querySelectorAll(
@@ -4322,12 +4690,12 @@
                     // 素材为空则直接拒绝分析
                     if (!userText) {
                         analysisResult.innerHTML = `
-                                        <div class="bg-red-50 rounded-lg p-4 text-center">
-                                            <i class="fas fa-exclamation-triangle text-red-500 text-3xl mb-2"></i>
-                                            <p class="text-red-700 font-medium">素材为空，无法分析</p>
-                                            <p class="text-xs text-red-600 mt-1">请在左侧产品素材输入框中填写商品信息后再开始生成</p>
-                                        </div>
-                                    `;
+                                                                <div class="bg-red-50 rounded-lg p-4 text-center">
+                                                                    <i class="fas fa-exclamation-triangle text-red-500 text-3xl mb-2"></i>
+                                                                    <p class="text-red-700 font-medium">素材为空，无法分析</p>
+                                                                    <p class="text-xs text-red-600 mt-1">请在左侧产品素材输入框中填写商品信息后再开始生成</p>
+                                                                </div>
+                                                            `;
                         return;
                     }
 
@@ -4348,15 +4716,15 @@
                         "px-4 py-2 bg-orange-400 text-white rounded-lg text-sm font-medium cursor-wait";
 
                     analysisResult.innerHTML = `
-                                                <div class="text-center py-4">
-                                                    <i class="fas fa-spinner fa-spin text-purple-500 text-3xl mb-2"></i>
-                                                    <p class="text-gray-600">正在调用 OpenAI AI 分析商品信息...</p>
-                                                    <p class="text-xs text-gray-400 mt-1">请稍候，AI 正在理解您的商品内容</p>
-                                                    <div class="mt-3 w-full bg-gray-200 rounded-full h-1.5 max-w-xs mx-auto">
-                                                        <div class="bg-purple-600 h-1.5 rounded-full animate-pulse" style="width: 60%"></div>
-                                                    </div>
-                                                </div>
-                                            `;
+                                                                        <div class="text-center py-4">
+                                                                            <i class="fas fa-spinner fa-spin text-purple-500 text-3xl mb-2"></i>
+                                                                            <p class="text-gray-600">正在调用 OpenAI AI 分析商品信息...</p>
+                                                                            <p class="text-xs text-gray-400 mt-1">请稍候，AI 正在理解您的商品内容</p>
+                                                                            <div class="mt-3 w-full bg-gray-200 rounded-full h-1.5 max-w-xs mx-auto">
+                                                                                <div class="bg-purple-600 h-1.5 rounded-full animate-pulse" style="width: 60%"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    `;
 
                     try {
                         const systemPrompt = getSystemPrompt();
@@ -4829,19 +5197,19 @@
                         statusDot.className = "status-dot done";
                         statusText.textContent = "分析完成！";
                         analysisResult.innerHTML = `
-                                                    <div class="bg-green-50 rounded-lg p-4">
-                                                        <div class="flex items-center gap-3 mb-3">
-                                                            <i class="fas fa-check-circle text-green-500 text-3xl"></i>
-                                                            <div>
-                                                                <p class="text-green-700 font-medium">AI 分析已完成</p>
-                                                                <p class="text-xs text-green-600">识别结果已自动填充到下方表单中，请检查确认</p>
-                                                            </div>
-                                                        </div>
-                                                        <div class="bg-white rounded p-3 text-left text-xs text-gray-600 max-h-40 overflow-y-auto border border-green-100">
-                                                            <pre style="white-space:pre-wrap;word-break:break-all;">${escapeHtml(JSON.stringify(analysisData, null, 2))}</pre>
-                                                        </div>
-                                                    </div>
-                                                `;
+                                                                            <div class="bg-green-50 rounded-lg p-4">
+                                                                                <div class="flex items-center gap-3 mb-3">
+                                                                                    <i class="fas fa-check-circle text-green-500 text-3xl"></i>
+                                                                                    <div>
+                                                                                        <p class="text-green-700 font-medium">AI 分析已完成</p>
+                                                                                        <p class="text-xs text-green-600">识别结果已自动填充到下方表单中，请检查确认</p>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="bg-white rounded p-3 text-left text-xs text-gray-600 max-h-40 overflow-y-auto border border-green-100">
+                                                                                    <pre style="white-space:pre-wrap;word-break:break-all;">${escapeHtml(JSON.stringify(analysisData, null, 2))}</pre>
+                                                                                </div>
+                                                                            </div>
+                                                                        `;
                         bottomActions.classList.remove("hidden");
                         publishBtn.disabled = false;
                         publishBtn.className =
@@ -4858,15 +5226,15 @@
                         statusDot.className = "status-dot waiting";
                         statusText.textContent = "分析失败";
                         analysisResult.innerHTML = `
-                                                    <div class="bg-red-50 rounded-lg p-4 text-center">
-                                                        <i class="fas fa-exclamation-triangle text-red-500 text-3xl mb-2"></i>
-                                                        <p class="text-red-700 font-medium">分析失败</p>
-                                                        <p class="text-xs text-red-600 mt-1">${escapeHtml(error.message || "未知错误")}</p>
-                                                        <button class="mt-3 px-4 py-1.5 bg-red-100 text-red-700 rounded text-xs hover:bg-red-200" onclick="document.getElementById('analyzeBtn').click()">
-                                                            <i class="fas fa-redo mr-1"></i>重试
-                                                        </button>
-                                                    </div>
-                                                `;
+                                                                            <div class="bg-red-50 rounded-lg p-4 text-center">
+                                                                                <i class="fas fa-exclamation-triangle text-red-500 text-3xl mb-2"></i>
+                                                                                <p class="text-red-700 font-medium">分析失败</p>
+                                                                                <p class="text-xs text-red-600 mt-1">${escapeHtml(error.message || "未知错误")}</p>
+                                                                                <button class="mt-3 px-4 py-1.5 bg-red-100 text-red-700 rounded text-xs hover:bg-red-200" onclick="document.getElementById('analyzeBtn').click()">
+                                                                                    <i class="fas fa-redo mr-1"></i>重试
+                                                                                </button>
+                                                                            </div>
+                                                                        `;
                         this.disabled = false;
                         this.innerHTML = '<i class="fas fa-play"></i> 开始生成';
                         this.className =
@@ -4993,13 +5361,13 @@
                                 ":" +
                                 String(now.getMinutes()).padStart(2, "0");
                             tr.innerHTML = `
-                                                <td><input type="text" class="source-input" placeholder="例: 1688" value="${escapeHtml(data?.name || "")}"></td>
-                                                <td><input type="text" class="source-input" placeholder="https://..." value="${escapeHtml(data?.url || "")}"></td>
-                                                <td><input type="text" class="source-input" value="${data?.price || "0"}"></td>
-                                                <td><input type="text" class="source-input" placeholder="更新人" value="${escapeHtml(data?.updater || "")}"></td>
-                                                <td><input type="text" class="source-input" value="${data?.updateTime || timeStr}"></td>
-                                                <td><button class="text-gray-400 hover:text-red-500" onclick="this.closest('tr').remove()"><i class="fas fa-trash"></i></button></td>
-                                            `;
+                                                                        <td><input type="text" class="source-input" placeholder="例: 1688" value="${escapeHtml(data?.name || "")}"></td>
+                                                                        <td><input type="text" class="source-input" placeholder="https://..." value="${escapeHtml(data?.url || "")}"></td>
+                                                                        <td><input type="text" class="source-input" value="${data?.price || "0"}"></td>
+                                                                        <td><input type="text" class="source-input" placeholder="更新人" value="${escapeHtml(data?.updater || "")}"></td>
+                                                                        <td><input type="text" class="source-input" value="${data?.updateTime || timeStr}"></td>
+                                                                        <td><button class="text-gray-400 hover:text-red-500" onclick="this.closest('tr').remove()"><i class="fas fa-trash"></i></button></td>
+                                                                    `;
                             tbody.appendChild(tr);
                         };
 
@@ -5122,12 +5490,12 @@
                                             categoryData[parts[0]]?.[parts[1]];
                                         if (data) {
                                             info.innerHTML = `
-                                                                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
-                                                                    <div><span style="color:#64748b;">佣金比例</span><br><span style="font-weight:600;color:#059669;">${data.commission}</span></div>
-                                                                    <div><span style="color:#64748b;">仓储费</span><br><span style="font-weight:600;color:#059669;">${data.storage}</span></div>
-                                                                    <div><span style="color:#64748b;">保质期必填</span><br><span style="font-weight:600;color:#059669;">${data.shelfLife}</span></div>
-                                                                </div>
-                                                            `;
+                                                                                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+                                                                                            <div><span style="color:#64748b;">佣金比例</span><br><span style="font-weight:600;color:#059669;">${data.commission}</span></div>
+                                                                                            <div><span style="color:#64748b;">仓储费</span><br><span style="font-weight:600;color:#059669;">${data.storage}</span></div>
+                                                                                            <div><span style="color:#64748b;">保质期必填</span><br><span style="font-weight:600;color:#059669;">${data.shelfLife}</span></div>
+                                                                                        </div>
+                                                                                    `;
                                             info.style.display = "block";
                                             return;
                                         }
@@ -5306,18 +5674,18 @@
                         row.style.cssText =
                             "display:grid;grid-template-columns:1fr 1.2fr 1fr 36px;gap:8px;align-items:center;margin-bottom:8px;";
                         row.innerHTML = `
-                                                <select class="form-select-sm">
-                                                    <option value="">单位名称</option>
-                                                    <option value="箱">箱</option>
-                                                    <option value="盒">盒</option>
-                                                    <option value="套">套</option>
-                                                    <option value="包">包</option>
-                                                    <option value="桶">桶</option>
-                                                </select>
-                                                <input type="text" class="form-input-sm" placeholder="条码" value="${escapeHtml(barcode || "")}">
-                                                <input type="number" class="form-input-sm" placeholder="换算(1=?)" value="${rate || ""}" min="0" step="0.01">
-                                                <button class="text-gray-400 hover:text-red-500 text-xs" onclick="this.closest('div').remove()"><i class="fas fa-times"></i></button>
-                                            `;
+                                                                        <select class="form-select-sm">
+                                                                            <option value="">单位名称</option>
+                                                                            <option value="箱">箱</option>
+                                                                            <option value="盒">盒</option>
+                                                                            <option value="套">套</option>
+                                                                            <option value="包">包</option>
+                                                                            <option value="桶">桶</option>
+                                                                        </select>
+                                                                        <input type="text" class="form-input-sm" placeholder="条码" value="${escapeHtml(barcode || "")}">
+                                                                        <input type="number" class="form-input-sm" placeholder="换算(1=?)" value="${rate || ""}" min="0" step="0.01">
+                                                                        <button class="text-gray-400 hover:text-red-500 text-xs" onclick="this.closest('div').remove()"><i class="fas fa-times"></i></button>
+                                                                    `;
                         container.appendChild(row);
                         if (name) row.querySelector("select").value = name;
                     }
@@ -5616,7 +5984,7 @@
                     // ============================
                     // 15. 工具函数
                     // ============================
-                    function escapeHtml(str) {
+                    window.escapeHtml = function (str) {
                         if (!str) return "";
                         return String(str).replace(
                             /[&<>]/g,
@@ -5625,10 +5993,10 @@
                                     m
                                 ] || m,
                         );
-                    }
+                    };
 
                     // 详情图预览同步（根据缩略图动态生成大图预览）
-                    function syncDetailPreviews() {
+                    window.syncDetailPreviews = function () {
                         const container = document.getElementById(
                             "detailPreviewContainer",
                         );
@@ -5651,7 +6019,7 @@
                             caption.textContent = "— 第 " + (i + 1) + " 张 —";
                             container.appendChild(caption);
                         });
-                    }
+                    };
 
                     // 初始化时触发一次体积计算
                     calcVolume();
@@ -5757,12 +6125,12 @@
                                         div.className =
                                             "flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100";
                                         div.innerHTML = `
-                                                                <i class="fas fa-file-excel text-purple-500"></i>
-                                                                <span class="text-xs text-gray-600">${escapeHtml(file.name)}</span>
-                                                                <span class="text-[10px] text-gray-400">(${(file.size / 1024).toFixed(1)} KB)</span>
-                                                                <span class="ml-auto text-[10px] text-green-600"><i class="fas fa-check-circle"></i> 已上传</span>
-                                                                <span class="text-gray-400 hover:text-red-500 cursor-pointer text-xs ml-1" onclick="this.closest('.flex').remove();updateMaterialCount()">×</span>
-                                                            `;
+                                                                                        <i class="fas fa-file-excel text-purple-500"></i>
+                                                                                        <span class="text-xs text-gray-600">${escapeHtml(file.name)}</span>
+                                                                                        <span class="text-[10px] text-gray-400">(${(file.size / 1024).toFixed(1)} KB)</span>
+                                                                                        <span class="ml-auto text-[10px] text-green-600"><i class="fas fa-check-circle"></i> 已上传</span>
+                                                                                        <span class="text-gray-400 hover:text-red-500 cursor-pointer text-xs ml-1" onclick="this.closest('.flex').remove();updateMaterialCount()">×</span>
+                                                                                    `;
                                         excelContainer.appendChild(div);
                                     }
                                     onFileDone();
@@ -5782,7 +6150,7 @@
                     }
 
                     // 素材计数更新
-                    function updateMaterialCount() {
+                    window.updateMaterialCount = function () {
                         const count =
                             document.querySelectorAll("#ocrThumbnails > div")
                                 .length +
@@ -5790,9 +6158,9 @@
                                 .length;
                         const el = document.querySelector("#materialCount");
                         if (el) el.textContent = count + " 个素材";
-                    }
+                    };
 
-                    function updateImageCount() {
+                    window.updateImageCount = function () {
                         const count = document.querySelectorAll(
                             "#imageLibraryPreviews > div:not(.w-12\\.h-12\\.bg-gray-50)",
                         ).length;
@@ -5812,7 +6180,7 @@
                                         span.textContent = count + " 张图片";
                                 }
                             });
-                    }
+                    };
 
                     // 规格数量切换（单规格/双规格）
                     window.setSpecMode = function (mode) {
@@ -5850,17 +6218,18 @@
                         }
                     };
 
-                    function updateSkuCount() {
+                    window.updateSkuCount = function () {
                         var tbody = document.querySelector(".sku-table tbody");
                         var el = document.querySelector(".sku-total");
                         if (tbody && el)
                             el.textContent =
                                 tbody.querySelectorAll("tr").length;
                         updatePriceRange();
-                    }
+                        updateStockTotal();
+                    };
 
                     // 从 SKU 表价格列自动计算价格区间
-                    function updatePriceRange() {
+                    window.updatePriceRange = function () {
                         var display = document.getElementById("priceRangeText");
                         if (!display) return;
                         var tbody = document.querySelector(".sku-table tbody");
@@ -5889,9 +6258,35 @@
                         } else {
                             display.textContent = "¥" + min + " - ¥" + max;
                         }
-                    }
+                    };
 
-                    // SKU 表价格变化时自动更新价格区间
+                    // 从 SKU 表库存列自动计算库存总量
+                    window.updateStockTotal = function () {
+                        var display = document.getElementById("stockTotalText");
+                        if (!display) return;
+                        var tbody = document.querySelector(".sku-table tbody");
+                        if (!tbody) {
+                            display.textContent = "由 SKU 库存自动计算";
+                            return;
+                        }
+                        var total = 0;
+                        tbody.querySelectorAll("tr").forEach(function (tr) {
+                            var cells = tr.querySelectorAll("td");
+                            if (cells.length >= 3) {
+                                var val = parseFloat(
+                                    cells[2].querySelector("input")?.value,
+                                );
+                                if (!isNaN(val) && val > 0) total += val;
+                            }
+                        });
+                        if (total === 0) {
+                            display.textContent = "由 SKU 库存自动计算";
+                            return;
+                        }
+                        display.textContent = total;
+                    };
+
+                    // SKU 表价格/库存变化时自动更新价格区间和库存总量
                     document.addEventListener("DOMContentLoaded", function () {
                         var skuBody =
                             document.querySelector(".sku-table tbody");
@@ -5899,6 +6294,9 @@
                             skuBody.addEventListener("input", function (e) {
                                 if (e.target.closest("td:nth-child(2)")) {
                                     updatePriceRange();
+                                }
+                                if (e.target.closest("td:nth-child(3)")) {
+                                    updateStockTotal();
                                 }
                             });
                         }
@@ -5971,65 +6369,61 @@
                                 processDroppedFiles(files);
                             });
                         });
-                    // ============================
-                    // 19. 写作提示（可选参考）
-                    // ============================
-                    // ============================
-                    // 18. Prompt 编辑弹窗逻辑
-                    // ============================
-                    var promptBtn = document.getElementById("promptBtn");
-                    var promptEditorModal =
-                        document.getElementById("promptEditorModal");
-                    var promptEditorTextarea = document.getElementById(
-                        "promptEditorTextarea",
-                    );
-                    if (promptBtn && promptEditorModal) {
-                        promptBtn.addEventListener("click", function () {
-                            var saved =
-                                localStorage.getItem("ai_custom_prompt");
-                            promptEditorTextarea.value =
-                                saved && saved.trim()
-                                    ? saved
-                                    : DEFAULT_SYSTEM_PROMPT;
-                            promptEditorModal.classList.add("open");
+                } catch (e) {
+                    console.error("Sections 9-19:", e);
+                }
+                // ============================
+                // 19. 写作提示（可选参考）
+                // ============================
+                // ============================
+                // 18. Prompt 编辑弹窗逻辑
+                // ============================
+                var promptBtn = document.getElementById("promptBtn");
+                var promptEditorModal =
+                    document.getElementById("promptEditorModal");
+                var promptEditorTextarea = document.getElementById(
+                    "promptEditorTextarea",
+                );
+                if (promptBtn && promptEditorModal) {
+                    promptBtn.addEventListener("click", function () {
+                        var saved = localStorage.getItem("ai_custom_prompt");
+                        promptEditorTextarea.value =
+                            saved && saved.trim()
+                                ? saved
+                                : DEFAULT_SYSTEM_PROMPT;
+                        promptEditorModal.classList.add("open");
+                    });
+                    promptEditorModal
+                        .querySelector(".prompt-editor-save")
+                        .addEventListener("click", function () {
+                            var val = promptEditorTextarea.value.trim();
+                            if (val)
+                                localStorage.setItem("ai_custom_prompt", val);
+                            promptEditorModal.classList.remove("open");
                         });
-                        promptEditorModal
-                            .querySelector(".prompt-editor-save")
-                            .addEventListener("click", function () {
-                                var val = promptEditorTextarea.value.trim();
-                                if (val)
-                                    localStorage.setItem(
-                                        "ai_custom_prompt",
-                                        val,
-                                    );
+                    promptEditorModal
+                        .querySelector(".prompt-editor-cancel")
+                        .addEventListener("click", function () {
+                            promptEditorTextarea.value = DEFAULT_SYSTEM_PROMPT;
+                            localStorage.removeItem("ai_custom_prompt");
+                        });
+                    promptEditorModal
+                        .querySelectorAll(".prompt-editor-close")
+                        .forEach(function (btn) {
+                            btn.addEventListener("click", function () {
                                 promptEditorModal.classList.remove("open");
                             });
-                        promptEditorModal
-                            .querySelector(".prompt-editor-cancel")
-                            .addEventListener("click", function () {
-                                promptEditorTextarea.value =
-                                    DEFAULT_SYSTEM_PROMPT;
-                                localStorage.removeItem("ai_custom_prompt");
-                            });
-                        promptEditorModal
-                            .querySelectorAll(".prompt-editor-close")
-                            .forEach(function (btn) {
-                                btn.addEventListener("click", function () {
-                                    promptEditorModal.classList.remove("open");
-                                });
-                            });
-                        promptEditorModal.addEventListener(
-                            "click",
-                            function (e) {
-                                if (e.target === promptEditorModal) {
-                                    promptEditorModal.classList.remove("open");
-                                }
-                            },
-                        );
-                    }
+                        });
+                    promptEditorModal.addEventListener("click", function (e) {
+                        if (e.target === promptEditorModal) {
+                            promptEditorModal.classList.remove("open");
+                        }
+                    });
+                }
 
-                    // 20. 媒体上传处理 - 视频、图片、详情图
-                    // ============================
+                // 20. 媒体上传处理 - 视频、图片、详情图
+                // ============================
+                try {
                     // Video upload
                     var videoUploadBox =
                         document.getElementById("videoUploadBox");
@@ -6319,7 +6713,7 @@
                             }
                         });
                 } catch (e) {
-                    console.error("Sections 9-20:", e);
+                    console.error("Section 20:", e);
                 }
             });
         </script>
