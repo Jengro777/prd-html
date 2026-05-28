@@ -649,7 +649,7 @@
                                     class="form-textarea flex-1 min-h-0"
                                     id="productInfoTextarea"
                                     contenteditable="true"
-                                    data-placeholder="请在此处输入商品的标题、卖点、参数等信息..."
+                                    data-placeholder="请输入商品信息，建议包含以下内容：&#10;1. 商品名称/标题&#10;2. 核心卖点（3-5个）&#10;3. 材质/规格/尺寸&#10;4. 颜色/款式&#10;5. 使用场景/适用人群&#10;6. 价格区间&#10;7. 品牌（如有）&#10;——信息越详细，生成结果越精准——"
                                     style="
                                         white-space: pre-wrap;
                                         overflow-y: auto;
@@ -730,6 +730,15 @@
                                             d.className =
                                                 "w-12 h-12 bg-gray-100 rounded border border-gray-200 relative overflow-hidden flex-shrink-0";
                                             d.draggable = true;
+                                            var materialId =
+                                                window.registerMaterialImage
+                                                    ? window.registerMaterialImage(
+                                                          file,
+                                                      )
+                                                    : "";
+                                            if (materialId)
+                                                d.dataset.materialId =
+                                                    materialId;
                                             d.innerHTML =
                                                 '<img src="' +
                                                 url +
@@ -2689,6 +2698,163 @@
         </main>
 
         <script>
+            // Material image registry used by the OpenAI request. Upload UI previews
+            // alone are not enough; active image files must be converted to data URLs.
+            (function () {
+                var store = (window.aiMaterialImageStore =
+                    window.aiMaterialImageStore || {
+                        items: [],
+                        nextId: 1,
+                    });
+
+                function isImageFile(file) {
+                    return !!(
+                        file &&
+                        file.type &&
+                        file.type.indexOf("image/") === 0
+                    );
+                }
+
+                function readFileAsDataUrl(file) {
+                    return new Promise(function (resolve, reject) {
+                        var reader = new FileReader();
+                        reader.onload = function () {
+                            resolve(reader.result);
+                        };
+                        reader.onerror = function () {
+                            reject(reader.error || new Error("图片读取失败"));
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                }
+
+                function compressImageForVision(file) {
+                    return readFileAsDataUrl(file).then(function (dataUrl) {
+                        return new Promise(function (resolve) {
+                            var img = new Image();
+                            img.onload = function () {
+                                try {
+                                    var maxSide = 1280;
+                                    var width = img.width;
+                                    var height = img.height;
+                                    var scale = Math.min(
+                                        1,
+                                        maxSide / Math.max(width, height),
+                                    );
+                                    var canvas =
+                                        document.createElement("canvas");
+                                    canvas.width = Math.max(
+                                        1,
+                                        Math.round(width * scale),
+                                    );
+                                    canvas.height = Math.max(
+                                        1,
+                                        Math.round(height * scale),
+                                    );
+                                    var ctx = canvas.getContext("2d");
+                                    ctx.drawImage(
+                                        img,
+                                        0,
+                                        0,
+                                        canvas.width,
+                                        canvas.height,
+                                    );
+                                    resolve(
+                                        canvas.toDataURL("image/jpeg", 0.86),
+                                    );
+                                } catch (e) {
+                                    resolve(dataUrl);
+                                }
+                            };
+                            img.onerror = function () {
+                                resolve(dataUrl);
+                            };
+                            img.src = dataUrl;
+                        });
+                    });
+                }
+
+                window.registerMaterialImage = function (file) {
+                    if (!isImageFile(file)) return "";
+                    var id = "material-image-" + store.nextId++;
+                    store.items.push({
+                        id: id,
+                        file: file,
+                        name: file.name || "pasted-image",
+                        size: file.size || 0,
+                    });
+                    return id;
+                };
+
+                window.getActiveMaterialImages = function () {
+                    var activeIds = new Set(
+                        Array.from(
+                            document.querySelectorAll(
+                                "#ocrThumbnails > div[data-material-id]",
+                            ),
+                        ).map(function (el) {
+                            return el.dataset.materialId;
+                        }),
+                    );
+                    return store.items.filter(function (item) {
+                        return activeIds.has(item.id);
+                    });
+                };
+
+                window.getActiveMaterialImageCount = function () {
+                    return window.getActiveMaterialImages().length;
+                };
+
+                window.getActiveMaterialImageNames = function () {
+                    return window
+                        .getActiveMaterialImages()
+                        .map(function (item, index) {
+                            return index + 1 + ". " + item.name;
+                        })
+                        .join("\n");
+                };
+
+                window.getActiveMaterialImageFiles = function (limit) {
+                    return window
+                        .getActiveMaterialImages()
+                        .slice(0, limit || 8)
+                        .map(function (item) {
+                            return item.file;
+                        });
+                };
+
+                window.getPrimaryMaterialImagePreviewUrl = function () {
+                    var item = window.getActiveMaterialImages()[0];
+                    if (!item || !item.file) return "";
+                    if (!item.previewUrl) {
+                        item.previewUrl = URL.createObjectURL(item.file);
+                    }
+                    return item.previewUrl;
+                };
+
+                window.buildMaterialImageContentParts = async function (limit) {
+                    var images = window
+                        .getActiveMaterialImages()
+                        .slice(0, limit || 6);
+                    var parts = [];
+                    for (var i = 0; i < images.length; i++) {
+                        var dataUrl = await compressImageForVision(
+                            images[i].file,
+                        );
+                        parts.push({
+                            type: "image_url",
+                            image_url: {
+                                url: dataUrl,
+                                detail: i < 2 ? "high" : "low",
+                            },
+                        });
+                    }
+                    return parts;
+                };
+            })();
+        </script>
+
+        <script>
             // Independent upload preview binding. Keep this separate so later
             // business-script errors cannot break the material upload UI.
             (function () {
@@ -2734,6 +2900,10 @@
                     div.className =
                         "w-12 h-12 bg-gray-100 rounded border border-gray-200 relative overflow-hidden flex-shrink-0";
                     div.draggable = true;
+                    var materialId = window.registerMaterialImage
+                        ? window.registerMaterialImage(file)
+                        : "";
+                    if (materialId) div.dataset.materialId = materialId;
                     div.innerHTML =
                         '<img src="' +
                         objUrl +
@@ -2878,6 +3048,10 @@
                     div.className =
                         "w-12 h-12 bg-gray-100 rounded border border-gray-200 relative overflow-hidden flex-shrink-0";
                     div.draggable = true;
+                    var materialId = window.registerMaterialImage
+                        ? window.registerMaterialImage(file)
+                        : "";
+                    if (materialId) div.dataset.materialId = materialId;
                     var img = document.createElement("img");
                     img.className = "w-full h-full object-cover";
                     img.src = objUrl;
@@ -2939,6 +3113,13 @@
                 const OPENAI_API_URL =
                     "https://api.openai.com/v1/chat/completions";
                 const OPENAI_MODEL = "gpt-5.5";
+                const OPENAI_IMAGE_API_URL =
+                    "https://api.openai.com/v1/images/edits";
+                const OPENAI_IMAGE_MODEL = "gpt-image-1";
+                const CAROUSEL_IMAGE_MAX_COUNT = 5;
+                const DETAIL_IMAGE_MAX_COUNT = 7;
+                const IMAGE_GENERATION_MAX_COUNT =
+                    CAROUSEL_IMAGE_MAX_COUNT + DETAIL_IMAGE_MAX_COUNT;
 
                 // 默认 System Prompt
                 const DEFAULT_SYSTEM_PROMPT = `你是一位资深电商产品上架专家，拥有 10 年以上 Amazon、淘宝、京东、Shopify 等平台的上架经验，运行于 GPT-5.5 多模态大模型之上，具备专业级视觉分析能力。你擅长通过产品图片和简要描述，精准反推产品的材质、使用场景、目标人群、核心卖点、完整规格、定价策略及变体关系，并生成高质量、可直接上架的产品信息。
@@ -3154,13 +3335,42 @@
 
             ---
 
-            # DALL·E Prompt 强关联规则（极重要）
+            # 参考图锚点提取规则（最高优先级）
+
+            在生成 carousel_images、detail_images、variants.image_url 之前，
+            你必须先从用户上传图片中提取“不可变视觉锚点”（内部使用，不输出），包括：
+
+            1. 商品品类和用途
+            2. 可见品牌名、LOGO、标签文字、容量/规格文字
+            3. 商品数量、变体数量、相对位置
+            4. 主体形状、瓶型/盒型/轮廓、开口/喷头/瓶盖/拉链/按键等结构
+            5. 材质、透明度、反光、纹理、液体颜色、金属颜色
+            6. 标签版式、文字位置、图标位置、装饰纹样
+            7. 背景风格、台面、光影方向、摄影角度
+
+            多图判断规则：
+
+            * 第 1 张上传图片默认为主参考图
+            * 文本描述与主参考图一致时，以主参考图 + 文本为准
+            * 若多张图片明显不是同一商品或同一品类，禁止合并成一个商品
+            * 不同品类图片只能作为风格参考，不得改变主商品品类、品牌、结构或包装
+            * 若图片与文字冲突，以主参考图中的可见商品为准
+
+            图片素材生成前的自检：
+
+            * 若输出图片 brief 不能让图像模型明确画出原图同一商品，必须重写
+            * 若 brief 只写 same product as reference image 但缺少具体视觉锚点，视为失败
+            * 若 brief 可能生成洗发水、护肤品、通用瓶子、相似商品或新品牌，视为失败
 
             ---
 
-            每个图片字段中的 description Prompt：
+            # 图片 Description 强关联规则（极重要）
 
-            必须明确包含：
+            ---
+
+            detail_images 中的 description 字段是后续 AI 生图的依据，必须严格遵循以下规则。
+
+            每个 description 必须明确包含：
 
             * same product as reference image
             * preserve identical structure
@@ -3169,8 +3379,21 @@
             * preserve original color scheme
             * identical product design
 
-            若商品存在：
+            每个 description 必须包含完整的视觉描述要素：
 
+            1. 商品主体名称
+            2. 原图颜色
+            3. 原图材质
+            4. 原图结构特征
+            5. 拍摄角度
+            6. 背景环境
+            7. 光照条件
+            8. 电商摄影风格
+
+            例如 description 内容：
+            "same product as reference image, wireless Bluetooth headset charging case, matte white plastic texture, LED indicator on front, identical product design, preserve original proportions, front view, clean white background, studio lighting, softbox lighting, ultra detailed, high resolution, realistic product texture, ecommerce photography"
+
+            若商品存在以下结构特征：
             * 拉链
             * 按钮
             * 提手
@@ -3179,15 +3402,15 @@
             * 纹理
             * LOGO位置
 
-            则必须在 Prompt 中明确保留。
+            则必须在 description 中明确保留。
 
             ---
 
-            # DALL·E Prompt 必须包含
+            # 详情图 description 必须包含要素
 
             ---
 
-            每个 Prompt 必须包含：
+            每个 detail_images[].description 必须包含以下8项要素：
 
             1. 商品主体
             2. 原图颜色
@@ -3210,19 +3433,18 @@
 
             ---
 
-            # 场景图规则（重要）
+            # 场景图 description 规则（重要）
 
             ---
 
-            场景图必须：
+            场景图 description 必须：
 
-            * 使用同一个商品
-            * 不允许换款
-            * 不允许替换成类似商品
-            * 不允许改变商品比例
-            * 不允许改变商品结构
+            * 明确指定是同一个商品（same product as reference image）
+            * 不允许换款/替换成类似商品
+            * 不允许改变商品比例/结构
+            * 保留原商品的所有视觉特征
 
-            只能改变：
+            可以改变：
 
             * 拍摄场景
             * 使用环境
@@ -3230,24 +3452,166 @@
 
             ---
 
-            # 图片 URL 规则
+            # 电商图片素材生成规则（极重要）
 
             ---
 
-            轮播图：
-            https://picsum.photos/id/{1-200}/800/800
+            ## 核心原则
 
-            详情图：
-            https://picsum.photos/id/{201-300}/1200/1200
+            carousel_images 和 detail_images 不是普通说明文案，
+            而是“后续 AI 生图的素材 brief”。
 
-            示意图：
-            https://placehold.co/{宽}x{高}/333/fff?text={文字}
+            JSON 中的 url 只作为前端占位预览，不代表真实最终图片。
+            真正用于生成电商图片的是：
 
-            禁止：
+            * carousel_images[].alt_text
+            * carousel_images[].focus_keyword
+            * detail_images[].title
+            * detail_images[].description
 
-            * 虚构真实图片 URL
-            * 使用不存在域名
-            * 输出空 URL
+            这些字段必须严格围绕“主参考图中的同一个商品”生成，
+            禁止输出无关商品、相似商品、换品类海报、换品牌包装或泛电商素材。
+
+            即使后续生图接口没有再次传入参考图片，
+            detail_images[].description 也必须足够自包含，
+            能让图像模型仅凭该 prompt 复原原商品的关键外观。
+            不允许只依赖 same product as reference image 这类抽象短语。
+
+            ---
+
+            ## 轮播图 URL 规则
+
+            格式：https://placehold.co/800x800/{背景色}/{文字色}?text={商品关键词}
+
+            轮播图说明（alt_text 和 focus_keyword）规则：
+            * alt_text：用中文写成可执行的电商图片 brief，必须包含商品品类、可见品牌/标签、主结构、材质、颜色、角度
+            * focus_keyword：该图的具体卖点关键词，不能泛写“主图/详情/展示”
+
+            最多 5 张轮播图，应优先从以下角度覆盖商品：
+            1. 商品整体正面图（主图）
+            2. 商品侧面/背面图
+            3. 商品细节特写（材质、纹理、按钮、拉链、接口等）
+            4. 商品使用状态图或多角度展示
+            5. （多SKU时）颜色/尺寸对比图；单SKU时为包装/配件（如有）
+
+            轮播图必须像真实电商主图/相册：
+
+            * 以商品摄影为主
+            * 第 1 张必须是白底商品主图，纯白或近白背景，商品完整清晰居中，不能有营销文案、场景道具或复杂背景
+            * 不做大面积营销海报
+            * 不添加复杂文案排版
+            * 不生成无关生活方式套装图
+            * 每张之间是同一商品在不同角度、不同局部、不同变体的连续相册
+            * 必须先评估用户上传图片质量；若原图清晰、主体完整、无明显水印/遮挡/严重畸变/低分辨率，并且适合作为真实电商轮播图，可以优先直接使用原图，不必重复生成同角度图片
+            * 只有当用户原图本身就是合格白底商品主图时，才允许直接作为第 1 张；否则第 1 张必须基于参考图生成白底主图
+
+            ---
+
+            ## 详情图 URL 规则
+
+            格式：https://placehold.co/1200x1200/{背景色}/{文字色}?text={场景描述}
+
+            详情图说明（title 和 description）规则：
+            * title：该图的电商用途名称，例如“尺寸规格图解”“材质工艺特写”“商务场景使用”
+            * description：必须使用英文，写成完整 AI image generation prompt，不是普通 caption
+
+            最多 7 张详情图，应优先从以下角度覆盖商品：
+            1. 商品尺寸/规格图解
+            2. 商品功能分解图
+            3. 商品使用场景图（1-2张）
+            4. 商品细节放大图
+            5. 商品材质/工艺说明图
+            6. 商品对比（与竞品/旧款）说明图
+            7. 商品包装/物流展示
+            其中多SKU商品必须将变体对比合并进以上 7 张之一，不允许额外增加第 8 张。
+
+            详情图必须像真实商品详情页：
+
+            * 每张图要承担明确营销目的
+            * 需要有统一视觉系统、统一色调、统一字体层级、统一留白
+            * 每张图必须包含简短营销文案或卖点标注
+            * 详情图之间必须按“主视觉 → 结构/参数 → 材质/工艺 → 场景 → 变体/对比 → 购买理由”形成连续叙事
+            * 禁止每张图独立成风格不同的随机海报
+            * 禁止只做商品孤立摆拍而没有营销信息
+
+            ---
+
+            ## detail_images[].description 强制格式
+
+            每个 description 必须包含以下段落，写在同一个字符串中：
+
+            1. Product lock:
+               same exact product as uploaded reference image,
+               preserve the original product category,
+               preserve the visible brand/logo/label text,
+               preserve identical structure, proportions, material, colors and packaging.
+
+            2. Visual anchors:
+               明确写出从参考图识别出的具体锚点，
+               包括品牌/标签文字、商品形状、瓶盖/喷头/把手/按键等结构、
+               材质、颜色、数量、变体差异、容量或规格文字。
+
+            3. Composition:
+               指定拍摄角度、画面主体数量、商品摆放、是否需要信息标注。
+
+            4. Ecommerce style:
+               white or clean neutral background,
+               premium ecommerce product photography,
+               studio softbox lighting,
+               sharp focus,
+               realistic reflections,
+               high resolution.
+
+            5. Negative prompt:
+               no different product category,
+               no new brand,
+               no redesigned label,
+               no extra unrelated bottles,
+               no shampoo, no conditioner, no body lotion, no skincare pump bottles unless the reference image is exactly that category,
+               no changed cap/nozzle/shape,
+               no wrong logo text,
+               no fantasy package,
+               no generic stock product.
+
+            ---
+
+            ## 商品文本保留规则
+
+            若参考图中能看见品牌名、LOGO字母、容量、型号、标签主文案：
+
+            * description 必须明确要求 preserve visible label text exactly
+            * alt_text 必须用中文说明该文字位于哪里
+            * 禁止把品牌替换成新品牌
+            * 禁止把香水生成洗护、把食品生成化妆品、把工具生成家居摆件等跨品类漂移
+
+            若图像模型可能难以精确生成小字：
+            仍必须保留品牌/LOGO位置、标签版式、容量文字位置，
+            不得生成新的可读品牌名。
+
+            ---
+
+            ## 颜色/文字色规则
+
+            轮播图背景色：从商品主色中选取最浅色，使用 hex（如 #f5f0eb）
+            轮播图文字色：从商品主色中选取最深色，使用 hex（如 #2c1810）
+            详情图背景色：从商品辅助色中选取，使用 hex（如 #e8f4f0）
+            详情图文字色：使用 #333333
+
+            text 参数内容：用英文关键词描述图片内容，单词间用 + 连接，长度不超过 30 字符
+            例如：text=Wireless+Headset+Front+View
+
+            ---
+
+            ## 禁止规则
+
+            * 禁止使用 picsum.photos 域名下的任何 URL
+            * 禁止虚构真实存在的图片 URL
+            * 禁止使用与商品无关的图片
+            * 禁止所有图片使用相同/相似的 alt_text 或 description
+            * 每张图片的 alt_text / title / description 必须有区分度
+            * 禁止在 detail_images[].description 中只写泛化品类词，例如 perfume bottle、beauty product、daily care products
+            * 禁止生成成套无关产品线，除非主参考图真实展示成套产品线
+            * 禁止生成新的品牌名、系列名、宣传语或标签文字
 
             ---
 
@@ -3257,13 +3621,19 @@
 
             单 SKU：
 
-            * 6 张轮播图
+            * 最多 5 张轮播图
             * 7 张详情图
 
             多 SKU：
 
-            * 7 张轮播图
-            * 8 张详情图
+            * 最多 5 张轮播图
+            * 最多 7 张详情图
+
+            若内容不足：
+            * 允许少于上限
+            * 不允许为了凑数生成重复角度或低价值图片
+            * 不允许 carousel_images 超过 5 条
+            * 不允许 detail_images 超过 7 条
 
             ---
 
@@ -3603,13 +3973,572 @@
 
             现在开始基于用户上传的图片和描述，
             直接输出严格 JSON。`;
+                const DEFAULT_PROMPT_VERSION =
+                    "image-reference-lock-v2-20260528";
 
                 // 获取 System Prompt（优先使用用户自定义的）
+                function isLegacyPrompt(prompt) {
+                    if (!prompt || !prompt.trim()) return true;
+                    return (
+                        prompt.indexOf("参考图锚点提取规则") === -1 ||
+                        prompt.indexOf("电商图片素材生成规则") === -1 ||
+                        prompt.indexOf(
+                            "detail_images[].description 强制格式",
+                        ) === -1
+                    );
+                }
+
                 function getSystemPrompt() {
                     var custom = localStorage.getItem("ai_custom_prompt");
-                    return custom && custom.trim()
-                        ? custom
-                        : DEFAULT_SYSTEM_PROMPT;
+                    if (custom && custom.trim() && !isLegacyPrompt(custom)) {
+                        return custom;
+                    }
+                    if (custom && isLegacyPrompt(custom)) {
+                        localStorage.setItem(
+                            "ai_custom_prompt_version",
+                            DEFAULT_PROMPT_VERSION,
+                        );
+                    }
+                    return DEFAULT_SYSTEM_PROMPT;
+                }
+
+                function isPlaceholderImageUrl(url) {
+                    return /^https:\/\/placehold\.co\//i.test(url || "");
+                }
+
+                function cleanPromptText(value) {
+                    return String(value || "")
+                        .replace(/\s+/g, " ")
+                        .trim();
+                }
+
+                function getProductVisualLock(data) {
+                    var variantText = "";
+                    if (Array.isArray(data?.variants) && data.variants.length) {
+                        variantText = data.variants
+                            .map(function (item) {
+                                return [
+                                    item.color,
+                                    item.size,
+                                    item.child_sku,
+                                ]
+                                    .filter(Boolean)
+                                    .join(" ");
+                            })
+                            .join("; ");
+                    }
+                    var material =
+                        data?.specifications?.material ||
+                        data?.base_specifications?.material ||
+                        "";
+                    return cleanPromptText(
+                        [
+                            "Product visual lock:",
+                            "Use the FIRST uploaded product image as the only product identity reference.",
+                            "Preserve exact product category, visible brand/logo/label layout, product shape, structure, proportions, material, color scheme, cap/nozzle/neck/base details, liquid/package appearance, and SKU variant differences.",
+                            "Product name:",
+                            data?.product_name || "",
+                            "Brand:",
+                            data?.brand || "",
+                            "Category:",
+                            data?.category || "",
+                            "Material and visible construction:",
+                            material,
+                            "Variants:",
+                            variantText,
+                        ].join(" "),
+                    );
+                }
+
+                function getSeriesArtDirection(data) {
+                    var features =
+                        data?.description?.key_features &&
+                        Array.isArray(data.description.key_features)
+                            ? data.description.key_features.join(" / ")
+                            : "";
+                    return cleanPromptText(
+                        [
+                            "Shared campaign art direction:",
+                            "premium ecommerce visual system, warm champagne and clean white background, consistent softbox lighting, realistic glass and metal reflections, same camera/lens feel, same contrast level, same clean spacing, same elegant black/gold/silver accent palette, refined marketplace-ready layout.",
+                            "Marketing direction:",
+                            data?.description?.short_description || "",
+                            features,
+                        ].join(" "),
+                    );
+                }
+
+                function getCarouselShotPlan(index, item) {
+                    var plans = [
+                        "Mandatory white-background hero main image, pure white or near-white background, product centered, complete, sharp, front 45-degree view, both variants standing clearly when variants exist, no marketing text overlay, no props.",
+                        "Left and right side-angle product photography, show bottle depth, thick glass edges, cap neck, and heavy base.",
+                        "Top and cap close-up photography, emphasize engraved cap medallions and metallic reflection.",
+                        "Material macro photography, emphasize transparent thick glass, liquid color, label placement, and refracted light.",
+                        "Scale and usage photography, one hand holding or about to use the perfume, product still dominant and label visible.",
+                        "Multi-angle studio layout, same product shown front, side, and slight top view without changing design.",
+                        "Variant comparison photography, exact real variants side by side at equal scale.",
+                    ];
+                    return plans[index] || item?.alt_text || "Product angle shot";
+                }
+
+                function loadImageMeta(file) {
+                    return new Promise(function (resolve) {
+                        var url = URL.createObjectURL(file);
+                        var img = new Image();
+                        img.onload = function () {
+                            URL.revokeObjectURL(url);
+                            resolve({
+                                width: img.naturalWidth || img.width || 0,
+                                height: img.naturalHeight || img.height || 0,
+                            });
+                        };
+                        img.onerror = function () {
+                            URL.revokeObjectURL(url);
+                            resolve({ width: 0, height: 0 });
+                        };
+                        img.src = url;
+                    });
+                }
+
+                function shouldUseOriginalForCarousel(file, meta) {
+                    if (!file || !meta) return false;
+                    var minSide = Math.min(meta.width || 0, meta.height || 0);
+                    var maxSide = Math.max(meta.width || 0, meta.height || 0);
+                    if (minSide < 800) return false;
+                    if (!file.type || file.type.indexOf("image/") !== 0)
+                        return false;
+                    var ratio = maxSide / Math.max(minSide, 1);
+                    if (ratio > 2.2) return false;
+                    return true;
+                }
+
+                async function isLikelyWhiteBackgroundImage(file) {
+                    return new Promise(function (resolve) {
+                        var url = URL.createObjectURL(file);
+                        var img = new Image();
+                        img.onload = function () {
+                            try {
+                                var canvas = document.createElement("canvas");
+                                var size = 24;
+                                canvas.width = size;
+                                canvas.height = size;
+                                var ctx = canvas.getContext("2d");
+                                ctx.drawImage(img, 0, 0, size, size);
+                                var points = [
+                                    [1, 1],
+                                    [size - 2, 1],
+                                    [1, size - 2],
+                                    [size - 2, size - 2],
+                                    [Math.floor(size / 2), 1],
+                                    [Math.floor(size / 2), size - 2],
+                                    [1, Math.floor(size / 2)],
+                                    [size - 2, Math.floor(size / 2)],
+                                ];
+                                var whiteCount = 0;
+                                points.forEach(function (point) {
+                                    var data = ctx.getImageData(
+                                        point[0],
+                                        point[1],
+                                        1,
+                                        1,
+                                    ).data;
+                                    var r = data[0];
+                                    var g = data[1];
+                                    var b = data[2];
+                                    var max = Math.max(r, g, b);
+                                    var min = Math.min(r, g, b);
+                                    if (r > 232 && g > 232 && b > 232 && max - min < 18) {
+                                        whiteCount++;
+                                    }
+                                });
+                                URL.revokeObjectURL(url);
+                                resolve(whiteCount >= 6);
+                            } catch (e) {
+                                URL.revokeObjectURL(url);
+                                resolve(false);
+                            }
+                        };
+                        img.onerror = function () {
+                            URL.revokeObjectURL(url);
+                            resolve(false);
+                        };
+                        img.src = url;
+                    });
+                }
+
+                async function buildOriginalCarouselItems(limit) {
+                    var files = window.getActiveMaterialImageFiles
+                        ? window.getActiveMaterialImageFiles(limit)
+                        : [];
+                    var items = [];
+                    for (var i = 0; i < files.length; i++) {
+                        var meta = await loadImageMeta(files[i]);
+                        if (!shouldUseOriginalForCarousel(files[i], meta)) {
+                            continue;
+                        }
+                        items.push({
+                            file: files[i],
+                            src: URL.createObjectURL(files[i]),
+                            index: i,
+                            width: meta.width,
+                            height: meta.height,
+                            isWhiteBackground:
+                                await isLikelyWhiteBackgroundImage(files[i]),
+                        });
+                    }
+                    return items.slice(0, limit || CAROUSEL_IMAGE_MAX_COUNT);
+                }
+
+                function getDetailNarrativePlan(index, item, data) {
+                    var features =
+                        data?.description?.key_features &&
+                        Array.isArray(data.description.key_features)
+                            ? data.description.key_features
+                            : [];
+                    var feature = features[index % Math.max(features.length, 1)] || "";
+                    var plans = [
+                        {
+                            role: "Opening detail-page hero panel",
+                            copy:
+                                data?.product_name ||
+                                item?.title ||
+                                "核心卖点展示",
+                            layout:
+                                "large product beauty shot with concise headline and one short subheading.",
+                        },
+                        {
+                            role: "Product structure and specification panel",
+                            copy: item?.title || "尺寸规格与喷雾结构",
+                            layout:
+                                "product centered with clean measurement lines, small callout labels, and clear spacing.",
+                        },
+                        {
+                            role: "Material craftsmanship panel",
+                            copy: feature || "高透玻璃与金属质感",
+                            layout:
+                                "macro material close-up with two or three concise selling-point callouts.",
+                        },
+                        {
+                            role: "Usage scenario panel",
+                            copy: item?.title || "商务通勤与约会场景",
+                            layout:
+                                "product in a realistic scene, headline on empty background area, product remains dominant.",
+                        },
+                        {
+                            role: "Variant selection panel",
+                            copy: item?.title || "双款变体对比",
+                            layout:
+                                "side-by-side variant chart with consistent cards and very short labels.",
+                        },
+                        {
+                            role: "Benefit proof panel",
+                            copy: feature || "清爽淡香 随身携带",
+                            layout:
+                                "product with icon-style benefit callouts, no unrelated objects.",
+                        },
+                        {
+                            role: "Gift and portability panel",
+                            copy: item?.title || "出差旅行 礼赠适用",
+                            layout:
+                                "product near tasteful travel or gift props, same brand identity retained.",
+                        },
+                        {
+                            role: "Closing conversion panel",
+                            copy:
+                                data?.description?.short_description ||
+                                item?.title ||
+                                "轻奢男香 现在上架",
+                            layout:
+                                "final polished ecommerce closing panel, product pair and concise CTA-style copy.",
+                        },
+                    ];
+                    return plans[index] || plans[plans.length - 1];
+                }
+
+                function buildGeneratedImagePrompt(
+                    item,
+                    kind,
+                    data,
+                    index,
+                    total,
+                    hasStyleReference,
+                ) {
+                    var title =
+                        item?.title || item?.focus_keyword || "商品素材图";
+                    var description =
+                        item?.description || item?.alt_text || title;
+                    var productLock = getProductVisualLock(data);
+                    var artDirection = getSeriesArtDirection(data);
+                    if (kind === "carousel") {
+                        return [
+                            "Create image " +
+                                (index + 1) +
+                                " of " +
+                                total +
+                                " in one coherent product carousel photography set.",
+                            productLock,
+                            artDirection,
+                        "Carousel rule: product photography only, no big marketing poster layout, no decorative advertising typography, no unrelated lifestyle product set.",
+                        index === 0
+                            ? "First carousel image hard requirement: pure white or near-white background, complete centered product, marketplace main image, no props, no scene, no text overlay."
+                            : "",
+                        "Shot plan: " + getCarouselShotPlan(index, item),
+                            "Specific returned brief: " + cleanPromptText(description),
+                            hasStyleReference
+                                ? "The additional generated image reference is for lighting and series consistency only; do not copy artifacts from it."
+                                : "",
+                            "Output: square marketplace carousel image, product large and sharp, same studio lighting across the whole set.",
+                            "Negative prompt: no different product category, no new brand, no redesigned label, no wrong logo text, no extra unrelated bottles, no shampoo, no conditioner, no body lotion, no skincare pump bottles unless the first reference image is exactly that category, no generic stock product.",
+                        ]
+                            .filter(Boolean)
+                            .join("\n\n");
+                    }
+
+                    var narrative = getDetailNarrativePlan(index, item, data);
+                    return [
+                        "Create detail-page panel " +
+                            (index + 1) +
+                            " of " +
+                            total +
+                            " as part of ONE continuous ecommerce detail page campaign.",
+                        productLock,
+                        artDirection,
+                        hasStyleReference
+                            ? "The additional generated detail-panel reference is used ONLY to keep the same typography style, spacing, background treatment, and campaign continuity as the previous panel. The FIRST uploaded product photo remains the product truth."
+                            : "This is the first detail panel; establish the visual system that later panels can follow.",
+                        "Detail narrative role: " + narrative.role,
+                        "Marketing copy to include as crisp overlay text: " +
+                            cleanPromptText(narrative.copy),
+                        "Layout requirement: " + narrative.layout,
+                        "Returned detail brief: " + cleanPromptText(description),
+                        "Detail-page rule: combine product photography with concise marketing copy and clean callouts. The panel must feel like one page section in a connected product detail page, not an isolated random poster.",
+                        "Use consistent typography hierarchy, consistent text placement grid, consistent accent colors, and enough blank space for readable Chinese marketing copy.",
+                        "Negative prompt: no different product category, no new brand, no redesigned label, no wrong logo text, no unrelated bottles, no shampoo, no conditioner, no body lotion, no skincare pump bottles unless the first reference image is exactly that category, no fantasy package, no generic stock product.",
+                    ].join("\n\n");
+                }
+
+                async function dataUrlToFile(dataUrl, fileName) {
+                    var response = await fetch(dataUrl);
+                    var blob = await response.blob();
+                    return new File([blob], fileName, {
+                        type: blob.type || "image/png",
+                    });
+                }
+
+                async function generateImageFromReference(
+                    prompt,
+                    styleReferenceFile,
+                ) {
+                    var files = window.getActiveMaterialImageFiles
+                        ? window.getActiveMaterialImageFiles(1)
+                        : [];
+                    if (!files.length) {
+                        throw new Error("缺少参考图片，无法生成商品图");
+                    }
+                    if (styleReferenceFile) files.push(styleReferenceFile);
+                    var formData = new FormData();
+                    formData.append("model", OPENAI_IMAGE_MODEL);
+                    formData.append("prompt", prompt);
+                    formData.append("size", "1024x1024");
+                    files.forEach(function (file) {
+                        formData.append(
+                            "image[]",
+                            file,
+                            file.name || "reference.jpg",
+                        );
+                    });
+
+                    var response = await fetch(OPENAI_IMAGE_API_URL, {
+                        method: "POST",
+                        headers: {
+                            Authorization: "Bearer " + OPENAI_API_KEY,
+                        },
+                        body: formData,
+                    });
+                    if (!response.ok) {
+                        var errText = await response.text();
+                        throw new Error(
+                            "图片生成失败: " +
+                                response.status +
+                                " " +
+                                errText,
+                        );
+                    }
+                    var result = await response.json();
+                    var imageData = result.data && result.data[0];
+                    if (imageData?.b64_json) {
+                        return "data:image/png;base64," + imageData.b64_json;
+                    }
+                    if (imageData?.url) return imageData.url;
+                    throw new Error("图片生成接口未返回图片数据");
+                }
+
+                async function generateProductImagesFromAnalysis(data) {
+                    var referenceFiles = window.getActiveMaterialImageFiles
+                        ? window.getActiveMaterialImageFiles(1)
+                        : [];
+                    if (!referenceFiles.length) return;
+
+                    var originalCarouselItems =
+                        await buildOriginalCarouselItems(
+                            CAROUSEL_IMAGE_MAX_COUNT,
+                        );
+                    var whiteBackgroundOriginal =
+                        originalCarouselItems.find(function (item) {
+                            return item.isWhiteBackground;
+                        }) || null;
+                    var originalItemsToUse = [];
+                    if (whiteBackgroundOriginal) {
+                        originalItemsToUse.push(whiteBackgroundOriginal);
+                    }
+                    originalCarouselItems.forEach(function (item) {
+                        if (
+                            originalItemsToUse.length >=
+                            CAROUSEL_IMAGE_MAX_COUNT
+                        ) {
+                            return;
+                        }
+                        if (item === whiteBackgroundOriginal) return;
+                        originalItemsToUse.push(item);
+                    });
+                    if (originalCarouselItems.length) {
+                        var carouselGrid =
+                            document.getElementById("mediaImageGrid");
+                        var uploadBtn =
+                            document.getElementById("mediaImageUploadBtn");
+                        if (carouselGrid && uploadBtn) {
+                            originalItemsToUse.forEach(function (item, idx) {
+                                var div = document.createElement("div");
+                                div.className =
+                                    "w-24 h-24 bg-gray-100 rounded-lg border border-gray-200 relative media-img-item";
+                                div.draggable = true;
+                                div.dataset.aiGenerated = "original";
+                                div.dataset.aiKind = "carousel";
+                                div.title =
+                                    "直接使用用户上传原图 " +
+                                    (item.index + 1) +
+                                    " (" +
+                                    item.width +
+                                    "x" +
+                                    item.height +
+                                    ")" +
+                                    (item.isWhiteBackground
+                                        ? "，白底主图"
+                                        : "");
+                                div.innerHTML =
+                                    '<img src="' +
+                                    item.src.replace(/"/g, "&quot;") +
+                                    '" class="w-full h-full object-cover rounded-lg" />' +
+                                    '<div class="absolute left-1 right-1 bottom-1 bg-green-600 bg-opacity-80 text-white text-[10px] leading-4 rounded text-center">' +
+                                    (item.isWhiteBackground
+                                        ? "白底原图"
+                                        : "原图可用") +
+                                    "</div>" +
+                                    '<div class="absolute top-1 right-1 bg-white rounded-full p-0.5 shadow cursor-pointer hover:text-red-500 del-media-img"><i class="fas fa-times text-xs"></i></div>';
+                                carouselGrid.insertBefore(
+                                    div,
+                                    idx === 0
+                                        ? carouselGrid.firstChild || uploadBtn
+                                        : uploadBtn,
+                                );
+                            });
+                        }
+                    }
+
+                    var jobs = [];
+                    document
+                        .querySelectorAll("#mediaImageGrid .media-img-item")
+                        .forEach(function (el) {
+                            if (el.dataset.aiPrompt) {
+                                jobs.push({ el: el, kind: "carousel" });
+                            }
+                        });
+                    document
+                        .querySelectorAll("#detailImageGrid .thumb-item")
+                        .forEach(function (el) {
+                            if (el.dataset.aiPrompt) {
+                                jobs.push({ el: el, kind: "detail" });
+                            }
+                        });
+
+                    var carouselJobs = jobs.filter(function (job) {
+                        return job.kind === "carousel";
+                    }).slice(
+                        whiteBackgroundOriginal ? 0 : 1,
+                        Math.max(
+                            CAROUSEL_IMAGE_MAX_COUNT -
+                                originalItemsToUse.length,
+                            0,
+                        ),
+                    );
+                    var detailJobs = jobs.filter(function (job) {
+                        return job.kind === "detail";
+                    }).slice(0, DETAIL_IMAGE_MAX_COUNT);
+                    var orderedJobs = carouselJobs.concat(detailJobs);
+                    if (!orderedJobs.length) return;
+                    var lastCarouselStyleFile = null;
+                    var lastDetailStyleFile = null;
+
+                    for (var i = 0; i < orderedJobs.length; i++) {
+                        var job = orderedJobs[i];
+                        var img = job.el.querySelector("img");
+                        var badge = job.el.querySelector(".ai-gen-status");
+                        var item = {};
+                        try {
+                            item = JSON.parse(job.el.dataset.aiItem || "{}");
+                        } catch (e) {
+                            item = {};
+                        }
+                        var kindJobs =
+                            job.kind === "carousel" ? carouselJobs : detailJobs;
+                        var kindIndex = kindJobs.indexOf(job);
+                        var styleReferenceFile =
+                            job.kind === "carousel"
+                                ? lastCarouselStyleFile
+                                : lastDetailStyleFile;
+                        var prompt = buildGeneratedImagePrompt(
+                            item,
+                            job.kind,
+                            data,
+                            kindIndex,
+                            kindJobs.length,
+                            !!styleReferenceFile,
+                        );
+                        if (badge) badge.textContent = "生成中";
+                        statusText.textContent =
+                            "正在生成商品图片 " +
+                            (i + 1) +
+                            "/" +
+                            orderedJobs.length;
+                        try {
+                            var src = await generateImageFromReference(
+                                prompt,
+                                styleReferenceFile,
+                            );
+                            if (img) img.src = src;
+                            job.el.dataset.aiGenerated = "true";
+                            if (badge) badge.remove();
+                            if (job.kind === "detail") syncDetailPreviews();
+                            if (src.indexOf("data:") === 0) {
+                                var generatedFile = await dataUrlToFile(
+                                    src,
+                                    job.kind + "-style-reference.png",
+                                );
+                                if (job.kind === "carousel") {
+                                    lastCarouselStyleFile = generatedFile;
+                                } else {
+                                    lastDetailStyleFile = generatedFile;
+                                }
+                            }
+                        } catch (error) {
+                            console.error("商品图片生成失败:", error);
+                            job.el.dataset.aiGenerated = "false";
+                            if (badge) badge.textContent = "生图失败";
+                            job.el.title =
+                                error.message || "商品图片生成失败";
+                        }
+                    }
+
+                    statusText.textContent = "分析完成，商品图片生成已处理";
                 }
 
                 // 分析完成后的填充函数
@@ -4513,15 +5442,45 @@
                             var url =
                                 typeof img === "object" ? img.url || "" : img;
                             if (!url) return;
+                            var isPlaceholder = isPlaceholderImageUrl(url);
+                            var previewUrl = isPlaceholder
+                                ? window.getPrimaryMaterialImagePreviewUrl?.() ||
+                                  url
+                                : url;
+                            var aiPrompt = buildGeneratedImagePrompt(
+                                typeof img === "object" ? img : { url: url },
+                                containerId === "mediaImageGrid"
+                                    ? "carousel"
+                                    : "detail",
+                            );
                             var div = document.createElement("div");
+                            div.dataset.aiSourceUrl = url;
+                            div.dataset.aiPrompt = aiPrompt;
+                            try {
+                                div.dataset.aiItem = JSON.stringify(
+                                    typeof img === "object" ? img : { url: url },
+                                );
+                            } catch (e) {
+                                div.dataset.aiItem = "{}";
+                            }
+                            div.dataset.aiKind =
+                                containerId === "mediaImageGrid"
+                                    ? "carousel"
+                                    : "detail";
+                            div.dataset.aiPlaceholder = isPlaceholder
+                                ? "true"
+                                : "false";
                             if (containerId === "mediaImageGrid") {
                                 div.className =
                                     "w-24 h-24 bg-gray-100 rounded-lg border border-gray-200 relative media-img-item";
                                 div.draggable = true;
                                 div.innerHTML =
                                     '<img src="' +
-                                    url.replace(/"/g, "&quot;") +
+                                    previewUrl.replace(/"/g, "&quot;") +
                                     '" class="w-full h-full object-cover rounded-lg" onerror="this.parentElement.remove()" />' +
+                                    (isPlaceholder
+                                        ? '<div class="ai-gen-status absolute left-1 right-1 bottom-1 bg-black bg-opacity-60 text-white text-[10px] leading-4 rounded text-center">待生图</div>'
+                                        : "") +
                                     '<div class="absolute top-1 right-1 bg-white rounded-full p-0.5 shadow cursor-pointer hover:text-red-500 del-media-img"><i class="fas fa-times text-xs"></i></div>';
                             } else {
                                 var count =
@@ -4531,10 +5490,13 @@
                                 div.draggable = true;
                                 div.innerHTML =
                                     '<img src="' +
-                                    url.replace(/"/g, "&quot;") +
+                                    previewUrl.replace(/"/g, "&quot;") +
                                     '" onerror="this.parentElement.remove()" />' +
                                     '<div class="sort-handle"><i class="fas fa-grip-vertical"></i></div>' +
                                     '<div class="del-btn" onclick="this.closest(\'.thumb-item\').remove();updateDetailBadges()"><i class="fas fa-times"></i></div>' +
+                                    (isPlaceholder
+                                        ? '<div class="ai-gen-status" style="position:absolute;left:4px;right:4px;bottom:22px;background:rgba(0,0,0,0.6);color:#fff;border-radius:4px;font-size:10px;line-height:16px;text-align:center;">待生图</div>'
+                                        : "") +
                                     '<div class="badge">第' +
                                     count +
                                     "张</div>";
@@ -4551,7 +5513,10 @@
                         data.carousel_images.length > 0
                     ) {
                         loadImagesToContainer(
-                            data.carousel_images,
+                            data.carousel_images.slice(
+                                0,
+                                CAROUSEL_IMAGE_MAX_COUNT,
+                            ),
                             "mediaImageGrid",
                             "mediaImageUploadBtn",
                         );
@@ -4559,7 +5524,10 @@
                     // 详情图
                     if (data.detail_images && data.detail_images.length > 0) {
                         loadImagesToContainer(
-                            data.detail_images,
+                            data.detail_images.slice(
+                                0,
+                                DETAIL_IMAGE_MAX_COUNT,
+                            ),
                             "detailImageGrid",
                             "detailImageUploadBtn",
                         );
@@ -4687,17 +5655,12 @@
                         ? (textArea.textContent || "").trim()
                         : "";
 
-                    // 素材为空则直接拒绝分析
-                    if (!userText) {
-                        analysisResult.innerHTML = `
-                                                                <div class="bg-red-50 rounded-lg p-4 text-center">
-                                                                    <i class="fas fa-exclamation-triangle text-red-500 text-3xl mb-2"></i>
-                                                                    <p class="text-red-700 font-medium">素材为空，无法分析</p>
-                                                                    <p class="text-xs text-red-600 mt-1">请在左侧产品素材输入框中填写商品信息后再开始生成</p>
-                                                                </div>
-                                                            `;
-                        return;
-                    }
+                    var materialImageCount = window.getActiveMaterialImageCount
+                        ? window.getActiveMaterialImageCount()
+                        : 0;
+                    var materialImageNames = window.getActiveMaterialImageNames
+                        ? window.getActiveMaterialImageNames()
+                        : "";
 
                     // 收集图片URL信息（如果有）
                     const urlTextarea = document.querySelector(
@@ -4707,8 +5670,23 @@
                         ? urlTextarea.value.trim()
                         : "";
 
+                    // 素材为空则直接拒绝分析
+                    if (!userText && materialImageCount === 0 && !imageUrls) {
+                        analysisResult.innerHTML = `
+                                                                <div class="bg-red-50 rounded-lg p-4 text-center">
+                                                                    <i class="fas fa-exclamation-triangle text-red-500 text-3xl mb-2"></i>
+                                                                    <p class="text-red-700 font-medium">素材为空，无法分析</p>
+                                                                    <p class="text-xs text-red-600 mt-1">请在左侧上传商品图片或填写商品信息后再开始生成</p>
+                                                                </div>
+                                                            `;
+                        return;
+                    }
+
                     statusDot.className = "status-dot analyzing";
-                    statusText.textContent = "正在调用 OpenAI AI 分析中...";
+                    statusText.textContent =
+                        materialImageCount > 0
+                            ? "正在读取参考图并调用 OpenAI AI 分析中..."
+                            : "正在调用 OpenAI AI 分析中...";
                     this.disabled = true;
                     this.innerHTML =
                         '<i class="fas fa-spinner fa-spin"></i> 分析中...';
@@ -4728,6 +5706,37 @@
 
                     try {
                         const systemPrompt = getSystemPrompt();
+                        const materialImageParts =
+                            window.buildMaterialImageContentParts
+                                ? await window.buildMaterialImageContentParts(8)
+                                : [];
+                        const userPromptText = [
+                            "请基于以下商品素材生成完整结构化 JSON 数据。",
+                            "最重要约束：已附加的 image_url 图片是商品主参考图，必须作为商品结构、品牌、标签、材质、颜色和构图的视觉事实来源。",
+                            "如果文本和图片冲突，以图片为准；如果多张图片不是同一商品，以第 1 张主参考图和文本共同指向的商品为准，不要把不同品类混合成一个商品。",
+                            "如果某张附加图片与第 1 张主参考图的品类、品牌、包装或结构明显冲突，把它视为错误示例或最多只作为风格参考，不能复制其中的品牌、品类、瓶型、标签或文案。",
+                            materialImageParts.length
+                                ? "已附加本地参考图片数量：" +
+                                  materialImageParts.length
+                                : "未附加本地参考图片。",
+                            materialImageNames
+                                ? "参考图片文件名：\n" + materialImageNames
+                                : "",
+                            userText ? "用户文本素材：\n" + userText : "",
+                            imageUrls
+                                ? "用户提供的图片链接：\n" + imageUrls
+                                : "",
+                            "数量限制：carousel_images 最多返回 5 条；detail_images 最多返回 7 条。内容不足时允许少于上限，禁止为了凑数生成重复或低价值图片。",
+                            "生成图片素材字段时，detail_images[].description 必须是可直接用于 AI 生图的英文 prompt，并完整写出主参考图中的品牌/标签文字、商品品类、形状结构、材质颜色、变体差异和负向约束，不能只写 same product as reference image。",
+                        ]
+                            .filter(Boolean)
+                            .join("\n\n");
+                        const userMessageContent = [
+                            {
+                                type: "text",
+                                text: userPromptText,
+                            },
+                        ].concat(materialImageParts);
 
                         // Structured Outputs JSON Schema（统一单 SKU / 多 SKU）
                         const productSchema = {
@@ -5143,23 +6152,17 @@
                             body: JSON.stringify({
                                 model: OPENAI_MODEL,
                                 messages: [
-                                    { role: "system", content: systemPrompt },
+                                    {
+                                        role: "developer",
+                                        content: systemPrompt,
+                                    },
                                     {
                                         role: "user",
-                                        content:
-                                            (userText
-                                                ? "请分析以下商品信息，返回完整的结构化JSON数据：\n\n" +
-                                                  userText
-                                                : "请根据以下商品图片URL（可能有多个，每行一个）和商品类型推断，生成完整的结构化商品数据。如果没有图片信息，请根据常见商品生成合理的示例数据。\n\n" +
-                                                  (imageUrls ||
-                                                      "（用户未提供具体商品信息，请生成一个通用商品的完整数据示例）")) +
-                                            (imageUrls
-                                                ? "\n\n图片链接：\n" + imageUrls
-                                                : ""),
+                                        content: userMessageContent,
                                     },
                                 ],
                                 temperature: 1,
-                                max_completion_tokens: 4096,
+                                max_completion_tokens: 8192,
                                 response_format: productSchema,
                             }),
                         });
@@ -5221,6 +6224,7 @@
                             '<i class="fas fa-rotate-right"></i> 重新分析';
                         this.className =
                             "px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition flex items-center gap-2";
+                        generateProductImagesFromAnalysis(analysisData);
                     } catch (error) {
                         console.error("OpenAI API 调用失败:", error);
                         statusDot.className = "status-dot waiting";
@@ -6053,6 +7057,10 @@
                         div.className =
                             "w-12 h-12 bg-gray-100 rounded border border-gray-200 relative overflow-hidden flex-shrink-0";
                         div.draggable = true;
+                        var materialId = window.registerMaterialImage
+                            ? window.registerMaterialImage(file)
+                            : "";
+                        if (materialId) div.dataset.materialId = materialId;
                         var img = document.createElement("img");
                         img.className = "w-full h-full object-cover";
                         img.src = objUrl;
@@ -6350,6 +7358,7 @@
                     document
                         .querySelectorAll(".upload-zone")
                         .forEach((zone) => {
+                            if (zone.dataset.uploadReady === "true") return;
                             zone.addEventListener("dragover", function (e) {
                                 e.preventDefault();
                                 this.style.borderColor = "#8b5cf6";
@@ -6388,7 +7397,7 @@
                     promptBtn.addEventListener("click", function () {
                         var saved = localStorage.getItem("ai_custom_prompt");
                         promptEditorTextarea.value =
-                            saved && saved.trim()
+                            saved && saved.trim() && !isLegacyPrompt(saved)
                                 ? saved
                                 : DEFAULT_SYSTEM_PROMPT;
                         promptEditorModal.classList.add("open");
@@ -6397,8 +7406,13 @@
                         .querySelector(".prompt-editor-save")
                         .addEventListener("click", function () {
                             var val = promptEditorTextarea.value.trim();
-                            if (val)
+                            if (val) {
                                 localStorage.setItem("ai_custom_prompt", val);
+                                localStorage.setItem(
+                                    "ai_custom_prompt_version",
+                                    DEFAULT_PROMPT_VERSION,
+                                );
+                            }
                             promptEditorModal.classList.remove("open");
                         });
                     promptEditorModal
@@ -6406,6 +7420,7 @@
                         .addEventListener("click", function () {
                             promptEditorTextarea.value = DEFAULT_SYSTEM_PROMPT;
                             localStorage.removeItem("ai_custom_prompt");
+                            localStorage.removeItem("ai_custom_prompt_version");
                         });
                     promptEditorModal
                         .querySelectorAll(".prompt-editor-close")
