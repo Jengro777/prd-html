@@ -28,13 +28,14 @@
                     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                     sans-serif;
                 color: #333333;
-                padding: 24px;
+                padding: 20px;
             }
 
             /* ===== TOS 设计系统 ===== */
-            /* 主色：#42b7ae | 成功：#52c41a | 警告：#faad14 | 错误：#f5222d */
-            /* 圆角：卡片20px | 按钮/输入框8px | 标签4px */
-            /* 阴影：0 4px 20px rgba(0,0,0,0.02) */
+            /* 主色：#42b7ae — 仅用于主要交互元素 */
+            /* 功能色：#52c41a 成功 | #faad14 警告 | #f5222d 删除/报错 */
+            /* 圆角：卡片12px | 按钮/输入框8px | 标签4px */
+            /* 阴影：卡片0 1px 2px rgba(15,23,42,0.03) | 弹窗0 20px 60px rgba(15,23,42,0.18) */
             /* 间距：基础20px | 内间距16px | 紧凑8px */
 
             .page-container {
@@ -44,13 +45,36 @@
 
             /* ---- TOS 卡片 ---- */
             .tos-card {
-                border-radius: 20px;
+                border-radius: 12px;
                 background: #fff;
                 padding: 20px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+                border: 1px solid #f0f2f5;
+                box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
             }
             .tos-card--compact {
                 padding: 16px;
+            }
+
+            .tos-card__header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+
+            .tos-card__title {
+                margin: 0;
+                color: #333;
+                font-size: 16px;
+                font-weight: 600;
+            }
+
+            .tos-card__desc {
+                margin-top: 4px;
+                color: #999;
+                font-size: 12px;
+                line-height: 1.5;
             }
 
             /* ===== 主色覆盖 ===== */
@@ -139,7 +163,7 @@
                 margin-bottom: 20px;
             }
             .page-header h1 {
-                font-size: 22px;
+                font-size: 20px;
                 font-weight: 600;
                 color: #333;
                 line-height: 1.4;
@@ -159,7 +183,7 @@
             }
             .filter-divider {
                 height: 1px;
-                background: #f0f0f0;
+                background: #f0f2f5;
                 border: none;
                 margin: 12px 0;
             }
@@ -181,10 +205,10 @@
                 flex-shrink: 0;
             }
             .dialog-section-header .badge--green {
-                background: #42b7ae;
+                background: #bbb;
             }
             .dialog-section-header .badge--orange {
-                background: #faad14;
+                background: #bbb;
             }
             .dialog-section-header .title {
                 font-weight: 600;
@@ -212,10 +236,11 @@
             }
 
             .el-dialog {
-                border-radius: 20px;
+                border-radius: 12px;
+                box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
             }
             .el-dialog__header {
-                border-radius: 20px 20px 0 0;
+                border-radius: 12px 12px 0 0;
             }
 
             /* ===== 状态指示器 ===== */
@@ -237,6 +262,81 @@
             /* ===== 标签圆角 ===== */
             .el-tag {
                 border-radius: 4px !important;
+            }
+
+            /* ===== 复选框中 TOS 主色 ===== */
+            .el-checkbox.is-checked.is-bordered {
+                border-color: #42b7ae !important;
+            }
+            .el-checkbox.is-checked .el-checkbox__inner {
+                background: #42b7ae !important;
+                border-color: #42b7ae !important;
+            }
+            .el-checkbox__input.is-checked + .el-checkbox__label {
+                color: #42b7ae !important;
+            }
+            .el-checkbox.is-bordered {
+                border-radius: 8px !important;
+                margin-bottom: 6px !important;
+            }
+
+            /* ===== 模型能力卡片 ===== */
+            .model-group-card {
+                padding: 14px;
+                background: #fafafa;
+                border: 1px solid #f0f2f5;
+                border-radius: 8px;
+                margin-bottom: 10px;
+                width: 100%;
+            }
+
+            /* ===== 能力组分区 ===== */
+            .capability-section {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                margin-bottom: 6px;
+            }
+            .capability-section:last-child {
+                margin-bottom: 0;
+            }
+            .capability-section__title {
+                font-size: 12px;
+                font-weight: 500;
+                color: #666;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+            .capability-section__items {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+                align-items: center;
+            }
+            .capability-section__items .el-checkbox-group {
+                display: inline-flex;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+            .capability-default-tag {
+                background: #e6f7f6 !important;
+                color: #42b7ae !important;
+                border-color: #b3e5e2 !important;
+                font-size: 12px;
+                height: 26px !important;
+                line-height: 24px !important;
+                padding: 0 10px !important;
+                border-radius: 4px !important;
+            }
+
+            /* ===== 紧凑复选框 ===== */
+            .el-checkbox.is-bordered.el-checkbox--small {
+                padding: 4px 8px !important;
+                height: 26px !important;
+                line-height: 16px !important;
+            }
+            .el-checkbox.is-bordered.el-checkbox--small .el-checkbox__label {
+                font-size: 12px !important;
             }
 
             /* ===== 操作列 ===== */
@@ -268,20 +368,6 @@
                         <h1>渠道管理</h1>
                         <p>管理所有 AI 渠道的接入配置、密钥和模型分配</p>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <span class="text-sm" style="color: #666">ID排序</span>
-                        <el-switch
-                            v-model="sortById"
-                            size="small"
-                        ></el-switch>
-                        <span class="text-sm ml-1" style="color: #666"
-                            >批量操作</span
-                        >
-                        <el-switch
-                            v-model="batchOps"
-                            size="small"
-                        ></el-switch>
-                    </div>
                 </div>
 
                 <!-- ==================== 工具栏 ==================== -->
@@ -296,38 +382,13 @@
                                 @click="openAddDialog"
                             >
                                 <el-icon style="margin-right: 4px"
-                                    ><plus></plus
-                                ></el-icon
+                                    ><plus></plus></el-icon
                                 >添加渠道
                             </el-button>
                             <el-button size="small">删除所选</el-button>
-                            <el-dropdown size="small" trigger="click">
-                                <el-button size="small">
-                                    更多操作<el-icon class="el-icon--right"
-                                        ><arrow-down></arrow-down
-                                    ></el-icon>
-                                </el-button>
-                                <template #dropdown>
-                                    <el-dropdown-menu>
-                                        <el-dropdown-item
-                                            >批量设置标签</el-dropdown-item
-                                        >
-                                        <el-dropdown-item
-                                            >批量操作</el-dropdown-item
-                                        >
-                                        <el-dropdown-item divided
-                                            >列设置</el-dropdown-item
-                                        >
-                                        <el-dropdown-item
-                                            >紧凑列表</el-dropdown-item
-                                        >
-                                    </el-dropdown-menu>
-                                </template>
-                            </el-dropdown>
                             <el-button size="small" @click="handleRefresh">
                                 <el-icon style="margin-right: 4px"
-                                    ><refresh></refresh
-                                ></el-icon
+                                    ><refresh></refresh></el-icon
                                 >刷新
                             </el-button>
                         </div>
@@ -377,26 +438,6 @@
                                 ><el-icon><search></search></el-icon
                             ></template>
                         </el-input>
-                        <el-select
-                            v-model="searchFilters.group"
-                            placeholder="选择分组"
-                            size="small"
-                            style="width: 110px"
-                            clearable
-                        >
-                            <el-option
-                                label="default"
-                                value="default"
-                            ></el-option>
-                            <el-option
-                                label="vip"
-                                value="vip"
-                            ></el-option>
-                            <el-option
-                                label="internal"
-                                value="internal"
-                            ></el-option>
-                        </el-select>
                         <el-button
                             size="small"
                             type="primary"
@@ -411,6 +452,15 @@
 
                 <!-- ==================== 数据表格 ==================== -->
                 <div class="tos-card">
+                    <div class="tos-card__header">
+                        <div>
+                            <h2 class="tos-card__title">渠道列表</h2>
+                            <div class="tos-card__desc">
+                                共 {{ filteredData.length }} 个渠道
+                            </div>
+                        </div>
+                    </div>
+
                     <el-table
                         :data="filteredData"
                         style="width: 100%"
@@ -436,53 +486,46 @@
                                 >
                             </template>
                         </el-table-column>
-                        <el-table-column label="模型" min-width="200">
+                        <el-table-column label="模型能力" min-width="280">
                             <template #default="scope">
-                                <el-tag
-                                    v-for="m in (scope.row.models || [])"
-                                    :key="m"
-                                    size="small"
-                                    style="margin: 2px 4px 2px 0"
-                                    >{{ m }}</el-tag
+                                <template
+                                    v-if="scope.row.modelGroups && scope.row.modelGroups.length"
                                 >
-                                <span
-                                    v-if="!scope.row.models || scope.row.models.length === 0"
-                                    style="color: #999"
-                                    >-</span
-                                >
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="group" label="分组" width="90">
-                            <template #default="scope">
-                                <el-tag size="small" type="info" effect="plain"
-                                    >{{ scope.row.group }}</el-tag
-                                >
+                                    <div
+                                        v-for="(g, gi) in scope.row.modelGroups"
+                                        :key="gi"
+                                        style="margin: 2px 0"
+                                    >
+                                        <el-tag
+                                            size="small"
+                                            style="margin-right: 4px"
+                                            >{{ g.model }}</el-tag
+                                        >
+                                        <span
+                                            v-if="g.capabilities && g.capabilities.length"
+                                            style="color: #666; font-size: 12px"
+                                        >
+                                            （<template
+                                                v-for="(c, ci) in g.capabilities"
+                                                :key="c"
+                                                >{{ ci > 0 ? '、' : '' }}{{
+                                                capabilityLabelMap[c] || c
+                                                }}</template
+                                            >）
+                                        </span>
+                                        <span
+                                            v-else
+                                            style="color: #999; font-size: 12px"
+                                            >（仅文本）</span
+                                        >
+                                    </div>
+                                </template>
+                                <span v-else style="color: #999">-</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="类型" width="100">
                             <template #default="scope">
-                                <el-tag
-                                    v-if="scope.row.type === 'OpenAI'"
-                                    size="small"
-                                    type="success"
-                                    effect="plain"
-                                    >OpenAI</el-tag
-                                >
-                                <el-tag
-                                    v-else-if="scope.row.type === 'DeepSeek'"
-                                    size="small"
-                                    type="primary"
-                                    effect="plain"
-                                    >DeepSeek</el-tag
-                                >
-                                <el-tag
-                                    v-else-if="scope.row.type === 'Azure'"
-                                    size="small"
-                                    effect="plain"
-                                    color="#faad14"
-                                    >Azure</el-tag
-                                >
-                                <el-tag v-else size="small"
+                                <el-tag size="small" type="info" effect="plain"
                                     >{{ scope.row.type }}</el-tag
                                 >
                             </template>
@@ -500,9 +543,7 @@
                         </el-table-column>
                         <el-table-column label="响应时间" width="100">
                             <template #default="scope">
-                                <span
-                                    v-if="scope.row.responseTime"
-                                    style="color: #52c41a"
+                                <span v-if="scope.row.responseTime"
                                     >{{ scope.row.responseTime }}</span
                                 >
                                 <span v-else style="color: #999">未测试</span>
@@ -510,63 +551,30 @@
                         </el-table-column>
                         <el-table-column label="已用 / 剩余" width="140">
                             <template #default="scope">
-                                <span style="color: #faad14"
+                                <span
                                     >${{ (scope.row.used || 0).toFixed(2)
                                     }}</span
                                 >
                                 <span class="mx-1" style="color: #ddd">/</span>
-                                <span style="color: #52c41a"
+                                <span
                                     >${{ (scope.row.remaining || 0).toFixed(2)
                                     }}</span
-                                >
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="优先级" width="72">
-                            <template #default="scope">
-                                <el-tag size="small" type="info" effect="plain"
-                                    >{{ scope.row.priority }}</el-tag
-                                >
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="权重" width="64">
-                            <template #default="scope">
-                                <el-tag size="small" type="info" effect="plain"
-                                    >{{ scope.row.weight }}</el-tag
                                 >
                             </template>
                         </el-table-column>
                         <el-table-column label="操作" fixed="right" width="210">
                             <template #default="scope">
                                 <div class="table-actions">
-                                    <el-dropdown size="small" trigger="click">
-                                        <el-button
-                                            size="small"
-                                            type="primary"
-                                            link
-                                        >
-                                            测试<el-icon class="el-icon--right"
-                                                ><arrow-down></arrow-down
-                                            ></el-icon>
-                                        </el-button>
-                                        <template #dropdown>
-                                            <el-dropdown-menu>
-                                                <el-dropdown-item
-                                                    @click="handleTest(scope.row, 'quick')"
-                                                    >快速测试</el-dropdown-item
-                                                >
-                                                <el-dropdown-item
-                                                    @click="handleTest(scope.row, 'full')"
-                                                    >完整测试</el-dropdown-item
-                                                >
-                                                <el-dropdown-item divided
-                                                    >清空测试上下文</el-dropdown-item
-                                                >
-                                            </el-dropdown-menu>
-                                        </template>
-                                    </el-dropdown>
                                     <el-button
                                         size="small"
-                                        :type="scope.row.status ? 'danger' : 'success'"
+                                        type="primary"
+                                        link
+                                        @click="handleTest(scope.row, 'quick')"
+                                        >测试</el-button
+                                    >
+                                    <el-button
+                                        size="small"
+                                        type="primary"
                                         link
                                         @click="toggleStatus(scope.row)"
                                         >{{ scope.row.status ? '禁用' : '启用'
@@ -579,34 +587,6 @@
                                         @click="openEditDialog(scope.row)"
                                         >编辑</el-button
                                     >
-                                    <el-dropdown size="small" trigger="click">
-                                        <el-button
-                                            size="small"
-                                            type="info"
-                                            link
-                                        >
-                                            <el-icon
-                                                ><more-filled></more-filled
-                                            ></el-icon>
-                                        </el-button>
-                                        <template #dropdown>
-                                            <el-dropdown-menu>
-                                                <el-dropdown-item
-                                                    @click="handleCopy(scope.row)"
-                                                    >复制渠道</el-dropdown-item
-                                                >
-                                                <el-dropdown-item
-                                                    >日志</el-dropdown-item
-                                                >
-                                                <el-dropdown-item
-                                                    divided
-                                                    style="color: #f5222d"
-                                                    @click="handleDelete(scope.row)"
-                                                    >删除</el-dropdown-item
-                                                >
-                                            </el-dropdown-menu>
-                                        </template>
-                                    </el-dropdown>
                                 </div>
                             </template>
                         </el-table-column>
@@ -651,10 +631,7 @@
                                 label="OpenAI"
                                 value="OpenAI"
                             ></el-option>
-                            <el-option
-                                label="Azure"
-                                value="Azure"
-                            ></el-option>
+                            <el-option label="Azure" value="Azure"></el-option>
                             <el-option
                                 label="自定义"
                                 value="Custom"
@@ -691,141 +668,99 @@
                             v-model="formData.apiAddr"
                             placeholder="https://api.deepseek.com"
                         ></el-input>
-                        <div class="form-hint">
-                            对于官方渠道，new-api 已内置地址；仅第三方代理站点或
-                            Azure 特殊接入地址需要填写。
-                        </div>
                     </el-form-item>
 
-                    <el-form-item label="模型">
-                        <el-select
-                            v-model="formData.models"
-                            multiple
-                            filterable
-                            placeholder="请选择模型"
-                            style="width: 100%"
+                    <el-form-item label="模型能力">
+                        <template
+                            v-for="(group, gi) in formData.modelGroups"
+                            :key="gi"
                         >
-                            <el-option
-                                label="deepseek-v4-flash"
-                                value="deepseek-v4-flash"
-                            ></el-option>
-                            <el-option
-                                label="deepseek-v4-pro"
-                                value="deepseek-v4-pro"
-                            ></el-option>
-                            <el-option
-                                label="gpt-4o"
-                                value="gpt-4o"
-                            ></el-option>
-                            <el-option
-                                label="gpt-4o-mini"
-                                value="gpt-4o-mini"
-                            ></el-option>
-                            <el-option
-                                label="claude-3-opus"
-                                value="claude-3-opus"
-                            ></el-option>
-                        </el-select>
-                        <div class="flex flex-wrap gap-1.5 mt-1.5">
-                            <el-button size="small" @click="fillRelatedModels"
-                                >填入相关模型</el-button
-                            >
-                            <el-button size="small" @click="fetchModelList"
-                                >获取模型列表</el-button
-                            >
-                            <el-button size="small" @click="openModelMore"
-                                >更多</el-button
-                            >
-                        </div>
-                    </el-form-item>
-
-                    <el-form-item label="自定义模型名">
-                        <el-input
-                            v-model="formData.customModel"
-                            placeholder="输入自定义模型名称"
-                        >
-                            <template #append>
-                                <el-button @click="fillCustomModel"
-                                    >填入</el-button
+                            <div class="model-group-card">
+                                <div
+                                    class="flex items-center gap-2"
+                                    style="margin-bottom: 10px"
                                 >
-                            </template>
-                        </el-input>
-                    </el-form-item>
-
-                    <hr
-                        style="
-                            border: none;
-                            border-top: 1px solid #ebeef5;
-                            margin: 24px 0;
-                        "
-                    />
-
-                    <!-- 高级配置 -->
-                    <div class="dialog-section-header">
-                        <span class="badge badge--orange"></span>
-                        <div>
-                            <div class="title">高级配置</div>
-                            <div class="desc">
-                                分组、重定向、自动禁用等高级设置
+                                    <el-select
+                                        v-model="group.model"
+                                        placeholder="选择模型"
+                                        size="small"
+                                        style="flex: 1; min-width: 0"
+                                        filterable
+                                    >
+                                        <el-option
+                                            v-for="opt in modelOptions"
+                                            :key="opt.value"
+                                            :label="opt.label"
+                                            :value="opt.value"
+                                        ></el-option>
+                                    </el-select>
+                                    <el-button
+                                        size="small"
+                                        type="danger"
+                                        link
+                                        @click="removeModelGroup(gi)"
+                                        >删除</el-button
+                                    >
+                                </div>
+                                <div>
+                                    <!-- 文本能力 - 默认支持，显示为标签 -->
+                                    <div class="capability-section">
+                                        <div class="capability-section__title">
+                                            文本能力
+                                        </div>
+                                        <div class="capability-section__items">
+                                            <el-tag
+                                                size="small"
+                                                class="capability-default-tag"
+                                                >文本识别与生成</el-tag
+                                            >
+                                        </div>
+                                    </div>
+                                    <!-- 其他能力组 -->
+                                    <template
+                                        v-for="grp in capabilityGroups"
+                                        :key="grp.category"
+                                    >
+                                        <div
+                                            v-if="grp.category !== '文本能力'"
+                                            class="capability-section"
+                                        >
+                                            <div
+                                                class="capability-section__title"
+                                            >
+                                                {{ grp.category }}
+                                            </div>
+                                            <div
+                                                class="capability-section__items"
+                                            >
+                                                <el-checkbox-group
+                                                    v-model="group.capabilities"
+                                                    @change="(val) => onCapabilityChange(group, val)"
+                                                >
+                                                    <el-checkbox
+                                                        v-for="item in grp.items"
+                                                        :key="item.value"
+                                                        :label="item.value"
+                                                        border
+                                                        size="small"
+                                                        >{{ item.label
+                                                        }}</el-checkbox
+                                                    >
+                                                </el-checkbox-group>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <el-form-item label="分组">
-                        <el-select v-model="formData.group" style="width: 100%">
-                            <el-option
-                                label="default"
-                                value="default"
-                            ></el-option>
-                            <el-option
-                                label="vip"
-                                value="vip"
-                            ></el-option>
-                            <el-option
-                                label="internal"
-                                value="internal"
-                            ></el-option>
-                        </el-select>
-                    </el-form-item>
-
-                    <el-form-item label="模型重定向">
-                        <div class="redirect-card">
-                            <div class="flex items-center justify-between mb-3">
-                                <span style="font-size: 13px; color: #333"
-                                    >可视化 / 手动编辑</span
-                                >
-                                <el-button size="small" link
-                                    >填入模板</el-button
-                                >
-                            </div>
-                            <div
-                                style="
-                                    text-align: center;
-                                    padding: 24px 0;
-                                    color: #999;
-                                "
+                        </template>
+                        <div style="margin-top: 12px; width: 100%">
+                            <el-button
+                                size="small"
+                                type="primary"
+                                plain
+                                @click="addModelGroup"
+                                >+ 添加模型组</el-button
                             >
-                                <p style="margin-bottom: 10px">
-                                    暂无数据，点击下方按钮添加键值对
-                                </p>
-                                <el-button type="primary" plain size="small"
-                                    >+ 添加键值对</el-button
-                                >
-                            </div>
-                            <div class="form-hint text-center">
-                                键为请求中的模型名称，值为要替换的模型名称
-                            </div>
-                        </div>
-                    </el-form-item>
-
-                    <el-form-item label="是否自动禁用">
-                        <el-switch
-                            v-model="formData.autoDisable"
-                            active-text="开启"
-                            inactive-text="关闭"
-                        ></el-switch>
-                        <div class="form-hint">
-                            开启后，渠道连续失败达到阈值将自动禁用
                         </div>
                     </el-form-item>
                 </el-form>
@@ -849,8 +784,8 @@
             const app = createApp({
                 setup() {
                     // ==================== 基础状态 ====================
-                    const sortById = ref(false);
-                    const batchOps = ref(false);
+                    const sortById = ref(true);
+                    const batchOps = ref(true);
                     const dialogVisible = ref(false);
                     const dialogMode = ref("add");
                     const formRef = ref(null);
@@ -867,7 +802,6 @@
                         status: "",
                         keyword: "",
                         model: "",
-                        group: "",
                     });
 
                     const defaultForm = () => ({
@@ -875,10 +809,7 @@
                         name: "",
                         key: "",
                         apiAddr: "https://api.deepseek.com",
-                        models: [],
-                        customModel: "",
-                        group: "default",
-                        autoDisable: true,
+                        modelGroups: [],
                     });
 
                     const formRules = {
@@ -909,60 +840,67 @@
                         {
                             id: 1001,
                             name: "OpenAI 主渠道",
-                            group: "default",
                             type: "OpenAI",
                             status: true,
                             responseTime: null,
-                            priority: 1,
-                            weight: 10,
                             used: 125.5,
                             remaining: 874.5,
-                            models: ["gpt-4o", "gpt-4o-mini"],
+                            modelGroups: [
+                                {
+                                    model: "gpt-4o",
+                                    capabilities: ["image_rec", "image_gen"],
+                                },
+                                { model: "gpt-4o-mini", capabilities: [] },
+                            ],
                             apiAddr: "https://api.openai.com",
                             key: "sk-xxxxx1",
                         },
                         {
                             id: 1002,
                             name: "DeepSeek 官方",
-                            group: "default",
                             type: "DeepSeek",
                             status: true,
                             responseTime: "0.82 秒",
-                            priority: 2,
-                            weight: 8,
                             used: 320.0,
                             remaining: 680.0,
-                            models: ["deepseek-v4-flash", "deepseek-v4-pro"],
+                            modelGroups: [
+                                {
+                                    model: "deepseek-v4-flash",
+                                    capabilities: ["ocr", "image_rec"],
+                                },
+                                { model: "deepseek-v4-pro", capabilities: [] },
+                            ],
                             apiAddr: "https://api.deepseek.com",
                             key: "sk-xxxxx2",
                         },
                         {
                             id: 1003,
                             name: "Azure OpenAI",
-                            group: "vip",
                             type: "Azure",
                             status: false,
                             responseTime: null,
-                            priority: 3,
-                            weight: 5,
                             used: 0.0,
                             remaining: 500.0,
-                            models: ["gpt-4o"],
+                            modelGroups: [
+                                { model: "gpt-4o", capabilities: [] },
+                            ],
                             apiAddr: "https://xxx.azure.com",
                             key: "az-xxxxx3",
                         },
                         {
                             id: 1004,
                             name: "Claude 代理",
-                            group: "internal",
                             type: "Custom",
                             status: true,
                             responseTime: "1.23 秒",
-                            priority: 0,
-                            weight: 3,
                             used: 88.2,
                             remaining: 411.8,
-                            models: ["claude-3-opus"],
+                            modelGroups: [
+                                {
+                                    model: "claude-3-opus",
+                                    capabilities: ["video_rec"],
+                                },
+                            ],
                             apiAddr: "https://api.claude-proxy.com",
                             key: "ck-xxxxx4",
                         },
@@ -994,15 +932,9 @@
                         if (searchFilters.model) {
                             const m = searchFilters.model.toLowerCase();
                             data = data.filter((r) =>
-                                (r.models || []).some((mod) =>
-                                    mod.toLowerCase().includes(m),
+                                (r.modelGroups || []).some((g) =>
+                                    g.model.toLowerCase().includes(m),
                                 ),
-                            );
-                        }
-
-                        if (searchFilters.group) {
-                            data = data.filter(
-                                (r) => r.group === searchFilters.group,
                             );
                         }
 
@@ -1020,6 +952,72 @@
 
                     // ==================== 弹窗表单数据 ====================
                     const formData = reactive(defaultForm());
+
+                    const modelOptions = [
+                        {
+                            label: "deepseek-v4-flash",
+                            value: "deepseek-v4-flash",
+                        },
+                        { label: "deepseek-v4-pro", value: "deepseek-v4-pro" },
+                        { label: "gpt-4o", value: "gpt-4o" },
+                        { label: "gpt-4o-mini", value: "gpt-4o-mini" },
+                        { label: "claude-3-opus", value: "claude-3-opus" },
+                    ];
+
+                    const capabilityGroups = [
+                        {
+                            category: "文本能力",
+                            items: [
+                                {
+                                    label: "文本识别与生成",
+                                    value: "text_rec_gen",
+                                    default: true,
+                                },
+                            ],
+                        },
+                        {
+                            category: "图片能力",
+                            items: [
+                                { label: "通用图片识别", value: "image_rec" },
+                                { label: "通用图片生成", value: "image_gen" },
+                                { label: "OCR文字识别", value: "ocr" },
+                            ],
+                        },
+                        {
+                            category: "文件能力",
+                            items: [
+                                { label: "文件识别", value: "file_rec" },
+                                { label: "文件生成", value: "file_gen" },
+                            ],
+                        },
+                        {
+                            category: "视频能力",
+                            items: [
+                                { label: "视频识别", value: "video_rec" },
+                                { label: "视频生成", value: "video_gen" },
+                            ],
+                        },
+                        {
+                            category: "音频能力",
+                            items: [
+                                { label: "音频识别", value: "audio_rec" },
+                                { label: "音频生成", value: "audio_gen" },
+                            ],
+                        },
+                    ];
+
+                    const capabilityLabelMap = {
+                        text_rec_gen: "文本识别与生成",
+                        image_rec: "通用图片识别",
+                        image_gen: "通用图片生成",
+                        ocr: "OCR文字识别",
+                        file_rec: "文件识别",
+                        file_gen: "文件生成",
+                        video_rec: "视频识别",
+                        video_gen: "视频生成",
+                        audio_rec: "音频识别",
+                        audio_gen: "音频生成",
+                    };
 
                     const openAddDialog = () => {
                         dialogMode.value = "add";
@@ -1053,8 +1051,6 @@
                                     id: newId,
                                     status: true,
                                     responseTime: null,
-                                    priority: 0,
-                                    weight: 0,
                                     used: 0,
                                     remaining: 0,
                                 });
@@ -1133,7 +1129,6 @@
                         searchFilters.status = "";
                         searchFilters.keyword = "";
                         searchFilters.model = "";
-                        searchFilters.group = "";
                         ElementPlus.ElMessage.info("已重置筛选条件");
                     };
 
@@ -1145,37 +1140,20 @@
                         );
                     };
 
-                    const fillRelatedModels = () => {
-                        const map = {
-                            DeepSeek: ["deepseek-v4-flash", "deepseek-v4-pro"],
-                            OpenAI: ["gpt-4o", "gpt-4o-mini"],
-                            Azure: ["gpt-4o"],
-                            Custom: ["claude-3-opus"],
-                        };
-                        const models = map[formData.type] || [];
-                        formData.models = [
-                            ...new Set([...formData.models, ...models]),
-                        ];
-                        ElementPlus.ElMessage.success(
-                            `已填入 ${models.length} 个相关模型`,
-                        );
+                    const addModelGroup = () => {
+                        formData.modelGroups.push({
+                            model: "",
+                            capabilities: [],
+                        });
                     };
 
-                    const fetchModelList = () =>
-                        ElementPlus.ElMessage.info("正在获取模型列表...");
-                    const openModelMore = () =>
-                        ElementPlus.ElMessage.info("更多模型配置");
+                    const removeModelGroup = (index) => {
+                        formData.modelGroups.splice(index, 1);
+                    };
 
-                    const fillCustomModel = () => {
-                        if (
-                            formData.customModel &&
-                            !formData.models.includes(formData.customModel)
-                        ) {
-                            formData.models.push(formData.customModel);
-                            ElementPlus.ElMessage.success(
-                                `已添加模型: ${formData.customModel}`,
-                            );
-                        }
+                    const onCapabilityChange = (group, newCaps) => {
+                        // No mutual exclusion needed in current capability structure
+                        group.capabilities = [...newCaps];
                     };
 
                     return {
@@ -1188,6 +1166,9 @@
                         formRules,
                         searchFilters,
                         formData,
+                        capabilityLabelMap,
+                        modelOptions,
+                        capabilityGroups,
                         tableData,
                         filteredData,
                         selectedRows,
@@ -1204,10 +1185,9 @@
                         handleSearch,
                         handleReset,
                         handleViewKey,
-                        fillRelatedModels,
-                        fetchModelList,
-                        openModelMore,
-                        fillCustomModel,
+                        addModelGroup,
+                        removeModelGroup,
+                        onCapabilityChange,
                     };
                 },
             });
