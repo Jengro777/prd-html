@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>渠道管理系统演示</title>
+        <!-- 引入 Element Plus 和 Vue 样式 -->
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/element-plus/dist/index.css"
+        />
+        <style>
+            body {
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    "Helvetica Neue", Arial, sans-serif;
+                margin: 0;
+                padding: 20px;
+                background-color: #f5f7fa;
+            }
+            .page-container {
+                max-width: 1400px;
+                margin: 0 auto;
+            }
+            .toolbar {
+                background: #fff;
+                padding: 10px 20px;
+                border-radius: 4px;
+                margin-bottom: 15px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .toolbar-left .el-button {
+                margin-right: 5px;
+            }
+            .toolbar-right {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+            }
+            .main-table-container {
+                background: #fff;
+                padding: 20px;
+                border-radius: 4px;
+            }
+            .el-table .cell {
+                padding: 8px 0;
+            }
+            .status-badge-success {
+                background-color: #f0f9eb;
+                color: #67c23a;
+                border: 1px solid #e1f3d8;
+                padding: 2px 8px;
+                border-radius: 4px;
+                font-size: 12px;
+            }
+            .status-badge-danger {
+                background-color: #fef0f0;
+                color: #f56c6c;
+                border: 1px solid #fde2e2;
+                padding: 2px 8px;
+                border-radius: 4px;
+                font-size: 12px;
+            }
+            .model-tag {
+                background-color: #f4f4f5;
+                color: #909399;
+                border: 1px solid #e9e9eb;
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-size: 12px;
+                display: inline-block;
+            }
+            .icon-mock {
+                font-weight: bold;
+            }
+            .el-dialog__header {
+                border-bottom: 1px solid #ebeef5;
+            }
+            /* 模拟格式标签 */
+            .tag-deepseek {
+                color: #409eff;
+                border-color: #409eff;
+            }
+            .tag-openai {
+                color: #67c23a;
+                border-color: #67c23a;
+            }
+
+            .el-dialog .el-input-group__append {
+                padding: 0 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+            <div class="page-container">
+                <!-- 工具栏 -->
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <el-button
+                            type="primary"
+                            plain
+                            size="small"
+                            @click="openAddDialog"
+                            >添加渠道</el-button
+                        >
+                        <el-button size="small">删除所选通道</el-button>
+                        <el-button size="small">批量设置标签</el-button>
+                        <el-button size="small">批量操作</el-button>
+                        <el-button size="small">刷新</el-button>
+                        <el-button size="small">列设置</el-button>
+                        <el-button size="small">紧凑列表</el-button>
+                    </div>
+                    <div class="toolbar-right">
+                        <span style="font-size: 14px">使用ID排序</span>
+                        <el-switch v-model="sortById" size="small"></el-switch>
+                        <span style="font-size: 14px; margin-left: 10px"
+                            >开启批量操作</span
+                        >
+                        <el-switch v-model="batchOps" size="small"></el-switch>
+                        <el-select
+                            v-model="statusFilter"
+                            placeholder="状态筛选"
+                            size="small"
+                            style="width: 100px"
+                        >
+                            <el-option label="全部" value="all"></el-option>
+                            <el-option
+                                label="已启用"
+                                value="enabled"
+                            ></el-option>
+                        </el-select>
+                        <el-input
+                            size="small"
+                            placeholder="渠道ID, 名称, 密钥, API地址"
+                            style="width: 180px"
+                            prefix-icon="Search"
+                        ></el-input>
+                        <el-input
+                            size="small"
+                            placeholder="模型关键字"
+                            style="width: 130px"
+                            prefix-icon="Search"
+                        ></el-input>
+                        <el-select
+                            size="small"
+                            placeholder="选择分组"
+                            style="width: 110px"
+                        >
+                            <el-option
+                                label="default"
+                                value="default"
+                            ></el-option>
+                        </el-select>
+                        <el-button size="small" type="primary">查询</el-button>
+                        <el-button size="small">重置</el-button>
+                    </div>
+                </div>
+
+                <!-- 数据表格 -->
+                <div class="main-table-container">
+                    <el-table
+                        :data="tableData"
+                        style="width: 100%"
+                        :header-cell-style="{background:'#fafafa'}"
+                        stripe
+                    >
+                        <el-table-column
+                            prop="id"
+                            label="ID"
+                            width="60"
+                        ></el-table-column>
+                        <el-table-column label="名称" width="150">
+                            <template #default="scope">
+                                <span style="font-weight: 500"
+                                    >{{ scope.row.name }}</span
+                                >
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="group" label="分组" width="120">
+                            <template #default="scope">
+                                <el-tag size="small" type="info" effect="plain"
+                                    >{{ scope.row.group }}</el-tag
+                                >
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="类型" width="120">
+                            <template #default="scope">
+                                <span v-if="scope.row.type === 'OpenAI'"
+                                    ><el-tag
+                                        size="small"
+                                        type="success"
+                                        effect="plain"
+                                        >OpenAI</el-tag
+                                    ></span
+                                >
+                                <span v-if="scope.row.type === 'DeepSeek'"
+                                    ><el-tag
+                                        size="small"
+                                        type="primary"
+                                        effect="plain"
+                                        >DeepSeek</el-tag
+                                    ></span
+                                >
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="状态" width="100">
+                            <template #default="scope">
+                                <span
+                                    class="status-badge-success"
+                                    v-if="scope.row.status"
+                                    >已启用</span
+                                >
+                                <span class="status-badge-danger" v-else
+                                    >已禁用</span
+                                >
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="响应时间" width="120">
+                            <template #default="scope">
+                                <span
+                                    v-if="scope.row.responseTime"
+                                    style="color: #67c23a"
+                                    >{{ scope.row.responseTime }}</span
+                                >
+                                <span v-else style="color: #909399"
+                                    >未测试</span
+                                >
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="已用/剩余" width="150">
+                            <template #default="scope">
+                                <el-tag size="small" type="info" effect="plain"
+                                    >$0.00</el-tag
+                                >
+                                <el-tag
+                                    size="small"
+                                    type="info"
+                                    effect="plain"
+                                    style="margin-left: 5px"
+                                    >$0.00</el-tag
+                                >
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="优先级" width="80">
+                            <template #default="scope">
+                                <el-tag size="small" type="info" effect="plain"
+                                    >{{ scope.row.priority }}</el-tag
+                                >
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="权重" width="80">
+                            <template #default="scope">
+                                <el-tag size="small" type="info" effect="plain"
+                                    >{{ scope.row.weight }}</el-tag
+                                >
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                            label="操作"
+                            fixed="right"
+                            min-width="180"
+                        >
+                            <template #default="scope">
+                                <el-button size="small" type="primary" link
+                                    >测试</el-button
+                                >
+                                <el-dropdown
+                                    size="small"
+                                    style="margin-left: 10px"
+                                >
+                                    <el-button size="small" type="primary" link
+                                        >测试
+                                        <el-icon class="el-icon--right"
+                                            ><arrow-down /></el-icon
+                                    ></el-button>
+                                    <template #dropdown>
+                                        <el-dropdown-menu>
+                                            <el-dropdown-item
+                                                >测试 1</el-dropdown-item
+                                            >
+                                            <el-dropdown-item
+                                                >测试 2</el-dropdown-item
+                                            >
+                                        </el-dropdown-menu>
+                                    </template>
+                                </el-dropdown>
+                                <el-button size="small" type="danger" link
+                                    >禁用</el-button
+                                >
+                                <el-button
+                                    size="small"
+                                    type="primary"
+                                    link
+                                    @click="openEditDialog(scope.row)"
+                                    >编辑</el-button
+                                >
+                                <el-button size="small" type="info" link
+                                    ><el-icon><more-filled /></el-icon
+                                ></el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+            </div>
+
+            <!-- 渠道弹窗 (添加/编辑共用一个) -->
+            <el-dialog
+                v-model="dialogVisible"
+                :title="dialogTitle"
+                width="700px"
+                :close-on-click-modal="false"
+            >
+                <el-form :model="formData" label-width="100px">
+                    <div
+                        style="
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                            background: #f4f4f5;
+                            padding: 10px;
+                            border-radius: 4px;
+                            margin-bottom: 20px;
+                        "
+                    >
+                        <el-icon :size="20" color="#409EFF"
+                            ><info-filled
+                        /></el-icon>
+                        <div>
+                            <div style="font-weight: bold; color: #333">
+                                核心配置
+                            </div>
+                            <div style="font-size: 12px; color: #666">
+                                创建渠道所需的基本信息
+                            </div>
+                        </div>
+                    </div>
+
+                    <el-form-item label="类型" required>
+                        <el-select v-model="formData.type" style="width: 100%">
+                            <el-option
+                                label="DeepSeek"
+                                value="DeepSeek"
+                            ></el-option>
+                            <el-option
+                                label="OpenAI"
+                                value="OpenAI"
+                            ></el-option>
+                        </el-select>
+                    </el-form-item>
+
+                    <el-form-item label="名称" required>
+                        <el-input v-model="formData.name"></el-input>
+                    </el-form-item>
+
+                    <el-form-item label="密钥">
+                        <el-input
+                            v-model="formData.key"
+                            type="password"
+                            show-password
+                            placeholder="请输入渠道对应的鉴权密钥"
+                        ></el-input>
+                        <div style="margin-top: 5px">
+                            <el-button size="small" type="primary" plain
+                                >查看密钥</el-button
+                            >
+                        </div>
+                    </el-form-item>
+
+                    <el-form-item label="API地址">
+                        <el-input
+                            v-model="formData.apiAddr"
+                            placeholder="https://api.deepseek.com"
+                        ></el-input>
+                        <div
+                            style="
+                                font-size: 12px;
+                                color: #999;
+                                margin-top: 4px;
+                            "
+                        >
+                            对于官方渠道，new-api已经内置地址，除非是第三方代理站点或者Azure的特殊接入地址，否则不需要填写
+                        </div>
+                    </el-form-item>
+
+                    <el-form-item label="模型">
+                        <el-select
+                            v-model="formData.models"
+                            multiple
+                            filterable
+                            placeholder="请选择模型"
+                            style="width: 100%"
+                        >
+                            <el-option
+                                label="deepseek-v4-flash"
+                                value="deepseek-v4-flash"
+                            ></el-option>
+                            <el-option
+                                label="deepseek-v4-pro"
+                                value="deepseek-v4-pro"
+                            ></el-option>
+                            <el-option
+                                label="gpt-4o"
+                                value="gpt-4o"
+                            ></el-option>
+                        </el-select>
+                        <div style="margin-top: 5px; display: flex; gap: 5px">
+                            <el-button size="small" type="primary" plain
+                                >填入相关模型</el-button
+                            >
+                            <el-button size="small" type="primary" plain
+                                >获取模型列表</el-button
+                            >
+                            <el-button size="small" type="primary" plain
+                                >更多</el-button
+                            >
+                        </div>
+                    </el-form-item>
+
+                    <el-form-item label="自定义模型名">
+                        <el-input v-model="formData.customModel">
+                            <template #append>
+                                <el-button>填入</el-button>
+                            </template>
+                        </el-input>
+                    </el-form-item>
+
+                    <el-form-item label="分组">
+                        <el-select v-model="formData.group" style="width: 100%">
+                            <el-option
+                                label="default"
+                                value="default"
+                            ></el-option>
+                        </el-select>
+                    </el-form-item>
+
+                    <el-form-item label="模型重定向">
+                        <el-card
+                            shadow="never"
+                            style="
+                                width: 100%;
+                                padding: 10px;
+                                background: #fafafa;
+                            "
+                        >
+                            <div
+                                style="
+                                    display: flex;
+                                    justify-content: space-between;
+                                    margin-bottom: 10px;
+                                "
+                            >
+                                <span style="font-size: 14px"
+                                    >可视化 / 手动编辑</span
+                                >
+                                <el-button size="small" link
+                                    >填入模板</el-button
+                                >
+                            </div>
+                            <div
+                                style="
+                                    text-align: center;
+                                    color: #999;
+                                    padding: 30px 0;
+                                "
+                            >
+                                <p>暂无数据，点击下方按钮添加键值对</p>
+                                <el-button
+                                    type="primary"
+                                    plain
+                                    style="margin-top: 10px"
+                                    >+ 添加键值对</el-button
+                                >
+                            </div>
+                            <div
+                                style="
+                                    font-size: 12px;
+                                    color: #aaa;
+                                    text-align: center;
+                                    margin-top: 5px;
+                                "
+                            >
+                                键为请求中的模型名称，值为要替换的模型名称
+                            </div>
+                        </el-card>
+                    </el-form-item>
+
+                    <el-form-item label="是否自动禁用">
+                        <el-switch
+                            v-model="formData.autoDisable"
+                            active-text="开启"
+                        ></el-switch>
+                    </el-form-item>
+                </el-form>
+                <template #footer>
+                    <span class="dialog-footer">
+                        <el-button @click="dialogVisible = false"
+                            >取消</el-button
+                        >
+                        <el-button type="primary" @click="dialogVisible = false"
+                            >提交</el-button
+                        >
+                    </span>
+                </template>
+            </el-dialog>
+        </div>
+
+        <!-- 引入 Vue 和 Element Plus 脚本 -->
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <script src="https://unpkg.com/element-plus/dist/index.full.js"></script>
+        <script src="https://unpkg.com/@element-plus/icons-vue"></script>
+
+        <script>
+            const { createApp, ref, reactive, computed } = Vue;
+
+            const app = createApp({
+                setup() {
+                    const sortById = ref(false);
+                    const batchOps = ref(false);
+                    const statusFilter = ref("all");
+                    const dialogVisible = ref(false);
+                    const dialogMode = ref("add"); // "add" | "edit"
+
+                    const dialogTitle = computed(() =>
+                        dialogMode.value === "add"
+                            ? "添加渠道"
+                            : "更新渠道信息",
+                    );
+
+                    // 默认空表单
+                    const defaultForm = () => ({
+                        type: "DeepSeek",
+                        name: "",
+                        key: "",
+                        apiAddr: "https://api.deepseek.com",
+                        models: [],
+                        customModel: "",
+                        group: "default",
+                        autoDisable: true,
+                    });
+
+                    // 模拟表格数据
+                    const tableData = reactive([
+                        {
+                            id: 1,
+                            name: "OpenAI",
+                            group: "default",
+                            type: "OpenAI",
+                            status: true,
+                            responseTime: null,
+                            priority: 0,
+                            weight: 0,
+                            models: ["gpt-3.5", "gpt-4"],
+                        },
+                        {
+                            id: 2,
+                            name: "DeepSeek",
+                            group: "default",
+                            type: "DeepSeek",
+                            status: true,
+                            responseTime: "0.82 秒",
+                            priority: 0,
+                            weight: 0,
+                            models: ["deepseek-v4-flash", "deepseek-v4-pro"],
+                        },
+                    ]);
+
+                    // 弹窗表单数据
+                    const formData = reactive(defaultForm());
+
+                    const openAddDialog = () => {
+                        dialogMode.value = "add";
+                        Object.assign(formData, defaultForm());
+                        dialogVisible.value = true;
+                    };
+
+                    const openEditDialog = (row) => {
+                        dialogMode.value = "edit";
+                        Object.assign(formData, row);
+                        dialogVisible.value = true;
+                    };
+
+                    return {
+                        sortById,
+                        batchOps,
+                        statusFilter,
+                        dialogTitle,
+                        tableData,
+                        dialogVisible,
+                        formData,
+                        openAddDialog,
+                        openEditDialog,
+                    };
+                },
+            });
+
+            // 注册图标组件
+            for (const [key, component] of Object.entries(
+                ElementPlusIconsVue,
+            )) {
+                app.component(key, component);
+            }
+
+            app.use(ElementPlus);
+            app.mount("#app");
+        </script>
+    </body>
+</html>

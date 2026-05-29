@@ -1,0 +1,1166 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>系统仪表盘 - TOS原型</title>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+        <style>
+            :root {
+                --primary: #42b7ae;
+                --primary-dark: #2a8a82;
+                --text: #333333;
+                --muted: #666666;
+                --light: #999999;
+                --line: #e7ebf0;
+                --grid: #edf1f5;
+                --bg: #f7f9fb;
+                --card: #ffffff;
+                --blue: #2f7df6;
+                --purple: #8b5cf6;
+                --green: #52c41a;
+                --orange: #faad14;
+                --pink: #ec4899;
+                --shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+                --radius-lg: 20px;
+                --radius: 12px;
+                --radius-sm: 8px;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                min-height: 100vh;
+                color: var(--text);
+                background: var(--bg);
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    "Helvetica Neue", Arial, sans-serif;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            button,
+            select {
+                font: inherit;
+            }
+
+            button {
+                cursor: pointer;
+            }
+
+            .page {
+                width: min(100%, 1280px);
+                margin: 0 auto;
+                padding: 24px;
+            }
+
+            .topbar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                margin-bottom: 20px;
+            }
+
+            .brand {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .brand-mark {
+                width: 38px;
+                height: 38px;
+                border-radius: 12px;
+                display: grid;
+                place-items: center;
+                color: #fff;
+                background: var(--primary);
+            }
+
+            .brand h1 {
+                font-size: 22px;
+                line-height: 1;
+                font-weight: 700;
+            }
+
+            .brand .user {
+                color: var(--light);
+                font-size: 14px;
+                font-weight: 500;
+            }
+
+            .top-actions {
+                display: flex;
+                gap: 8px;
+            }
+
+            .icon-btn {
+                width: 36px;
+                height: 36px;
+                border: 1px solid var(--line);
+                border-radius: var(--radius-sm);
+                color: var(--muted);
+                background: var(--card);
+            }
+
+            .card {
+                border: 1px solid var(--line);
+                border-radius: var(--radius-lg);
+                background: var(--card);
+                box-shadow: var(--shadow);
+                overflow: visible;
+            }
+
+            .summary-grid {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 16px;
+                margin-bottom: 18px;
+            }
+
+            .summary-card {
+                padding: 20px;
+            }
+
+            .card-title {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 18px;
+                color: var(--muted);
+                font-size: 14px;
+                font-weight: 700;
+            }
+
+            .card-title i {
+                color: var(--primary);
+            }
+
+            .summary-body {
+                display: flex;
+                justify-content: space-between;
+                gap: 16px;
+            }
+
+            .metric-list {
+                display: grid;
+                gap: 14px;
+            }
+
+            .metric {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .metric-icon {
+                width: 38px;
+                height: 38px;
+                border-radius: 12px;
+                display: grid;
+                place-items: center;
+                flex: 0 0 auto;
+                color: #fff;
+            }
+
+            .metric-label {
+                color: var(--light);
+                font-size: 12px;
+            }
+
+            .metric-value {
+                margin-top: 3px;
+                color: var(--text);
+                font-size: 18px;
+                line-height: 1;
+                font-weight: 700;
+            }
+
+            .recharge {
+                align-self: flex-start;
+                height: 30px;
+                padding: 0 14px;
+                border: 0;
+                border-radius: var(--radius-sm);
+                color: var(--primary-dark);
+                background: rgba(66, 183, 174, 0.1);
+                font-size: 13px;
+                font-weight: 600;
+            }
+
+            .charts-toolbar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                padding: 4px 0;
+                margin-bottom: 18px;
+            }
+
+            .charts-toolbar h2 {
+                font-size: 17px;
+                font-weight: 700;
+            }
+
+            .toolbar-actions {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .month-select {
+                height: 34px;
+                min-width: 126px;
+                padding: 0 12px;
+                border: 1px solid var(--line);
+                border-radius: var(--radius-sm);
+                color: var(--muted);
+                background: #fff;
+                cursor: pointer;
+            }
+
+            .export-btn {
+                height: 34px;
+                padding: 0 14px;
+                border: 0;
+                border-radius: var(--radius-sm);
+                color: #fff;
+                background: #111827;
+                font-weight: 600;
+            }
+
+            .chart-stack {
+                display: grid;
+                gap: 18px;
+            }
+
+            .chart-card {
+                padding: 16px 18px;
+                position: relative;
+            }
+
+            .chart-card:hover {
+                z-index: 10;
+            }
+
+            .chart-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 18px;
+            }
+
+            .chart-head {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 16px;
+                margin-bottom: 12px;
+            }
+
+            .chart-title {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--muted);
+                font-size: 14px;
+                font-weight: 700;
+            }
+
+            .chart-title i {
+                color: var(--primary);
+            }
+
+            .chart-total {
+                text-align: right;
+                color: var(--text);
+                font-size: 24px;
+                line-height: 1;
+                font-weight: 700;
+            }
+
+            .chart-total span {
+                display: block;
+                margin-top: 5px;
+                color: var(--light);
+                font-size: 12px;
+                font-weight: 500;
+            }
+
+            .chart-area {
+                display: grid;
+                grid-template-columns: 42px 1fr;
+                min-width: 0;
+                padding-top: 8px;
+                border-top: 1px solid var(--line);
+            }
+
+            .y-axis {
+                height: 220px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                color: #667085;
+                font-size: 12px;
+            }
+
+            .plot {
+                position: relative;
+                height: 200px;
+                min-width: 0;
+                border-bottom: 1px solid #cfd8e3;
+                background:
+                    linear-gradient(to bottom, var(--grid) 1px, transparent 1px)
+                        0 0 / 100% 55px,
+                    linear-gradient(
+                            to right,
+                            rgba(231, 235, 240, 0.72) 1px,
+                            transparent 1px
+                        )
+                        0 0 / calc(100% / 30) 100%;
+                overflow: visible;
+            }
+
+            .plot::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                z-index: 1;
+                background: inherit;
+                pointer-events: none;
+            }
+
+            .plot-sm,
+            .plot-sm-y {
+                height: 150px;
+            }
+
+            .bars {
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 1px;
+                z-index: 2;
+                height: calc(100% - 18px);
+                display: grid;
+                grid-template-columns: repeat(31, 1fr);
+                align-items: end;
+                gap: 5px;
+                padding: 0 3px;
+            }
+
+            .bar {
+                position: relative;
+                width: 100%;
+                max-width: 18px;
+                height: var(--h);
+                justify-self: center;
+                border-radius: 4px 4px 0 0;
+                background: linear-gradient(
+                    180deg,
+                    var(--bar),
+                    var(--bar-soft)
+                );
+            }
+
+            .bar::after,
+            .point::after {
+                content: attr(data-tip);
+                position: absolute;
+                left: 50%;
+                bottom: calc(100% + 8px);
+                z-index: 20;
+                padding: 5px 8px;
+                border-radius: 6px;
+                color: #fff;
+                background: rgba(17, 24, 39, 0.92);
+                font-size: 11px;
+                white-space: nowrap;
+                opacity: 0;
+                pointer-events: none;
+                transform: translateX(-50%) translateY(4px);
+                transition: all 0.18s ease;
+            }
+
+            .bar:hover::after,
+            .point:hover::after {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+
+            .area-svg {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                overflow: visible;
+                pointer-events: none;
+                z-index: 2;
+            }
+
+            .point {
+                position: absolute;
+                left: calc(var(--x) * 100% / 30);
+                bottom: calc(var(--y) * 100% / 100);
+                width: 8px;
+                height: 8px;
+                border: 2px solid #fff;
+                border-radius: 50%;
+                background: var(--blue);
+                box-shadow: 0 0 0 1px var(--blue);
+                transform: translate(-50%, 50%);
+                cursor: pointer;
+                z-index: 3;
+            }
+
+            .x-axis {
+                grid-column: 2;
+                display: flex;
+                justify-content: space-between;
+                padding-top: 7px;
+                color: #667085;
+                font-size: 12px;
+            }
+
+            .bg-blue {
+                background: var(--blue);
+            }
+
+            .bg-purple {
+                background: var(--purple);
+            }
+
+            .bg-green {
+                background: var(--green);
+            }
+
+            .bg-teal {
+                background: var(--primary);
+            }
+
+            .bg-orange {
+                background: var(--orange);
+            }
+
+            .bg-pink {
+                background: var(--pink);
+            }
+
+            /* 店铺搜索下拉框 */
+            .store-select-wrapper {
+                position: relative;
+                width: 200px;
+                z-index: 100;
+            }
+
+            .store-select {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                height: 36px;
+                padding: 0 12px;
+                border: 1px solid var(--line);
+                border-radius: var(--radius-sm);
+                background: var(--card);
+                cursor: pointer;
+                gap: 8px;
+                transition: border-color 0.2s;
+            }
+
+            .store-select:hover {
+                border-color: var(--primary);
+            }
+
+            .store-select.is-open {
+                border-color: var(--primary);
+                box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.15);
+            }
+
+            .store-select .store-select-text {
+                flex: 1;
+                font-size: 13px;
+                color: var(--text);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .store-select .store-select-text.placeholder {
+                color: var(--light);
+            }
+
+            .store-select i {
+                font-size: 12px;
+                color: var(--light);
+                transition: transform 0.2s;
+            }
+
+            .store-select.is-open i {
+                transform: rotate(180deg);
+            }
+
+            .store-dropdown {
+                position: absolute;
+                top: calc(100% + 4px);
+                left: 0;
+                right: 0;
+                border: 1px solid var(--line);
+                border-radius: var(--radius-sm);
+                background: var(--card);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+                display: none;
+                overflow: hidden;
+            }
+
+            .store-dropdown.is-visible {
+                display: block;
+            }
+
+            .store-dropdown-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 12px;
+                border-bottom: 1px solid var(--line);
+            }
+
+            .store-dropdown-header i {
+                font-size: 13px;
+                color: var(--light);
+            }
+
+            .store-dropdown-header input {
+                flex: 1;
+                border: none;
+                outline: none;
+                font-size: 13px;
+                color: var(--text);
+                background: transparent;
+            }
+
+            .store-dropdown-header input::placeholder {
+                color: var(--light);
+            }
+
+            .store-dropdown-list {
+                max-height: 220px;
+                overflow-y: auto;
+            }
+
+            .store-dropdown-list::-webkit-scrollbar {
+                width: 4px;
+            }
+
+            .store-dropdown-list::-webkit-scrollbar-thumb {
+                background: var(--line);
+                border-radius: 2px;
+            }
+
+            .store-option {
+                padding: 8px 12px;
+                font-size: 13px;
+                color: var(--text);
+                cursor: pointer;
+                transition: background 0.15s;
+            }
+
+            .store-option:hover {
+                background: rgba(66, 183, 174, 0.08);
+            }
+
+            .store-option.active {
+                color: var(--primary);
+                font-weight: 600;
+                background: rgba(66, 183, 174, 0.06);
+            }
+
+            .store-option.no-result {
+                color: var(--light);
+                cursor: default;
+                text-align: center;
+                padding: 16px 12px;
+            }
+
+            .store-option.no-result:hover {
+                background: transparent;
+            }
+
+            @media (max-width: 900px) {
+                .summary-grid,
+                .chart-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            @media (max-width: 640px) {
+                .page {
+                    padding: 18px;
+                }
+
+                .topbar,
+                .charts-toolbar {
+                    align-items: flex-start;
+                    flex-direction: column;
+                }
+
+                .toolbar-actions {
+                    width: 100%;
+                    justify-content: space-between;
+                }
+
+                .month-select {
+                    flex: 1;
+                }
+
+                .chart-area {
+                    grid-template-columns: 36px 1fr;
+                }
+
+                .y-axis {
+                    font-size: 11px;
+                }
+
+                .bars {
+                    gap: 3px;
+                }
+
+                .bar {
+                    max-width: 10px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <main class="page">
+            <header class="topbar">
+                <div class="brand">
+                    <div class="brand-mark" aria-hidden="true">
+                        <i class="fas fa-chart-simple"></i>
+                    </div>
+                    <h1>仪表盘</h1>
+                    <span class="user">admin</span>
+                </div>
+                <div class="store-select-wrapper" id="storeSelectWrapper">
+                    <div class="store-select" id="storeSelectTrigger">
+                        <span class="store-select-text placeholder">全部</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="store-dropdown" id="storeDropdown">
+                        <div class="store-dropdown-header">
+                            <i class="fas fa-search"></i>
+                            <input
+                                type="text"
+                                id="storeFilterInput"
+                                placeholder="搜索店铺..."
+                                autocomplete="off"
+                            />
+                        </div>
+                        <div class="store-dropdown-list" id="storeDropdownList">
+                            <div class="store-option active" data-value="all">
+                                全部
+                            </div>
+                            <div class="store-option" data-value="store1">
+                                TOS官方旗舰店
+                            </div>
+                            <div class="store-option" data-value="store2">
+                                TechZone数码专营店
+                            </div>
+                            <div class="store-option" data-value="store3">
+                                时尚优品服饰店
+                            </div>
+                            <div class="store-option" data-value="store4">
+                                家居生活馆
+                            </div>
+                            <div class="store-option" data-value="store5">
+                                美妆护肤专营店
+                            </div>
+                            <div class="store-option" data-value="store6">
+                                运动户外旗舰店
+                            </div>
+                            <div class="store-option" data-value="store7">
+                                母婴用品专营店
+                            </div>
+                            <div class="store-option" data-value="store8">
+                                图书文具旗舰店
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <section class="summary-grid" aria-label="数据概览">
+                <article class="card summary-card">
+                    <div class="card-title">
+                        <i class="fas fa-wallet"></i>
+                        <span>账户数据</span>
+                    </div>
+                    <div class="summary-body">
+                        <div class="metric-list">
+                            <div class="metric">
+                                <span class="metric-icon bg-blue"
+                                    ><i class="fas fa-dollar-sign"></i
+                                ></span>
+                                <div>
+                                    <div class="metric-label">当前余额</div>
+                                    <div class="metric-value">$200.00</div>
+                                </div>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-icon bg-purple"
+                                    ><i class="fas fa-history"></i
+                                ></span>
+                                <div>
+                                    <div class="metric-label">历史消耗</div>
+                                    <div class="metric-value">$0.00</div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="recharge" type="button">充值</button>
+                    </div>
+                </article>
+
+                <article class="card summary-card">
+                    <div class="card-title">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>使用统计</span>
+                    </div>
+                    <div class="metric-list">
+                        <div class="metric">
+                            <span class="metric-icon bg-green"
+                                ><i class="fas fa-rocket"></i
+                            ></span>
+                            <div>
+                                <div class="metric-label">调用次数</div>
+                                <div class="metric-value">0</div>
+                            </div>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-icon bg-teal"
+                                ><i class="fas fa-sync-alt"></i
+                            ></span>
+                            <div>
+                                <div class="metric-label">统计次数</div>
+                                <div class="metric-value">4</div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="card summary-card">
+                    <div class="card-title">
+                        <i class="fas fa-coins"></i>
+                        <span>资源消耗</span>
+                    </div>
+                    <div class="metric-list">
+                        <div class="metric">
+                            <span class="metric-icon bg-orange"
+                                ><i class="fas fa-dollar-sign"></i
+                            ></span>
+                            <div>
+                                <div class="metric-label">统计额度</div>
+                                <div class="metric-value">¥87.55</div>
+                            </div>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-icon bg-pink"
+                                ><i class="fas fa-cube"></i
+                            ></span>
+                            <div>
+                                <div class="metric-label">统计Tokens</div>
+                                <div class="metric-value">1,258,127,902</div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <section class="charts-toolbar" aria-label="图表月份筛选">
+                <h2>每月用量</h2>
+                <div class="toolbar-actions">
+                    <select class="month-select" aria-label="选择图表统计月份">
+                        <option value="2026-05">2026年05月</option>
+                        <option value="2026-04">2026年04月</option>
+                        <option value="2026-03">2026年03月</option>
+                        <option value="2026-02">2026年02月</option>
+                        <option value="2026-01">2026年01月</option>
+                    </select>
+                    <button class="export-btn" id="exportZipBtn" type="button">
+                        <i class="fas fa-download"></i>
+                        导出
+                    </button>
+                </div>
+            </section>
+
+            <section class="chart-stack" aria-label="月度图表">
+                <article class="card chart-card">
+                    <div class="chart-head">
+                        <div class="chart-title">
+                            <i class="fas fa-credit-card"></i>
+                            <span>消费金额</span>
+                        </div>
+                        <div class="chart-total">
+                            ¥87.55
+                            <span>总计</span>
+                        </div>
+                    </div>
+                    <div class="chart-area">
+                        <div class="y-axis" aria-hidden="true">
+                            <span>¥20</span>
+                            <span>¥10</span>
+                            <span>¥0</span>
+                        </div>
+                        <div
+                            class="plot"
+                            role="img"
+                            aria-label="2026年5月1日至5月31日每日消费金额柱状图"
+                        >
+                            <div
+                                class="bars"
+                                id="costBars"
+                                style="
+                                    --bar: #42b7ae;
+                                    --bar-soft: rgba(66, 183, 174, 0.18);
+                                "
+                            ></div>
+                        </div>
+                        <div class="x-axis" aria-hidden="true">
+                            <span>5.1</span>
+                            <span>5.31</span>
+                        </div>
+                    </div>
+                </article>
+
+                <div class="chart-grid">
+                    <article class="card chart-card">
+                        <div class="chart-head">
+                            <div class="chart-title">
+                                <i class="fas fa-chart-line"></i>
+                                <span>API 请求次数</span>
+                            </div>
+                            <div class="chart-total">14,675</div>
+                        </div>
+                        <div class="chart-area">
+                            <div class="y-axis plot-sm-y" aria-hidden="true">
+                                <span>3,200</span>
+                                <span></span>
+                                <span>0</span>
+                            </div>
+                            <div
+                                class="plot plot-sm"
+                                id="requestPlot"
+                                role="img"
+                                aria-label="2026年5月1日至5月31日API请求次数折线图"
+                            ></div>
+                            <div class="x-axis" aria-hidden="true">
+                                <span>5.1</span>
+                                <span>5.31</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="card chart-card">
+                        <div class="chart-head">
+                            <div class="chart-title">
+                                <i class="fas fa-chart-bar"></i>
+                                <span>Tokens</span>
+                            </div>
+                            <div class="chart-total">1,258,127,902</div>
+                        </div>
+                        <div class="chart-area">
+                            <div class="y-axis plot-sm-y" aria-hidden="true">
+                                <span>240,000,000</span>
+                                <span></span>
+                                <span>0</span>
+                            </div>
+                            <div
+                                class="plot plot-sm"
+                                role="img"
+                                aria-label="2026年5月1日至5月31日Token消耗柱状图"
+                            >
+                                <div
+                                    class="bars"
+                                    id="tokenBars"
+                                    style="
+                                        --bar: #8b5cf6;
+                                        --bar-soft: rgba(139, 92, 246, 0.18);
+                                    "
+                                ></div>
+                            </div>
+                            <div class="x-axis" aria-hidden="true">
+                                <span>5.1</span>
+                                <span>5.31</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </main>
+        <script>
+            const monthDays = Array.from({ length: 31 }, (_, index) => {
+                const day = String(index + 1).padStart(2, "0");
+                return `2026-05-${day}`;
+            });
+
+            const costDaily = [
+                0, 0, 0.9574, 0, 0.4734, 0, 0.2126, 0, 0, 0, 1.4863, 1.1144,
+                2.7764, 5.7615, 3.9478, 0, 0, 8.6288, 3.5756, 4.8578, 0,
+                20.3087, 0, 2.2317, 11.4604, 6.9704, 9.5567, 3.2292, 0.0001, 0,
+                0,
+            ];
+            const requestDaily = [
+                0, 0, 155, 0, 128, 0, 52, 0, 0, 0, 175, 205, 408, 908, 766, 0,
+                0, 1154, 569, 514, 0, 3151, 0, 345, 2341, 1365, 1807, 628, 4, 0,
+                0,
+            ];
+            const tokenDaily = [
+                0, 0, 9937667, 0, 5130125, 0, 3331820, 0, 0, 0, 13980632,
+                3117642, 28199798, 88084003, 65970515, 0, 0, 133816152,
+                43437621, 53546354, 0, 235492185, 0, 33249189, 195358159,
+                129610388, 163600922, 52264653, 77, 0, 0,
+            ];
+
+            function formatNumber(value) {
+                return new Intl.NumberFormat("en-US").format(value);
+            }
+
+            function formatTokens(value) {
+                if (value >= 1000000) {
+                    return `${(value / 1000000).toFixed(1)}M`;
+                }
+                return formatNumber(value);
+            }
+
+            function renderBars(targetId, values, formatter) {
+                const target = document.getElementById(targetId);
+                const max = Math.max(...values, 1);
+                target.innerHTML = values
+                    .map((value, index) => {
+                        const height =
+                            value === 0 ? 0 : Math.max((value / max) * 92, 2);
+                        const tip = `${monthDays[index]} ${formatter(value)}`;
+                        return `<span class="bar" style="--h: ${height.toFixed(2)}%" data-tip="${tip}"></span>`;
+                    })
+                    .join("");
+            }
+
+            function renderLine(targetId, values) {
+                const target = document.getElementById(targetId);
+                const max = Math.max(...values, 1);
+                const points = values.map((value, index) => ({
+                    x: (index / 30) * 300,
+                    y: 96 - (value / max) * 88,
+                }));
+                const linePath = points.reduce((path, point, index) => {
+                    if (index === 0)
+                        return `M${point.x.toFixed(2)},${point.y.toFixed(2)}`;
+                    const prev = points[index - 1];
+                    const c1x = prev.x + (point.x - prev.x) / 2;
+                    const c2x = point.x - (point.x - prev.x) / 2;
+                    return `${path} C${c1x.toFixed(2)},${prev.y.toFixed(2)} ${c2x.toFixed(2)},${point.y.toFixed(2)} ${point.x.toFixed(2)},${point.y.toFixed(2)}`;
+                }, "");
+                const areaPath = `${linePath} L300,100 L0,100 Z`;
+                target.innerHTML = `
+                    <svg class="area-svg" viewBox="0 0 300 100" preserveAspectRatio="none" aria-hidden="true">
+                        <path d="${areaPath}" fill="#d8ecff" opacity="0.9"></path>
+                        <path d="${linePath}" fill="none" stroke="#2f7df6" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+                    </svg>
+                    ${values
+                        .map((value, index) => {
+                            if (!value) return "";
+                            const x = index;
+                            const y = (value / max) * 88 + 4;
+                            const tip = `${monthDays[index]} ${formatNumber(value)}次`;
+                            return `<span class="point" style="--x: ${x}; --y: ${y.toFixed(2)}" data-tip="${tip}"></span>`;
+                        })
+                        .join("")}
+                `;
+            }
+
+            function buildCostCsv() {
+                const rows = [
+                    [
+                        "user_id",
+                        "utc_date",
+                        "model",
+                        "wallet_type",
+                        "cost",
+                        "currency",
+                    ],
+                    ...costDaily
+                        .map((cost, index) => [
+                            "Wechat-a478b531-f954-4ba9-a5c1-efe43bee0bf8",
+                            monthDays[index],
+                            "all_models",
+                            "Paid",
+                            cost.toFixed(16),
+                            "CNY",
+                        ])
+                        .filter((row) => Number(row[4]) > 0),
+                ];
+                return rows.map((row) => row.join(",")).join("\n");
+            }
+
+            function buildAmountCsv() {
+                const rows = [
+                    [
+                        "user_id",
+                        "utc_date",
+                        "model",
+                        "api_key_name",
+                        "api_key",
+                        "type",
+                        "price",
+                        "amount",
+                    ],
+                ];
+                monthDays.forEach((date, index) => {
+                    if (requestDaily[index]) {
+                        rows.push([
+                            "Wechat-a478b531-f954-4ba9-a5c1-efe43bee0bf8",
+                            date,
+                            "all_models",
+                            "tos",
+                            "sk-960cf***********************3eb7",
+                            "request_count",
+                            "",
+                            requestDaily[index],
+                        ]);
+                    }
+                    if (tokenDaily[index]) {
+                        rows.push([
+                            "Wechat-a478b531-f954-4ba9-a5c1-efe43bee0bf8",
+                            date,
+                            "all_models",
+                            "tos",
+                            "sk-960cf***********************3eb7",
+                            "total_tokens",
+                            "",
+                            tokenDaily[index],
+                        ]);
+                    }
+                });
+                return rows.map((row) => row.join(",")).join("\n");
+            }
+
+            async function exportUsageZip() {
+                if (!window.JSZip) return;
+                const zip = new JSZip();
+                zip.file("amount-2026-5.csv", `\uFEFF${buildAmountCsv()}`);
+                zip.file("cost-2026-5.csv", `\uFEFF${buildCostCsv()}`);
+                const blob = await zip.generateAsync({ type: "blob" });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "usage_data_2026_5.zip";
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                URL.revokeObjectURL(url);
+            }
+
+            renderBars(
+                "costBars",
+                costDaily,
+                (value) => `¥${value.toFixed(2)}`,
+            );
+            renderLine("requestPlot", requestDaily);
+            renderBars("tokenBars", tokenDaily, formatTokens);
+            document
+                .getElementById("exportZipBtn")
+                .addEventListener("click", exportUsageZip);
+
+            // 店铺搜索下拉框逻辑
+            (function () {
+                const wrapper = document.getElementById("storeSelectWrapper");
+                const trigger = document.getElementById("storeSelectTrigger");
+                const dropdown = document.getElementById("storeDropdown");
+                const textEl = trigger.querySelector(".store-select-text");
+                const filterInput = document.getElementById("storeFilterInput");
+                const list = document.getElementById("storeDropdownList");
+                const options = list.querySelectorAll(".store-option");
+
+                let isOpen = false;
+
+                function toggle(e) {
+                    e.stopPropagation();
+                    isOpen = !isOpen;
+                    dropdown.classList.toggle("is-visible", isOpen);
+                    trigger.classList.toggle("is-open", isOpen);
+                    if (isOpen) {
+                        filterInput.value = "";
+                        filterOptions("");
+                        filterInput.focus();
+                    }
+                }
+
+                function filterOptions(query) {
+                    const q = query.trim().toLowerCase();
+                    let hasVisible = false;
+                    options.forEach((opt) => {
+                        const text = opt.textContent.toLowerCase();
+                        const match = !q || text.includes(q);
+                        opt.style.display = match ? "" : "none";
+                        if (match) hasVisible = true;
+                    });
+                    const noResult = list.querySelector(".no-result");
+                    if (!hasVisible && !noResult) {
+                        const el = document.createElement("div");
+                        el.className = "store-option no-result";
+                        el.textContent = "未找到匹配的店铺";
+                        list.appendChild(el);
+                    } else if (hasVisible) {
+                        const nr = list.querySelector(".no-result");
+                        if (nr) nr.remove();
+                    }
+                }
+
+                function selectOption(opt) {
+                    options.forEach((o) => o.classList.remove("active"));
+                    opt.classList.add("active");
+                    textEl.textContent = opt.textContent;
+                    textEl.classList.remove("placeholder");
+                    isOpen = false;
+                    dropdown.classList.remove("is-visible");
+                    trigger.classList.remove("is-open");
+                    console.log("selected store:", opt.dataset.value);
+                }
+
+                trigger.addEventListener("click", toggle);
+
+                options.forEach((opt) => {
+                    opt.addEventListener("click", function (e) {
+                        e.stopPropagation();
+                        selectOption(this);
+                    });
+                });
+
+                filterInput.addEventListener("input", function () {
+                    filterOptions(this.value);
+                });
+
+                filterInput.addEventListener("keydown", function (e) {
+                    if (e.key === "Escape") {
+                        isOpen = true;
+                        toggle(e);
+                    }
+                });
+
+                document.addEventListener("click", function (e) {
+                    if (isOpen && !wrapper.contains(e.target)) {
+                        isOpen = false;
+                        dropdown.classList.remove("is-visible");
+                        trigger.classList.remove("is-open");
+                    }
+                });
+            })();
+        </script>
+    </body>
+</html>
