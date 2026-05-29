@@ -1,0 +1,1563 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>虚拟点充值 - TOS原型</title>
+        <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/reset.css"
+        />
+        <script src="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/antd.min.js"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+        <style>
+            :root {
+                --tos-primary: #42b7ae;
+                --tos-primary-hover: #339b94;
+                --tos-primary-bg: #e6f7f6;
+                --tos-bg: #f5f7fa;
+                --tos-card: #ffffff;
+                --tos-border: #e5e7eb;
+                --tos-border-soft: #f0f2f5;
+                --tos-text: #333333;
+                --tos-text-secondary: #666666;
+                --tos-text-muted: #999999;
+                --tos-radius-card: 12px;
+                --tos-radius-control: 8px;
+                --tos-radius-tag: 4px;
+                --tos-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.03);
+                --tos-shadow-pop: 0 20px 60px rgba(15, 23, 42, 0.18);
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                min-height: 100vh;
+                background: var(--tos-bg);
+                color: var(--tos-text);
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    "Helvetica Neue", Arial, sans-serif;
+                letter-spacing: 0;
+            }
+
+            button,
+            input,
+            select {
+                font: inherit;
+            }
+
+            button {
+                cursor: pointer;
+            }
+
+            .tos-page {
+                width: min(100%, 980px);
+                margin: 0 auto;
+                padding: 24px 20px;
+            }
+
+            .tos-card {
+                overflow: hidden;
+                border: 1px solid var(--tos-border-soft);
+                border-radius: var(--tos-radius-card);
+                background: var(--tos-card);
+                box-shadow: var(--tos-shadow-card);
+            }
+
+            .tos-card__header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                padding: 16px 20px 12px;
+            }
+
+            .tos-brand {
+                display: flex;
+                min-width: 0;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .tos-brand__icon {
+                display: inline-flex;
+                width: 32px;
+                height: 32px;
+                flex: 0 0 32px;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                background: var(--tos-primary-bg);
+                color: var(--tos-primary);
+                font-size: 15px;
+            }
+
+            .tos-brand__title {
+                margin: 0;
+                color: var(--tos-text);
+                font-size: 16px;
+                font-weight: 600;
+                line-height: 1.35;
+            }
+
+            .tos-brand__desc {
+                margin-top: 2px;
+                color: var(--tos-text-secondary);
+                font-size: 12px;
+                line-height: 1.4;
+            }
+
+            .tos-btn {
+                display: inline-flex;
+                height: 32px;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                border: 1px solid var(--tos-border);
+                border-radius: var(--tos-radius-control);
+                background: #fff;
+                padding: 0 14px;
+                color: var(--tos-text);
+                font-size: 14px;
+                font-weight: 500;
+                line-height: 30px;
+                white-space: nowrap;
+            }
+
+            .tos-btn:hover {
+                border-color: var(--tos-primary);
+                color: var(--tos-primary);
+            }
+
+            .tos-btn--primary {
+                border-color: var(--tos-primary);
+                background: var(--tos-primary);
+                color: #fff;
+            }
+
+            .tos-btn--primary:hover {
+                border-color: var(--tos-primary-hover);
+                background: var(--tos-primary-hover);
+                color: #fff;
+            }
+
+            .tos-btn--ghost {
+                width: 100%;
+                color: var(--tos-primary);
+                border-color: var(--tos-border);
+                background: #fff;
+            }
+
+            .tos-tabs {
+                padding: 0 20px 20px;
+            }
+
+            .tos-tab-nav {
+                display: flex;
+                border-bottom: 1px solid var(--tos-border-soft);
+                gap: 8px;
+                margin-bottom: 10px;
+            }
+
+            .tos-tab {
+                position: relative;
+                display: inline-flex;
+                height: 38px;
+                align-items: center;
+                gap: 8px;
+                border: 0;
+                background: transparent;
+                padding: 0 14px;
+                color: var(--tos-text-secondary);
+                font-size: 14px;
+            }
+
+            .tos-tab.is-active {
+                color: var(--tos-text);
+                font-weight: 600;
+            }
+
+            .tos-tab.is-active::after {
+                position: absolute;
+                right: 0;
+                bottom: -1px;
+                left: 0;
+                height: 2px;
+                background: var(--tos-primary);
+                content: "";
+            }
+
+            .tos-tab-panel {
+                display: none;
+            }
+
+            .tos-tab-panel.is-active {
+                display: block;
+            }
+
+            .tos-section {
+                min-height: 340px;
+                border: 1px solid var(--tos-border-soft);
+                border-radius: var(--tos-radius-card);
+                background: #fff;
+            }
+
+            .tos-section__head {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 12px;
+                padding: 14px 16px 8px;
+            }
+
+            .tos-section__title {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin: 0;
+                color: var(--tos-text);
+                font-size: 16px;
+                font-weight: 600;
+                line-height: 1.35;
+            }
+
+            .tos-section__desc {
+                margin-top: 10px;
+                max-width: 520px;
+                color: var(--tos-text-secondary);
+                font-size: 12px;
+                line-height: 1.65;
+            }
+
+            .tos-tag {
+                display: inline-flex;
+                height: 22px;
+                align-items: center;
+                border: 1px solid var(--tos-border);
+                border-radius: var(--tos-radius-tag);
+                padding: 0 8px;
+                background: #fff;
+                color: var(--tos-text-secondary);
+                font-size: 12px;
+                font-weight: 500;
+                line-height: 20px;
+            }
+
+            .tos-tag--success {
+                border-color: #b7eb8f;
+                background: #f0faf0;
+                color: #389e0d;
+            }
+
+            .tos-section__tools {
+                display: flex;
+                flex: 0 0 auto;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .tos-icon-button {
+                display: inline-flex;
+                width: 32px;
+                height: 32px;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid var(--tos-border-soft);
+                border-radius: var(--tos-radius-control);
+                background: #fff;
+                color: var(--tos-text-muted);
+            }
+
+            .tos-icon-button:hover {
+                border-color: var(--tos-primary);
+                color: var(--tos-primary);
+            }
+
+            .tos-plan-grid {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(180px, 1fr));
+                gap: 16px;
+                padding: 0 16px 18px;
+            }
+
+            .tos-plan {
+                display: flex;
+                min-height: 242px;
+                flex-direction: column;
+                justify-content: space-between;
+                border: 1px solid var(--tos-border-soft);
+                border-radius: var(--tos-radius-card);
+                background: #fff;
+                padding: 26px;
+                box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+            }
+
+            .tos-plan__name {
+                color: #111827;
+                font-size: 20px;
+                font-weight: 700;
+                line-height: 1.3;
+            }
+
+            .tos-plan__price {
+                margin-top: 18px;
+                color: #4b5563;
+                font-size: 28px;
+                font-weight: 700;
+                line-height: 1;
+            }
+
+            .tos-plan__currency {
+                display: inline-flex;
+                align-items: center;
+                border: 1px solid var(--tos-border);
+                border-radius: var(--tos-radius-tag);
+                padding: 2px 6px;
+                color: var(--tos-text-secondary);
+                font-size: 12px;
+                font-weight: 500;
+            }
+
+            .tos-plan__points {
+                margin-top: 12px;
+                color: var(--tos-primary);
+                font-size: 16px;
+                font-weight: 700;
+            }
+
+            .tos-plan__meta {
+                margin: 12px 0 0;
+                padding-left: 18px;
+                color: var(--tos-text-secondary);
+                font-size: 12px;
+                line-height: 1.7;
+            }
+
+            .tos-plan__footer {
+                margin-top: 20px;
+                border-top: 1px solid var(--tos-border-soft);
+                padding-top: 14px;
+            }
+
+            .tos-amount-panel {
+                display: grid;
+                grid-template-columns: 1.2fr 0.8fr;
+                gap: 18px;
+                padding: 16px;
+            }
+
+            .tos-amount-box {
+                border: 1px solid var(--tos-border-soft);
+                border-radius: var(--tos-radius-card);
+                padding: 18px;
+            }
+
+            .tos-muted {
+                color: var(--tos-text-muted);
+                font-size: 12px;
+                line-height: 1.6;
+            }
+
+            .tos-recharge-form {
+                display: grid;
+                gap: 16px;
+                margin-top: 16px;
+            }
+
+            .tos-field-label {
+                display: block;
+                margin-bottom: 8px;
+                color: var(--tos-text-secondary);
+                font-size: 13px;
+                font-weight: 500;
+            }
+
+            .tos-input-row {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) 116px;
+                gap: 10px;
+            }
+
+            .tos-input,
+            .tos-control-select {
+                width: 100%;
+                height: 38px;
+                border: 1px solid var(--tos-border);
+                border-radius: var(--tos-radius-control);
+                background: #fff;
+                color: var(--tos-text);
+                outline: none;
+                padding: 0 12px;
+            }
+
+            .tos-input:focus,
+            .tos-control-select:focus {
+                border-color: var(--tos-primary);
+                box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.12);
+            }
+
+            .tos-rate-list {
+                display: grid;
+                gap: 8px;
+                margin-top: 16px;
+            }
+
+            .tos-rate-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                color: var(--tos-text-secondary);
+                font-size: 13px;
+            }
+
+            .tos-point-value {
+                margin-top: 16px;
+                color: #111827;
+                font-size: 30px;
+                font-weight: 700;
+                line-height: 1.2;
+            }
+
+            .tos-modal-mask {
+                position: fixed;
+                inset: 0;
+                z-index: 50;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                background: rgba(0, 0, 0, 0.55);
+                padding: 20px;
+            }
+
+            .tos-modal-mask.is-open {
+                display: flex;
+            }
+
+            .tos-modal {
+                width: min(100%, 900px);
+                max-height: calc(100vh - 40px);
+                overflow: auto;
+                border-radius: var(--tos-radius-card);
+                background: #fff;
+                box-shadow: var(--tos-shadow-pop);
+            }
+
+            .tos-modal--small {
+                width: min(100%, 680px);
+            }
+
+            .tos-modal__head {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 14px;
+                padding: 18px 20px 12px;
+            }
+
+            .tos-modal__title {
+                margin: 0;
+                color: #111827;
+                font-size: 18px;
+                font-weight: 700;
+            }
+
+            .tos-modal__close {
+                width: 28px;
+                height: 28px;
+                border: 0;
+                background: transparent;
+                color: var(--tos-text-secondary);
+                font-size: 18px;
+            }
+
+            .tos-modal__body {
+                padding: 12px 20px 22px;
+            }
+
+            .tos-search {
+                position: relative;
+                margin-bottom: 8px;
+            }
+
+            .tos-search i {
+                position: absolute;
+                top: 50%;
+                left: 12px;
+                color: var(--tos-text-muted);
+                transform: translateY(-50%);
+            }
+
+            .tos-search input {
+                width: 100%;
+                height: 32px;
+                border: 1px solid var(--tos-border-soft);
+                border-radius: var(--tos-radius-control);
+                background: #f3f4f6;
+                padding: 0 12px 0 34px;
+                color: var(--tos-text);
+                outline: none;
+            }
+
+            .tos-search input:focus {
+                border-color: var(--tos-primary);
+                background: #fff;
+            }
+
+            .tos-bill-table {
+                width: 100%;
+                border-collapse: collapse;
+                table-layout: fixed;
+            }
+
+            .tos-bill-table th {
+                padding: 14px 12px;
+                border-bottom: 1px solid var(--tos-border);
+                color: var(--tos-text-secondary);
+                font-size: 14px;
+                font-weight: 600;
+                text-align: left;
+                white-space: nowrap;
+            }
+
+            .tos-bill-table td {
+                padding: 13px 12px;
+                border-bottom: 1px solid var(--tos-border-soft);
+                color: var(--tos-text);
+                font-size: 13px;
+                white-space: nowrap;
+            }
+
+            .tos-empty-wrap {
+                display: flex;
+                min-height: 286px;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                border-bottom: 1px solid var(--tos-border-soft);
+                color: var(--tos-text-secondary);
+                font-size: 14px;
+            }
+
+            .tos-empty-art {
+                position: relative;
+                width: 132px;
+                height: 118px;
+                margin-bottom: 14px;
+            }
+
+            .tos-empty-art::before {
+                position: absolute;
+                top: 10px;
+                left: 42px;
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                background: var(--tos-primary-bg);
+                color: var(--tos-primary);
+                content: "?";
+                font-size: 34px;
+                font-weight: 700;
+                line-height: 48px;
+                text-align: center;
+            }
+
+            .tos-empty-box {
+                position: absolute;
+                right: 18px;
+                bottom: 12px;
+                width: 54px;
+                height: 36px;
+                border: 2px solid #555;
+                border-top-width: 10px;
+                background: #fff;
+            }
+
+            .tos-empty-person {
+                position: absolute;
+                bottom: 24px;
+                left: 10px;
+                width: 70px;
+                height: 44px;
+                border: 1.5px solid #555;
+                border-radius: 46px 46px 14px 14px;
+                transform: rotate(4deg);
+            }
+
+            .tos-payment-methods {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+                margin-top: 18px;
+            }
+
+            .tos-modal--small .tos-payment-methods {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+
+            .tos-payment-option {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                min-height: 44px;
+                border: 1px solid var(--tos-border);
+                border-radius: var(--tos-radius-control);
+                background: #fff;
+                padding: 10px 12px;
+                color: var(--tos-text);
+                font-size: 13px;
+                text-align: left;
+            }
+
+            .tos-payment-option span {
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .tos-payment-option i {
+                color: var(--tos-primary);
+            }
+
+            .tos-payment-option.is-active {
+                border-color: var(--tos-primary);
+                background: var(--tos-primary-bg);
+            }
+
+            .tos-order-info {
+                display: grid;
+                gap: 14px;
+                margin-top: 4px;
+            }
+
+            .tos-info-row,
+            .tos-pay-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                color: var(--tos-text);
+                font-size: 14px;
+            }
+
+            .tos-info-row strong,
+            .tos-pay-row strong {
+                font-weight: 600;
+            }
+
+            .tos-pay-row {
+                margin-top: 4px;
+                border-top: 1px solid var(--tos-border-soft);
+                padding-top: 14px;
+                font-weight: 600;
+            }
+
+            .tos-alert {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-top: 26px;
+                border-radius: var(--tos-radius-control);
+                background: var(--tos-primary-bg);
+                padding: 12px 28px;
+                color: var(--tos-text);
+                font-size: 14px;
+            }
+
+            .tos-alert i {
+                color: var(--tos-primary);
+                font-size: 16px;
+            }
+
+            .tos-modal-actions {
+                display: flex;
+                justify-content: flex-end;
+                gap: 10px;
+                margin-top: 22px;
+                border-top: 1px solid var(--tos-border-soft);
+                padding-top: 16px;
+            }
+
+            .tos-toast {
+                position: fixed;
+                top: 18px;
+                left: 50%;
+                z-index: 80;
+                display: none;
+                border: 1px solid var(--tos-border-soft);
+                border-radius: var(--tos-radius-control);
+                background: #fff;
+                box-shadow: var(--tos-shadow-pop);
+                padding: 9px 14px;
+                color: var(--tos-text);
+                font-size: 14px;
+                transform: translateX(-50%);
+            }
+
+            .tos-toast.is-open {
+                display: block;
+            }
+
+            @media (max-width: 768px) {
+                .tos-page {
+                    padding: 14px;
+                }
+
+                .tos-card__header,
+                .tos-section__head {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .tos-plan-grid,
+                .tos-amount-panel {
+                    grid-template-columns: 1fr;
+                }
+
+                .tos-section__tools {
+                    justify-content: flex-start;
+                }
+
+                .tos-plan {
+                    min-height: 220px;
+                    padding: 22px;
+                }
+
+                .tos-bill-table {
+                    min-width: 760px;
+                }
+
+                .tos-bill-scroll {
+                    overflow-x: auto;
+                }
+
+                .tos-modal--small .tos-payment-methods {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <main class="tos-page">
+            <section class="tos-card">
+                <div class="tos-card__header">
+                    <div class="tos-brand">
+                        <div class="tos-brand__icon">
+                            <i class="fa-regular fa-credit-card"></i>
+                        </div>
+                        <div>
+                            <h1 class="tos-brand__title">虚拟点充值</h1>
+                            <div class="tos-brand__desc">
+                                多种充值方式，安全便捷
+                            </div>
+                        </div>
+                    </div>
+                    <button
+                        class="tos-btn tos-btn--primary"
+                        type="button"
+                        data-open-modal="billModal"
+                    >
+                        <i class="fa-regular fa-rectangle-list"></i>
+                        账单
+                    </button>
+                </div>
+
+                <div class="tos-tabs">
+                    <div class="tos-tab-nav" role="tablist">
+                        <button
+                            class="tos-tab is-active"
+                            type="button"
+                            role="tab"
+                            aria-selected="true"
+                            data-tab="subscriptionPanel"
+                        >
+                            <i class="fa-regular fa-gem"></i>
+                            订阅套餐
+                        </button>
+                        <button
+                            class="tos-tab"
+                            type="button"
+                            role="tab"
+                            aria-selected="false"
+                            data-tab="amountPanel"
+                        >
+                            <i class="fa-regular fa-credit-card"></i>
+                            额度充值
+                        </button>
+                    </div>
+
+                    <section
+                        id="subscriptionPanel"
+                        class="tos-tab-panel is-active"
+                        role="tabpanel"
+                    >
+                        <div class="tos-section">
+                            <div class="tos-section__head">
+                                <div>
+                                    <h2 class="tos-section__title">
+                                        我的订阅
+                                        <span class="tos-tag" id="subscriptionStatus">无生效</span>
+                                    </h2>
+                                    <div class="tos-section__desc" id="subscriptionDesc">
+                                        当前无生效订阅，购买套餐后即可享受模型权益
+                                    </div>
+                                </div>
+                                <div class="tos-section__tools">
+                                    <button
+                                        class="tos-icon-button"
+                                        type="button"
+                                        aria-label="刷新"
+                                        id="refreshButton"
+                                    >
+                                        <i class="fa-solid fa-rotate-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="tos-plan-grid">
+                                <article class="tos-plan">
+                                    <div>
+                                        <span class="tos-plan__currency">USD</span>
+                                        <div class="tos-plan__name">基础套餐</div>
+                                        <div class="tos-plan__price">$100</div>
+                                        <div class="tos-plan__points">10,000 虚拟点</div>
+                                        <ul class="tos-plan__meta">
+                                            <li>有效期: 1 个月</li>
+                                            <li>兑换比例: 1 USD = 100 虚拟点</li>
+                                        </ul>
+                                    </div>
+                                    <div class="tos-plan__footer">
+                                        <button
+                                            class="tos-btn tos-btn--ghost"
+                                            type="button"
+                                            data-open-modal="subscribeModal"
+                                            data-plan-name="基础套餐"
+                                            data-plan-period="1 个月"
+                                            data-plan-currency="USD"
+                                            data-plan-price="100"
+                                            data-plan-points="10000"
+                                        >
+                                            立即订阅
+                                        </button>
+                                    </div>
+                                </article>
+                                <article class="tos-plan">
+                                    <div>
+                                        <span class="tos-plan__currency">CNY</span>
+                                        <div class="tos-plan__name">成长套餐</div>
+                                        <div class="tos-plan__price">¥680</div>
+                                        <div class="tos-plan__points">72,000 虚拟点</div>
+                                        <ul class="tos-plan__meta">
+                                            <li>有效期: 1 个月</li>
+                                            <li>兑换比例: 1 CNY = 105.9 虚拟点</li>
+                                        </ul>
+                                    </div>
+                                    <div class="tos-plan__footer">
+                                        <button
+                                            class="tos-btn tos-btn--ghost"
+                                            type="button"
+                                            data-open-modal="subscribeModal"
+                                            data-plan-name="成长套餐"
+                                            data-plan-period="1 个月"
+                                            data-plan-currency="CNY"
+                                            data-plan-price="680"
+                                            data-plan-points="72000"
+                                        >
+                                            立即订阅
+                                        </button>
+                                    </div>
+                                </article>
+                                <article class="tos-plan">
+                                    <div>
+                                        <span class="tos-plan__currency">EUR</span>
+                                        <div class="tos-plan__name">专业套餐</div>
+                                        <div class="tos-plan__price">€120</div>
+                                        <div class="tos-plan__points">15,600 虚拟点</div>
+                                        <ul class="tos-plan__meta">
+                                            <li>有效期: 1 个月</li>
+                                            <li>兑换比例: 1 EUR = 130 虚拟点</li>
+                                        </ul>
+                                    </div>
+                                    <div class="tos-plan__footer">
+                                        <button
+                                            class="tos-btn tos-btn--ghost"
+                                            type="button"
+                                            data-open-modal="subscribeModal"
+                                            data-plan-name="专业套餐"
+                                            data-plan-period="1 个月"
+                                            data-plan-currency="EUR"
+                                            data-plan-price="120"
+                                            data-plan-points="15600"
+                                        >
+                                            立即订阅
+                                        </button>
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="amountPanel" class="tos-tab-panel" role="tabpanel">
+                        <div class="tos-section">
+                            <div class="tos-amount-panel">
+                                <div class="tos-amount-box">
+                                    <strong>输入充值金额</strong>
+                                    <div class="tos-recharge-form">
+                                        <label>
+                                            <span class="tos-field-label">金额与币种</span>
+                                            <div class="tos-input-row">
+                                                <input
+                                                    class="tos-input"
+                                                    id="amountInput"
+                                                    type="number"
+                                                    min="1"
+                                                    step="1"
+                                                    value="100"
+                                                    inputmode="decimal"
+                                                    placeholder="请输入金额"
+                                                />
+                                                <select
+                                                    class="tos-control-select"
+                                                    id="currencySelect"
+                                                    aria-label="币种"
+                                                >
+                                                    <option value="USD">USD</option>
+                                                    <option value="CNY">CNY</option>
+                                                    <option value="EUR">EUR</option>
+                                                    <option value="JPY">JPY</option>
+                                                </select>
+                                            </div>
+                                        </label>
+                                        <div class="tos-rate-list">
+                                            <div class="tos-rate-row">
+                                                <span>当前兑换</span>
+                                                <strong id="rateText">1 USD = 100 虚拟点</strong>
+                                            </div>
+                                            <div class="tos-rate-row">
+                                                <span>到账方式</span>
+                                                <strong>支付成功后实时到账</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tos-amount-box">
+                                    <strong>预计获得虚拟点</strong>
+                                    <div class="tos-point-value" id="pointPreview">
+                                        10,000
+                                    </div>
+                                    <div class="tos-muted" style="margin-top: 6px">
+                                        应付金额：<span id="amountPay">$100</span>
+                                    </div>
+                                    <div class="tos-muted" style="margin-top: 12px">
+                                        不同币种对应不同兑换比例，提交前请确认预计到账虚拟点。
+                                    </div>
+                                    <button
+                                        class="tos-btn tos-btn--primary"
+                                        style="margin-top: 20px"
+                                        type="button"
+                                        data-open-modal="rechargeModal"
+                                    >
+                                        立即充值
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </section>
+        </main>
+
+        <div class="tos-modal-mask" id="billModal" role="dialog" aria-modal="true">
+            <section class="tos-modal">
+                <div class="tos-modal__head">
+                    <h2 class="tos-modal__title">充值账单</h2>
+                    <button
+                        class="tos-modal__close"
+                        type="button"
+                        aria-label="关闭"
+                        data-close-modal
+                    >
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="tos-modal__body">
+                    <div class="tos-search">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="search" placeholder="订单号" />
+                    </div>
+                    <div class="tos-bill-scroll">
+                        <table class="tos-bill-table">
+                            <thead>
+                                <tr>
+                                    <th>用户ID</th>
+                                    <th>订单号</th>
+                                    <th>支付方式</th>
+                                    <th>虚拟点数</th>
+                                    <th>支付金额</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                    <th>创建时间</th>
+                                </tr>
+                            </thead>
+                            <tbody id="billRows"></tbody>
+                        </table>
+                        <div class="tos-empty-wrap" id="billEmpty">
+                            <div class="tos-empty-art" aria-hidden="true">
+                                <span class="tos-empty-person"></span>
+                                <span class="tos-empty-box"></span>
+                            </div>
+                            <div>暂无充值记录</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div
+            class="tos-modal-mask"
+            id="subscribeModal"
+            role="dialog"
+            aria-modal="true"
+        >
+            <section class="tos-modal tos-modal--small">
+                <div class="tos-modal__head">
+                    <h2 class="tos-modal__title">
+                        <i class="fa-solid fa-crown" style="margin-right: 8px"></i>
+                        购买订阅套餐
+                    </h2>
+                    <button
+                        class="tos-modal__close"
+                        type="button"
+                        aria-label="关闭"
+                        data-close-modal
+                    >
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="tos-modal__body">
+                    <div class="tos-order-info">
+                        <div class="tos-info-row">
+                            <strong>套餐名称:</strong>
+                            <span id="subscribePlanName">基础套餐</span>
+                        </div>
+                        <div class="tos-info-row">
+                            <strong>有效期:</strong>
+                            <span id="subscribePlanPeriod">
+                                <i
+                                    class="fa-regular fa-calendar-days"
+                                    style="margin-right: 4px; color: #6b7280"
+                                ></i>
+                                1 个月
+                            </span>
+                        </div>
+                        <div class="tos-info-row">
+                            <strong>虚拟点数:</strong>
+                            <span id="subscribePlanPoints">
+                                <i
+                                    class="fa-solid fa-cube"
+                                    style="margin-right: 4px; color: #6b7280"
+                                ></i>
+                                10,000
+                            </span>
+                        </div>
+                        <div class="tos-pay-row">
+                            <strong>应付金额:</strong>
+                            <span id="subscribePlanPay">USD 100.00</span>
+                        </div>
+                    </div>
+                    <div class="tos-field-label" style="margin-top: 18px">
+                        支付方式
+                    </div>
+                    <div class="tos-payment-methods" data-payment-group="subscribe">
+                        <button
+                            class="tos-payment-option is-active"
+                            type="button"
+                            data-payment="钱包余额"
+                        >
+                            <i class="fa-solid fa-wallet"></i>
+                            <span>钱包余额</span>
+                        </button>
+                        <button
+                            class="tos-payment-option"
+                            type="button"
+                            data-payment="微信支付"
+                        >
+                            <i class="fa-brands fa-weixin"></i>
+                            <span>微信支付</span>
+                        </button>
+                        <button
+                            class="tos-payment-option"
+                            type="button"
+                            data-payment="支付宝"
+                        >
+                            <i class="fa-brands fa-alipay"></i>
+                            <span>支付宝</span>
+                        </button>
+                        <button
+                            class="tos-payment-option"
+                            type="button"
+                            data-payment="PayPal"
+                        >
+                            <i class="fa-brands fa-paypal"></i>
+                            <span>PayPal</span>
+                        </button>
+                        <button
+                            class="tos-payment-option"
+                            type="button"
+                            data-payment="Stripe"
+                        >
+                            <i class="fa-brands fa-stripe"></i>
+                            <span>Stripe</span>
+                        </button>
+                        <button
+                            class="tos-payment-option"
+                            type="button"
+                            data-payment="Visa / MasterCard"
+                        >
+                            <i class="fa-regular fa-credit-card"></i>
+                            <span>Visa/Master</span>
+                        </button>
+                        <button
+                            class="tos-payment-option"
+                            type="button"
+                            data-payment="Apple Pay"
+                        >
+                            <i class="fa-brands fa-apple-pay"></i>
+                            <span>Apple Pay</span>
+                        </button>
+                        <button
+                            class="tos-payment-option"
+                            type="button"
+                            data-payment="Google Pay"
+                        >
+                            <i class="fa-brands fa-google-pay"></i>
+                            <span>Google Pay</span>
+                        </button>
+                        <button
+                            class="tos-payment-option"
+                            type="button"
+                            data-payment="MoMo"
+                        >
+                            <i class="fa-solid fa-mobile-screen-button"></i>
+                            <span>MoMo</span>
+                        </button>
+                        <button
+                            class="tos-payment-option"
+                            type="button"
+                            data-payment="GrabPay"
+                        >
+                            <i class="fa-solid fa-wallet"></i>
+                            <span>GrabPay</span>
+                        </button>
+                    </div>
+                    <div class="tos-modal-actions">
+                        <button class="tos-btn" type="button" data-close-modal>
+                            取消
+                        </button>
+                        <button
+                            class="tos-btn tos-btn--primary"
+                            type="button"
+                            id="confirmSubscribe"
+                        >
+                            确认支付
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div
+            class="tos-modal-mask"
+            id="rechargeModal"
+            role="dialog"
+            aria-modal="true"
+        >
+            <section class="tos-modal tos-modal--small">
+                <div class="tos-modal__head">
+                    <h2 class="tos-modal__title">
+                        <i
+                            class="fa-regular fa-credit-card"
+                            style="margin-right: 8px"
+                        ></i>
+                        确认充值
+                    </h2>
+                    <button
+                        class="tos-modal__close"
+                        type="button"
+                        aria-label="关闭"
+                        data-close-modal
+                    >
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="tos-modal__body">
+                    <div class="tos-order-info">
+                        <div class="tos-info-row">
+                            <strong>充值金额:</strong>
+                            <span id="rechargeAmount">$100</span>
+                        </div>
+                        <div class="tos-info-row">
+                            <strong>预计获得:</strong>
+                            <span id="rechargeCredit">10,000 虚拟点</span>
+                        </div>
+                        <div class="tos-pay-row">
+                            <strong>应付金额:</strong>
+                            <span id="rechargePay">$100</span>
+                        </div>
+                    </div>
+                    <div class="tos-field-label" style="margin-top: 18px">
+                        支付方式
+                    </div>
+                    <div class="tos-payment-methods" data-payment-group="recharge">
+                        <button
+                            class="tos-payment-option is-active"
+                            type="button"
+                            data-payment="微信支付"
+                        >
+                            <i class="fa-brands fa-weixin"></i>
+                            <span>微信支付</span>
+                        </button>
+                        <button
+                            class="tos-payment-option"
+                            type="button"
+                            data-payment="支付宝"
+                        >
+                            <i class="fa-brands fa-alipay"></i>
+                            <span>支付宝</span>
+                        </button>
+                        <button
+                            class="tos-payment-option"
+                            type="button"
+                            data-payment="PayPal"
+                        >
+                            <i class="fa-brands fa-paypal"></i>
+                            <span>PayPal</span>
+                        </button>
+                        <button
+                            class="tos-payment-option"
+                            type="button"
+                            data-payment="Stripe"
+                        >
+                            <i class="fa-brands fa-stripe"></i>
+                            <span>Stripe</span>
+                        </button>
+                        <button
+                            class="tos-payment-option"
+                            type="button"
+                            data-payment="Visa / MasterCard"
+                        >
+                            <i class="fa-regular fa-credit-card"></i>
+                            <span>Visa/Master</span>
+                        </button>
+                        <button
+                            class="tos-payment-option"
+                            type="button"
+                            data-payment="Apple Pay"
+                        >
+                            <i class="fa-brands fa-apple-pay"></i>
+                            <span>Apple Pay</span>
+                        </button>
+                        <button
+                            class="tos-payment-option"
+                            type="button"
+                            data-payment="Google Pay"
+                        >
+                            <i class="fa-brands fa-google-pay"></i>
+                            <span>Google Pay</span>
+                        </button>
+                        <button
+                            class="tos-payment-option"
+                            type="button"
+                            data-payment="MoMo"
+                        >
+                            <i class="fa-solid fa-mobile-screen-button"></i>
+                            <span>MoMo</span>
+                        </button>
+                        <button
+                            class="tos-payment-option"
+                            type="button"
+                            data-payment="GrabPay"
+                        >
+                            <i class="fa-solid fa-wallet"></i>
+                            <span>GrabPay</span>
+                        </button>
+                    </div>
+                    <div class="tos-modal-actions">
+                        <button class="tos-btn" type="button" data-close-modal>
+                            取消
+                        </button>
+                        <button
+                            class="tos-btn tos-btn--primary"
+                            type="button"
+                            id="confirmRecharge"
+                        >
+                            确认支付
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="tos-toast" id="toast">操作成功</div>
+
+        <script>
+            const tabs = document.querySelectorAll(".tos-tab");
+            const panels = document.querySelectorAll(".tos-tab-panel");
+            const toast = document.getElementById("toast");
+            const billRows = document.getElementById("billRows");
+            const billEmpty = document.getElementById("billEmpty");
+            const amountInput = document.getElementById("amountInput");
+            const currencySelect = document.getElementById("currencySelect");
+            const amountPay = document.getElementById("amountPay");
+            const rateText = document.getElementById("rateText");
+            const pointPreview = document.getElementById("pointPreview");
+            const rechargeAmount = document.getElementById("rechargeAmount");
+            const rechargeCredit = document.getElementById("rechargeCredit");
+            const rechargePay = document.getElementById("rechargePay");
+            const subscribePlanName = document.getElementById("subscribePlanName");
+            const subscribePlanPeriod =
+                document.getElementById("subscribePlanPeriod");
+            const subscribePlanPoints =
+                document.getElementById("subscribePlanPoints");
+            const subscribePlanPay = document.getElementById("subscribePlanPay");
+            const subscriptionStatus = document.getElementById("subscriptionStatus");
+            const subscriptionDesc = document.getElementById("subscriptionDesc");
+            let toastTimer = null;
+            let billIndex = 0;
+            let selectedAmount = 100;
+            let selectedCurrency = "USD";
+            let selectedPoints = 10000;
+            let selectedPlan = {
+                name: "基础套餐",
+                period: "1 个月",
+                currency: "USD",
+                price: 100,
+                points: 10000,
+            };
+
+            const currencyRates = {
+                USD: 100,
+                CNY: 10,
+                EUR: 130,
+                JPY: 0.9,
+            };
+
+            const showToast = (message) => {
+                toast.textContent = message;
+                toast.classList.add("is-open");
+                window.clearTimeout(toastTimer);
+                toastTimer = window.setTimeout(() => {
+                    toast.classList.remove("is-open");
+                }, 1600);
+            };
+
+            const closeModal = (modalId) => {
+                document.getElementById(modalId).classList.remove("is-open");
+            };
+
+            const getPayment = (groupName) => {
+                return document.querySelector(
+                    `[data-payment-group="${groupName}"] .tos-payment-option.is-active`,
+                ).dataset.payment;
+            };
+
+            const formatMoney = (amount, currency) => {
+                const fractionDigits = currency === "JPY" ? 0 : 2;
+                return `${currency} ${Number(amount).toLocaleString("zh-CN", {
+                    minimumFractionDigits: fractionDigits,
+                    maximumFractionDigits: fractionDigits,
+                })}`;
+            };
+
+            const formatPoints = (points) => {
+                return Math.round(points).toLocaleString("zh-CN");
+            };
+
+            const updateRechargePreview = () => {
+                const inputAmount = Number(amountInput.value);
+                selectedAmount =
+                    Number.isFinite(inputAmount) && inputAmount > 0
+                        ? inputAmount
+                        : 0;
+                selectedCurrency = currencySelect.value;
+                selectedPoints =
+                    selectedAmount * currencyRates[selectedCurrency];
+                const payText = formatMoney(selectedAmount, selectedCurrency);
+                const pointText = `${formatPoints(selectedPoints)} 虚拟点`;
+
+                rateText.textContent = `1 ${selectedCurrency} = ${currencyRates[
+                    selectedCurrency
+                ].toLocaleString("zh-CN")} 虚拟点`;
+                pointPreview.textContent = formatPoints(selectedPoints);
+                amountPay.textContent = payText;
+                rechargeAmount.textContent = payText;
+                rechargeCredit.textContent = pointText;
+                rechargePay.textContent = payText;
+            };
+
+            const updateSubscribeModal = () => {
+                subscribePlanName.textContent = selectedPlan.name;
+                subscribePlanPeriod.innerHTML = `
+                    <i class="fa-regular fa-calendar-days" style="margin-right: 4px; color: #6b7280"></i>
+                    ${selectedPlan.period}
+                `;
+                subscribePlanPoints.innerHTML = `
+                    <i class="fa-solid fa-cube" style="margin-right: 4px; color: #6b7280"></i>
+                    ${formatPoints(selectedPlan.points)} 虚拟点
+                `;
+                subscribePlanPay.textContent = formatMoney(
+                    selectedPlan.price,
+                    selectedPlan.currency,
+                );
+            };
+
+            const addBill = ({ type, credit, payAmount, payment }) => {
+                billIndex += 1;
+                const orderNo = "RC" + Date.now().toString().slice(-8) + billIndex;
+                const createdAt = new Date().toLocaleString("zh-CN", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                });
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>U10001</td>
+                    <td>${orderNo}</td>
+                    <td>${payment}</td>
+                    <td>${credit}</td>
+                    <td>${payAmount}</td>
+                    <td><span class="tos-tag tos-tag--success">已完成</span></td>
+                    <td><button class="tos-btn" type="button" style="height: 28px; padding: 0 10px;">查看</button></td>
+                    <td>${createdAt}</td>
+                `;
+                billRows.prepend(row);
+                billEmpty.style.display = "none";
+            };
+
+            tabs.forEach((tab) => {
+                tab.addEventListener("click", () => {
+                    const panelId = tab.dataset.tab;
+                    tabs.forEach((item) => {
+                        const active = item === tab;
+                        item.classList.toggle("is-active", active);
+                        item.setAttribute("aria-selected", String(active));
+                    });
+                    panels.forEach((panel) => {
+                        panel.classList.toggle("is-active", panel.id === panelId);
+                    });
+                });
+            });
+
+            document.querySelectorAll("[data-open-modal]").forEach((button) => {
+                button.addEventListener("click", () => {
+                    if (button.dataset.openModal === "subscribeModal") {
+                        selectedPlan = {
+                            name: button.dataset.planName,
+                            period: button.dataset.planPeriod,
+                            currency: button.dataset.planCurrency,
+                            price: Number(button.dataset.planPrice),
+                            points: Number(button.dataset.planPoints),
+                        };
+                        updateSubscribeModal();
+                    }
+                    if (button.dataset.openModal === "rechargeModal") {
+                        updateRechargePreview();
+                    }
+                    document
+                        .getElementById(button.dataset.openModal)
+                        .classList.add("is-open");
+                });
+            });
+
+            document.querySelectorAll(".tos-modal-mask").forEach((mask) => {
+                mask.addEventListener("click", (event) => {
+                    if (
+                        event.target === mask ||
+                        event.target.closest("[data-close-modal]")
+                    ) {
+                        mask.classList.remove("is-open");
+                    }
+                });
+            });
+
+            amountInput.addEventListener("input", updateRechargePreview);
+            currencySelect.addEventListener("change", updateRechargePreview);
+
+            document.querySelectorAll(".tos-payment-option").forEach((button) => {
+                button.addEventListener("click", () => {
+                    const group = button.closest("[data-payment-group]");
+                    group
+                        .querySelectorAll(".tos-payment-option")
+                        .forEach((item) => item.classList.remove("is-active"));
+                    button.classList.add("is-active");
+                });
+            });
+
+            document.getElementById("refreshButton").addEventListener("click", () => {
+                showToast("订阅信息已刷新");
+            });
+
+            document
+                .getElementById("confirmRecharge")
+                .addEventListener("click", () => {
+                    addBill({
+                        type: "虚拟点充值",
+                        credit: `${formatPoints(selectedPoints)} 虚拟点`,
+                        payAmount: formatMoney(selectedAmount, selectedCurrency),
+                        payment: getPayment("recharge"),
+                    });
+                    closeModal("rechargeModal");
+                    showToast("充值成功，额度已到账");
+                });
+
+            document
+                .getElementById("confirmSubscribe")
+                .addEventListener("click", () => {
+                    subscriptionStatus.textContent = "生效中";
+                    subscriptionStatus.classList.add("tos-tag--success");
+                    subscriptionDesc.textContent =
+                        `${selectedPlan.name}已生效，有效期至下月同日，模型权益将优先从订阅额度中扣减。`;
+                    addBill({
+                        type: "订阅套餐",
+                        credit: `${formatPoints(selectedPlan.points)} 虚拟点`,
+                        payAmount: formatMoney(
+                            selectedPlan.price,
+                            selectedPlan.currency,
+                        ),
+                        payment: getPayment("subscribe"),
+                    });
+                    closeModal("subscribeModal");
+                    showToast("订阅购买成功");
+                });
+
+            document.addEventListener("keydown", (event) => {
+                if (event.key === "Escape") {
+                    document
+                        .querySelectorAll(".tos-modal-mask.is-open")
+                        .forEach((modal) => modal.classList.remove("is-open"));
+                }
+            });
+
+            const hashModal = document.getElementById(
+                window.location.hash.replace("#", ""),
+            );
+            if (hashModal?.classList.contains("tos-modal-mask")) {
+                hashModal.classList.add("is-open");
+            }
+
+            updateRechargePreview();
+        </script>
+    </body>
+</html>
