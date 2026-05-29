@@ -486,7 +486,7 @@
                                 >
                             </template>
                         </el-table-column>
-                        <el-table-column label="模型能力" min-width="280">
+                        <el-table-column label="能力" min-width="280">
                             <template #default="scope">
                                 <template
                                     v-if="scope.row.modelGroups && scope.row.modelGroups.length"
@@ -523,10 +523,112 @@
                                 <span v-else style="color: #999">-</span>
                             </template>
                         </el-table-column>
+                        <el-table-column label="计价" width="200">
+                            <template #default="scope">
+                                <div style="font-size: 12px; line-height: 1.6">
+                                    <span style="color: #42b7ae"
+                                        >{{ (scope.row.currency || 'USD') ===
+                                        'CNY' ? '￥' : '$' }}{{
+                                        scope.row.multiplier != null ?
+                                        scope.row.multiplier : 1.0 }}</span
+                                    >
+                                    <el-tag
+                                        v-if="scope.row.cacheHitEnabled"
+                                        size="small"
+                                        type="warning"
+                                        effect="plain"
+                                        style="
+                                            margin-left: 4px;
+                                            font-size: 10px;
+                                            height: 18px;
+                                            line-height: 16px;
+                                        "
+                                        >缓存计费</el-tag
+                                    >
+                                    <el-tag
+                                        v-if="scope.row.type === 'GhostCut'"
+                                        size="small"
+                                        type="success"
+                                        effect="plain"
+                                        style="
+                                            margin-left: 4px;
+                                            font-size: 10px;
+                                            height: 18px;
+                                            line-height: 16px;
+                                        "
+                                        >调用计费</el-tag
+                                    >
+                                </div>
+                                <template v-if="scope.row.type === 'GhostCut'">
+                                    <div
+                                        style="
+                                            font-size: 12px;
+                                            line-height: 1.6;
+                                        "
+                                    >
+                                        <span style="color: #666">
+                                            ￥{{ ((scope.row.pricePerPoint ||
+                                            0.01) * (scope.row.multiplier ||
+                                            1.0)).toFixed(4) }}/点
+                                        </span>
+                                    </div>
+                                    <div
+                                        style="
+                                            font-size: 10px;
+                                            color: #999;
+                                            line-height: 1.6;
+                                        "
+                                    >
+                                        每点￥{{ (scope.row.pricePerPoint ||
+                                        0.01).toFixed(3) }} ×{{
+                                        scope.row.multiplier != null ?
+                                        scope.row.multiplier : 1.0 }}
+                                    </div>
+                                </template>
+                                <template
+                                    v-else-if="scope.row.modelGroups && scope.row.modelGroups.length"
+                                >
+                                    <div
+                                        v-for="(g, gi) in scope.row.modelGroups"
+                                        :key="gi"
+                                        style="
+                                            font-size: 12px;
+                                            line-height: 1.6;
+                                        "
+                                    >
+                                        <span style="color: #999"
+                                            >{{ g.model }}:</span
+                                        >
+                                        <span style="color: #666">
+                                            {{ g.officialInputPrice != null ?
+                                            '输入' + g.officialInputPrice : ''
+                                            }} {{ scope.row.cacheHitEnabled &&
+                                            g.officialInputCacheHitPrice != null
+                                            ? '命中' +
+                                            g.officialInputCacheHitPrice : '' }}
+                                            {{ g.officialOutputPrice != null ?
+                                            '输出' + g.officialOutputPrice : ''
+                                            }} {{ scope.row.cacheHitEnabled &&
+                                            g.officialOutputCacheHitPrice !=
+                                            null ? '出命' +
+                                            g.officialOutputCacheHitPrice : ''
+                                            }} {{ scope.row.priceUnit ? '/' +
+                                            scope.row.priceUnit : '' }}
+                                        </span>
+                                    </div>
+                                </template>
+                                <span
+                                    v-else
+                                    style="color: #999; font-size: 12px"
+                                    >-</span
+                                >
+                            </template>
+                        </el-table-column>
                         <el-table-column label="类型" width="100">
                             <template #default="scope">
                                 <el-tag size="small" type="info" effect="plain"
-                                    >{{ scope.row.type }}</el-tag
+                                    >{{ scope.row.type === 'GhostCut' ?
+                                    '鬼手剪辑' : scope.row.type }}</el-tag
                                 >
                             </template>
                         </el-table-column>
@@ -622,7 +724,11 @@
                     </div>
 
                     <el-form-item label="类型" prop="type" required>
-                        <el-select v-model="formData.type" style="width: 100%">
+                        <el-select
+                            v-model="formData.type"
+                            style="width: 100%"
+                            @change="onTypeChange"
+                        >
                             <el-option
                                 label="DeepSeek"
                                 value="DeepSeek"
@@ -635,6 +741,10 @@
                             <el-option
                                 label="自定义"
                                 value="Custom"
+                            ></el-option>
+                            <el-option
+                                label="鬼手剪辑"
+                                value="GhostCut"
                             ></el-option>
                         </el-select>
                     </el-form-item>
@@ -670,7 +780,10 @@
                         ></el-input>
                     </el-form-item>
 
-                    <el-form-item label="模型能力">
+                    <el-form-item
+                        label="模型能力"
+                        v-if="formData.type !== 'GhostCut'"
+                    >
                         <template
                             v-for="(group, gi) in formData.modelGroups"
                             :key="gi"
@@ -686,6 +799,7 @@
                                         size="small"
                                         style="flex: 1; min-width: 0"
                                         filterable
+                                        @change="handleModelChange(group)"
                                     >
                                         <el-option
                                             v-for="opt in modelOptions"
@@ -763,6 +877,221 @@
                             >
                         </div>
                     </el-form-item>
+
+                    <!-- ===== 计费配置（渠道级别） ===== -->
+                    <div class="dialog-section-header" style="margin-top: 20px">
+                        <span
+                            class="badge badge--green"
+                            style="background: #e6a23c"
+                        ></span>
+                        <div>
+                            <div class="title">计费配置</div>
+                            <div class="desc">
+                                渠道级别的按量计费参数，不同渠道类型的计价结构不同
+                            </div>
+                        </div>
+                    </div>
+
+                    <el-form-item label="基础参数">
+                        <div class="flex items-center gap-3 flex-wrap">
+                            <el-select
+                                v-model="formData.currency"
+                                size="small"
+                                style="width: 90px"
+                            >
+                                <el-option label="USD" value="USD"></el-option>
+                                <el-option label="CNY" value="CNY"></el-option>
+                            </el-select>
+                            <el-select
+                                v-model="formData.priceUnit"
+                                size="small"
+                                style="width: 120px"
+                            >
+                                <template v-if="formData.type === 'GhostCut'">
+                                    <el-option
+                                        label="每点"
+                                        value="call"
+                                    ></el-option>
+                                </template>
+                                <template v-else>
+                                    <el-option
+                                        label="每1K tokens"
+                                        value="1K"
+                                    ></el-option>
+                                    <el-option
+                                        label="每1M tokens"
+                                        value="1M"
+                                    ></el-option>
+                                </template>
+                            </el-select>
+                            <span style="color: #666; font-size: 12px">倍率</span>
+                            <el-input-number
+                                v-model="formData.multiplier"
+                                :min="0"
+                                :max="10"
+                                :step="0.1"
+                                :precision="1"
+                                size="small"
+                                style="width: 90px"
+                            ></el-input-number>
+                            <el-tag
+                                v-if="formData.cacheHitEnabled"
+                                size="small"
+                                type="warning"
+                                effect="plain"
+                                >支持缓存命中计费</el-tag
+                            >
+                            <el-tag
+                                v-else
+                                size="small"
+                                type="info"
+                                effect="plain"
+                                >无缓存区分</el-tag
+                            >
+                        </div>
+                    </el-form-item>
+
+                    <el-form-item
+                        label="官方价"
+                        v-if="formData.type === 'GhostCut' || (formData.modelGroups && formData.modelGroups.length)"
+                    >
+                        <div style="width: 100%">
+                            <template v-if="formData.type === 'GhostCut'">
+                                <div
+                                    class="model-group-card"
+                                    style="
+                                        padding: 10px 14px;
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 12px;
+                                    "
+                                >
+                                    <el-input-number
+                                        v-model="formData.pricePerPoint"
+                                        :min="0"
+                                        :step="0.001"
+                                        :precision="3"
+                                        size="small"
+                                        style="width: 120px"
+                                    >
+                                    </el-input-number>
+                                    <span
+                                        style="
+                                            color: #42b7ae;
+                                            font-size: 12px;
+                                            white-space: nowrap;
+                                        "
+                                    >
+                                        实: ￥{{ (formData.pricePerPoint || 0) *
+                                        formData.multiplier }} / 点
+                                    </span>
+                                </div>
+                            </template>
+                            <div
+                                v-for="(g, gi) in formData.modelGroups"
+                                :key="gi"
+                                class="model-group-card"
+                                style="padding: 10px 14px"
+                            >
+                                <div class="flex items-center gap-3 flex-wrap">
+                                    <span
+                                        style="
+                                            font-weight: 500;
+                                            min-width: 120px;
+                                            font-size: 13px;
+                                        "
+                                        >{{ g.model || '未选择模型' }}</span
+                                    >
+                                    <el-input
+                                        v-model.number="g.officialInputPrice"
+                                        size="small"
+                                        style="width: 90px"
+                                        placeholder="输入价"
+                                    >
+                                        <template #prefix
+                                            ><span style="font-size: 11px"
+                                                >输入</span
+                                            ></template
+                                        >
+                                    </el-input>
+                                    <el-input
+                                        v-if="formData.cacheHitEnabled"
+                                        v-model.number="g.officialInputCacheHitPrice"
+                                        size="small"
+                                        style="width: 90px"
+                                        placeholder="输入命中"
+                                    >
+                                        <template #prefix
+                                            ><span style="font-size: 11px"
+                                                >入命中</span
+                                            ></template
+                                        >
+                                    </el-input>
+                                    <el-input
+                                        v-model.number="g.officialOutputPrice"
+                                        size="small"
+                                        style="width: 90px"
+                                        placeholder="输出价"
+                                    >
+                                        <template #prefix
+                                            ><span style="font-size: 11px"
+                                                >输出</span
+                                            ></template
+                                        >
+                                    </el-input>
+                                    <el-input
+                                        v-if="formData.cacheHitEnabled"
+                                        v-model.number="g.officialOutputCacheHitPrice"
+                                        size="small"
+                                        style="width: 90px"
+                                        placeholder="输出命中"
+                                    >
+                                        <template #prefix
+                                            ><span style="font-size: 11px"
+                                                >出命中</span
+                                            ></template
+                                        >
+                                    </el-input>
+                                    <span
+                                        style="
+                                            color: #42b7ae;
+                                            font-size: 12px;
+                                            white-space: nowrap;
+                                        "
+                                    >
+                                        实: {{ g.officialInputPrice != null ?
+                                        (g.officialInputPrice *
+                                        formData.multiplier).toFixed(4) : '-' }}
+                                        <template
+                                            v-if="formData.cacheHitEnabled"
+                                        >
+                                            /{{ g.officialInputCacheHitPrice !=
+                                            null ? (g.officialInputCacheHitPrice
+                                            * formData.multiplier).toFixed(4) :
+                                            '-' }}
+                                        </template>
+                                        /{{ g.officialOutputPrice != null ?
+                                        (g.officialOutputPrice *
+                                        formData.multiplier).toFixed(4) : '-' }}
+                                        <template
+                                            v-if="formData.cacheHitEnabled"
+                                        >
+                                            /{{ g.officialOutputCacheHitPrice !=
+                                            null ?
+                                            (g.officialOutputCacheHitPrice *
+                                            formData.multiplier).toFixed(4) :
+                                            '-' }}
+                                        </template>
+                                        {{ formData.currency }}/{{
+                                        formData.priceUnit === "1K" ? "1K" :
+                                        "1M" }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </el-form-item>
+
+                    </el-form-item>
                 </el-form>
                 <template #footer>
                     <el-button @click="dialogVisible = false">取消</el-button>
@@ -810,6 +1139,12 @@
                         key: "",
                         apiAddr: "https://api.deepseek.com",
                         modelGroups: [],
+                        // 渠道级别计费参数
+                        currency: "CNY",
+                        cacheHitEnabled: true,
+                        priceUnit: "1M",
+                        multiplier: 1.0,
+                        pricePerPoint: null,
                     });
 
                     const formRules = {
@@ -845,12 +1180,27 @@
                             responseTime: null,
                             used: 125.5,
                             remaining: 874.5,
+                            currency: "USD",
+                            cacheHitEnabled: false,
+                            priceUnit: "1M",
+                            multiplier: 1.0,
                             modelGroups: [
                                 {
                                     model: "gpt-4o",
                                     capabilities: ["image_rec", "image_gen"],
+                                    officialInputPrice: 2.5,
+                                    officialOutputPrice: 10.0,
+                                    officialInputCacheHitPrice: null,
+                                    officialOutputCacheHitPrice: null,
                                 },
-                                { model: "gpt-4o-mini", capabilities: [] },
+                                {
+                                    model: "gpt-4o-mini",
+                                    capabilities: [],
+                                    officialInputPrice: 0.15,
+                                    officialOutputPrice: 0.6,
+                                    officialInputCacheHitPrice: null,
+                                    officialOutputCacheHitPrice: null,
+                                },
                             ],
                             apiAddr: "https://api.openai.com",
                             key: "sk-xxxxx1",
@@ -863,12 +1213,27 @@
                             responseTime: "0.82 秒",
                             used: 320.0,
                             remaining: 680.0,
+                            currency: "CNY",
+                            cacheHitEnabled: true,
+                            priceUnit: "1M",
+                            multiplier: 1.2,
                             modelGroups: [
                                 {
                                     model: "deepseek-v4-flash",
                                     capabilities: ["ocr", "image_rec"],
+                                    officialInputPrice: 1,
+                                    officialOutputPrice: 2,
+                                    officialInputCacheHitPrice: 0.02,
+                                    officialOutputCacheHitPrice: 0.1,
                                 },
-                                { model: "deepseek-v4-pro", capabilities: [] },
+                                {
+                                    model: "deepseek-v4-pro",
+                                    capabilities: [],
+                                    officialInputPrice: 3,
+                                    officialOutputPrice: 6,
+                                    officialInputCacheHitPrice: 0.025,
+                                    officialOutputCacheHitPrice: 0.5,
+                                },
                             ],
                             apiAddr: "https://api.deepseek.com",
                             key: "sk-xxxxx2",
@@ -881,8 +1246,19 @@
                             responseTime: null,
                             used: 0.0,
                             remaining: 500.0,
+                            currency: "USD",
+                            cacheHitEnabled: false,
+                            priceUnit: "1M",
+                            multiplier: 1.0,
                             modelGroups: [
-                                { model: "gpt-4o", capabilities: [] },
+                                {
+                                    model: "gpt-4o",
+                                    capabilities: [],
+                                    officialInputPrice: 2.5,
+                                    officialOutputPrice: 10.0,
+                                    officialInputCacheHitPrice: null,
+                                    officialOutputCacheHitPrice: null,
+                                },
                             ],
                             apiAddr: "https://xxx.azure.com",
                             key: "az-xxxxx3",
@@ -895,14 +1271,39 @@
                             responseTime: "1.23 秒",
                             used: 88.2,
                             remaining: 411.8,
+                            currency: "USD",
+                            cacheHitEnabled: false,
+                            priceUnit: "1M",
+                            multiplier: 1.5,
                             modelGroups: [
                                 {
                                     model: "claude-3-opus",
                                     capabilities: ["video_rec"],
+                                    officialInputPrice: 15.0,
+                                    officialOutputPrice: 75.0,
+                                    officialInputCacheHitPrice: null,
+                                    officialOutputCacheHitPrice: null,
                                 },
                             ],
                             apiAddr: "https://api.claude-proxy.com",
                             key: "ck-xxxxx4",
+                        },
+                        {
+                            id: 1005,
+                            name: "鬼手剪辑 官方",
+                            type: "GhostCut",
+                            status: true,
+                            responseTime: null,
+                            used: 50.0,
+                            remaining: 950.0,
+                            currency: "CNY",
+                            cacheHitEnabled: false,
+                            priceUnit: "call",
+                            multiplier: 1.0,
+                            pricePerPoint: 0.01,
+                            modelGroups: [],
+                            apiAddr: "https://api.zhaoli.com",
+                            key: "gc-xxxxx5",
                         },
                     ]);
 
@@ -964,6 +1365,55 @@
                         { label: "claude-3-opus", value: "claude-3-opus" },
                     ];
 
+                    // 模型官方计价映射（不同模型基础货币可能不同）
+                    const modelPricingMap = {
+                        "deepseek-v4-flash": {
+                            officialInputPrice: 1,
+                            officialOutputPrice: 2,
+                            officialInputCacheHitPrice: 0.02,
+                            officialOutputCacheHitPrice: 0.1,
+                            cacheHitEnabled: true,
+                            currency: "CNY",
+                            priceUnit: "1M",
+                        },
+                        "deepseek-v4-pro": {
+                            officialInputPrice: 3,
+                            officialOutputPrice: 6,
+                            officialInputCacheHitPrice: 0.025,
+                            officialOutputCacheHitPrice: 0.5,
+                            cacheHitEnabled: true,
+                            currency: "CNY",
+                            priceUnit: "1M",
+                        },
+                        "gpt-4o": {
+                            officialInputPrice: 2.5,
+                            officialOutputPrice: 10.0,
+                            officialInputCacheHitPrice: null,
+                            officialOutputCacheHitPrice: null,
+                            cacheHitEnabled: false,
+                            currency: "USD",
+                            priceUnit: "1M",
+                        },
+                        "gpt-4o-mini": {
+                            officialInputPrice: 0.15,
+                            officialOutputPrice: 0.6,
+                            officialInputCacheHitPrice: null,
+                            officialOutputCacheHitPrice: null,
+                            cacheHitEnabled: false,
+                            currency: "USD",
+                            priceUnit: "1M",
+                        },
+                        "claude-3-opus": {
+                            officialInputPrice: 15.0,
+                            officialOutputPrice: 75.0,
+                            officialInputCacheHitPrice: null,
+                            officialOutputCacheHitPrice: null,
+                            cacheHitEnabled: false,
+                            currency: "USD",
+                            priceUnit: "1M",
+                        },
+                    };
+
                     const capabilityGroups = [
                         {
                             category: "文本能力",
@@ -1019,6 +1469,7 @@
                         audio_gen: "音频生成",
                     };
 
+                    // 鬼手剪辑功能耗点价格表（基础价格，不区分VIP）
                     const openAddDialog = () => {
                         dialogMode.value = "add";
                         Object.assign(formData, defaultForm());
@@ -1144,7 +1595,54 @@
                         formData.modelGroups.push({
                             model: "",
                             capabilities: [],
+                            officialInputPrice: null,
+                            officialOutputPrice: null,
+                            officialInputCacheHitPrice: null,
+                            officialOutputCacheHitPrice: null,
                         });
+                    };
+
+                    // 选择模型时自动填充官方计价
+                    const handleModelChange = (group) => {
+                        if (!group.model) return;
+                        const pricing = modelPricingMap[group.model];
+                        if (pricing) {
+                            group.officialInputPrice =
+                                pricing.officialInputPrice;
+                            group.officialOutputPrice =
+                                pricing.officialOutputPrice;
+                            group.officialInputCacheHitPrice =
+                                pricing.officialInputCacheHitPrice;
+                            group.officialOutputCacheHitPrice =
+                                pricing.officialOutputCacheHitPrice;
+                        }
+                    };
+
+                    // 渠道类型变更时自动调整计费参数
+                    const onTypeChange = (type) => {
+                        const typeDefaults = {
+                            DeepSeek: {
+                                currency: "CNY",
+                                cacheHitEnabled: true,
+                            },
+                            OpenAI: { currency: "USD", cacheHitEnabled: false },
+                            Azure: { currency: "USD", cacheHitEnabled: false },
+                            Custom: { currency: "USD", cacheHitEnabled: false },
+                            GhostCut: {
+                                currency: "CNY",
+                                cacheHitEnabled: false,
+                            },
+                        };
+                        const d = typeDefaults[type];
+                        if (d) {
+                            formData.currency = d.currency;
+                            formData.cacheHitEnabled = d.cacheHitEnabled;
+                            formData.priceUnit =
+                                type === "GhostCut" ? "call" : "1M";
+                            formData.multiplier = 1.0;
+                            formData.pricePerPoint =
+                                type === "GhostCut" ? 0.01 : null;
+                        }
                     };
 
                     const removeModelGroup = (index) => {
@@ -1167,6 +1665,7 @@
                         searchFilters,
                         formData,
                         capabilityLabelMap,
+
                         modelOptions,
                         capabilityGroups,
                         tableData,
@@ -1185,6 +1684,8 @@
                         handleSearch,
                         handleReset,
                         handleViewKey,
+                        onTypeChange,
+                        handleModelChange,
                         addModelGroup,
                         removeModelGroup,
                         onCapabilityChange,
