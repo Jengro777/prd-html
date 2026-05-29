@@ -3139,7 +3139,7 @@
             1. 识别商品真实结构
             2. 判断是否存在真实 SKU
             3. 提取颜色、材质、尺寸、结构特征
-            4. 生成高质量电商文案
+            4. 生成高质量英文电商文案
             5. 生成与原图强关联的商品图片 Prompt
             6. 输出严格 JSON
 
@@ -3150,6 +3150,7 @@
             * 不允许任何解释文本
             * 不允许 Markdown
             * 不允许代码块
+            * 所有面向买家的文案、图片 brief、图片标题、图片内可见文字必须使用英文
 
             ---
 
@@ -3484,8 +3485,8 @@
             格式：https://placehold.co/800x800/{背景色}/{文字色}?text={商品关键词}
 
             轮播图说明（alt_text 和 focus_keyword）规则：
-            * alt_text：用中文写成可执行的电商图片 brief，必须包含商品品类、可见品牌/标签、主结构、材质、颜色、角度
-            * focus_keyword：该图的具体卖点关键词，不能泛写“主图/详情/展示”
+            * alt_text：必须使用英文，写成可执行的 ecommerce image generation brief，必须包含商品品类、可见品牌/标签、主结构、材质、颜色、角度
+            * focus_keyword：必须使用英文，写成该图的具体卖点关键词，不能泛写 main image/detail/display
 
             最多 5 张轮播图，应优先从以下角度覆盖商品：
             1. 商品整体正面图（主图）
@@ -3512,7 +3513,7 @@
             格式：https://placehold.co/1200x1200/{背景色}/{文字色}?text={场景描述}
 
             详情图说明（title 和 description）规则：
-            * title：该图的电商用途名称，例如“尺寸规格图解”“材质工艺特写”“商务场景使用”
+            * title：必须使用英文，写成该图的电商用途名称，例如 "Size and Specification Guide", "Material Craftsmanship Close-up", "Business Usage Scene"
             * description：必须使用英文，写成完整 AI image generation prompt，不是普通 caption
 
             最多 7 张详情图，应优先从以下角度覆盖商品：
@@ -3529,7 +3530,7 @@
 
             * 每张图要承担明确营销目的
             * 需要有统一视觉系统、统一色调、统一字体层级、统一留白
-            * 每张图必须包含简短营销文案或卖点标注
+            * 每张图必须包含简短英文营销文案或英文卖点标注
             * 详情图之间必须按“主视觉 → 结构/参数 → 材质/工艺 → 场景 → 变体/对比 → 购买理由”形成连续叙事
             * 禁止每张图独立成风格不同的随机海报
             * 禁止只做商品孤立摆拍而没有营销信息
@@ -3547,7 +3548,7 @@
                preserve identical structure, proportions, material, colors and packaging.
 
             2. Visual anchors:
-               明确写出从参考图识别出的具体锚点，
+               用英文明确写出从参考图识别出的具体锚点，
                包括品牌/标签文字、商品形状、瓶盖/喷头/把手/按键等结构、
                材质、颜色、数量、变体差异、容量或规格文字。
 
@@ -3580,7 +3581,7 @@
             若参考图中能看见品牌名、LOGO字母、容量、型号、标签主文案：
 
             * description 必须明确要求 preserve visible label text exactly
-            * alt_text 必须用中文说明该文字位于哪里
+            * alt_text 必须用英文说明该文字位于哪里
             * 禁止把品牌替换成新品牌
             * 禁止把香水生成洗护、把食品生成化妆品、把工具生成家居摆件等跨品类漂移
 
@@ -3642,6 +3643,11 @@
             ---
 
             文案必须：
+
+            * 全部使用英文
+            * product_name、category、variant、specifications、attributes、description、meta_info、carousel_images、detail_images 中所有字符串都必须使用英文
+            * 图片内需要渲染的营销文案、标题、卖点标注、参数标注必须使用英文
+            * 除原图中已经存在且必须保留的品牌、LOGO、标签文字外，禁止输出中文、日文、韩文或其他非英文文案
 
             * 转化导向
             * 信息密度高
@@ -3974,7 +3980,22 @@
             现在开始基于用户上传的图片和描述，
             直接输出严格 JSON。`;
                 const DEFAULT_PROMPT_VERSION =
-                    "image-reference-lock-v2-20260528";
+                    "image-reference-lock-v3-en-20260529";
+                const OUTPUT_LANGUAGE_LOCK = `
+
+            ---
+
+            # Output Language Lock (highest priority)
+
+            All generated product listing copy and all generated image prompts must be in English.
+
+            This applies to every customer-facing or image-generation string in the JSON, including product_name, category, color names, size labels, material, scenes, attributes, pricing_strategy, description.seo_title, description.short_description, description.key_features, description.full_description, meta_info.tags, package_dimensions_cm, carousel_images[].alt_text, carousel_images[].focus_keyword, detail_images[].title, and detail_images[].description.
+
+            All visible text rendered inside generated images must be English. If a source idea is Chinese or another non-English language, translate it into concise natural English before using it as visible image copy.
+
+            Preserve visible brand names, logos, model numbers, ingredient text, capacity text, and label text from the reference image exactly when they are part of the real product packaging. Do not invent or translate real packaging text that is visibly printed on the product.
+
+            Do not output Chinese marketing copy, Chinese image titles, Chinese image prompts, or Chinese visible overlay text.`;
 
                 // 获取 System Prompt（优先使用用户自定义的）
                 function isLegacyPrompt(prompt) {
@@ -3991,7 +4012,7 @@
                 function getSystemPrompt() {
                     var custom = localStorage.getItem("ai_custom_prompt");
                     if (custom && custom.trim() && !isLegacyPrompt(custom)) {
-                        return custom;
+                        return custom + OUTPUT_LANGUAGE_LOCK;
                     }
                     if (custom && isLegacyPrompt(custom)) {
                         localStorage.setItem(
@@ -3999,7 +4020,7 @@
                             DEFAULT_PROMPT_VERSION,
                         );
                     }
-                    return DEFAULT_SYSTEM_PROMPT;
+                    return DEFAULT_SYSTEM_PROMPT + OUTPUT_LANGUAGE_LOCK;
                 }
 
                 function isPlaceholderImageUrl(url) {
@@ -4201,43 +4222,43 @@
                             copy:
                                 data?.product_name ||
                                 item?.title ||
-                                "核心卖点展示",
+                                "Key Benefits Showcase",
                             layout:
                                 "large product beauty shot with concise headline and one short subheading.",
                         },
                         {
                             role: "Product structure and specification panel",
-                            copy: item?.title || "尺寸规格与喷雾结构",
+                            copy: item?.title || "Size and Structure Guide",
                             layout:
                                 "product centered with clean measurement lines, small callout labels, and clear spacing.",
                         },
                         {
                             role: "Material craftsmanship panel",
-                            copy: feature || "高透玻璃与金属质感",
+                            copy: feature || "Premium Materials and Finish",
                             layout:
                                 "macro material close-up with two or three concise selling-point callouts.",
                         },
                         {
                             role: "Usage scenario panel",
-                            copy: item?.title || "商务通勤与约会场景",
+                            copy: item?.title || "Everyday Usage Scene",
                             layout:
                                 "product in a realistic scene, headline on empty background area, product remains dominant.",
                         },
                         {
                             role: "Variant selection panel",
-                            copy: item?.title || "双款变体对比",
+                            copy: item?.title || "Variant Comparison",
                             layout:
                                 "side-by-side variant chart with consistent cards and very short labels.",
                         },
                         {
                             role: "Benefit proof panel",
-                            copy: feature || "清爽淡香 随身携带",
+                            copy: feature || "Portable Everyday Performance",
                             layout:
                                 "product with icon-style benefit callouts, no unrelated objects.",
                         },
                         {
                             role: "Gift and portability panel",
-                            copy: item?.title || "出差旅行 礼赠适用",
+                            copy: item?.title || "Travel and Gift Ready",
                             layout:
                                 "product near tasteful travel or gift props, same brand identity retained.",
                         },
@@ -4246,7 +4267,7 @@
                             copy:
                                 data?.description?.short_description ||
                                 item?.title ||
-                                "轻奢男香 现在上架",
+                                "Ready for Marketplace Launch",
                             layout:
                                 "final polished ecommerce closing panel, product pair and concise CTA-style copy.",
                         },
@@ -4263,7 +4284,7 @@
                     hasStyleReference,
                 ) {
                     var title =
-                        item?.title || item?.focus_keyword || "商品素材图";
+                        item?.title || item?.focus_keyword || "Product image asset";
                     var description =
                         item?.description || item?.alt_text || title;
                     var productLock = getProductVisualLock(data);
@@ -4283,6 +4304,7 @@
                             : "",
                         "Shot plan: " + getCarouselShotPlan(index, item),
                             "Specific returned brief: " + cleanPromptText(description),
+                            "Language requirement: if any source brief or product copy is Chinese or another non-English language, translate it into concise natural English before rendering. Do not render Chinese or non-English overlay text in the image, except real brand/logo/packaging text visible on the reference product.",
                             hasStyleReference
                                 ? "The additional generated image reference is for lighting and series consistency only; do not copy artifacts from it."
                                 : "",
@@ -4308,10 +4330,11 @@
                         "Detail narrative role: " + narrative.role,
                         "Marketing copy to include as crisp overlay text: " +
                             cleanPromptText(narrative.copy),
+                        "Language requirement: rewrite the marketing copy above into concise natural English before rendering. All visible overlay text, callouts, titles, labels, and benefit copy in the generated image must be English only, except real brand/logo/packaging text visible on the reference product.",
                         "Layout requirement: " + narrative.layout,
                         "Returned detail brief: " + cleanPromptText(description),
                         "Detail-page rule: combine product photography with concise marketing copy and clean callouts. The panel must feel like one page section in a connected product detail page, not an isolated random poster.",
-                        "Use consistent typography hierarchy, consistent text placement grid, consistent accent colors, and enough blank space for readable Chinese marketing copy.",
+                        "Use consistent typography hierarchy, consistent text placement grid, consistent accent colors, and enough blank space for readable English marketing copy.",
                         "Negative prompt: no different product category, no new brand, no redesigned label, no wrong logo text, no unrelated bottles, no shampoo, no conditioner, no body lotion, no skincare pump bottles unless the first reference image is exactly that category, no fantasy package, no generic stock product.",
                     ].join("\n\n");
                 }
@@ -4917,6 +4940,40 @@
                     }
 
                     // 16. 其他属性 — 从 specifications + attributes 合并
+                    function toEnglishAttributeName(name) {
+                        var raw = String(name || "").trim();
+                        if (!raw) return "";
+                        var map = {
+                            材质: "Material",
+                            颜色: "Color",
+                            色彩: "Color",
+                            重量: "Weight",
+                            "重量(kg)": "Weight (kg)",
+                            尺寸: "Dimensions",
+                            规格: "Specification",
+                            适用场景: "Use Scenes",
+                            使用场景: "Use Scenes",
+                            目标人群: "Target Audience",
+                            适用人群: "Target Audience",
+                            风格: "Style",
+                            使用方式: "Usage Method",
+                            供电方式: "Power Type",
+                            电源类型: "Power Type",
+                            兼容性: "Compatibility",
+                            品牌: "Brand",
+                            型号: "Model",
+                            容量: "Capacity",
+                            包装: "Package",
+                            产地: "Origin",
+                            保修: "Warranty",
+                            防水等级: "Water Resistance",
+                        };
+                        if (map[raw]) return map[raw];
+                        return /[\u3400-\u9fff]/.test(raw)
+                            ? "Custom Attribute"
+                            : raw;
+                    }
+
                     function addAttrRowToForm(name, value) {
                         var attrCard = Array.from(
                             document.querySelectorAll(
@@ -4935,11 +4992,11 @@
                         var row = document.createElement("div");
                         row.className = "attr-row";
                         row.innerHTML =
-                            '<div class="attr-name"><label class="form-label text-xs">属性名称</label><input type="text" class="form-input" value="' +
-                            escapeHtml(name || "") +
-                            '" placeholder="属性名称"></div><div class="attr-value"><label class="form-label text-xs">属性值</label><input type="text" class="form-input" value="' +
+                            '<div class="attr-name"><label class="form-label text-xs">Attribute Name</label><input type="text" class="form-input" value="' +
+                            escapeHtml(toEnglishAttributeName(name)) +
+                            '" placeholder="Attribute name"></div><div class="attr-value"><label class="form-label text-xs">Attribute Value</label><input type="text" class="form-input" value="' +
                             escapeHtml(String(value || "")) +
-                            '" placeholder="属性值"></div><div class="attr-del"><label class="form-label text-xs">&nbsp;</label><button class="w-full px-2 py-1.5 border border-gray-200 rounded text-xs text-gray-500 hover:bg-gray-50" onclick="this.closest(\'.attr-row\').remove()">删除</button></div>';
+                            '" placeholder="Attribute value"></div><div class="attr-del"><label class="form-label text-xs">&nbsp;</label><button class="w-full px-2 py-1.5 border border-gray-200 rounded text-xs text-gray-500 hover:bg-gray-50" onclick="this.closest(\'.attr-row\').remove()">Delete</button></div>';
                         addBtnWrapper.parentNode.insertBefore(
                             row,
                             addBtnWrapper,
@@ -4949,14 +5006,14 @@
                     if (data.specifications) {
                         if (data.specifications.material)
                             addAttrRowToForm(
-                                "材质",
+                                "Material",
                                 data.specifications.material,
                             );
                         if (data.specifications.color)
-                            addAttrRowToForm("颜色", data.specifications.color);
+                            addAttrRowToForm("Color", data.specifications.color);
                         if (data.specifications.weight_kg)
                             addAttrRowToForm(
-                                "重量(kg)",
+                                "Weight (kg)",
                                 data.specifications.weight_kg,
                             );
                         if (data.specifications.dimension) {
@@ -4968,15 +5025,15 @@
                                 "x" +
                                 (dim.height_cm || 0) +
                                 " cm";
-                            addAttrRowToForm("尺寸", dimStr);
+                            addAttrRowToForm("Dimensions", dimStr);
                         }
                         if (
                             data.specifications.scenes &&
                             Array.isArray(data.specifications.scenes)
                         ) {
                             addAttrRowToForm(
-                                "适用场景",
-                                data.specifications.scenes.join("、"),
+                                "Use Scenes",
+                                data.specifications.scenes.join(", "),
                             );
                         }
                     }
@@ -4987,7 +5044,7 @@
                             !data.specifications?.material
                         )
                             addAttrRowToForm(
-                                "材质",
+                                "Material",
                                 data.base_specifications.material,
                             );
                         if (
@@ -4995,8 +5052,8 @@
                             Array.isArray(data.base_specifications.scenes)
                         )
                             addAttrRowToForm(
-                                "适用场景",
-                                data.base_specifications.scenes.join("、"),
+                                "Use Scenes",
+                                data.base_specifications.scenes.join(", "),
                             );
                     }
                     // 从 attributes 添加属性
@@ -5005,11 +5062,11 @@
                         typeof data.attributes === "object"
                     ) {
                         var attrMap = {
-                            target_audience: "目标人群",
-                            style: "风格",
-                            usage_method: "使用方式",
-                            power_type: "供电方式",
-                            compatibility: "兼容性",
+                            target_audience: "Target Audience",
+                            style: "Style",
+                            usage_method: "Usage Method",
+                            power_type: "Power Type",
+                            compatibility: "Compatibility",
                         };
                         Object.keys(attrMap).forEach(function (key) {
                             if (data.attributes[key]) {
@@ -5727,6 +5784,7 @@
                                 ? "用户提供的图片链接：\n" + imageUrls
                                 : "",
                             "数量限制：carousel_images 最多返回 5 条；detail_images 最多返回 7 条。内容不足时允许少于上限，禁止为了凑数生成重复或低价值图片。",
+                            "输出语言强制要求：除原图包装上真实可见的品牌、LOGO、型号、容量、标签文字必须原样保留外，JSON 中所有商品文案、字段字符串、图片 brief、图片标题、卖点、标签和图片内可见营销文字都必须使用英文。",
                             "生成图片素材字段时，detail_images[].description 必须是可直接用于 AI 生图的英文 prompt，并完整写出主参考图中的品牌/标签文字、商品品类、形状结构、材质颜色、变体差异和负向约束，不能只写 same product as reference image。",
                         ]
                             .filter(Boolean)
@@ -6301,6 +6359,40 @@
                         // ============================
                         // 5. 其他属性 - 添加/删除
                         // ============================
+                        function toEnglishExtraAttrName(name) {
+                            var raw = String(name || "").trim();
+                            if (!raw) return "";
+                            var map = {
+                                材质: "Material",
+                                颜色: "Color",
+                                色彩: "Color",
+                                重量: "Weight",
+                                "重量(kg)": "Weight (kg)",
+                                尺寸: "Dimensions",
+                                规格: "Specification",
+                                适用场景: "Use Scenes",
+                                使用场景: "Use Scenes",
+                                目标人群: "Target Audience",
+                                适用人群: "Target Audience",
+                                风格: "Style",
+                                使用方式: "Usage Method",
+                                供电方式: "Power Type",
+                                电源类型: "Power Type",
+                                兼容性: "Compatibility",
+                                品牌: "Brand",
+                                型号: "Model",
+                                容量: "Capacity",
+                                包装: "Package",
+                                产地: "Origin",
+                                保修: "Warranty",
+                                防水等级: "Water Resistance",
+                            };
+                            if (map[raw]) return map[raw];
+                            return /[\u3400-\u9fff]/.test(raw)
+                                ? "Custom Attribute"
+                                : raw;
+                        }
+
                         function addExtraAttr(nameVal, valueVal) {
                             var container = Array.from(
                                 document.querySelectorAll(
@@ -6316,11 +6408,11 @@
                             var row = document.createElement("div");
                             row.className = "attr-row";
                             row.innerHTML =
-                                '<div class="attr-name"><label class="form-label text-xs">属性名称</label><input type="text" class="form-input" value="' +
-                                escapeHtml(nameVal || "") +
-                                '" placeholder="属性名称"></div><div class="attr-value"><label class="form-label text-xs">属性值</label><input type="text" class="form-input" value="' +
+                                '<div class="attr-name"><label class="form-label text-xs">Attribute Name</label><input type="text" class="form-input" value="' +
+                                escapeHtml(toEnglishExtraAttrName(nameVal)) +
+                                '" placeholder="Attribute name"></div><div class="attr-value"><label class="form-label text-xs">Attribute Value</label><input type="text" class="form-input" value="' +
                                 escapeHtml(valueVal || "") +
-                                '" placeholder="属性值"></div><div class="attr-del"><label class="form-label text-xs">&nbsp;</label><button class="w-full px-2 py-1.5 border border-gray-200 rounded text-xs text-gray-500 hover:bg-gray-50" onclick="this.closest(\'.attr-row\').remove()">删除</button></div>';
+                                '" placeholder="Attribute value"></div><div class="attr-del"><label class="form-label text-xs">&nbsp;</label><button class="w-full px-2 py-1.5 border border-gray-200 rounded text-xs text-gray-500 hover:bg-gray-50" onclick="this.closest(\'.attr-row\').remove()">Delete</button></div>';
                             insertBefore.parentNode.insertBefore(
                                 row,
                                 insertBefore,
