@@ -1,1074 +1,751 @@
-好的，继续生成 `references/component-examples.html` 文件。 --- ##
-references/component-examples.html ```html
 <!doctype html>
 <html lang="zh-CN">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>TOS 组件示例库</title>
+        <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
         <link
             rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            href="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/reset.css"
         />
+        <script src="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/antd.min.js"></script>
         <link
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         />
         <style>
-            /* ===== TOS 组件样式 ===== */
+            :root {
+                --tos-primary: #42b7ae;
+                --tos-primary-hover: #339b94;
+                --tos-primary-bg: #e6f7f6;
+                --tos-bg: #f5f7fa;
+                --tos-card: #fff;
+                --tos-border: #e5e7eb;
+                --tos-border-soft: #f0f2f5;
+                --tos-text: #333;
+                --tos-text-secondary: #666;
+                --tos-text-muted: #999;
+                --tos-success: #52c41a;
+                --tos-warning: #faad14;
+                --tos-error: #f5222d;
+                --tos-radius-card: 12px;
+                --tos-radius-control: 8px;
+                --tos-radius-tag: 4px;
+                --tos-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.03);
+                --tos-shadow-pop: 0 20px 60px rgba(15, 23, 42, 0.18);
+            }
 
-            /* 全局 */
             * {
-                margin: 0;
-                padding: 0;
                 box-sizing: border-box;
             }
+
             body {
-                background-color: #f5f7fa;
+                margin: 0;
+                background: var(--tos-bg);
+                color: var(--tos-text);
                 font-family:
                     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-                    sans-serif;
-                padding: 20px;
+                    "Helvetica Neue", Arial, sans-serif;
+                letter-spacing: 0;
             }
 
-            /* 演示容器 */
-            .demo-section {
-                margin-bottom: 40px;
-                background: #fff;
-                border-radius: 20px;
-                padding: 20px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+            #app {
+                min-height: 100vh;
             }
-            .demo-title {
-                font-size: 18px;
-                font-weight: 600;
-                color: #333;
-                margin-bottom: 20px;
-                padding-bottom: 12px;
-                border-bottom: 1px solid #f0f0f0;
+
+            .tos-shell {
+                min-height: 100vh;
             }
-            .demo-row {
+
+            .tos-header {
+                position: sticky;
+                top: 0;
+                z-index: 20;
                 display: flex;
-                flex-wrap: wrap;
-                gap: 20px;
-                align-items: flex-start;
-                margin-bottom: 16px;
-            }
-            .demo-col {
-                flex: 1;
-                min-width: 200px;
-            }
-
-            /* ===== TOS 组件 ===== */
-
-            /* 卡片 */
-            .tos-card {
-                border-radius: 20px;
-                background: #fff;
-                padding: 20px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
-            }
-            .tos-card__title {
-                font-size: 16px;
-                font-weight: 600;
-                color: #333;
-                margin-bottom: 16px;
-            }
-            .tos-card--compact {
-                padding: 16px;
-            }
-
-            /* 按钮 */
-            .btn-primary {
-                background-color: #42b7ae;
-                color: #fff;
-                border-radius: 8px;
-                padding: 8px 16px;
-                font-size: 14px;
-                font-weight: 500;
-                border: none;
-                cursor: pointer;
-                transition: opacity 0.2s;
-            }
-            .btn-primary:hover {
-                opacity: 0.8;
-            }
-            .btn-primary:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
-
-            .btn-secondary {
-                background-color: #fff;
-                color: #666;
-                border: 1px solid #e5e7eb;
-                border-radius: 8px;
-                padding: 8px 16px;
-                font-size: 14px;
-                cursor: pointer;
-                transition: all 0.2s;
-            }
-            .btn-secondary:hover {
-                background-color: #f5f7fa;
-                border-color: #d1d5db;
-            }
-
-            .btn-text {
-                background: none;
-                border: none;
-                color: #42b7ae;
-                padding: 8px 12px;
-                font-size: 14px;
-                cursor: pointer;
-                border-radius: 8px;
-            }
-            .btn-text:hover {
-                background-color: rgba(66, 183, 174, 0.08);
-            }
-
-            .btn-text-danger {
-                color: #f5222d;
-            }
-            .btn-text-danger:hover {
-                background-color: rgba(245, 34, 45, 0.08);
-            }
-
-            /* 表单 */
-            .form-input {
-                width: 100%;
-                border: 1px solid #e5e7eb;
-                border-radius: 8px;
-                padding: 8px 12px;
-                font-size: 14px;
-                transition: all 0.2s;
-                background: #fff;
-            }
-            .form-input:hover {
-                border-color: #d1d5db;
-            }
-            .form-input:focus {
-                outline: none;
-                border-color: #42b7ae;
-                box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.2);
-            }
-
-            .form-textarea {
-                width: 100%;
-                border: 1px solid #e5e7eb;
-                border-radius: 8px;
-                padding: 8px 12px;
-                font-size: 14px;
-                min-height: 80px;
-                transition: all 0.2s;
-                resize: vertical;
-            }
-            .form-textarea:focus {
-                outline: none;
-                border-color: #42b7ae;
-                box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.2);
-            }
-
-            .form-label {
-                font-size: 12px;
-                font-weight: 500;
-                color: #4b5563;
-                margin-bottom: 4px;
-                display: block;
-            }
-            .form-label .required {
-                color: #f5222d;
-                margin-left: 2px;
-            }
-
-            .form-select {
-                width: 100%;
-                border: 1px solid #e5e7eb;
-                border-radius: 8px;
-                padding: 8px 12px;
-                font-size: 14px;
-                background-color: #fff;
-                cursor: pointer;
-            }
-            .form-select:focus {
-                outline: none;
-                border-color: #42b7ae;
-                box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.2);
-            }
-
-            .form-error {
-                font-size: 11px;
-                color: #f5222d;
-                margin-top: 4px;
-            }
-
-            /* 表格 */
-            .tos-table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-            .tos-table th {
-                padding: 12px 16px;
-                text-align: left;
-                font-size: 13px;
-                font-weight: 500;
-                color: #666;
-                border-bottom: 1px solid #f0f0f0;
-            }
-            .tos-table td {
-                padding: 12px 16px;
-                font-size: 14px;
-                color: #333;
-                border-bottom: 1px solid #f5f5f5;
-            }
-            .tos-table tr:hover {
-                background-color: #fafafa;
-            }
-            .tos-table tr--selected {
-                background-color: #e6f7f6;
-            }
-
-            /* 标签 */
-            .tag {
-                display: inline-block;
-                padding: 2px 8px;
-                border-radius: 4px;
-                font-size: 12px;
-                font-weight: 500;
-            }
-            .tag-success {
-                background-color: #f0faf0;
-                color: #52c41a;
-            }
-            .tag-warning {
-                background-color: #fff7e6;
-                color: #faad14;
-            }
-            .tag-error {
-                background-color: #fff1f0;
-                color: #f5222d;
-            }
-            .tag-default {
-                background-color: #f5f5f5;
-                color: #666;
-            }
-            .tag-primary {
-                background-color: #e6f7f6;
-                color: #42b7ae;
-            }
-
-            /* 链接 */
-            .tos-link {
-                color: #42b7ae;
-                text-decoration: underline;
-                cursor: pointer;
-            }
-            .tos-link:hover {
-                color: #2a8a82;
-            }
-            .tos-link--danger {
-                color: #f5222d;
-            }
-            .tos-link--danger:hover {
-                color: #cf1322;
-            }
-
-            /* 弹窗 */
-            .modal-overlay {
-                position: fixed;
-                inset: 0;
-                background: rgba(0, 0, 0, 0.5);
-                display: flex;
+                height: 64px;
                 align-items: center;
-                justify-content: center;
-                z-index: 1000;
-            }
-            .modal-container {
-                background: #fff;
-                border-radius: 20px;
-                width: 90%;
-                max-width: 520px;
-                max-height: 85vh;
-                overflow: hidden;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-            }
-            .modal-header {
-                padding: 16px 20px;
-                border-bottom: 1px solid #f0f0f0;
-                display: flex;
                 justify-content: space-between;
+                gap: 16px;
+                border-bottom: 1px solid var(--tos-border-soft);
+                background: rgba(255, 255, 255, 0.96);
+                padding: 0 20px;
+                backdrop-filter: blur(10px);
+            }
+
+            .tos-brand {
+                display: flex;
+                min-width: 0;
                 align-items: center;
+                gap: 12px;
             }
-            .modal-header h3 {
-                font-size: 16px;
-                font-weight: 600;
-                color: #333;
-                margin: 0;
-            }
-            .modal-close {
+
+            .tos-brand__icon {
+                display: inline-flex;
                 width: 32px;
                 height: 32px;
-                border: none;
-                background: transparent;
-                border-radius: 8px;
-                cursor: pointer;
-                color: #999;
-            }
-            .modal-close:hover {
-                background: #f5f5f5;
-            }
-            .modal-body {
-                padding: 20px;
-                overflow-y: auto;
-            }
-            .modal-footer {
-                padding: 12px 20px;
-                border-top: 1px solid #f0f0f0;
-                display: flex;
-                justify-content: flex-end;
-                gap: 12px;
-            }
-
-            /* 分页 */
-            .pagination {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                justify-content: flex-end;
-                margin-top: 16px;
-            }
-            .pagination__item {
-                display: inline-flex;
+                flex: 0 0 32px;
                 align-items: center;
                 justify-content: center;
-                min-width: 32px;
-                height: 32px;
-                padding: 0 8px;
-                border: 1px solid #e5e7eb;
-                border-radius: 6px;
-                font-size: 13px;
-                color: #666;
-                background: #fff;
-                cursor: pointer;
-            }
-            .pagination__item:hover:not(.pagination__item--active) {
-                background-color: #f5f7fa;
-            }
-            .pagination__item--active {
-                background-color: #42b7ae;
-                border-color: #42b7ae;
+                border-radius: 8px;
+                background: var(--tos-primary);
                 color: #fff;
             }
 
-            /* 面包屑 */
-            .breadcrumb {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                font-size: 13px;
-                margin-bottom: 16px;
-            }
-            .breadcrumb__item {
-                color: #999;
-                text-decoration: none;
-            }
-            .breadcrumb__item:hover {
-                color: #42b7ae;
-            }
-            .breadcrumb__item--active {
-                color: #333;
-                font-weight: 500;
-            }
-            .breadcrumb__separator {
-                color: #ccc;
-            }
-
-            /* 空状态 */
-            .empty-state {
-                text-align: center;
-                padding: 48px 20px;
-            }
-            .empty-state__icon {
-                font-size: 48px;
-                color: #d9d9d9;
-                margin-bottom: 16px;
-            }
-            .empty-state__title {
-                font-size: 14px;
-                color: #999;
-                margin-bottom: 8px;
-            }
-            .empty-state__description {
-                font-size: 12px;
-                color: #bbb;
-                margin-bottom: 16px;
-            }
-
-            /* 骨架屏 */
-            @keyframes skeleton-loading {
-                0% {
-                    background-position: 200% 0;
-                }
-                100% {
-                    background-position: -200% 0;
-                }
-            }
-            .skeleton {
-                background: linear-gradient(
-                    90deg,
-                    #f0f0f0 25%,
-                    #e0e0e0 50%,
-                    #f0f0f0 75%
-                );
-                background-size: 200% 100%;
-                animation: skeleton-loading 1.5s infinite;
-                border-radius: 4px;
-            }
-            .skeleton-line {
-                height: 14px;
-                background: #f0f0f0;
-                border-radius: 4px;
-                margin-bottom: 12px;
-            }
-            .skeleton-line--sm {
-                width: 60%;
-                height: 12px;
-            }
-            .skeleton-line--lg {
-                width: 90%;
-                height: 16px;
-            }
-
-            /* 开关 */
-            .switch {
-                position: relative;
-                display: inline-block;
-                width: 44px;
-                height: 24px;
-            }
-            .switch input {
-                opacity: 0;
-                width: 0;
-                height: 0;
-            }
-            .switch__slider {
-                position: absolute;
-                cursor: pointer;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-color: #ccc;
-                transition: 0.3s;
-                border-radius: 24px;
-            }
-            .switch__slider:before {
-                position: absolute;
-                content: "";
-                height: 18px;
-                width: 18px;
-                left: 3px;
-                bottom: 3px;
-                background-color: white;
-                transition: 0.3s;
-                border-radius: 50%;
-            }
-            .switch input:checked + .switch__slider {
-                background-color: #42b7ae;
-            }
-            .switch input:checked + .switch__slider:before {
-                transform: translateX(20px);
-            }
-
-            /* 进度条 */
-            .progress {
-                background-color: #f0f0f0;
-                border-radius: 4px;
+            .tos-brand__title {
                 overflow: hidden;
-                height: 8px;
-            }
-            .progress__bar {
-                background-color: #42b7ae;
-                height: 100%;
-                border-radius: 4px;
-                transition: width 0.3s ease;
-            }
-            .progress--success .progress__bar {
-                background-color: #52c41a;
-            }
-            .progress--warning .progress__bar {
-                background-color: #faad14;
-            }
-            .progress--error .progress__bar {
-                background-color: #f5222d;
+                color: #1f2937;
+                font-size: 18px;
+                font-weight: 600;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
 
-            /* 消息提示 */
-            .message {
-                position: fixed;
-                top: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                padding: 10px 20px;
-                border-radius: 8px;
-                font-size: 14px;
-                z-index: 1100;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            }
-            .message-success {
-                background-color: #f0faf0;
-                color: #52c41a;
-                border: 1px solid #b7eb8f;
-            }
-            .message-warning {
-                background-color: #fff7e6;
-                color: #faad14;
-                border: 1px solid #ffe58f;
-            }
-            .message-error {
-                background-color: #fff1f0;
-                color: #f5222d;
-                border: 1px solid #ffccc7;
-            }
-            .message-info {
-                background-color: #e6f7f6;
-                color: #42b7ae;
-                border: 1px solid #b5f5ec;
-            }
-
-            /* 折叠面板 */
-            .collapse-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                cursor: pointer;
-                padding: 8px 0;
-            }
-            .collapse-content {
-                padding: 12px 0;
-                border-top: 1px solid #f0f0f0;
-                margin-top: 8px;
-            }
-
-            /* 抽屉 */
-            .drawer-overlay {
-                position: fixed;
-                inset: 0;
-                background: rgba(0, 0, 0, 0.5);
-                z-index: 1000;
-            }
-            .drawer-container {
-                position: fixed;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                width: 480px;
-                max-width: 90vw;
-                background: #fff;
-                display: flex;
-                flex-direction: column;
-            }
-            .drawer-header {
-                padding: 16px 20px;
-                border-bottom: 1px solid #f0f0f0;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-            .drawer-body {
-                flex: 1;
+            .tos-page {
+                max-width: 1440px;
+                margin: 0 auto;
                 padding: 20px;
-                overflow-y: auto;
-            }
-            .drawer-footer {
-                padding: 12px 20px;
-                border-top: 1px solid #f0f0f0;
-                display: flex;
-                justify-content: flex-end;
-                gap: 12px;
             }
 
-            /* 工具类 */
-            .rotate-90 {
-                transform: rotate(90deg);
+            .tos-page-title {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 16px;
+                margin-bottom: 20px;
             }
-            .hidden {
+
+            .tos-page-title h1 {
+                margin: 0;
+                color: #1f2937;
+                font-size: 20px;
+                font-weight: 600;
+                line-height: 1.4;
+            }
+
+            .tos-page-title p {
+                margin: 4px 0 0;
+                color: var(--tos-text-muted);
+                font-size: 13px;
+            }
+
+            .tos-card {
+                background: var(--tos-card);
+                border: 1px solid var(--tos-border-soft);
+                border-radius: var(--tos-radius-card);
+                box-shadow: var(--tos-shadow-card);
+                padding: 20px;
+            }
+
+            .tos-card + .tos-card {
+                margin-top: 20px;
+            }
+
+            .tos-card__header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+
+            .tos-card__title {
+                margin: 0;
+                color: var(--tos-text);
+                font-size: 16px;
+                font-weight: 600;
+            }
+
+            .tos-card__desc {
+                margin-top: 4px;
+                color: var(--tos-text-muted);
+                font-size: 12px;
+                line-height: 1.5;
+            }
+
+            .tos-grid {
+                display: grid;
+                grid-template-columns: repeat(12, minmax(0, 1fr));
+                gap: 20px;
+            }
+
+            .tos-col-4 {
+                grid-column: span 4;
+            }
+
+            .tos-col-8 {
+                grid-column: span 8;
+            }
+
+            .tos-form-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 16px 20px;
+            }
+
+            .tos-form-help {
+                margin-top: 4px;
+                color: var(--tos-text-muted);
+                font-size: 12px;
+                line-height: 1.5;
+            }
+
+            .tos-upload {
+                display: flex;
+                min-height: 132px;
+                align-items: center;
+                justify-content: center;
+                border: 1px dashed #d9dee8;
+                border-radius: var(--tos-radius-control);
+                background: #fbfcfd;
+                color: var(--tos-text-secondary);
+                cursor: pointer;
+                text-align: center;
+                transition:
+                    border-color 0.2s,
+                    background-color 0.2s;
+            }
+
+            .tos-upload:hover {
+                border-color: var(--tos-primary);
+                background: rgba(66, 183, 174, 0.06);
+            }
+
+            .tos-upload i {
+                color: var(--tos-primary);
+                font-size: 22px;
+            }
+
+            .tos-upload__title {
+                margin-top: 8px;
+                color: var(--tos-text);
+                font-size: 14px;
+            }
+
+            .tos-upload__desc {
+                margin-top: 4px;
+                color: var(--tos-text-muted);
+                font-size: 12px;
+            }
+
+            .tos-stat {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                padding: 16px;
+                border: 1px solid var(--tos-border-soft);
+                border-radius: var(--tos-radius-card);
+                background: #fff;
+            }
+
+            .tos-stat__label {
+                color: var(--tos-text-muted);
+                font-size: 12px;
+            }
+
+            .tos-stat__value {
+                margin-top: 4px;
+                color: #1f2937;
+                font-size: 22px;
+                font-weight: 600;
+                line-height: 1.2;
+            }
+
+            .tos-stat__icon {
+                display: inline-flex;
+                width: 36px;
+                height: 36px;
+                align-items: center;
+                justify-content: center;
+                border-radius: 8px;
+                background: var(--tos-primary-bg);
+                color: var(--tos-primary);
+            }
+
+            .tos-table-wrap {
+                overflow-x: auto;
+                border: 1px solid var(--tos-border-soft);
+                border-radius: var(--tos-radius-card);
+            }
+
+            .tos-table {
+                width: 100%;
+                min-width: 720px;
+                border-collapse: collapse;
+                table-layout: fixed;
+            }
+
+            .tos-table th {
+                padding: 12px 16px;
+                background: #fafafa;
+                border-bottom: 1px solid var(--tos-border-soft);
+                color: var(--tos-text-secondary);
+                font-size: 13px;
+                font-weight: 500;
+                text-align: left;
+            }
+
+            .tos-table td {
+                padding: 12px 16px;
+                border-bottom: 1px solid #f5f5f5;
+                color: var(--tos-text);
+                font-size: 14px;
+                vertical-align: middle;
+            }
+
+            .tos-table tbody tr:last-child td {
+                border-bottom: 0;
+            }
+
+            .tos-table tr:hover td {
+                background: #fafafa;
+            }
+
+            .tos-tag {
+                display: inline-flex;
+                height: 22px;
+                align-items: center;
+                padding: 0 8px;
+                border-radius: var(--tos-radius-tag);
+                font-size: 12px;
+                font-weight: 500;
+                line-height: 20px;
+                white-space: nowrap;
+            }
+
+            .tos-tag--default {
+                background: #f5f5f5;
+                color: var(--tos-text-secondary);
+            }
+
+            .tos-tag--primary {
+                background: var(--tos-primary-bg);
+                color: var(--tos-primary);
+            }
+
+            .tos-tag--success {
+                background: #f0faf0;
+                color: var(--tos-success);
+            }
+
+            .tos-tag--warning {
+                background: #fff7e6;
+                color: var(--tos-warning);
+            }
+
+            .tos-tag--error {
+                background: #fff1f0;
+                color: var(--tos-error);
+            }
+
+            .tos-empty {
+                padding: 40px 20px;
+                color: var(--tos-text-muted);
+                text-align: center;
+            }
+
+            .tos-empty i {
+                margin-bottom: 12px;
+                color: #c9ced6;
+                font-size: 36px;
+            }
+
+            .tos-actions {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 8px;
+            }
+
+            .ant-btn-primary {
+                background: var(--tos-primary);
+                border-color: var(--tos-primary);
+                box-shadow: none;
+            }
+
+            a-button {
+                display: inline-flex;
+                height: 32px;
+                align-items: center;
+                justify-content: center;
+                padding: 0 15px;
+                border: 1px solid var(--tos-border);
+                border-radius: var(--tos-radius-control);
+                background: #fff;
+                color: var(--tos-text);
+                font-size: 14px;
+                line-height: 30px;
+                white-space: nowrap;
+            }
+
+            a-button[type="primary"] {
+                border-color: var(--tos-primary);
+                background: var(--tos-primary);
+                color: #fff;
+            }
+
+            a-button[type="link"] {
+                height: auto;
+                padding: 0 4px;
+                border: 0;
+                background: transparent;
+                color: var(--tos-primary);
+            }
+
+            a-button[danger] {
+                color: var(--tos-error);
+            }
+
+            a-form {
+                display: block;
+            }
+
+            a-form-item {
+                display: block;
+            }
+
+            a-form-item::before {
+                display: block;
+                margin-bottom: 6px;
+                color: var(--tos-text-secondary);
+                content: attr(label);
+                font-size: 13px;
+            }
+
+            a-input,
+            a-input-number,
+            a-select,
+            a-textarea {
+                display: flex;
+                width: 100%;
+                min-height: 32px;
+                align-items: center;
+                border: 1px solid var(--tos-border);
+                border-radius: var(--tos-radius-control);
+                background: #fff;
+                color: var(--tos-text);
+                font-size: 14px;
+            }
+
+            a-input,
+            a-input-number,
+            a-select {
+                padding: 4px 11px;
+            }
+
+            a-textarea {
+                min-height: 96px;
+                align-items: flex-start;
+                padding: 8px 11px;
+            }
+
+            a-input::before,
+            a-input-number::before {
+                color: var(--tos-text);
+                content: attr(value);
+            }
+
+            a-input:not([value])::before,
+            a-textarea::before {
+                color: var(--tos-text-muted);
+                content: attr(placeholder);
+            }
+
+            a-select::before {
+                color: var(--tos-text-secondary);
+                content: attr(placeholder);
+            }
+
+            a-select[value="home"]::before {
+                content: "家居生活";
+            }
+
+            a-select[value="draft"]::before {
+                content: "草稿";
+            }
+
+            a-select-option {
                 display: none;
+            }
+
+            .ant-btn-primary:hover,
+            .ant-btn-primary:focus {
+                background: var(--tos-primary-hover) !important;
+                border-color: var(--tos-primary-hover) !important;
+            }
+
+            .ant-btn,
+            .ant-input,
+            .ant-input-number,
+            .ant-select-selector,
+            .ant-picker {
+                border-radius: var(--tos-radius-control) !important;
+            }
+
+            .ant-input:focus,
+            .ant-input-focused,
+            .ant-select-focused .ant-select-selector,
+            .ant-picker-focused {
+                border-color: var(--tos-primary) !important;
+                box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.16) !important;
+            }
+
+            .ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn,
+            .ant-tabs .ant-tabs-tab:hover {
+                color: var(--tos-primary);
+            }
+
+            .ant-tabs .ant-tabs-ink-bar {
+                background: var(--tos-primary);
+            }
+
+            .ant-modal-content {
+                border-radius: var(--tos-radius-card);
+                box-shadow: var(--tos-shadow-pop);
+            }
+
+            @media (max-width: 960px) {
+                .tos-col-4,
+                .tos-col-8 {
+                    grid-column: span 12;
+                }
+            }
+
+            @media (max-width: 640px) {
+                .tos-header {
+                    height: 56px;
+                    padding: 0 14px;
+                }
+
+                .tos-brand__title {
+                    max-width: 150px;
+                    font-size: 16px;
+                }
+
+                .tos-page {
+                    padding: 16px;
+                }
+
+                .tos-page-title {
+                    display: block;
+                }
+
+                .tos-page-title .tos-actions {
+                    justify-content: flex-start;
+                    margin-top: 12px;
+                }
+
+                .tos-form-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .tos-card {
+                    padding: 16px;
+                }
             }
         </style>
     </head>
     <body>
-        <!-- ==================== 组件示例 ==================== -->
-
-        <!-- 1. 按钮组件 -->
-        <div class="demo-section">
-            <div class="demo-title">1. 按钮组件</div>
-            <div class="demo-row">
-                <div class="demo-col">
-                    <button class="btn-primary">主按钮</button>
-                </div>
-                <div class="demo-col">
-                    <button class="btn-secondary">次按钮</button>
-                </div>
-                <div class="demo-col">
-                    <button class="btn-text">文本按钮</button>
-                </div>
-                <div class="demo-col">
-                    <button class="btn-text btn-text-danger">
-                        危险文本按钮
-                    </button>
-                </div>
-                <div class="demo-col">
-                    <button class="btn-primary" disabled>禁用按钮</button>
-                </div>
-            </div>
-            <div class="demo-row">
-                <div class="demo-col">
-                    <button class="btn-primary">
-                        <i class="fas fa-plus mr-1"></i> 新增
-                    </button>
-                </div>
-                <div class="demo-col">
-                    <button class="btn-secondary">
-                        <i class="fas fa-search mr-1"></i> 搜索
-                    </button>
-                </div>
-                <div class="demo-col">
-                    <button class="btn-text">
-                        <i class="fas fa-edit mr-1"></i> 编辑
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 2. 表单组件 -->
-        <div class="demo-section">
-            <div class="demo-title">2. 表单组件</div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div>
-                    <label class="form-label"
-                        >输入框 <span class="required">*</span></label
-                    >
-                    <input
-                        type="text"
-                        class="form-input"
-                        placeholder="请输入内容"
-                    />
-                    <div class="form-error">错误提示信息</div>
-                </div>
-                <div>
-                    <label class="form-label">选择器</label>
-                    <select class="form-select">
-                        <option>请选择</option>
-                        <option>选项一</option>
-                        <option>选项二</option>
-                    </select>
-                </div>
-                <div class="md:col-span-2">
-                    <label class="form-label">文本域</label>
-                    <textarea
-                        class="form-textarea"
-                        placeholder="请输入详细描述..."
-                    ></textarea>
-                </div>
-            </div>
-        </div>
-
-        <!-- 3. 卡片组件 -->
-        <div class="demo-section">
-            <div class="demo-title">3. 卡片组件</div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div class="tos-card">
-                    <div class="tos-card__title">标准卡片</div>
-                    <div class="text-gray-600">
-                        这是卡片内容区域，可以放置任何信息。卡片圆角20px，带有轻微阴影。
-                    </div>
-                </div>
-                <div class="tos-card tos-card--compact">
-                    <div class="tos-card__title">紧凑卡片</div>
-                    <div class="text-gray-600">
-                        紧凑卡片内边距16px，适用于信息较密集的场景。
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 4. 标签组件 -->
-        <div class="demo-section">
-            <div class="demo-title">4. 标签组件</div>
-            <div class="demo-row">
-                <span class="tag tag-success">成功</span>
-                <span class="tag tag-warning">警告</span>
-                <span class="tag tag-error">错误</span>
-                <span class="tag tag-default">默认</span>
-                <span class="tag tag-primary">主要</span>
-            </div>
-        </div>
-
-        <!-- 5. 表格组件 -->
-        <div class="demo-section">
-            <div class="demo-title">5. 表格组件</div>
-            <table class="tos-table">
-                <thead>
-                    <tr>
-                        <th>姓名</th>
-                        <th>邮箱</th>
-                        <th>状态</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>张三</td>
-                        <td>zhang@example.com</td>
-                        <td><span class="tag tag-success">启用</span></td>
-                        <td>
-                            <a href="#" class="tos-link">编辑</a> /
-                            <a href="#" class="tos-link--danger">删除</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>李四</td>
-                        <td>li@example.com</td>
-                        <td><span class="tag tag-default">禁用</span></td>
-                        <td>
-                            <a href="#" class="tos-link">编辑</a> /
-                            <a href="#" class="tos-link--danger">删除</a>
-                        </td>
-                    </tr>
-                    <tr class="tos-table tr--selected">
-                        <td>王五</td>
-                        <td>wang@example.com</td>
-                        <td><span class="tag tag-success">启用</span></td>
-                        <td>
-                            <a href="#" class="tos-link">编辑</a> /
-                            <a href="#" class="tos-link--danger">删除</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- 6. 分页组件 -->
-        <div class="demo-section">
-            <div class="demo-title">6. 分页组件</div>
-            <div class="pagination">
-                <button class="pagination__item pagination__prev">
-                    上一页
-                </button>
-                <button class="pagination__item">1</button>
-                <button class="pagination__item pagination__item--active">
-                    2
-                </button>
-                <button class="pagination__item">3</button>
-                <button class="pagination__item">4</button>
-                <button class="pagination__item">5</button>
-                <button class="pagination__item pagination__next">
-                    下一页
-                </button>
-            </div>
-        </div>
-
-        <!-- 7. 面包屑导航 -->
-        <div class="demo-section">
-            <div class="demo-title">7. 面包屑导航</div>
-            <div class="breadcrumb">
-                <a href="#" class="breadcrumb__item">首页</a>
-                <span class="breadcrumb__separator">/</span>
-                <a href="#" class="breadcrumb__item">商品管理</a>
-                <span class="breadcrumb__separator">/</span>
-                <span class="breadcrumb__item--active">商品列表</span>
-            </div>
-        </div>
-
-        <!-- 8. 空状态 -->
-        <div class="demo-section">
-            <div class="demo-title">8. 空状态</div>
-            <div class="empty-state">
-                <div class="empty-state__icon">
-                    <i class="fas fa-inbox"></i>
-                </div>
-                <div class="empty-state__title">暂无数据</div>
-                <div class="empty-state__description">
-                    当前列表为空，请点击下方按钮添加
-                </div>
-                <div class="empty-state__action">
-                    <button class="btn-primary">+ 新增数据</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 9. 骨架屏 -->
-        <div class="demo-section">
-            <div class="demo-title">9. 骨架屏</div>
-            <div class="tos-card">
-                <div class="skeleton-line skeleton-line--lg mb-4"></div>
-                <div class="skeleton-line"></div>
-                <div class="skeleton-line"></div>
-                <div class="skeleton-line skeleton-line--sm"></div>
-            </div>
-        </div>
-
-        <!-- 10. 进度条 -->
-        <div class="demo-section">
-            <div class="demo-title">10. 进度条</div>
-            <div class="space-y-3">
-                <div class="progress">
-                    <div class="progress__bar" style="width: 60%"></div>
-                </div>
-                <div class="progress progress--success">
-                    <div class="progress__bar" style="width: 80%"></div>
-                </div>
-                <div class="progress progress--warning">
-                    <div class="progress__bar" style="width: 40%"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 11. 开关组件 -->
-        <div class="demo-section">
-            <div class="demo-title">11. 开关组件</div>
-            <label class="switch">
-                <input type="checkbox" checked />
-                <span class="switch__slider"></span>
-            </label>
-        </div>
-
-        <!-- 12. 链接组件 -->
-        <div class="demo-section">
-            <div class="demo-title">12. 链接组件</div>
-            <div class="demo-row">
-                <a href="#" class="tos-link">普通链接</a>
-                <a href="#" class="tos-link--danger">危险链接</a>
-            </div>
-        </div>
-
-        <!-- 13. 消息提示 -->
-        <div class="demo-section">
-            <div class="demo-title">13. 消息提示</div>
-            <div class="demo-row">
-                <div class="message-success">操作成功！</div>
-                <div class="message-warning">请注意检查</div>
-                <div class="message-error">操作失败</div>
-                <div class="message-info">信息提示</div>
-            </div>
-        </div>
-
-        <!-- 14. 折叠面板 -->
-        <div class="demo-section">
-            <div class="demo-title">14. 折叠面板</div>
-            <div
-                class="collapse-header"
-                onclick="
-                    this.nextElementSibling.classList.toggle('hidden');
-                    this.querySelector('.fa-chevron-right').classList.toggle(
-                        'rotate-90',
-                    );
-                "
-            >
-                <span class="font-medium">点击展开/收起</span>
-                <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
-            </div>
-            <div class="collapse-content hidden">
-                <div class="text-gray-600">
-                    这里是折叠面板的内容区域，可以放置更多高级选项。
-                </div>
-            </div>
-        </div>
-
-        <!-- 15. 弹窗示例 (JavaScript 控制) -->
-        <div class="demo-section">
-            <div class="demo-title">15. 弹窗示例</div>
-            <div class="demo-row">
-                <button
-                    class="btn-primary"
-                    onclick="
-                        document.getElementById('demoModal').style.display =
-                            'flex'
-                    "
-                >
-                    打开弹窗
-                </button>
-            </div>
-        </div>
-
-        <div
-            id="demoModal"
-            class="modal-overlay"
-            style="display: none"
-            onclick="if (event.target === this) this.style.display = 'none';"
-        >
-            <div class="modal-container">
-                <div class="modal-header">
-                    <h3>弹窗标题</h3>
-                    <button
-                        class="modal-close"
-                        onclick="
-                            document.getElementById('demoModal').style.display =
-                                'none'
-                        "
-                    >
-                        ×
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>这是弹窗内容区域，可以放置表单、提示信息等。</p>
-                    <div class="mt-4">
-                        <label class="form-label">示例输入</label>
-                        <input
-                            type="text"
-                            class="form-input"
-                            placeholder="请输入"
-                        />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button
-                        class="btn-secondary"
-                        onclick="
-                            document.getElementById('demoModal').style.display =
-                                'none'
-                        "
-                    >
-                        取消
-                    </button>
-                    <button
-                        class="btn-primary"
-                        onclick="
-                            alert('确认操作');
-                            document.getElementById('demoModal').style.display =
-                                'none';
-                        "
-                    >
-                        确认
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 16. 抽屉示例 -->
-        <div class="demo-section">
-            <div class="demo-title">16. 抽屉示例</div>
-            <div class="demo-row">
-                <button
-                    class="btn-secondary"
-                    onclick="
-                        document.getElementById('demoDrawer').style.display =
-                            'flex'
-                    "
-                >
-                    打开抽屉
-                </button>
-            </div>
-        </div>
-
-        <div
-            id="demoDrawer"
-            class="drawer-overlay"
-            style="display: none"
-            onclick="if (event.target === this) this.style.display = 'none';"
-        >
-            <div class="drawer-container">
-                <div class="drawer-header">
-                    <h3>抽屉标题</h3>
-                    <button
-                        class="modal-close"
-                        onclick="
-                            document.getElementById(
-                                'demoDrawer',
-                            ).style.display = 'none'
-                        "
-                    >
-                        ×
-                    </button>
-                </div>
-                <div class="drawer-body">
-                    <p>这是抽屉内容区域，通常用于放置表单或详情信息。</p>
-                    <div class="mt-4 space-y-4">
-                        <div>
-                            <label class="form-label">字段一</label>
-                            <input
-                                type="text"
-                                class="form-input"
-                                placeholder="请输入"
-                            />
+        <div id="app">
+            <div class="tos-shell">
+                <header class="tos-header">
+                    <div class="tos-brand">
+                        <div class="tos-brand__icon">
+                            <i class="fas fa-layer-group"></i>
                         </div>
-                        <div>
-                            <label class="form-label">字段二</label>
-                            <select class="form-select">
-                                <option>请选择</option>
-                                <option>选项A</option>
-                                <option>选项B</option>
-                            </select>
-                        </div>
+                        <div class="tos-brand__title">TOS 组件示例库</div>
                     </div>
-                </div>
-                <div class="drawer-footer">
-                    <button
-                        class="btn-secondary"
-                        onclick="
-                            document.getElementById(
-                                'demoDrawer',
-                            ).style.display = 'none'
-                        "
-                    >
-                        取消
-                    </button>
-                    <button
-                        class="btn-primary"
-                        onclick="
-                            alert('提交成功');
-                            document.getElementById(
-                                'demoDrawer',
-                            ).style.display = 'none';
-                        "
-                    >
-                        提交
-                    </button>
-                </div>
-            </div>
-        </div>
+                    <div class="tos-actions">
+                        <a-button>保存草稿</a-button>
+                        <a-button type="primary">发布</a-button>
+                    </div>
+                </header>
 
-        <!-- 使用说明 -->
-        <div class="demo-section">
-            <div class="demo-title">使用说明</div>
-            <div class="text-sm text-gray-600 space-y-2">
-                <p>
-                    1. <strong>颜色变量</strong>：主色 #42b7ae，功能色 #52c41a /
-                    #faad14 / #f5222d
-                </p>
-                <p>
-                    2. <strong>圆角规范</strong>：卡片/弹窗 20px，按钮/输入框
-                    8px，标签 4px
-                </p>
-                <p>
-                    3. <strong>间距规范</strong>：基础 20px，内边距 16px，紧凑
-                    8px
-                </p>
-                <p>
-                    4. <strong>响应式</strong>：所有组件支持移动端适配，使用
-                    Tailwind 断点（md:、lg:）
-                </p>
-                <p>
-                    5. <strong>BEM 命名</strong>：自定义样式使用 .tos-*
-                    前缀，遵循 BEM 规范
-                </p>
-                <p>
-                    6. <strong>字体</strong>：系统默认字体栈 -apple-system,
-                    BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif
-                </p>
+                <main class="tos-page">
+                    <section class="tos-page-title">
+                        <div>
+                            <h1>商品发布工作台</h1>
+                            <p>组件示例用于生成 TOS 原型时复用，不做装饰性展示。</p>
+                        </div>
+                        <div class="tos-actions">
+                            <a-button>导入</a-button>
+                            <a-button type="primary">新建商品</a-button>
+                        </div>
+                    </section>
+
+                    <section class="tos-grid">
+                        <div class="tos-col-4">
+                            <div class="tos-card">
+                                <div class="tos-card__header">
+                                    <div>
+                                        <h2 class="tos-card__title">素材上传</h2>
+                                        <div class="tos-card__desc">支持图片、Excel、CSV</div>
+                                    </div>
+                                    <span class="tos-tag tos-tag--primary">3 个文件</span>
+                                </div>
+                                <div class="tos-upload">
+                                    <div>
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <div class="tos-upload__title">拖拽上传或点击选择</div>
+                                        <div class="tos-upload__desc">单个文件不超过 10MB</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tos-card">
+                                <div class="tos-card__header">
+                                    <h2 class="tos-card__title">运行状态</h2>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="tos-stat">
+                                        <div>
+                                            <div class="tos-stat__label">待处理</div>
+                                            <div class="tos-stat__value">18</div>
+                                        </div>
+                                        <div class="tos-stat__icon">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                    </div>
+                                    <div class="tos-stat">
+                                        <div>
+                                            <div class="tos-stat__label">已完成</div>
+                                            <div class="tos-stat__value">126</div>
+                                        </div>
+                                        <div class="tos-stat__icon">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tos-col-8">
+                            <div class="tos-card">
+                                <div class="tos-card__header">
+                                    <div>
+                                        <h2 class="tos-card__title">基础表单</h2>
+                                        <div class="tos-card__desc">使用 Ant Design Vue 表单控件，TOS 只覆盖品牌样式。</div>
+                                    </div>
+                                    <a-button type="primary">保存</a-button>
+                                </div>
+                                <a-form layout="vertical">
+                                    <div class="tos-form-grid">
+                                        <a-form-item label="商品名称" required>
+                                            <a-input value="智能保温杯" placeholder="请输入商品名称" />
+                                        </a-form-item>
+                                        <a-form-item label="商品分类" required>
+                                            <a-select value="home" placeholder="请选择分类">
+                                                <a-select-option value="home">家居生活</a-select-option>
+                                                <a-select-option value="digital">数码产品</a-select-option>
+                                            </a-select>
+                                        </a-form-item>
+                                        <a-form-item label="销售状态">
+                                            <a-select value="draft">
+                                                <a-select-option value="draft">草稿</a-select-option>
+                                                <a-select-option value="online">已上架</a-select-option>
+                                            </a-select>
+                                        </a-form-item>
+                                        <a-form-item label="售价">
+                                            <a-input-number class="w-full" value="99" min="0" addon-after="CNY" />
+                                        </a-form-item>
+                                    </div>
+                                    <a-form-item label="商品描述">
+                                        <a-textarea rows="4" placeholder="请输入面向用户的商品描述"></a-textarea>
+                                        <div class="tos-form-help">描述应包含核心卖点、适用场景和规格说明。</div>
+                                    </a-form-item>
+                                </a-form>
+                            </div>
+
+                            <div class="tos-card">
+                                <div class="tos-card__header">
+                                    <div>
+                                        <h2 class="tos-card__title">表格与状态</h2>
+                                        <div class="tos-card__desc">表格用浅表头和细分割线，状态标签只表达状态。</div>
+                                    </div>
+                                    <a-button>批量处理</a-button>
+                                </div>
+                                <div class="tos-table-wrap">
+                                    <table class="tos-table">
+                                        <thead>
+                                            <tr>
+                                                <th>商品名称</th>
+                                                <th>分类</th>
+                                                <th>库存</th>
+                                                <th>状态</th>
+                                                <th class="text-right">操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>智能保温杯</td>
+                                                <td>家居生活</td>
+                                                <td>128</td>
+                                                <td><span class="tos-tag tos-tag--success">已上架</span></td>
+                                                <td class="text-right">
+                                                    <a-button type="link" size="small">编辑</a-button>
+                                                    <a-button type="link" danger size="small">删除</a-button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>无线充电器</td>
+                                                <td>数码产品</td>
+                                                <td>42</td>
+                                                <td><span class="tos-tag tos-tag--warning">待审核</span></td>
+                                                <td class="text-right">
+                                                    <a-button type="link" size="small">编辑</a-button>
+                                                    <a-button type="link" danger size="small">删除</a-button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>旅行收纳包</td>
+                                                <td>户外出行</td>
+                                                <td>0</td>
+                                                <td><span class="tos-tag tos-tag--error">已售罄</span></td>
+                                                <td class="text-right">
+                                                    <a-button type="link" size="small">编辑</a-button>
+                                                    <a-button type="link" danger size="small">删除</a-button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="tos-card">
+                                <div class="tos-card__header">
+                                    <h2 class="tos-card__title">反馈状态</h2>
+                                </div>
+                                <a-tabs>
+                                    <a-tab-pane key="1" tab="空状态">
+                                        <div class="tos-empty">
+                                            <i class="fas fa-inbox"></i>
+                                            <div>暂无商品数据</div>
+                                        </div>
+                                    </a-tab-pane>
+                                    <a-tab-pane key="2" tab="提示">
+                                        <a-alert
+                                            type="warning"
+                                            show-icon
+                                            message="部分 SKU 缺少价格"
+                                            description="请补充价格后再提交审核。"
+                                        />
+                                    </a-tab-pane>
+                                </a-tabs>
+                            </div>
+                        </div>
+                    </section>
+                </main>
             </div>
         </div>
 
         <script>
-            // 折叠面板的旋转图标处理
-            document.querySelectorAll(".collapse-header").forEach((header) => {
-                const icon = header.querySelector(".fa-chevron-right");
-                const content = header.nextElementSibling;
-                if (icon && content && !content.classList.contains("hidden")) {
-                    icon.classList.add("rotate-90");
-                }
-            });
+            if (window.Vue && window.antd) {
+                const { createApp } = Vue;
+
+                createApp({}).use(antd).mount("#app");
+            }
         </script>
     </body>
 </html>
-```
