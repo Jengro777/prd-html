@@ -651,16 +651,16 @@
                                 <span v-else style="color: #999">未测试</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="已用 / 剩余" width="140">
+                        <el-table-column label="已用 / 剩余" width="150">
                             <template #default="scope">
-                                <span
-                                    >${{ (scope.row.used || 0).toFixed(2)
-                                    }}</span
+                                <span style="font-size: 12px"
+                                    >{{ ((scope.row.used || 0) * (scope.row.pointsRate || 100)).toFixed(0) }}
+                                    点</span
                                 >
                                 <span class="mx-1" style="color: #ddd">/</span>
-                                <span
-                                    >${{ (scope.row.remaining || 0).toFixed(2)
-                                    }}</span
+                                <span style="font-size: 12px"
+                                    >{{ ((scope.row.remaining || 0) * (scope.row.pointsRate || 100)).toFixed(0) }}
+                                    点</span
                                 >
                             </template>
                         </el-table-column>
@@ -934,6 +934,16 @@
                                 size="small"
                                 style="width: 90px"
                             ></el-input-number>
+                            <span style="color: #666; font-size: 12px">{{ formData.type === 'GhostCut' ? '点/扣点' : '点/' + formData.priceUnit }}</span>
+                            <el-input-number
+                                v-model="formData.pointsRate"
+                                :min="1"
+                                :max="100000"
+                                :step="10"
+                                :precision="0"
+                                size="small"
+                                style="width: 100px"
+                            ></el-input-number>
                             <el-tag
                                 v-if="formData.cacheHitEnabled"
                                 size="small"
@@ -948,6 +958,14 @@
                                 effect="plain"
                                 >无缓存区分</el-tag
                             >
+                        </div>
+                        <div class="form-hint" style="margin-top: 4px">
+                            <template v-if="formData.type === 'GhostCut'">
+                                1 扣点 = {{ formData.pointsRate || 1 }} 内部虚拟点
+                            </template>
+                            <template v-else>
+                                1 {{ formData.priceUnit === '1K' ? 'K tokens' : 'M tokens' }} = {{ formData.pointsRate || 100 }} 内部虚拟点
+                            </template>
                         </div>
                     </el-form-item>
 
@@ -1145,6 +1163,7 @@
                         priceUnit: "1M",
                         multiplier: 1.0,
                         pricePerPoint: null,
+                        pointsRate: 100,
                     });
 
                     const formRules = {
@@ -1184,6 +1203,7 @@
                             cacheHitEnabled: false,
                             priceUnit: "1M",
                             multiplier: 1.0,
+                            pointsRate: 100,
                             modelGroups: [
                                 {
                                     model: "gpt-4o",
@@ -1217,6 +1237,7 @@
                             cacheHitEnabled: true,
                             priceUnit: "1M",
                             multiplier: 1.2,
+                            pointsRate: 100,
                             modelGroups: [
                                 {
                                     model: "deepseek-v4-flash",
@@ -1250,6 +1271,7 @@
                             cacheHitEnabled: false,
                             priceUnit: "1M",
                             multiplier: 1.0,
+                            pointsRate: 100,
                             modelGroups: [
                                 {
                                     model: "gpt-4o",
@@ -1275,6 +1297,7 @@
                             cacheHitEnabled: false,
                             priceUnit: "1M",
                             multiplier: 1.5,
+                            pointsRate: 100,
                             modelGroups: [
                                 {
                                     model: "claude-3-opus",
@@ -1301,6 +1324,7 @@
                             priceUnit: "call",
                             multiplier: 1.0,
                             pricePerPoint: 0.01,
+                            pointsRate: 1,
                             modelGroups: [],
                             apiAddr: "https://api.zhaoli.com",
                             key: "gc-xxxxx5",
@@ -1642,6 +1666,8 @@
                             formData.multiplier = 1.0;
                             formData.pricePerPoint =
                                 type === "GhostCut" ? 0.01 : null;
+                            formData.pointsRate =
+                                type === "GhostCut" ? 1 : 100;
                         }
                     };
 
