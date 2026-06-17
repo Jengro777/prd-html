@@ -1,0 +1,919 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>WMS - 任务配置中心</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+        <style>
+            :root {
+                --tos-primary: #42b7ae;
+                --tos-primary-hover: #339b94;
+                --tos-primary-bg: #e6f7f6;
+                --tos-bg: #f5f7fa;
+                --tos-card: #fff;
+                --tos-border: #e5e7eb;
+                --tos-border-soft: #f0f2f5;
+                --tos-text: #333;
+                --tos-text-secondary: #666;
+                --tos-text-muted: #999;
+                --tos-success: #52c41a;
+                --tos-warning: #faad14;
+                --tos-error: #f5222d;
+                --tos-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.03);
+                --tos-shadow-pop: 0 20px 60px rgba(15, 23, 42, 0.18);
+            }
+            body {
+                background: var(--tos-bg);
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    "Helvetica Neue", Arial, sans-serif;
+                margin: 0;
+                height: 100vh;
+            }
+
+            .app-container {
+                display: flex;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            /* 左侧分组栏 - 核心调整 */
+            .left-group-panel {
+                width: 220px;
+                background: var(--tos-bg);
+                border-right: 1px solid var(--tos-border-soft);
+                padding: 16px 0;
+                overflow-y: auto;
+                flex-shrink: 0;
+            }
+            .group-folder {
+                padding: 8px 16px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 500;
+                color: var(--tos-text);
+                font-size: 14px;
+            }
+            .group-folder i {
+                color: var(--tos-text-muted);
+            }
+            .group-item {
+                padding: 8px 16px 8px 44px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                cursor: pointer;
+                font-size: 13px;
+                color: var(--tos-text-secondary);
+                transition: all 0.15s;
+            }
+            .group-item:hover {
+                background: #fafafa;
+            }
+            .group-item.active {
+                background: var(--tos-primary-bg);
+                color: var(--tos-primary);
+                font-weight: 500;
+                border-right: 3px solid var(--tos-primary);
+            }
+            .group-item i {
+                width: 16px;
+                text-align: center;
+                color: var(--tos-text-muted);
+                font-size: 14px;
+            }
+            .group-item.active i {
+                color: var(--tos-primary);
+            }
+
+            /* 右侧内容区 */
+            .content-area {
+                flex: 1;
+                padding: 20px;
+                overflow-y: auto;
+            }
+
+            .card {
+                background: var(--tos-card);
+                border-radius: 12px;
+                border: 1px solid var(--tos-border-soft);
+                box-shadow: var(--tos-shadow-card);
+            }
+
+            /* 工具栏 */
+            .toolbar {
+                padding: 12px 20px;
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+                border-bottom: 1px solid var(--tos-border-soft);
+            }
+            .btn {
+                height: 32px;
+                border: 1px solid var(--tos-border);
+                background: #fff;
+                padding: 0 12px;
+                border-radius: 8px;
+                font-size: 13px;
+                cursor: pointer;
+                color: var(--tos-text-secondary);
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                transition: all 0.15s;
+            }
+            .btn:hover {
+                border-color: #d1d5db;
+                background: #fafafa;
+            }
+            .btn-primary {
+                background: var(--tos-primary);
+                border-color: var(--tos-primary);
+                color: #fff;
+            }
+            .btn-primary:hover {
+                background: var(--tos-primary-hover);
+                border-color: var(--tos-primary-hover);
+            }
+
+            /* 表格 */
+            .tos-table-wrap {
+                overflow-x: auto;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th {
+                text-align: left;
+                padding: 12px 16px;
+                background: #fafafa;
+                color: var(--tos-text-secondary);
+                font-weight: 500;
+                font-size: 13px;
+                border-bottom: 1px solid var(--tos-border-soft);
+                white-space: nowrap;
+            }
+            td {
+                padding: 12px 16px;
+                border-bottom: 1px solid #f5f5f5;
+                font-size: 14px;
+                color: var(--tos-text);
+            }
+            tr:hover td {
+                background: #fafafa;
+            }
+
+            .status-badge {
+                display: inline-flex;
+                align-items: center;
+                height: 22px;
+                padding: 0 8px;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: 500;
+                line-height: 20px;
+            }
+            .status-active {
+                background: #f0faf0;
+                color: var(--tos-success);
+            }
+            .tag-schedule {
+                background: var(--tos-primary-bg);
+                color: var(--tos-primary);
+                padding: 0 8px;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: 500;
+                height: 22px;
+                display: inline-flex;
+                align-items: center;
+            }
+            .tag-webhook {
+                background: #f5f5f5;
+                color: var(--tos-text-secondary);
+                padding: 0 8px;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: 500;
+                height: 22px;
+                display: inline-flex;
+                align-items: center;
+            }
+
+            .action-link {
+                color: var(--tos-primary);
+                cursor: pointer;
+                margin-right: 10px;
+                font-size: 13px;
+            }
+            .action-link:hover {
+                text-decoration: underline;
+            }
+
+            /* 弹窗样式 */
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.45);
+                display: none;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            }
+            .modal-overlay.show {
+                display: flex;
+            }
+            .modal-box {
+                background: #fff;
+                width: 900px;
+                max-height: 90vh;
+                border-radius: 12px;
+                padding: 24px;
+                overflow-y: auto;
+                box-shadow: var(--tos-shadow-pop);
+                animation: modalIn 0.2s ease-out;
+            }
+            @keyframes modalIn {
+                from {
+                    transform: translateY(-20px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+            .modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 16px;
+                padding-bottom: 12px;
+                border-bottom: 1px solid var(--tos-border-soft);
+            }
+            .modal-title {
+                font-size: 16px;
+                font-weight: 600;
+                color: #333;
+            }
+            .modal-close {
+                cursor: pointer;
+                font-size: 20px;
+                color: #999;
+            }
+            .modal-close:hover {
+                color: #333;
+            }
+
+            /* 弹窗内表单样式 */
+            .form-section {
+                background: var(--tos-primary-bg);
+                color: var(--tos-primary);
+                padding: 4px 12px;
+                border-radius: 4px;
+                font-size: 14px;
+                font-weight: 600;
+                margin: 16px 0 12px;
+                display: inline-block;
+            }
+            .form-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+                margin-bottom: 12px;
+            }
+            .form-group label {
+                display: block;
+                font-size: 13px;
+                color: #666;
+                margin-bottom: 4px;
+            }
+            .form-group input,
+            .form-group select {
+                width: 100%;
+                border: 1px solid #d9d9d9;
+                border-radius: 8px;
+                padding: 6px 10px;
+                font-size: 13px;
+            }
+            .form-group textarea {
+                width: 100%;
+                border: 1px solid #d9d9d9;
+                border-radius: 8px;
+                padding: 6px 10px;
+                font-size: 13px;
+                font-family: monospace;
+                min-height: 80px;
+            }
+            .json-block {
+                background: #f6f8fa;
+                padding: 12px;
+                border-radius: 4px;
+                border: 1px solid var(--tos-border-soft);
+                font-family: monospace;
+                font-size: 12px;
+            }
+            .event-list {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                margin-top: 8px;
+            }
+            .event-row {
+                display: flex;
+                gap: 12px;
+                background: #fafafa;
+                padding: 6px 12px;
+                border-radius: 4px;
+                border: 1px solid var(--tos-border-soft);
+                font-size: 13px;
+            }
+            .event-row span {
+                margin-right: 8px;
+                color: var(--tos-text);
+            }
+            .btn-add {
+                background: var(--tos-primary);
+                color: #fff;
+                border: none;
+                height: 28px;
+                padding: 0 12px;
+                border-radius: 8px;
+                font-size: 12px;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+            }
+            .btn-add:hover {
+                background: var(--tos-primary-hover);
+            }
+
+
+            /* 开关 */
+            .tos-switch { position: relative; display: inline-block; width: 44px; height: 22px; }
+            .tos-switch input { opacity: 0; width: 0; height: 0; }
+            .tos-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: 0.4s; border-radius: 34px; }
+            .tos-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 2px; bottom: 2px; background-color: white; transition: 0.4s; border-radius: 50%; }
+            input:checked + .tos-slider { background-color: var(--primary-color); }
+            input:checked + .tos-slider:before { transform: translateX(22px); }
+
+            /* 单选按钮组 */
+            .tos-radio-group { display: flex; gap: 16px; align-items: center; }
+            .tos-radio { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; color: #555; }
+            .tos-radio input[type="radio"] { margin: 0; accent-color: var(--primary-color); }
+            /* 推送条件选项卡 */
+            .tos-tabs-mini { display: flex; gap: 0; border-bottom: 1px solid var(--tos-border-soft); margin-bottom: 12px; }
+            .tos-tab-mini { padding: 8px 16px; font-size: 13px; cursor: pointer; color: #666; border-bottom: 2px solid transparent; transition: all 0.15s; }
+            .tos-tab-mini:hover { color: var(--primary-color); }
+            .tos-tab-mini.active { color: var(--primary-color); border-bottom-color: var(--primary-color); font-weight: 500; }
+
+            .tos-text-primary { color: var(--tos-primary); }
+            .tos-border-primary { border-color: var(--tos-primary); }
+            @media (max-width: 768px) {
+                .form-row {
+                    grid-template-columns: 1fr;
+                }
+                .modal-box {
+                    width: 95%;
+                }
+            }
+        
+    .tos-shell { display: flex; flex-direction: column; height: 100vh; }
+    .tos-header { display: flex; height: 56px; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--tos-border-soft, #f0f2f5); background: #fff; padding: 0 20px; flex-shrink: 0; }
+    .tos-brand { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; color: #1f2937; }
+    .tos-brand__tenant { color: var(--tos-text-muted, #999); font-size: 12px; font-weight: 400; margin-left: 4px; }
+    .tos-layout { display: flex; flex: 1; overflow: hidden; }
+    .tos-sidebar { width: 200px; background: #fff; border-right: 1px solid var(--tos-border-soft, #f0f2f5); overflow-y: auto; flex-shrink: 0; }
+    .tos-menu-item { display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: var(--tos-text-secondary, #666); text-decoration: none; font-size: 14px; cursor: pointer; transition: all 0.15s; }
+    .tos-menu-item:hover { color: var(--tos-primary, #42b7ae); background: var(--tos-primary-bg, #e6f7f6); }
+    .tos-menu-item.active, .tos-menu-item--sub.active { color: var(--tos-primary, #42b7ae); background: var(--tos-primary-bg, #e6f7f6); border-right: 3px solid var(--tos-primary, #42b7ae); font-weight: 500; }
+    .tos-menu-group.active .tos-menu-group__title { color: var(--tos-primary, #42b7ae); }
+    .tos-menu-group__title { display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: var(--tos-text-secondary, #666); font-size: 14px; font-weight: 500; }
+    .tos-menu-item--sub { padding-left: 44px; font-size: 13px; }
+
+    </style>
+    </head>
+    <body>
+        <div class="tos-shell">
+            <header class="tos-header">
+                <div class="tos-brand">
+                    <i class="fas fa-bars" style="color:#999;margin-right:4px;"></i>
+                    WMS企业版系统
+                    <span class="tos-brand__tenant">(1-5JMLHR)</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <i class="fas fa-bell" style="color:#999;"></i>
+                    <span style="color:#666;font-size:13px;"><i class="fas fa-user-circle"></i> 超级管理员 <i class="fas fa-caret-down"></i></span>
+                </div>
+            </header>
+            <div class="tos-layout">
+                <aside class="tos-sidebar"></aside>
+
+            <!-- 左侧分组栏 (参考截图1) -->
+            <div class="left-group-panel">
+                <div class="group-folder">
+                    <i class="fas fa-folder-open"></i>
+                    同步到[T3-U2UZUG]
+                </div>
+                <div class="group-item active">
+                    <i class="fas fa-file-alt"></i> 出库单转TMS订单
+                </div>
+                <div class="group-item">
+                    <i class="fas fa-box"></i> 商品同步
+                </div>
+                <div class="group-item">
+                    <i class="fas fa-truck"></i> 货主同步
+                </div>
+                <div class="group-item">
+                    <i class="fas fa-undo"></i> 出库退货转TMS订单
+                </div>
+                <div class="group-item">
+                    <i class="fas fa-exchange-alt"></i> TOS回调
+                </div>
+            </div>
+
+            <!-- 右侧内容区 -->
+            <div class="content-area">
+                <!-- 页面标题 -->
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h1 style="font-size:20px;font-weight:600;color:var(--tos-text);margin:0;">任务配置</h1>
+                        <p style="margin:4px 0 0;color:var(--tos-text-muted);font-size:12px;">管理 API 任务的触发模式、数据加载和推送条件配置</p>
+                    </div>
+                </div>
+
+                <!-- 搜索栏 -->
+                <div class="card" style="padding:16px 20px;margin-bottom:16px;">
+                    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+                        <input
+                            type="text"
+                            placeholder="平台名称/接口名称"
+                            style="border:1px solid #d9d9d9;border-radius:8px;padding:4px 11px;height:32px;font-size:14px;width:180px;outline:none;"
+                        />
+                        <select style="border:1px solid #d9d9d9;border-radius:8px;padding:4px 11px;height:32px;font-size:14px;background:#fff;outline:none;">
+                            <option>全部触发模式</option>
+                            <option>定时/扫库</option>
+                            <option>事件/Webhook</option>
+                        </select>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-search"></i> 查询
+                        </button>
+                        <button class="btn">重置</button>
+                    </div>
+                </div>
+
+                <!-- 列表卡片 -->
+                <div class="card">
+                    <!-- 工具栏 -->
+                    <div class="toolbar">
+                        <button
+                            class="btn btn-primary"
+                            onclick="openModal('create')"
+                        >
+                            <i class="fas fa-plus"></i> 新增
+                        </button>
+                        <button class="btn">
+                            <i class="fas fa-redo"></i> 刷新
+                        </button>
+                        <button class="btn">
+                            <i class="fas fa-file-import"></i> 导入
+                        </button>
+                        <button class="btn">
+                            <i class="fas fa-file-export"></i> 导出
+                        </button>
+                        <div class="flex-1"></div>
+                        <span class="text-xs text-gray-400">共 2 条</span>
+                    </div>
+
+                    <!-- 表格 -->
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 30px">
+                                    <input type="checkbox" />
+                                </th>
+                                <th>任务名称 / ID</th>
+                                <th>接口名称</th>
+                                <th>触发模式</th>
+                                <th>状态</th>
+                                <th>修改时间</th>
+                                <th style="width: 120px">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 行 1: 出库单转TMS订单 -->
+                            <tr>
+                                <td><input type="checkbox" /></td>
+                                <td>
+                                    <div class="font-medium text-gray-800">
+                                        出库单转TMS订单
+                                    </div>
+                                    <div class="text-xs text-gray-400">
+                                        ID: 26
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="text-gray-700">
+                                        WMS出库单转TMS订单
+                                    </div>
+                                    <div class="text-xs text-gray-500">
+                                        平台: TMS(3-U2UZUG)
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="tag-schedule">定时/扫库</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-active"
+                                        >启用</span
+                                    >
+                                </td>
+                                <td class="text-gray-400 text-xs">
+                                    2026-06-01 15:29
+                                </td>
+                                <td>
+                                    <span
+                                        class="action-link"
+                                        onclick="openModal('edit', 26)"
+                                        ><i class="fas fa-edit"></i> 编辑</span
+                                    >
+                                </td>
+                            </tr>
+                            <!-- 行 2: TOS回调 -->
+                            <tr>
+                                <td><input type="checkbox" /></td>
+                                <td>
+                                    <div class="font-medium text-gray-800">
+                                        WMS出库回调
+                                    </div>
+                                    <div class="text-xs text-gray-400">
+                                        ID: 59
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="text-gray-700">WMS出库回调</div>
+                                    <div class="text-xs text-gray-500">
+                                        平台: TOS回调
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="tag-webhook"
+                                        >事件/Webhook</span
+                                    >
+                                </td>
+                                <td>
+                                    <span class="status-badge status-active"
+                                        >启用</span
+                                    >
+                                </td>
+                                <td class="text-gray-400 text-xs">
+                                    2026-06-15 09:05
+                                </td>
+                                <td>
+                                    <span
+                                        class="action-link"
+                                        onclick="openModal('edit', 59)"
+                                        ><i class="fas fa-edit"></i> 编辑</span
+                                    >
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- 分页 -->
+                    <div
+                        style="padding:12px 20px;display:flex;justify-content:flex-end;align-items:center;font-size:13px;color:var(--tos-text-muted);border-top:1px solid var(--tos-border-soft);"
+                    >
+                        <span>共 2 条</span>
+                        <div class="flex gap-1 ml-4">
+                            <button
+                                class="border rounded-lg px-2 py-1 bg-white"
+                                disabled
+                            >
+                                <
+                            </button>
+                            <button
+                                class="border rounded-lg px-2 py-1 bg-white tos-text-primary tos-border-primary"
+                            >
+                                1
+                            </button>
+                            <button
+                                class="border rounded-lg px-2 py-1 bg-white"
+                                disabled
+                            >
+                                >
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+                <!-- 弹窗: 对应截图2 和 截图3 -->
+        <div class="modal-overlay" id="taskModal">
+            <div class="modal-box">
+                <div class="modal-header">
+                    <div class="modal-title" id="modalTitle">模块编辑</div>
+                    <div class="modal-close" onclick="closeModal()">×</div>
+                </div>
+
+                <div id="modalBody">
+                    <!-- 由 JS 动态渲染 -->
+                </div>
+
+                <div class="modal-footer mt-6 flex justify-end gap-3">
+                    <button class="btn" onclick="closeModal()">取消</button>
+                    <button class="btn btn-primary" onclick="closeModal()">确定 (Ctrl+S)</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // 弹窗控制逻辑
+            const modal = document.getElementById("taskModal");
+            const modalTitle = document.getElementById("modalTitle");
+            const modalBody = document.getElementById("modalBody");
+
+            // 任务数据（模拟）
+            var taskData = {
+                26: {
+                    id: 26,
+                    account: "TMS(3-U2UZUG)",
+                    apiName: "WMS出库单转TMS订单",
+                    enabled: true,
+                    remark: "",
+                    maxRetries: "",
+                    taskType: "推送 (Push)",
+                    triggerMode: "定时扫库",
+                    triggerModeRaw: "schedule",
+                    dataUrl: "/outbound/out/order/pageList",
+                    idField: "orderId",
+                    statusField: "orderStatus",
+                    pushUrl: "/integration/wms/outOrder/tms/push",
+                    pushJson: '{\n    "sourceType": "TOSPINO-FBT-GH",\n    "orderStatus": "待审核,审核成功,配货完成,打包完成,发运完成"\n}',
+                    isWebhook: false,
+                    events: [],
+                    creator: "超级管理员",
+                    createdAt: "2026-06-01 15:29",
+                    updatedAt: "2026-06-01 15:29"
+                },
+                59: {
+                    id: 59,
+                    account: "TOS回调",
+                    apiName: "WMS出库回调",
+                    enabled: true,
+                    remark: "TOS的webhook事件订阅",
+                    maxRetries: "",
+                    taskType: "推送 (Push)",
+                    triggerMode: "事件/WebHook",
+                    triggerModeRaw: "event",
+                    dataUrl: "",
+                    idField: "",
+                    statusField: "",
+                    pushUrl: "",
+                    pushJson: '{\n    "sourceType": "",\n    "orderStatus": ""\n}',
+                    isWebhook: true,
+                    events: [
+                        { event: "预到货单状态变更", condition: "上架完成" },
+                        { event: "到货退货单状态变更", condition: "已转出库" },
+                        { event: "出库单状态变更", condition: "打包完成" }
+                    ],
+                    creator: "超级管理员",
+                    createdAt: "2026-06-15 09:05",
+                    updatedAt: "2026-06-15 09:05"
+                }
+            };
+
+            // 统一表单构建
+            function buildForm(data) {
+                var isEdit = !!data.id;
+                var isWebhook = data.isWebhook;
+
+                // 基本信息
+                var html = '<div class="form-section">基本信息</div>';
+                if (isEdit) {
+                    html += '<div class="form-row">';
+                    html += '<div class="form-group"><label>任务配置ID</label><input value="' + data.id + '" readonly style="background:#f5f5f5;" /></div>';
+                    html += '</div>';
+                }
+                html += '<div class="form-row">';
+                html += '<div class="form-group"><label>对接账号</label><select id="form-account">';
+                var accounts = isWebhook ? ["TOS回调"] : ["请选择对接账号", "TMS(3-U2UZUG)", "TOS回调"];
+                for (var a = 0; a < accounts.length; a++) {
+                    html += '<option' + (accounts[a] === data.account ? ' selected' : '') + '>' + accounts[a] + '</option>';
+                }
+                html += '</select></div>';
+                html += '<div class="form-group"><label>接口名称</label><input id="form-apiName" value="' + escapeHtml(data.apiName) + '" placeholder="请输入接口名称"></div>';
+                html += '</div>';
+
+                html += '<div class="form-row">';
+                html += '<div class="form-group">';
+                html += '<label>是否启用</label>';
+                html += '<label class="tos-switch" style="margin-top:4px;">';
+                html += '<input type="checkbox" id="form-enabled"' + (data.enabled ? ' checked' : '') + '>';
+                html += '<span class="tos-slider"></span>';
+                html += '</label>';
+                html += '</div>';
+                html += '<div class="form-group"><label>备注</label><input id="form-remark" value="' + escapeHtml(data.remark) + '" placeholder="可选"></div>';
+                html += '</div>';
+
+                // 推送配置
+                html += '<div class="form-section">推送配置</div>';
+                html += '<div class="form-row">';
+                html += '<div class="form-group"><label>最大推送次数</label><input type="number" id="form-maxRetries" value="' + data.maxRetries + '" placeholder="默认无限"></div>';
+                html += '</div>';
+                html += '<div class="form-row">';
+                html += '<div class="form-group"><label>任务类型</label><select id="form-taskType">';
+                var taskTypes = ["拉取 (Pull)", "推送 (Push)"];
+                for (var t = 0; t < taskTypes.length; t++) {
+                    html += '<option' + (taskTypes[t] === data.taskType ? ' selected' : '') + '>' + taskTypes[t] + '</option>';
+                }
+                html += '</select></div>';
+                html += '<div class="form-group"><label>触发模式</label><select id="form-triggerMode">';
+                var modes = ["定时扫库", "仅手动", "事件/WebHook"];
+                for (var m = 0; m < modes.length; m++) {
+                    html += '<option' + (modes[m] === data.triggerMode ? ' selected' : '') + '>' + modes[m] + '</option>';
+                }
+                html += '</select></div>';
+                html += '</div>';
+
+                // 数据加载设置
+                html += '<div class="form-section">数据加载设置</div>';
+                html += '<div class="form-row">';
+                html += '<div class="form-group"><label>数据加载地址</label><input id="form-dataUrl" value="' + escapeHtml(data.dataUrl) + '" placeholder="输入API路径"></div>';
+                html += '<div class="form-group"><label>ID字段名</label><input id="form-idField" value="' + escapeHtml(data.idField) + '" placeholder="如 orderId"></div>';
+                html += '<div class="form-group"><label>状态字段</label><input id="form-statusField" value="' + escapeHtml(data.statusField) + '" placeholder="如 orderStatus"></div>';
+                html += '<div class="form-group"><label>手动推送地址</label><input id="form-pushUrl" value="' + escapeHtml(data.pushUrl) + '" placeholder="输入推送URL"></div>';
+                html += '</div>';
+
+                // 推送条件
+                html += '<div class="form-section">推送条件</div>';
+                html += '<div class="tos-tabs-mini">';
+                html += '<div class="tos-tab-mini' + (isWebhook ? '' : ' active') + '" data-tab="json">JSON</div>';
+                html += '<div class="tos-tab-mini' + (isWebhook ? ' active' : '') + '" data-tab="event">事件</div>';
+                html += '</div>';
+                html += '<div class="form-group" id="pushTabJson" style="' + (isWebhook ? 'display:none;' : '') + '">';
+                html += '<textarea id="form-pushJson" placeholder=\'{\n    "sourceType": "",\n    "orderStatus": ""\n}\' style="min-height:280px;">' + escapeHtml(data.pushJson) + '</textarea>';
+                html += '</div>';
+                html += '<div class="form-group" id="pushTabEvent" style="' + (isWebhook ? '' : 'display:none;') + '">';
+                html += '<div style="margin-bottom:8px;display:flex;align-items:center;gap:8px;">';
+                html += '<span style="font-size:13px;color:var(--tos-text-secondary);">多事件逻辑：</span>';
+                html += '<select style="border:1px solid #d9d9d9;border-radius:4px;padding:4px 8px;font-size:12px;"><option>且 (AND)</option><option>或 (OR)</option></select>';
+                html += '</div>';
+                html += '<div style="display:flex;gap:8px;padding:0 12px;margin-bottom:2px;font-size:12px;color:var(--tos-text-muted);">';
+                html += '<span style="flex:1;">事件类型</span><span style="flex:1;">触发条件</span><span style="width:48px;"></span>';
+                html += '</div>';
+                html += '<div id="eventRows" style="display:flex;flex-direction:column;gap:8px;">';
+                if (data.events.length > 0) {
+                    for (var e = 0; e < data.events.length; e++) {
+                        html += buildEventRow(data.events[e].event, data.events[e].condition);
+                    }
+                } else {
+                    html += buildEventRow("预到货单状态变更", "");
+                }
+                html += '</div>';
+                html += '<button class="btn-add" onclick="addEventRow()" style="margin-top:8px;">';
+                html += '<i class="fas fa-plus"></i> 新增事件</button>';
+                html += '</div>';
+
+                // 其他信息
+                html += '<div class="form-section">其他信息</div>';
+                html += '<div class="form-row">';
+                html += '<div class="form-group"><label>创建人</label><div style="line-height:32px;font-size:13px;color:var(--tos-text);">' + escapeHtml(data.creator) + '</div></div>';
+                html += '<div class="form-group"><label>创建时间</label><div style="line-height:32px;font-size:13px;color:var(--tos-text);">' + escapeHtml(data.createdAt) + '</div></div>';
+                html += '</div>';
+                html += '<div class="form-row">';
+                html += '<div class="form-group"><label>修改时间</label><div style="line-height:32px;font-size:13px;color:var(--tos-text);">' + escapeHtml(data.updatedAt) + '</div></div>';
+                html += '</div>';
+
+                return html;
+            }
+
+            function buildEventRow(eventName, conditionVal) {
+                var evt = eventName || "预到货单状态变更";
+                var cond = conditionVal || "";
+                var h = '<div class="event-row" style="display:flex;gap:8px;align-items:center;padding:8px 12px;border:1px solid var(--tos-border-soft);border-radius:4px;background:#fafafa;">';
+                h += '<select style="border:1px solid #d9d9d9;border-radius:4px;padding:4px 8px;font-size:12px;flex:1;">';
+                var eventTypes = ["预到货单状态变更", "到货退货单状态变更", "出库单状态变更"];
+                for (var i = 0; i < eventTypes.length; i++) {
+                    h += '<option' + (eventTypes[i] === evt ? ' selected' : '') + '>' + eventTypes[i] + '</option>';
+                }
+                h += '</select>';
+                h += '<select multiple style="border:1px solid #d9d9d9;border-radius:4px;padding:4px 8px;font-size:12px;flex:1;min-height:80px;">';
+                var conditions = ["上架完成", "已转出库", "打包完成"];
+                for (var j = 0; j < conditions.length; j++) {
+                    h += '<option' + (conditions[j] === cond ? ' selected' : '') + '>' + conditions[j] + '</option>';
+                }
+                h += '</select>';
+                h += '<span class="action-link" onclick="removeEventRow(this)" style="font-size:12px;white-space:nowrap;"><i class="fas fa-trash-alt"></i> 删除</span>';
+                h += '</div>';
+                return h;
+            }
+
+            function escapeHtml(str) {
+                return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            }
+
+            function openModal(mode, id) {
+                var data;
+                var isCreate = mode === "create";
+
+                if (isCreate) {
+                    modalTitle.textContent = "新增任务";
+                    data = {
+                        id: null,
+                        account: "",
+                        apiName: "",
+                        enabled: true,
+                        remark: "",
+                        maxRetries: "",
+                        taskType: "推送 (Push)",
+                        triggerMode: "定时扫库",
+                        triggerModeRaw: "schedule",
+                        dataUrl: "",
+                        idField: "",
+                        statusField: "",
+                        pushUrl: "",
+                        pushJson: '{\n    "sourceType": "",\n    "orderStatus": ""\n}',
+                        isWebhook: false,
+                        events: [],
+                        creator: "超级管理员",
+                        createdAt: "2026-06-17 16:00",
+                        updatedAt: "2026-06-17 16:00"
+                    };
+                } else {
+                    data = taskData[id];
+                    if (!data) { data = taskData[26]; id = 26; }
+                    modalTitle.textContent = "编辑任务 (ID: " + data.id + ")";
+                }
+
+                modalBody.innerHTML = buildForm(data);
+
+                // 绑定选项卡切换
+                (function() {
+                    var tabs = modalBody.querySelectorAll('.tos-tab-mini');
+                    tabs.forEach(function(tab) {
+                        tab.addEventListener('click', function() {
+                            tabs.forEach(function(t) { t.classList.remove('active'); });
+                            this.classList.add('active');
+                            var isEvent = this.getAttribute('data-tab') === 'event';
+                            var jsonEl = document.getElementById('pushTabJson');
+                            var eventEl = document.getElementById('pushTabEvent');
+                            if (jsonEl) jsonEl.style.display = isEvent ? 'none' : '';
+                            if (eventEl) eventEl.style.display = isEvent ? '' : 'none';
+                        });
+                    });
+                })();
+
+                modal.classList.add("show");
+            }
+
+            function closeModal() {
+                modal.classList.remove("show");
+            }
+
+            function addEventRow() {
+                var container = document.getElementById('eventRows');
+                var rows = container.querySelectorAll('.event-row');
+                var firstRow = rows[0];
+                var newRow = firstRow.cloneNode(true);
+                container.appendChild(newRow);
+            }
+
+            function removeEventRow(el) {
+                var container = document.getElementById('eventRows');
+                var rows = container.querySelectorAll('.event-row');
+                if (rows.length > 1) {
+                    el.closest('.event-row').remove();
+                }
+            }
+
+            // 点击外部遮罩关闭
+            modal.addEventListener("click", function (e) {
+                if (e.target === modal) closeModal();
+            });
+
+            // 键盘 ESC 关闭
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape") closeModal();
+            });
+        </script>
+        <script src="tos-sidebar.js"></script>
+    <script>
+        renderSidebar('任务配置');
+    </script>
+</body>
+</html>

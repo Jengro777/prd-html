@@ -1,0 +1,1130 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>WMS企业版系统 - 任务执行</title>
+        <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/reset.css"
+        />
+        <script src="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/antd.min.js"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+        <style>
+            :root {
+                --tos-primary: #42b7ae;
+                --tos-primary-hover: #339b94;
+                --tos-primary-bg: #e6f7f6;
+                --tos-bg: #f5f7fa;
+                --tos-card: #fff;
+                --tos-border: #e5e7eb;
+                --tos-border-soft: #f0f2f5;
+                --tos-text: #333;
+                --tos-text-secondary: #666;
+                --tos-text-muted: #999;
+                --tos-success: #52c41a;
+                --tos-warning: #faad14;
+                --tos-error: #f5222d;
+                --tos-radius-card: 12px;
+                --tos-radius-control: 8px;
+                --tos-radius-tag: 4px;
+                --tos-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.03);
+                --tos-shadow-pop: 0 20px 60px rgba(15, 23, 42, 0.18);
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                background: var(--tos-bg);
+                color: var(--tos-text);
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    "Helvetica Neue", Arial, sans-serif;
+            }
+            #app {
+                min-height: 100vh;
+            }
+            .tos-shell {
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+            }
+            .tos-header {
+                display: flex;
+                height: 56px;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                border-bottom: 1px solid var(--tos-border-soft);
+                background: #fff;
+                padding: 0 20px;
+                flex-shrink: 0;
+            }
+            .tos-brand {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 16px;
+                font-weight: 600;
+                color: #1f2937;
+            }
+            .tos-brand__tenant {
+                color: var(--tos-text-muted);
+                font-size: 12px;
+                font-weight: 400;
+                margin-left: 4px;
+            }
+            .tos-layout {
+                display: flex;
+                flex: 1;
+                overflow: hidden;
+            }
+            .tos-sidebar {
+                width: 200px;
+                background: #fff;
+                border-right: 1px solid var(--tos-border-soft);
+                overflow-y: auto;
+                flex-shrink: 0;
+            }
+            .tos-page {
+                flex: 1;
+                padding: 20px;
+                overflow-y: auto;
+            }
+            .tos-card {
+                background: var(--tos-card);
+                border: 1px solid var(--tos-border-soft);
+                border-radius: var(--tos-radius-card);
+                box-shadow: var(--tos-shadow-card);
+                padding: 20px;
+                margin-bottom: 16px;
+            }
+
+            /* 工具栏（上沿操作区） */
+            .toolbar {
+                padding: 0 0 12px;
+                margin-bottom: 12px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                flex-wrap: wrap;
+                border-bottom: 1px solid var(--tos-border-soft);
+            }
+            .tos-card__header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+            .tos-card__title {
+                margin: 0;
+                color: var(--tos-text);
+                font-size: 16px;
+                font-weight: 600;
+            }
+            .tos-card__desc {
+                margin-top: 4px;
+                color: var(--tos-text-muted);
+                font-size: 12px;
+            }
+            .tos-table-wrap {
+                overflow-x: auto;
+            }
+            .tos-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .tos-table th {
+                padding: 12px 16px;
+                background: #fafafa;
+                border-bottom: 1px solid var(--tos-border-soft);
+                color: var(--tos-text-secondary);
+                font-size: 13px;
+                font-weight: 500;
+                text-align: left;
+                white-space: nowrap;
+            }
+            .tos-table td {
+                padding: 12px 16px;
+                border-bottom: 1px solid #f5f5f5;
+                color: var(--tos-text);
+                font-size: 14px;
+            }
+            .tos-table tr:hover td {
+                background: #fafafa;
+            }
+            .tos-tag {
+                display: inline-flex;
+                align-items: center;
+                height: 22px;
+                padding: 0 8px;
+                border-radius: var(--tos-radius-tag);
+                font-size: 12px;
+                font-weight: 500;
+            }
+            .tos-tag--error {
+                background: #fff1f0;
+                color: var(--tos-error);
+            }
+            .tos-tag--primary {
+                background: var(--tos-primary-bg);
+                color: var(--tos-primary);
+            }
+            .tos-actions {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+
+            /* Ant Design Vue 覆盖 */
+            .ant-btn-primary {
+                background: var(--tos-primary) !important;
+                border-color: var(--tos-primary) !important;
+                cursor: pointer !important;
+                transition: all 0.2s ease;
+            }
+            .ant-btn-primary:hover {
+                background: var(--tos-primary-hover) !important;
+                border-color: var(--tos-primary-hover) !important;
+                cursor: pointer !important;
+            }
+            .ant-btn {
+                border-radius: 8px;
+                cursor: pointer !important;
+            }
+            .ant-btn:hover {
+                cursor: pointer !important;
+            }
+
+            /* button 全局手势 */
+            button, [role="button"], a-button {
+                cursor: pointer !important;
+            }
+            .ant-input, .ant-select-selector {
+                border-radius: 8px !important;
+            }
+            .ant-input:focus, .ant-select-focused .ant-select-selector {
+                border-color: var(--tos-primary) !important;
+                box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.16) !important;
+            }
+            .ant-modal-content {
+                border-radius: 12px;
+            }
+
+            .info-alert {
+                background: var(--tos-primary-bg);
+                border: 1px solid rgba(66, 183, 174, 0.2);
+                border-radius: 8px;
+                padding: 10px 16px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 13px;
+                color: var(--tos-text-secondary);
+            }
+
+            /* 侧边栏菜单 */
+            .tos-menu-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 20px;
+                color: var(--tos-text-secondary);
+                text-decoration: none;
+                font-size: 14px;
+                cursor: pointer;
+                transition: all 0.15s;
+            }
+            .tos-menu-item:hover {
+                color: var(--tos-primary);
+                background: var(--tos-primary-bg);
+            }
+            .tos-menu-item.active,
+            .tos-menu-item--sub.active {
+                color: var(--tos-primary);
+                background: var(--tos-primary-bg);
+                border-right: 3px solid var(--tos-primary);
+                font-weight: 500;
+            }
+            .tos-menu-item--sub {
+                padding-left: 44px;
+                font-size: 13px;
+            }
+            .tos-menu-group__title {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 20px;
+                color: var(--tos-text-secondary);
+                font-size: 14px;
+                font-weight: 500;
+            }
+            .tos-menu-group.active .tos-menu-group__title {
+                color: var(--tos-primary);
+            }
+            .tos-menu-item i {
+                width: 16px;
+                text-align: center;
+            }
+
+            /* 内容分组 (左侧) — 与 任务配置 统一 */
+            .content-group-wrapper {
+                width: 220px;
+                flex-shrink: 0;
+                background: var(--tos-bg);
+                border-right: 1px solid var(--tos-border-soft);
+                padding: 16px 0;
+                overflow-y: auto;
+            }
+            .content-group__header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 16px;
+                font-size: 14px;
+                font-weight: 500;
+                color: var(--tos-text);
+                cursor: pointer;
+            }
+            .content-group__header i {
+                color: var(--tos-text-muted);
+                font-size: 14px;
+            }
+            .content-group__items {
+                /* 子项自带左边距，不再额外缩进 */
+            }
+            .content-group-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 8px 16px 8px 44px;
+                cursor: pointer;
+                font-size: 13px;
+                color: var(--tos-text-secondary);
+                transition: all 0.15s;
+            }
+            .content-group-item:hover {
+                background: #fafafa;
+            }
+            .content-group-item.active {
+                background: var(--tos-primary-bg);
+                color: var(--tos-primary);
+                font-weight: 500;
+                border-right: 3px solid var(--tos-primary);
+            }
+            .content-group-item i {
+                width: 16px;
+                text-align: center;
+                color: var(--tos-text-muted);
+                font-size: 14px;
+            }
+            .content-group-item.active i {
+                color: var(--tos-primary);
+            }
+
+            /* 弹窗样式 (完全参考截图) */
+            .modal-mask {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.45);
+                z-index: 999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .modal-wrapper {
+                background: #fff;
+                width: 900px;
+                max-width: 92%;
+                max-height: 90vh;
+                border-radius: 12px;
+                box-shadow: var(--tos-shadow-pop);
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+            .modal-header {
+                padding: 16px 24px;
+                border-bottom: 1px solid var(--tos-border-soft);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .modal-header h3 {
+                margin: 0;
+                font-size: 16px;
+                font-weight: 600;
+            }
+            .modal-header .close-btn {
+                cursor: pointer;
+                color: #999;
+                font-size: 18px;
+            }
+            .modal-header .close-btn:hover {
+                color: #333;
+            }
+            .modal-body {
+                padding: 20px 24px;
+                overflow-y: auto;
+                flex: 1;
+            }
+
+            /* 详情弹窗 */
+            .detail-section-title {
+                background: var(--tos-primary-bg);
+                color: var(--tos-primary);
+                padding: 4px 12px;
+                font-size: 14px;
+                font-weight: 600;
+                display: inline-block;
+                margin-bottom: 12px;
+                border-radius: 4px;
+            }
+            .detail-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0;
+                border: 1px solid var(--tos-border-soft);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            .detail-item {
+                display: flex;
+                border-bottom: 1px solid #f5f5f5;
+                font-size: 13px;
+            }
+            .detail-item:nth-child(odd) {
+                border-right: 1px solid #f5f5f5;
+            }
+            .detail-item:last-child,
+            .detail-item:nth-last-child(2):nth-child(odd) {
+                border-bottom: none;
+            }
+            .detail-item--full {
+                grid-column: 1 / -1;
+                border-right: none !important;
+            }
+            .detail-item--full + .detail-item--full {
+                border-top: 1px solid #f5f5f5;
+            }
+            .detail-label {
+                width: 90px;
+                flex-shrink: 0;
+                padding: 10px 12px;
+                background: #fafafa;
+                color: var(--tos-text-secondary);
+                font-weight: 500;
+                font-size: 13px;
+                border-right: 1px solid #f5f5f5;
+            }
+            .detail-value {
+                flex: 1;
+                padding: 10px 12px;
+                color: var(--tos-text);
+                word-break: break-all;
+            }
+            @media (max-width: 768px) {
+                .detail-grid {
+                    grid-template-columns: 1fr;
+                }
+                .detail-item:nth-child(odd) {
+                    border-right: none;
+                }
+            }
+            .modal-footer {
+                padding: 16px 24px;
+                border-top: 1px solid var(--tos-border-soft);
+                display: flex;
+                justify-content: flex-end;
+                gap: 8px;
+            }
+            .modal-footer .ant-btn-primary {
+                background: var(--tos-primary);
+                border-color: var(--tos-primary);
+            }
+            .modal-footer .ant-btn-primary:hover {
+                background: var(--tos-primary-hover);
+                border-color: var(--tos-primary-hover);
+            }
+
+            /* 日志控制台 (带工具栏) */
+            .console-wrapper {
+                border: 1px solid #d9d9d9;
+                border-radius: 8px;
+                overflow: hidden;
+                margin-top: 8px;
+            }
+            .console-toolbar {
+                background: #e8e8e8;
+                padding: 6px 12px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                border-bottom: 1px solid #d9d9d9;
+            }
+            .console-toolbar i {
+                color: #555;
+                font-size: 14px;
+                cursor: pointer;
+            }
+            .console-toolbar i:hover {
+                color: #000;
+            }
+            .tos-console {
+                background: #1e1e1e;
+                color: #d4d4d4;
+                font-family: Menlo, Consolas, monospace;
+                padding: 12px 16px;
+                height: 320px;
+                overflow-y: auto;
+                font-size: 13px;
+                line-height: 1.6;
+            }
+            .tos-console__time {
+                color: #808080;
+            }
+            .tos-console__info {
+                color: #569cd6;
+            }
+            .tos-console__error {
+                color: #f44747;
+            }
+            .tos-console__success {
+                color: #6a9955;
+            }
+            .tos-console-line {
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+            .tos-console-line .highlight {
+                color: #d4d4d4;
+            }
+
+            @media (max-width: 768px) {
+                .tos-sidebar {
+                    width: 56px;
+                }
+                .tos-sidebar .tos-menu-item,
+                .tos-sidebar .tos-menu-group__title {
+                    padding-left: 10px;
+                }
+                .tos-sidebar .tos-menu-item span,
+                .tos-sidebar .tos-menu-group__title span {
+                    display: none;
+                }
+                .content-group-wrapper {
+                    width: 180px;
+                }
+                .tos-page {
+                    padding: 16px;
+                }
+                .tos-card {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+            <div class="tos-shell">
+                <header class="tos-header">
+                    <div class="tos-brand">
+                        <i
+                            class="fas fa-bars"
+                            style="color: #999; margin-right: 4px"
+                        ></i>
+                        WMS企业版系统
+                        <span class="tos-brand__tenant">(1-5JMLHR)</span>
+                    </div>
+                    <div class="tos-actions">
+                        <a-button type="text" size="small"
+                            ><i class="fas fa-bell"></i
+                        ></a-button>
+                        <span style="color: #666; font-size: 13px"
+                            ><i class="fas fa-user-circle"></i> 超级管理员
+                            <i class="fas fa-caret-down"></i
+                        ></span>
+                    </div>
+                </header>
+                <div class="tos-layout">
+                    <aside class="tos-sidebar">
+                    </aside>
+
+                    <!-- 左侧分组栏 -->
+                    <div class="content-group-wrapper">
+                        <div class="content-group__header">
+                            <i class="fas fa-folder-open"></i>
+                            <span>同步到[3-U2UUZG]</span>
+                            <i class="fas fa-chevron-down" style="font-size:12px;margin-left:auto;"></i>
+                        </div>
+                        <div class="content-group__items">
+                            <div class="content-group-item active">
+                                <i class="fas fa-file-alt"></i>
+                                <span>出库单转TMS订单</span>
+                            </div>
+                            <div class="content-group-item">
+                                <i class="fas fa-box"></i>
+                                <span>商品同步</span>
+                            </div>
+                            <div class="content-group-item">
+                                <i class="fas fa-truck"></i>
+                                <span>货主同步</span>
+                            </div>
+                            <div class="content-group-item">
+                                <i class="fas fa-undo"></i>
+                                <span>出库退货转TMS订单</span>
+                            </div>
+                            <div class="content-group-item">
+                                <i class="fas fa-exchange-alt"></i>
+                                <span>TOS回调</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右侧内容区 -->
+                    <main class="tos-page">
+                        <!-- 页面标题 -->
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+                            <div>
+                                <h1 style="font-size:20px;font-weight:600;color:var(--tos-text);margin:0;">任务执行</h1>
+                                <p style="margin:4px 0 0;color:var(--tos-text-muted);font-size:12px;">批量推送WMS出库单至TMS，实时查看推送进度及错误详情</p>
+                            </div>
+                        </div>
+
+                        <!-- 任务执行卡片 -->
+                        <div class="tos-card">
+                            <!-- 工具栏 -->
+                            <div class="toolbar">
+                                <a-button
+                                    type="primary"
+                                    @click="openModal"
+                                >
+                                    <i class="fas fa-play"></i> 批量推送
+                                </a-button>
+                                <span class="tos-tag tos-tag--primary">配置ID: 26</span>
+                                <div style="flex:1;"></div>
+                                <span style="font-size:12px;color:var(--tos-text-muted);">共 2 条</span>
+                            </div>
+
+                            <!-- 表格 -->
+                            <div class="tos-table-wrap">
+                                <table class="tos-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:40px;">
+                                                <input type="checkbox" checked />
+                                            </th>
+                                            <th>单号 ID</th>
+                                            <th>单号</th>
+                                            <th>推送次数</th>
+                                            <th>推送时间</th>
+                                            <th>推送状态</th>
+                                            <th>推送消息</th>
+                                            <th>货主</th>
+                                            <th>仓库</th>
+                                            <th>创建人</th>
+                                            <th style="text-align:right;">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <input
+                                                    type="checkbox"
+                                                    checked
+                                                />
+                                            </td>
+                                            <td style="font-size: 13px">
+                                                61442
+                                            </td>
+                                            <td
+                                                style="
+                                                    font-family:
+                                                        Menlo, monospace;
+                                                    font-size: 13px;
+                                                "
+                                            >
+                                                SO202606170002
+                                            </td>
+                                            <td>6</td>
+                                            <td
+                                                style="
+                                                    font-size: 13px;
+                                                    color: var(
+                                                        --tos-text-muted
+                                                    );
+                                                "
+                                            >
+                                                2026-06-17 15:43:46
+                                            </td>
+                                            <td>
+                                                <span
+                                                    class="tos-tag tos-tag--error"
+                                                    >推送失败</span
+                                                >
+                                            </td>
+                                            <td
+                                                style="
+                                                    font-size: 12px;
+                                                    color: var(--tos-error);
+                                                    max-width: 180px;
+                                                    overflow: hidden;
+                                                    text-overflow: ellipsis;
+                                                    white-space: nowrap;
+                                                "
+                                            >
+                                                发货省市区不能为空 (578 提货信息
+                                                expandFields 或仓库
+                                                base_storage)
+                                            </td>
+                                            <td>Jengro-sij</td>
+                                            <td>Kumasi</td>
+                                            <td>超级管理员</td>
+                                            <td style="text-align:right;">
+                                                <a-button type="link" size="small" @click="openDetail(0)">查看详情</a-button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input
+                                                    type="checkbox"
+                                                    checked
+                                                />
+                                            </td>
+                                            <td style="font-size: 13px">
+                                                61436
+                                            </td>
+                                            <td
+                                                style="
+                                                    font-family:
+                                                        Menlo, monospace;
+                                                    font-size: 13px;
+                                                "
+                                            >
+                                                SO202606170001
+                                            </td>
+                                            <td>6</td>
+                                            <td
+                                                style="
+                                                    font-size: 13px;
+                                                    color: var(
+                                                        --tos-text-muted
+                                                    );
+                                                "
+                                            >
+                                                2026-06-17 15:43:46
+                                            </td>
+                                            <td>
+                                                <span
+                                                    class="tos-tag tos-tag--error"
+                                                    >推送失败</span
+                                                >
+                                            </td>
+                                            <td
+                                                style="
+                                                    font-size: 12px;
+                                                    color: var(--tos-error);
+                                                    max-width: 180px;
+                                                    overflow: hidden;
+                                                    text-overflow: ellipsis;
+                                                    white-space: nowrap;
+                                                "
+                                            >
+                                                发货省市区不能为空 (578 提货信息
+                                                expandFields 或仓库
+                                                base_storage)
+                                            </td>
+                                            <td>Jengro-sij</td>
+                                            <td>Kumasi</td>
+                                            <td>超级管理员</td>
+                                            <td style="text-align:right;">
+                                                <a-button type="link" size="small" @click="openDetail(1)">查看详情</a-button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div
+                                style="
+                                    display: flex;
+                                    justify-content: space-between;
+                                    margin-top: 8px;
+                                    font-size: 13px;
+                                    color: var(--tos-text-muted);
+                                "
+                            >
+                                <span
+                                    ><i class="far fa-check-circle"></i> 已选 2
+                                    条</span
+                                >
+                                <span>1/5 共 67 项</span>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+
+            <!-- 推送详情弹窗 (参考截图) -->
+            <div
+                class="modal-mask"
+                v-if="modalVisible"
+                @click.self="closeModal"
+            >
+                <div class="modal-wrapper">
+                    <div class="modal-header">
+                        <h3>WMS出库单转TMS订单 (配置 ID: 26)</h3>
+                        <span class="close-btn" @click="closeModal"
+                            >&times;</span
+                        >
+                    </div>
+                    <div class="modal-body">
+                        <div class="info-alert">
+                            <i
+                                class="fas fa-info-circle"
+                                style="color: var(--tos-primary)"
+                            ></i>
+                            <span
+                                >已勾选 <strong>2</strong> 条单据，点击下方
+                                「开始推送」
+                                执行批量推送，进度将实时显示在下方日志区。</span
+                            >
+                        </div>
+
+                        <div class="console-wrapper">
+                            <div class="console-toolbar">
+                                <i class="fas fa-pause"></i>
+                                <i
+                                    class="fas fa-play"
+                                    style="opacity: 0.4; cursor: default"
+                                ></i>
+                                <i class="fas fa-chevron-down"></i>
+                                <i class="fas fa-undo-alt"></i>
+                                <i
+                                    class="fas fa-search"
+                                    style="margin-left: auto"
+                                ></i>
+                            </div>
+                            <div class="tos-console" ref="consoleRef">
+                                <div
+                                    v-for="(line, index) in logLines"
+                                    :key="index"
+                                    class="tos-console-line"
+                                >
+                                    <span
+                                        v-if="line.lineNum"
+                                        style="color: #808080; min-width: 24px"
+                                        >{{ line.lineNum }}</span
+                                    >
+                                    <span
+                                        class="tos-console__time"
+                                        v-if="line.time"
+                                        >[{{ line.time }}]</span
+                                    >
+                                    <span
+                                        :class="'tos-console__' + line.type"
+                                        v-html="line.content"
+                                    ></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a-button @click="closeModal">关闭</a-button>
+                        <a-button
+                            type="primary"
+                            :loading="pushing"
+                            @click="startPush"
+                            style="background: var(--tos-primary); border-color: var(--tos-primary)"
+                        >
+                            <span v-if="!pushing">开始推送</span>
+                            <span v-else>推送中...</span>
+                        </a-button>
+                    </div>
+                </div>
+            </div>
+
+        <!-- 任务日志详情弹窗 -->
+        <div
+            class="modal-mask"
+            v-if="detailVisible"
+            @click.self="closeDetail"
+        >
+            <div class="modal-wrapper" style="width:720px;">
+                <div class="modal-header">
+                    <h3>任务日志详情</h3>
+                    <span class="close-btn" @click="closeDetail">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <!-- 基础信息 -->
+                    <div class="detail-section-title">基础信息</div>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">日志ID</span>
+                            <span class="detail-value">{{ currentDetail.logId }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">配置ID</span>
+                            <span class="detail-value">{{ currentDetail.configId }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">平台名称</span>
+                            <span class="detail-value">{{ currentDetail.platform }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模块名称</span>
+                            <span class="detail-value">{{ currentDetail.module }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">单据ID</span>
+                            <span class="detail-value">{{ currentDetail.docId }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">单据编号</span>
+                            <span class="detail-value" style="font-family:Menlo,monospace;">{{ currentDetail.docNo }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">推送类型</span>
+                            <span class="detail-value">{{ currentDetail.pushType }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">推送次数</span>
+                            <span class="detail-value">{{ currentDetail.pushCount }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">推送时间</span>
+                            <span class="detail-value">{{ currentDetail.pushTime }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">推送状态</span>
+                            <span class="detail-value">
+                                <span class="tos-tag tos-tag--error" v-if="currentDetail.pushStatus === '推送失败'">推送失败</span>
+                                <span class="tos-tag tos-tag--success" v-else style="background:#f0faf0;color:var(--tos-success);">推送成功</span>
+                            </span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">创建人</span>
+                            <span class="detail-value">{{ currentDetail.creator }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">创建时间</span>
+                            <span class="detail-value">{{ currentDetail.createdAt }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">修改时间</span>
+                            <span class="detail-value">{{ currentDetail.updatedAt }}</span>
+                        </div>
+                    </div>
+
+                    <!-- 推送内容 -->
+                    <div class="detail-section-title" style="margin-top:16px;">推送内容</div>
+                    <div class="detail-grid">
+                        <div class="detail-item detail-item--full">
+                            <span class="detail-label">推送消息</span>
+                            <span class="detail-value" style="color:var(--tos-error);">{{ currentDetail.pushMsg }}</span>
+                        </div>
+                        <div class="detail-item detail-item--full">
+                            <span class="detail-label">异常消息</span>
+                            <span class="detail-value" style="color:var(--tos-error);">{{ currentDetail.errorMsg }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">请求数据</span>
+                            <span class="detail-value">{{ currentDetail.reqData }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">响应数据</span>
+                            <span class="detail-value">{{ currentDetail.respData }}</span>
+                        </div>
+                        <div class="detail-item detail-item--full">
+                            <span class="detail-label">备注</span>
+                            <span class="detail-value">{{ currentDetail.remark }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a-button @click="closeDetail">关闭</a-button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <script src="tos-sidebar.js"></script>
+        <script>
+            renderSidebar('任务执行');
+        </script>
+        <script>
+            const { createApp, ref, nextTick } = Vue;
+
+            const app = createApp({
+                setup() {
+                    const modalVisible = ref(false);
+                    const pushing = ref(false);
+                    const logLines = ref([]);
+                    const consoleRef = ref(null);
+
+                    // 详情弹窗
+                    const detailVisible = ref(false);
+                    const detailList = [
+                        {
+                            logId: 286, configId: 26, platform: "TMS(3-U2UUZG)", module: "出库单转TMS订单",
+                            docId: 61442, docNo: "SO202606170002", pushType: "-", pushCount: 6,
+                            pushTime: "2026-06-17 15:43:46", pushStatus: "推送失败",
+                            creator: "超级管理员", createdAt: "2026-06-17 09:29:55", updatedAt: "2026-06-17 15:43:46",
+                            pushMsg: "发货省市区不能为空（578 提货信息 expandFields 或仓库 base_storage） 2026-06-17 15:43:46",
+                            errorMsg: "发货省市区不能为空（578 提货信息 expandFields 或仓库 base_storage） 2026-06-17 15:43:46",
+                            reqData: "1", respData: "1", remark: "-"
+                        },
+                        {
+                            logId: 285, configId: 26, platform: "TMS(3-U2UUZG)", module: "出库单转TMS订单",
+                            docId: 61436, docNo: "SO202606170001", pushType: "-", pushCount: 12,
+                            pushTime: "2026-06-17 16:51:55", pushStatus: "推送失败",
+                            creator: "超级管理员", createdAt: "2026-06-17 09:29:55", updatedAt: "2026-06-17 16:51:55",
+                            pushMsg: "发货省市区不能为空（578 提货信息 expandFields 或仓库 base_storage） 2026-06-17 16:51:55",
+                            errorMsg: "发货省市区不能为空（578 提货信息 expandFields 或仓库 base_storage） 2026-06-17 16:51:55",
+                            reqData: "1", respData: "1", remark: "-"
+                        }
+                    ];
+                    const currentDetail = ref(detailList[0]);
+
+                    const openDetail = (index) => {
+                        currentDetail.value = detailList[index] || detailList[0];
+                        detailVisible.value = true;
+                    };
+
+                    const closeDetail = () => {
+                        detailVisible.value = false;
+                    };
+
+                    const openModal = () => {
+                        // 重置日志为初始状态
+                        logLines.value = [
+                            {
+                                lineNum: 1,
+                                type: "info",
+                                content: "当前推送对接账号：TMS(3-U2UUZG)",
+                            },
+                            {
+                                lineNum: 2,
+                                type: "info",
+                                content:
+                                    "开始推送出库单至 TMS，任务配置 ID=26，共 2 条",
+                            },
+                        ];
+                        modalVisible.value = true;
+                        pushing.value = false;
+                        nextTick(() => {
+                            if (consoleRef.value) {
+                                consoleRef.value.scrollTop =
+                                    consoleRef.value.scrollHeight;
+                            }
+                        });
+                    };
+
+                    const closeModal = () => {
+                        modalVisible.value = false;
+                        pushing.value = false;
+                    };
+
+                    const startPush = () => {
+                        if (pushing.value) return;
+                        pushing.value = true;
+                        // 清空并重置日志
+                        logLines.value = [
+                            {
+                                lineNum: 1,
+                                type: "info",
+                                content: "当前推送对接账号：TMS(3-U2UUZG)",
+                            },
+                            {
+                                lineNum: 2,
+                                type: "info",
+                                content:
+                                    "开始推送出库单至 TMS，任务配置 ID=26，共 2 条",
+                            },
+                        ];
+                        nextTick(() => {
+                            if (consoleRef.value) {
+                                consoleRef.value.scrollTop =
+                                    consoleRef.value.scrollHeight;
+                            }
+                        });
+
+                        // 模拟推送过程，完全复刻截图内容
+                        setTimeout(() => {
+                            logLines.value.push({
+                                lineNum: 3,
+                                type: "error",
+                                content:
+                                    "[1/2] SO202606170001 — 发货省市区不能为空（578 提货信息 expandFields 或仓库 base_storage） 2026-06-17 16:51:55",
+                            });
+                            nextTick(() => {
+                                if (consoleRef.value)
+                                    consoleRef.value.scrollTop =
+                                        consoleRef.value.scrollHeight;
+                            });
+                        }, 600);
+
+                        setTimeout(() => {
+                            logLines.value.push({
+                                lineNum: 4,
+                                type: "error",
+                                content:
+                                    "[2/2] SO202606160001 — 发货省市区不能为空（578 提货信息 expandFields 或仓库 base_storage） 2026-06-17 16:51:55",
+                            });
+                            nextTick(() => {
+                                if (consoleRef.value)
+                                    consoleRef.value.scrollTop =
+                                        consoleRef.value.scrollHeight;
+                            });
+                        }, 1200);
+
+                        setTimeout(() => {
+                            // 最后一行带绿色高亮
+                            logLines.value.push({
+                                lineNum: 5,
+                                type: "info",
+                                content:
+                                    '推送完成：<span style="color:#6a9955;">成功 0 条</span>，<span style="color:#f44747;">失败 2 条</span>，共 2 条 — SO202606170001: 发货省市区不能为空（578 提货信息 expandFields 或仓库 base_storage）; SO202606160001: 发货省市区不能为空（578 提货信息 expandFields 或仓库 base_storage）',
+                            });
+                            pushing.value = false;
+                            nextTick(() => {
+                                if (consoleRef.value)
+                                    consoleRef.value.scrollTop =
+                                        consoleRef.value.scrollHeight;
+                            });
+                        }, 1800);
+                    };
+
+                    return {
+                        modalVisible,
+                        pushing,
+                        logLines,
+                        consoleRef,
+                        openModal,
+                        closeModal,
+                        startPush,
+                        detailVisible,
+                        currentDetail,
+                        openDetail,
+                        closeDetail,
+                    };
+                },
+            });
+
+            if (typeof antd !== "undefined") app.use(antd);
+            app.mount("#app");
+        </script>
+    </body>
+</html>

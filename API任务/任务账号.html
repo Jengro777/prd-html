@@ -1,0 +1,792 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>WMS企业版系统 - 任务账号</title>
+        <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/reset.css"
+        />
+        <script src="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/antd.min.js"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+        <style>
+            :root {
+                --tos-primary: #42b7ae;
+                --tos-primary-hover: #339b94;
+                --tos-primary-bg: #e6f7f6;
+                --tos-bg: #f5f7fa;
+                --tos-card: #fff;
+                --tos-border: #e5e7eb;
+                --tos-border-soft: #f0f2f5;
+                --tos-text: #333;
+                --tos-text-secondary: #666;
+                --tos-text-muted: #999;
+                --tos-success: #52c41a;
+                --tos-warning: #faad14;
+                --tos-error: #f5222d;
+                --tos-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.03);
+                --tos-shadow-pop: 0 20px 60px rgba(15, 23, 42, 0.18);
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                background: var(--tos-bg);
+                color: var(--tos-text);
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    "Helvetica Neue", Arial, sans-serif;
+            }
+            #app {
+                min-height: 100vh;
+            }
+            .tos-shell {
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+            }
+            .tos-header {
+                display: flex;
+                height: 56px;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                border-bottom: 1px solid var(--tos-border-soft);
+                background: #fff;
+                padding: 0 20px;
+                flex-shrink: 0;
+            }
+            .tos-brand {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 16px;
+                font-weight: 600;
+                color: #1f2937;
+            }
+            .tos-brand__tenant {
+                color: var(--tos-text-muted);
+                font-size: 12px;
+                font-weight: 400;
+                margin-left: 4px;
+            }
+            .tos-layout {
+                display: flex;
+                flex: 1;
+                overflow: hidden;
+            }
+            .tos-sidebar {
+                width: 200px;
+                background: #fff;
+                border-right: 1px solid var(--tos-border-soft);
+                overflow-y: auto;
+                flex-shrink: 0;
+            }
+            .tos-page {
+                flex: 1;
+                padding: 20px;
+                overflow-y: auto;
+            }
+            .tos-card {
+                background: var(--tos-card);
+                border: 1px solid var(--tos-border-soft);
+                border-radius: 12px;
+                box-shadow: var(--tos-shadow-card);
+                padding: 20px;
+            }
+            .tos-card__header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+            .tos-card__title {
+                margin: 0;
+                color: var(--tos-text);
+                font-size: 16px;
+                font-weight: 600;
+            }
+            .tos-card__desc {
+                margin-top: 4px;
+                color: var(--tos-text-muted);
+                font-size: 12px;
+            }
+
+            /* Table */
+            .tos-table-wrap {
+                overflow-x: auto;
+                margin-top: 12px;
+            }
+            .tos-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .tos-table th {
+                padding: 12px 16px;
+                background: #fafafa;
+                border-bottom: 1px solid var(--tos-border-soft);
+                color: var(--tos-text-secondary);
+                font-size: 13px;
+                font-weight: 500;
+                text-align: left;
+                white-space: nowrap;
+            }
+            .tos-table td {
+                padding: 12px 16px;
+                border-bottom: 1px solid #f5f5f5;
+                color: var(--tos-text);
+                font-size: 14px;
+            }
+            .tos-table tr:hover td {
+                background: #fafafa;
+            }
+            .tos-tag {
+                display: inline-flex;
+                align-items: center;
+                height: 22px;
+                padding: 0 8px;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: 500;
+            }
+            .tos-tag--success {
+                background: #f0faf0;
+                color: var(--tos-success);
+            }
+            .tos-tag--default {
+                background: #f5f5f5;
+                color: var(--tos-text-muted);
+            }
+
+            /* Modal / Form */
+            .tos-modal-mask {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.45);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .tos-modal {
+                background: #fff;
+                width: 800px;
+                max-width: 90%;
+                max-height: 90vh;
+                border-radius: 12px;
+                box-shadow: var(--tos-shadow-pop);
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+            .tos-modal__header {
+                padding: 16px 24px;
+                border-bottom: 1px solid var(--tos-border-soft);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .tos-modal__title {
+                font-size: 16px;
+                font-weight: 600;
+            }
+            .tos-modal__close {
+                cursor: pointer;
+                font-size: 18px;
+                color: var(--tos-text-muted);
+            }
+            .tos-modal__body {
+                padding: 24px;
+                overflow-y: auto;
+                flex: 1;
+            }
+            .tos-modal__footer {
+                padding: 16px 24px;
+                border-top: 1px solid var(--tos-border-soft);
+                text-align: right;
+                background: #fafafa;
+            }
+
+            /* Form */
+            .tos-form-item {
+                display: flex;
+                margin-bottom: 16px;
+                align-items: flex-start;
+            }
+            .tos-form-item__label {
+                width: 100px;
+                flex-shrink: 0;
+                text-align: right;
+                padding-right: 12px;
+                line-height: 32px;
+                color: var(--tos-text-secondary);
+                font-size: 14px;
+            }
+            .tos-form-item__label.required::before {
+                content: "*";
+                color: var(--tos-error);
+                margin-right: 4px;
+            }
+            .tos-form-item__control {
+                flex: 1;
+            }
+            .tos-input,
+            .tos-select {
+                width: 100%;
+                padding: 4px 11px;
+                border: 1px solid #d9d9d9;
+                border-radius: 8px;
+                height: 32px;
+                font-size: 14px;
+                outline: none;
+                transition: all 0.3s;
+            }
+            .tos-input:focus,
+            .tos-select:focus {
+                border-color: var(--tos-primary);
+                box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.2);
+            }
+            .tos-textarea {
+                width: 100%;
+                padding: 4px 11px;
+                border: 1px solid #d9d9d9;
+                border-radius: 8px;
+                font-size: 14px;
+                outline: none;
+                font-family: Menlo, monospace;
+                min-height: 200px;
+                resize: vertical;
+            }
+            .tos-textarea:focus {
+                border-color: var(--tos-primary);
+                box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.2);
+            }
+
+            /* Section Header */
+            .tos-section-header {
+                background: var(--tos-primary-bg);
+                color: var(--tos-primary);
+                padding: 4px 12px;
+                font-size: 14px;
+                font-weight: 600;
+                display: inline-block;
+                margin-bottom: 16px;
+                border-radius: 4px;
+            }
+
+            /* Toggle Switch */
+            .tos-switch {
+                position: relative;
+                display: inline-block;
+                width: 44px;
+                height: 22px;
+            }
+            .tos-switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+            .tos-slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                transition: 0.4s;
+                border-radius: 34px;
+            }
+            .tos-slider:before {
+                position: absolute;
+                content: "";
+                height: 18px;
+                width: 18px;
+                left: 2px;
+                bottom: 2px;
+                background-color: white;
+                transition: 0.4s;
+                border-radius: 50%;
+            }
+            input:checked + .tos-slider {
+                background-color: var(--tos-primary);
+            }
+            input:checked + .tos-slider:before {
+                transform: translateX(22px);
+            }
+
+            .tos-actions {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+
+            /* Ant Design Vue 覆盖 */
+            .ant-btn-primary {
+                background: var(--tos-primary) !important;
+                border-color: var(--tos-primary) !important;
+                cursor: pointer !important;
+            }
+            .ant-btn-primary:hover {
+                background: var(--tos-primary-hover) !important;
+                border-color: var(--tos-primary-hover) !important;
+                cursor: pointer !important;
+            }
+            .ant-btn {
+                border-radius: 8px;
+                cursor: pointer !important;
+            }
+
+            /* button 全局手势 */
+            button, [role="button"], a-button {
+                cursor: pointer !important;
+            }
+            .ant-input, .ant-select-selector, .ant-picker {
+                border-radius: 8px !important;
+            }
+            .ant-input:focus, .ant-select-focused .ant-select-selector,
+            .ant-picker-focused {
+                border-color: var(--tos-primary) !important;
+                box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.16) !important;
+            }
+            .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+                color: var(--tos-primary) !important;
+            }
+            .ant-tabs-ink-bar {
+                background: var(--tos-primary) !important;
+            }
+            .ant-modal-content {
+                border-radius: 12px;
+            }
+
+            /* Mock Code Editor */
+            .mock-editor {
+                background: #f6f8fa;
+                border: 1px solid #e1e4e8;
+                border-radius: 8px;
+                padding: 12px;
+                font-family: Menlo, monospace;
+                font-size: 13px;
+                line-height: 1.6;
+                color: #24292f;
+            }
+            .mock-editor .key {
+                color: #0969da;
+            }
+            .mock-editor .string {
+                color: #0a3069;
+            }
+            .mock-editor .boolean {
+                color: #0550ae;
+            }
+            .mock-editor .number {
+                color: #0550ae;
+            }
+            .mock-editor .line-num {
+                color: #8b949e;
+                margin-right: 12px;
+                user-select: none;
+            }
+        
+    /* 侧边栏菜单 */
+    .tos-menu-item { display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: var(--tos-text-secondary); text-decoration: none; font-size: 14px; cursor: pointer; transition: all 0.15s; }
+    .tos-menu-item:hover { color: var(--tos-primary); background: var(--tos-primary-bg); }
+    .tos-menu-item.active, .tos-menu-item--sub.active { color: var(--tos-primary); background: var(--tos-primary-bg); border-right: 3px solid var(--tos-primary); font-weight: 500; }
+    .tos-menu-group.active .tos-menu-group__title { color: var(--tos-primary); }
+    .tos-menu-group__title { display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: var(--tos-text-secondary); font-size: 14px; font-weight: 500; }
+    .tos-menu-item--sub { padding-left: 44px; font-size: 13px; }
+
+    </style>
+    </head>
+    <body>
+        <div id="app">
+            <div class="tos-shell">
+                <header class="tos-header">
+                    <div class="tos-brand">
+                        <i
+                            class="fas fa-bars"
+                            style="color: #999; margin-right: 4px"
+                        ></i>
+                        WMS企业版系统
+                        <span class="tos-brand__tenant">(1-5JMLHR)</span>
+                    </div>
+                    <div class="tos-actions">
+                        <a-button type="text" size="small"
+                            ><i class="fas fa-bell"></i
+                        ></a-button>
+                        <span style="color: #666; font-size: 13px"
+                            ><i class="fas fa-user-circle"></i> 超级管理员
+                            <i class="fas fa-caret-down"></i
+                        ></span>
+                    </div>
+                </header>
+                <div class="tos-layout">
+                    <aside class="tos-sidebar">
+                        <!-- 侧边栏占位 -->
+                    </aside>
+                    <main class="tos-page">
+                        <!-- 页面标题 -->
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+                            <div>
+                                <h1 style="font-size:20px;font-weight:600;color:var(--tos-text);margin:0;">任务账号</h1>
+                                <p style="margin:4px 0 0;color:var(--tos-text-muted);font-size:12px;">管理对接厂商的 API 账号、认证凭证和连接参数</p>
+                            </div>
+                        </div>
+
+                        <!-- 搜索筛选区 -->
+                        <div class="tos-card" style="margin-bottom:16px;">
+                            <div style="font-weight:500;color:var(--tos-text-secondary);font-size:14px;margin-bottom:12px;">筛选</div>
+                            <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <span style="font-size:14px;color:var(--tos-text-secondary);">厂商类型</span>
+                                    <select class="tos-select" style="width:120px;">
+                                        <option>请选择</option>
+                                        <option>WMS</option>
+                                        <option>TMS</option>
+                                    </select>
+                                </div>
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <span style="font-size:14px;color:var(--tos-text-secondary);">账号名称</span>
+                                    <input class="tos-input" placeholder="账号名称" style="width:200px;" />
+                                </div>
+                                <div class="tos-actions">
+                                    <a-button type="primary" size="small">搜索</a-button>
+                                    <a-button size="small">重置</a-button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 列表卡片 -->
+                        <div class="tos-card">
+                            <div class="tos-card__header" style="border-bottom:0;padding-bottom:0;">
+                                <div>
+                                    <h2 class="tos-card__title">账号列表</h2>
+                                    <div class="tos-card__desc">共 {{ accountList.length }} 个账号</div>
+                                </div>
+                                <div class="tos-actions">
+                                    <a-button type="primary" size="small">新建</a-button>
+                                    <a-button size="small">刷新</a-button>
+                                    <a-button size="small" disabled>复制</a-button>
+                                    <a-button size="small" disabled>删除</a-button>
+                                </div>
+                            </div>
+
+                            <!-- 表格 -->
+                            <div class="tos-table-wrap">
+                                <table class="tos-table">
+                                    <thead>
+                                        <tr>
+                                            <th>账号名称</th>
+                                            <th>厂商类型</th>
+                                            <th>账号编码</th>
+                                            <th>账号ID</th>
+                                            <th>启用</th>
+                                            <th>备注</th>
+                                            <th style="text-align:right;">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr
+                                            v-for="item in accountList"
+                                            :key="item.id"
+                                        >
+                                            <td
+                                                style="
+                                                    color: var(--tos-primary);
+                                                    font-weight: 500;
+                                                "
+                                            >
+                                                {{ item.name }}
+                                            </td>
+                                            <td>{{ item.type }}</td>
+                                            <td style="font-family: monospace">
+                                                {{ item.code }}
+                                            </td>
+                                            <td>{{ item.id }}</td>
+                                            <td>
+                                                <span
+                                                    class="tos-tag tos-tag--success"
+                                                    v-if="item.enabled"
+                                                    >是</span
+                                                >
+                                                <span
+                                                    class="tos-tag tos-tag--default"
+                                                    v-else
+                                                    >否</span
+                                                >
+                                            </td>
+                                            <td style="color:var(--tos-text-muted);">-</td>
+                                            <td style="text-align:right;">
+                                                <a-button type="link" size="small" @click.stop="openEdit(item)">编辑</a-button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 模态框：编辑对接账号 -->
+                        <div class="tos-modal-mask" v-if="isModalVisible">
+                            <div class="tos-modal">
+                                <div class="tos-modal__header">
+                                    <span class="tos-modal__title"
+                                        >编辑对接账号</span
+                                    >
+                                    <span
+                                        class="tos-modal__close"
+                                        @click="closeModal"
+                                        ><i class="fas fa-times"></i
+                                    ></span>
+                                </div>
+                                <div class="tos-modal__body">
+                                    <!-- 基础信息 -->
+                                    <div class="tos-section-header">
+                                        基础信息
+                                    </div>
+
+                                    <div class="tos-form-item">
+                                        <div class="tos-form-item__label">
+                                            账号ID
+                                        </div>
+                                        <div class="tos-form-item__control">
+                                            <span
+                                                style="
+                                                    line-height: 32px;
+                                                    color: var(
+                                                        --tos-text-secondary
+                                                    );
+                                                "
+                                                >{{ currentForm.id }}</span
+                                            >
+                                        </div>
+                                    </div>
+
+                                    <div class="tos-form-item">
+                                        <div
+                                            class="tos-form-item__label required"
+                                        >
+                                            厂商类型
+                                        </div>
+                                        <div class="tos-form-item__control">
+                                            <select
+                                                class="tos-select"
+                                                v-model="currentForm.type"
+                                            >
+                                                <option>WMS</option>
+                                                <option>TMS</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="tos-form-item">
+                                        <div
+                                            class="tos-form-item__label required"
+                                        >
+                                            账号名称
+                                        </div>
+                                        <div class="tos-form-item__control">
+                                            <input
+                                                class="tos-input"
+                                                v-model="currentForm.name"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div class="tos-form-item">
+                                        <div class="tos-form-item__label">
+                                            账号编码
+                                        </div>
+                                        <div class="tos-form-item__control">
+                                            <input
+                                                class="tos-input"
+                                                v-model="currentForm.code"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div class="tos-form-item">
+                                        <div class="tos-form-item__label">
+                                            是否启用
+                                        </div>
+                                        <div class="tos-form-item__control">
+                                            <label class="tos-switch">
+                                                <input
+                                                    type="checkbox"
+                                                    v-model="currentForm.enabled"
+                                                />
+                                                <span class="tos-slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="tos-form-item">
+                                        <div class="tos-form-item__label">
+                                            排序号
+                                        </div>
+                                        <div class="tos-form-item__control">
+                                            <input
+                                                class="tos-input"
+                                                type="number"
+                                                value="0"
+                                                style="width: 100px"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <!-- 对接参数 -->
+                                    <div
+                                        class="tos-section-header"
+                                        style="margin-top: 16px"
+                                    >
+                                        对接参数
+                                    </div>
+
+                                    <div class="tos-form-item">
+                                        <div
+                                            class="tos-form-item__label"
+                                            style="padding-top: 0"
+                                        >
+                                            对接参数 JSON
+                                        </div>
+                                        <div class="tos-form-item__control">
+                                            <textarea
+                                                class="tos-textarea"
+                                                v-model="currentForm.params"
+                                            ></textarea>
+                                            <div
+                                                style="
+                                                    font-size: 12px;
+                                                    color: var(
+                                                        --tos-text-muted
+                                                    );
+                                                    margin-top: 4px;
+                                                "
+                                            >
+                                                金蝶:
+                                                clientId/clientSecret/outerInstanceId/host
+                                                等; WMS:
+                                                baseUrl/accessKey/secretKey/dryRun/failFast
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="tos-form-item">
+                                        <div class="tos-form-item__label">
+                                            备注
+                                        </div>
+                                        <div class="tos-form-item__control">
+                                            <textarea
+                                                class="tos-input"
+                                                style="
+                                                    min-height: 60px;
+                                                    padding-top: 8px;
+                                                    height: auto;
+                                                "
+                                            ></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tos-modal__footer">
+                                    <a-button
+                                        style="margin-right: 8px"
+                                        @click="closeModal"
+                                        >关闭</a-button
+                                    >
+                                    <a-button type="primary" @click="closeModal"
+                                        >确认 (ctrl+s)</a-button
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        </div>
+
+        <script src="tos-sidebar.js"></script>
+        <script>
+            const { createApp, ref, reactive } = Vue;
+
+            const app = createApp({
+                setup() {
+                    // 表格数据
+                    const accountList = ref([
+                        {
+                            id: 8,
+                            name: "TOS回调",
+                            type: "WMS",
+                            code: "TOS_WEBHOOK",
+                            enabled: true,
+                        },
+                        {
+                            id: 3,
+                            name: "TMS(3-U2UUZG)",
+                            type: "WMS",
+                            code: "AKVJC6VQGLYAFYMD254JSLOXYLCLSB4",
+                            enabled: true,
+                        },
+                    ]);
+
+                    // 模态框控制
+                    const isModalVisible = ref(false);
+                    const currentForm = reactive({
+                        id: null,
+                        type: "WMS",
+                        name: "",
+                        code: "",
+                        enabled: true,
+                        params: `{
+  "dryRun": false,
+  "authMode": "hmac_sha256",
+  "secretkey": "whsec_change_me_before_use",
+  "maxRetries": 5,
+  "webhookUrl": "https://partner.example.com/wms/callback",
+  "readTimeoutMs": 30000,
+  "retryIntervalMs": 30000,
+  "connectTimeoutMs": 10000
+}`,
+                    });
+
+                    // 打开编辑（模拟点击行）
+                    const openEdit = (item) => {
+                        Object.assign(currentForm, item);
+                        // 模拟JSON数据
+                        if (item.id === 8) {
+                            currentForm.params = `{\n  "dryRun": false,\n  "authMode": "hmac_sha256",\n  "secretkey": "whsec_change_me_before_use",\n  "maxRetries": 5,\n  "webhookUrl": "https://partner.example.com/wms/callback",\n  "readTimeoutMs": 30000,\n  "retryIntervalMs": 30000,\n  "connectTimeoutMs": 10000\n}`;
+                        } else {
+                            currentForm.params = `{\n  "baseUrl": "https://tms-api.example.com",\n  "accessKey": "AKVJC6VQGLYAFYMD254J",\n  "secretKey": "SLOXYLCLSB4",\n  "dryRun": false,\n  "failFast": true\n}`;
+                        }
+                        isModalVisible.value = true;
+                    };
+
+                    const closeModal = () => {
+                        isModalVisible.value = false;
+                    };
+
+                    return {
+                        accountList,
+                        isModalVisible,
+                        currentForm,
+                        openEdit,
+                        closeModal,
+                    };
+                },
+            });
+
+            if (typeof antd !== "undefined") app.use(antd);
+            app.mount("#app");
+            renderSidebar('任务账号');
+        </script>
+    </body>
+</html>
