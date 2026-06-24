@@ -759,6 +759,8 @@
                             JSON.stringify(features[0].geometry),
                         );
                     } else {
+                        // Try sequential turf.union to merge adjacent/overlapping polygons
+                        var unionOk = true;
                         try {
                             var merged = turf.feature(
                                 turf.multiPolygon(
@@ -774,15 +776,49 @@
                                 try {
                                     var u = turf.union(merged, next);
                                     if (u) merged = u;
+                                    else { unionOk = false; break; }
+                                } catch (e) {
+                                    // non-adjacent polygons → union fails
+                                    unionOk = false;
+                                    break;
+                                }
+                            }
+                            if (unionOk) {
+                                mergedGeom = JSON.parse(
+                                    JSON.stringify(merged.geometry),
+                                );
+                            }
+                        } catch (err) {
+                            unionOk = false;
+                        }
+
+                        // Fallback: when union fails (non-adjacent cities),
+                        // compute the convex hull of ALL coordinates from ALL
+                        // selected cities — produces a single Polygon that
+                        // encompasses every city while keeping fenceType="polygon"
+                        if (!unionOk || !mergedGeom) {
+                            var allPoints = [];
+                            for (var i = 0; i < features.length; i++) {
+                                var polys = features[i].geometry.coordinates;
+                                for (var j = 0; j < polys.length; j++) {
+                                    var ring = polys[j][0]; // outer ring
+                                    for (var k = 0; k < ring.length; k++) {
+                                        allPoints.push(turf.point(ring[k]));
+                                    }
+                                }
+                            }
+                            if (allPoints.length > 0) {
+                                try {
+                                    var hull = turf.convex(turf.featureCollection(allPoints));
+                                    if (hull) {
+                                        mergedGeom = JSON.parse(JSON.stringify(hull.geometry));
+                                    }
                                 } catch (e) {}
                             }
-                            mergedGeom = JSON.parse(
-                                JSON.stringify(merged.geometry),
-                            );
-                        } catch (err) {
-                            mergedGeom = JSON.parse(
-                                JSON.stringify(features[0].geometry),
-                            );
+                            // Last resort: use first feature's geometry
+                            if (!mergedGeom) {
+                                mergedGeom = JSON.parse(JSON.stringify(features[0].geometry));
+                            }
                         }
                     }
 
@@ -791,10 +827,34 @@
                     while (mergedGeom && mergedGeom.type === "Feature" && mergedGeom.geometry) {
                         mergedGeom = mergedGeom.geometry;
                     }
-                    // convert MultiPolygon -> Polygon
+
+                    // Final normalization: platform only accepts fenceType=polygon,
+                    // so MultiPolygon (islands, non-adjacent cities) must be
+                    // converted to a single Polygon via convex hull
                     if (mergedGeom && mergedGeom.type === "MultiPolygon") {
-                        mergedGeom = { type: "Polygon", coordinates: mergedGeom.coordinates[0] };
+                        var hullPts = [];
+                        for (var pi = 0; pi < mergedGeom.coordinates.length; pi++) {
+                            var outerRing = mergedGeom.coordinates[pi][0];
+                            for (var ri = 0; ri < outerRing.length; ri++) {
+                                hullPts.push(turf.point(outerRing[ri]));
+                            }
+                        }
+                        if (hullPts.length > 0) {
+                            try {
+                                var finalHull = turf.convex(turf.featureCollection(hullPts));
+                                if (finalHull) {
+                                    mergedGeom = JSON.parse(JSON.stringify(finalHull.geometry));
+                                }
+                            } catch (e) {}
+                        }
+                        // Absolute last resort: take only the first polygon
+                        if (mergedGeom && mergedGeom.type === "MultiPolygon") {
+                            mergedGeom = { type: "Polygon", coordinates: mergedGeom.coordinates[0] };
+                        }
                     }
+                    // Guarantee fenceType is always polygon (platform constraint)
+                    var gt = "polygon";
+
                     var now = Date.now();
                     var siteInput = document.getElementById("merged-name").value.trim();
 
@@ -805,7 +865,7 @@
                     var regionName =
                         regionSet.size === 1
                             ? Array.from(regionSet)[0]
-                            : Array.from(regionSet).join("\u3001");
+                            : Array.from(regionSet).join("、");
 
                     var mid, mergedName;
                     if (features.length === 1) {
@@ -813,12 +873,8 @@
                         mergedName = siteInput || features[0].properties.NAME_2;
                     } else {
                         mid = "merged_" + now;
-                        mergedName = siteInput || "\u8054\u5408\u56f4\u680f_" + now;
+                        mergedName = siteInput || "联合围栏_" + now;
                     }
-                    var gt =
-                        mergedGeom.type === "MultiPolygon"
-                            ? "multiPolygon"
-                            : "polygon";
 
                     var result = {
                         type: "FeatureCollection",
