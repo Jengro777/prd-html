@@ -1,0 +1,2917 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Jumia 加纳全网点地图</title>
+        <!-- Font Awesome (需在 head 中加载) -->
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        />
+        <!-- Leaflet (OpenStreetMap) — 无需 API 密钥，本地打开即可使用 -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: "Segoe UI", Roboto, system-ui, sans-serif;
+            }
+            body {
+                background: #0b1a2f;
+                color: #eef2f6;
+                height: 100vh;
+                overflow: hidden;
+            }
+            #app {
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+                padding: 12px;
+                gap: 10px;
+            }
+            header {
+                background: rgba(0, 20, 40, 0.65);
+                backdrop-filter: blur(6px);
+                border-radius: 14px;
+                padding: 14px 22px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                border: 1px solid rgba(66, 183, 174, 0.25);
+                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+            }
+            header h1 {
+                font-size: 1.7rem;
+                font-weight: 500;
+                letter-spacing: 0.5px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            header h1 i {
+                color: #42b7ae;
+            }
+            header h1 small {
+                font-size: 0.9rem;
+                font-weight: 400;
+                color: #9bb7d4;
+                margin-left: 8px;
+            }
+            .stats-badge {
+                background: #1d3b4f;
+                padding: 6px 18px;
+                border-radius: 40px;
+                font-size: 0.9rem;
+                border: 1px solid #2e5a6f;
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                flex-wrap: wrap;
+            }
+            .stats-badge span {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .stats-badge i {
+                color: #42b7ae;
+            }
+            #mapContainer {
+                flex: 1;
+                border-radius: 16px;
+                overflow: hidden;
+                box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6);
+                background: #2a3a4a;
+                position: relative;
+                min-height: 400px;
+            }
+            #map {
+                width: 100%;
+                height: 100%;
+            }
+
+            .info-window {
+                color: #0b1f2e;
+                font-size: 0.85rem;
+                line-height: 1.5;
+            }
+            .info-window h3 {
+                font-size: 1rem;
+                font-weight: 600;
+                color: #003153;
+                border-bottom: 2px solid #42b7ae;
+                padding-bottom: 4px;
+                margin-bottom: 6px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .info-window h3 .province-tag {
+                font-size: 0.65rem;
+                background: #1d4e6b;
+                color: white;
+                padding: 1px 10px;
+                border-radius: 30px;
+                font-weight: 400;
+            }
+            .info-window .detail-row {
+                display: flex;
+                gap: 6px;
+                margin-top: 3px;
+                font-size: 0.8rem;
+                color: #1e3b4f;
+            }
+            .info-window .detail-row i {
+                color: #1c6b7a;
+                width: 16px;
+                text-align: center;
+            }
+            .info-window .addr {
+                background: #f0f6fc;
+                padding: 4px 8px;
+                border-radius: 6px;
+                margin: 4px 0;
+                font-size: 0.8rem;
+            }
+            .info-window .contact {
+                font-weight: 500;
+                color: #003d66;
+            }
+            .legend {
+                position: absolute;
+                bottom: 22px;
+                left: 18px;
+                background: rgba(8, 24, 40, 0.8);
+                backdrop-filter: blur(4px);
+                border-radius: 10px;
+                padding: 10px 14px;
+                border: 1px solid #2b5a70;
+                color: #dce9f2;
+                font-size: 0.75rem;
+                z-index: 10;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                pointer-events: none;
+            }
+            .legend-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .legend-dot {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: #ff4d4d;
+                border: 1px solid rgba(255, 255, 255, 0.3);
+            }
+            .legend-dot.blue {
+                background: #2a7de1;
+            }
+            .reset-view {
+                position: absolute;
+                top: 18px;
+                right: 18px;
+                z-index: 10;
+                background: rgba(10, 30, 48, 0.8);
+                backdrop-filter: blur(4px);
+                border: 1px solid #3d738b;
+                color: white;
+                border-radius: 30px;
+                padding: 8px 16px;
+                font-size: 0.8rem;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                transition: all 0.2s;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            }
+            .reset-view:hover {
+                background: #1e4f69;
+                border-color: #42b7ae;
+            }
+            /* Leaflet 弹窗暗色主题适配 */
+            .leaflet-popup-content-wrapper {
+                border-radius: 12px !important;
+                background: #f5f9fe !important;
+                color: #0b1f2e !important;
+                box-shadow: 0 6px 20px rgba(0,0,0,0.4) !important;
+                padding: 0 !important;
+                overflow: hidden;
+            }
+            .leaflet-popup-content {
+                margin: 8px 10px !important;
+                font-size: 0.85rem;
+                line-height: 1.5;
+                min-width: 260px;
+                max-width: 320px;
+            }
+            .leaflet-popup-tip {
+                background: #f5f9fe !important;
+                box-shadow: none !important;
+            }
+            .leaflet-popup-close-button {
+                color: #1d4e6b !important;
+                font-size: 18px !important;
+                top: 6px !important;
+                right: 6px !important;
+            }
+            .leaflet-popup-close-button:hover {
+                color: #ff4d4d !important;
+            }
+            /* Leaflet 控件适配暗色主题 */
+            .leaflet-control-zoom a {
+                background: #1a3042 !important;
+                color: #eef2f6 !important;
+                border-color: #3d738b !important;
+            }
+            .leaflet-control-zoom a:hover {
+                background: #1e4f69 !important;
+                color: white !important;
+            }
+            .leaflet-control-attribution {
+                display: none !important;
+            }
+            /* 图例在 Leaflet 中需要更高 z-index */
+            .legend {
+                z-index: 1000 !important;
+            }
+            @media (max-width: 640px) {
+                header h1 {
+                    font-size: 1.2rem;
+                }
+                header {
+                    padding: 10px 14px;
+                }
+                .stats-badge {
+                    font-size: 0.7rem;
+                    padding: 4px 12px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+            <header>
+                <h1>
+                    <i class="fas fa-map-pin"></i> Jumia 加纳网点
+                    <small>· 全部 <span id="totalCount">0</span> 个</small>
+                </h1>
+                <div class="stats-badge">
+                    <span
+                        ><i class="fas fa-flag"></i>
+                        <span id="provinceCount">0</span> 省</span
+                    >
+                    <span
+                        ><i class="fas fa-circle" style="color: #ff4d4d"></i>
+                        自提点</span
+                    >
+                </div>
+            </header>
+            <div id="mapContainer">
+                <div id="map"></div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <span class="legend-dot"></span> Jumia 网点
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot blue"></span> 省份标记
+                    </div>
+                </div>
+                <button class="reset-view" id="resetViewBtn">
+                    <i class="fas fa-expand"></i> 重置视图
+                </button>
+            </div>
+        </div>
+
+        <script>
+
+            // DOM 加载完成后初始化地图
+            document.addEventListener('DOMContentLoaded', function() {
+                // 错误诊断：捕获并展示任何初始化错误
+                var initError = function(msg) {
+                    var el = document.getElementById('map');
+                    if (el) el.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#ff8a80;font-size:1.1rem;text-align:center;padding:30px;flex-direction:column;gap:10px;background:#0b1a2f;"><div style="font-size:2rem;">⚠</div><p><b>地图加载失败</b></p><p style="font-size:0.85rem;color:#90caf9;background:rgba(30,59,79,0.6);padding:12px 18px;border-radius:8px;word-break:break-all;">' + String(msg).replace(/</g, '&lt;') + '</p></div>';
+                };
+                try {
+                
+                // ----- 从 Excel 提取的完整网点数据 (在 locations 数组中) -----
+                const locations = [
+                    {
+                        province: "Ahafo",
+                        name: "Duayaw Nkwanta",
+                        lat: 7.172678,
+                        lng: -2.095637,
+                        address:
+                            "Sunyani Bechem Road off Techimantia Road Next to Pentecost Area Office Near Kobby Jones Pub & Akesefour Junction",
+                        closeTo:
+                            "NEDCO/VRA Office, Ghana Water Office, Electoral Commission Office",
+                        contact: "Bismark Osei Kuffour 0247940721",
+                        hours: "8:30AM - 5:30PM; 9:00AM-3:30PM",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ahafo",
+                        name: "Goaso",
+                        lat: 6.8076251,
+                        lng: -2.5146494,
+                        address: "GOASO-SUNYANI MAIN ROAD",
+                        closeTo: "UNDER THE STORY BUILDING OF KING OF GOASO",
+                        contact: "FRANCES AYENSU 0248018347",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 09:30-15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Abuakwa",
+                        lat: 6.3000836,
+                        lng: -1.8372551,
+                        address:
+                            "Abuakwa Nkawei Road Adjacent MTTD,Abuakwa ,Ashanti",
+                        closeTo: "Abuakwa Maakro road Adjacent Afrikana pub",
+                        contact: "Affugu Janet 0554362901",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Adansi Kyekyewere",
+                        lat: 6.2430507,
+                        lng: -1.6672288,
+                        address: "Kyekyewere highway",
+                        closeTo: "Alberto Plaza",
+                        contact: "Augustine Anyan 0555554175",
+                        hours: "Mon-Fri 08:00 -18:00; Sat 08:00 -17:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Adum",
+                        lat: 6.6878607,
+                        lng: -1.6221256,
+                        address: "Thankful Heights, Passport premium office",
+                        closeTo: "Thankful Heights, Passport premium office",
+                        contact: "Blessed Ewurabena Annan 541390822",
+                        hours: "[Monday – Friday]: 8:30 AM – 6:00 PM; [Saturday]: 9:30 AM – 3:30 PM",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Adum Harper Road",
+                        lat: 6.6889458,
+                        lng: -1.6231714,
+                        address: "1st floor Chelsea House Harper Rd. Kumasi",
+                        closeTo: "Adjacent the Chelsea House building car park",
+                        contact: "ADUTWUM GYAMFI 0534838470/0209967429",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 09:00-12:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Ahenema Kokobin",
+                        lat: 6.626919,
+                        lng: -1.651514,
+                        address:
+                            "Ahenema Kokobin, Close to New Market and Kifi clodin & beauty",
+                        closeTo:
+                            "Ahenema Kokobin, Close to New Market and Kifi clodin & beauty",
+                        contact: "Philomena Quaicoe 0503574015",
+                        hours: "Mon-Fri 08:30 -18:00; Sat 09:00 -17:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Akim Agogo",
+                        lat: 6.80122,
+                        lng: -1.082028,
+                        address: "Amakyedede maame street Akim Agogo",
+                        closeTo: "Amakyedede maame street Akim Agogo",
+                        contact: "Kenneth Quaicoe 024 445 4029",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Akrokerri",
+                        lat: 6.297166,
+                        lng: -1.636923,
+                        address:
+                            "OPPOSITE ASARE BEDIAKO SECONDARY SCHOOL  , Absec Junction, Akrokerri",
+                        closeTo: "Akrokerri",
+                        contact: "Ebenezer Asare 0242857981",
+                        hours: "Mon-Fri 08:30 -18:00; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Asafo",
+                        lat: 6.6920514,
+                        lng: -1.6113197,
+                        address: "Kumasi, O.A. Street",
+                        closeTo: "Kumasi Polytechnic Adjacent Fosuaa Hostel",
+                        contact: "Freda Awuah 0592461212",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Asuoyeboah",
+                        lat: 6.6953056,
+                        lng: -1.6741944,
+                        address: "Asuyeboa IPT Junction",
+                        closeTo: "AMUSTED( Univ. College Of Edu-Kumasi Campus)",
+                        contact: "PRISCILLA  AGYAPONG 0245962091",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Atonsu",
+                        lat: 6.6508333,
+                        lng: -1.5874722,
+                        address:
+                            "Atonsu Agogo Market Street, behind Atonsu Agogo Hospital and share wall with Baah Herbal",
+                        closeTo:
+                            "Behind Atonsu Agogo Hospital and share wall with Baah Herbal",
+                        contact:
+                            "Kenneth Quaicoe & Emmanuel Quaicoe 0244454029 & 0249418318",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Bantama",
+                        lat: 6.7013569,
+                        lng: -1.6462322,
+                        address: "Close to NPP Party Office",
+                        closeTo: "close to the Ashfood Hotel , Bantama Ecobank",
+                        contact: "Nancy 0546494067",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Bekwai",
+                        lat: 6.457532,
+                        lng: -1.5688496,
+                        address:
+                            "On the Bekwai - Kokofu road, close to the Bekwai municipal Assembly",
+                        closeTo: "Bekwai municipal Assembly",
+                        contact: "Lamidi Muna 0554132753",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; SAT: 08:30 - 14:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Buoho-Afrancho",
+                        lat: 6.787553,
+                        lng: -1.645055,
+                        address: "N10 Highway, Kumasi-Techiman Road",
+                        closeTo:
+                            "Next to B5 Plus Steel Company, near Modern/Kas Quarry Limited",
+                        contact: "Emmanuel Asamoah 025-688-2013",
+                        hours: "Mon-Fri 09:30 -18:30; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Buokrom",
+                        lat: 6.730163,
+                        lng: -1.585156,
+                        address:
+                            "PJ68 Goodyear Street, Off Kumasi-Antoa Road, near Regal International School",
+                        closeTo:
+                            "near Regal International School, PJ68 Goodyear Street, Off Kumasi-Antoa Road",
+                        contact: "Tina Kusiwaa 0544524569",
+                        hours: "Mon-Fri 09:30 -18:30; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Effiduase area",
+                        lat: 6.846318,
+                        lng: -1.407322,
+                        address: "Ejisu - Effiduase Road",
+                        closeTo: "In The Same Building With EsthMarks Pharmacy",
+                        contact: "Emmanuel Quaicoe  0506183817",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -16:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Ejisu",
+                        lat: 6.723892,
+                        lng: -1.466136,
+                        address:
+                            "Accra - Kumasi highway, Ejisu police staion;CID UNIT (ON THE U-Turnafter Golden Pub), ejisu, Ashanti",
+                        closeTo:
+                            "Ejisu police staion;CID UNIT (ON THE U-Turnafter Golden Pub), ejisu, Ashanti",
+                        contact:
+                            "Kenneth Quaicoe & Ayishetu Abubakar 024 445 4029 & 0500855777",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Fomena",
+                        lat: 6.2816553,
+                        lng: -1.5141181,
+                        address: "Adansi formena",
+                        closeTo: "fomena NSS Office",
+                        contact: "Seth Yeboah 0271985288",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Fumso",
+                        lat: 6.112722,
+                        lng: -1.4517506,
+                        address:
+                            "Fumso Zongo junction, OPPOSITE THE NEW MOSQUE",
+                        closeTo: "Fumso Zongo junction",
+                        contact: "Ebenezer Asare 0541922700",
+                        hours: "Mon-Fri 08:30 -18:00; Sat 09:00 -17:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Boadi Palace Area",
+                        lat: 6.676295,
+                        lng: -1.541733,
+                        address: "AJACENT TO BOADI PALACE",
+                        closeTo:
+                            "AJACENT TO BOADI PALACE AND OPPOSITE MISTICAL ROSE GUESTHOUSE",
+                        contact: "Linda Amankwah 0599256004",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -16:00",
+                        payment: "Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Bomso",
+                        lat: 6.688159,
+                        lng: -1.574539,
+                        address:
+                            "At Agyapa villa, close to jaccford pharmacy around ecococent road",
+                        closeTo:
+                            "close to jaccford pharmacy and near Derrick Kitchen",
+                        contact: "Anita 0205909641",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Konongo",
+                        lat: 6.6209722,
+                        lng: -1.1963056,
+                        address: "Accra - Kumasi highway, Konongo Akrantebesa",
+                        closeTo: "adjacent Telenergy fuel station Akrantebesa",
+                        contact:
+                            "Kenneth Quaicoe & Osei Clevis 024 445 4029 & 0535807993",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Mampong",
+                        lat: 7.063843,
+                        lng: -1.401592,
+                        address: "Pay All Street Mampong Ashanti",
+                        closeTo:
+                            "Pay All Mampong Ashanti. Near Methodist Church",
+                        contact: "Appiah Twumasi Daniel 0247989393/0555503988",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Mampongteng",
+                        lat: 6.784223,
+                        lng: -1.573107,
+                        address: "S50 Mampong Road, near OK Academy",
+                        closeTo: "Mamponteng-Achiase",
+                        contact: "Vera Antwi 0246778555",
+                        hours: "Mon-Fri 09:30 -18:30; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "New Edubiase",
+                        lat: 6.061373,
+                        lng: -1.395103,
+                        address: "Maize street,New Edubiase",
+                        closeTo: "Close to sosaab pharmacy",
+                        contact: "George Nyarko 0246540725",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Nkawie",
+                        lat: 6.6602946,
+                        lng: -1.814738,
+                        address: "Toase Palace",
+                        closeTo: "close to Toase Senior High school",
+                        contact: "Prince Labi 0543890238",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 08:30 -14:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Obuasi Antobuasi",
+                        lat: 6.2005517,
+                        lng: -1.6682633,
+                        address:
+                            "Davoro Field, Adjacent Total Energies Ant obuasi.",
+                        closeTo: "Close to Obuasi total energies",
+                        contact: "Charles 0534816507",
+                        hours: "Mon - Fri: 8:30am - 6:00pm; Sat: -8am -5pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Obuasi Kunka Market",
+                        lat: 6.2138889,
+                        lng: -1.6905833,
+                        address: "Obuasi, Kunka Market Shop 17",
+                        closeTo: "Behind Puma Fuel Station",
+                        contact: "Godfred 0593856978",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Obuasi Mangoase",
+                        lat: 6.2028777,
+                        lng: -1.6756515,
+                        address: "Amangoase-zongo road",
+                        closeTo:
+                            "after the mangoease bus-stop infront of mango hotel.",
+                        contact: "Susana  0534816507",
+                        hours: "Mon-Fri 09:00 -18:00; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Obuasi Akaporiso",
+                        lat: 6.199262,
+                        lng: -1.628801,
+                        address: "Akaporiso- Agyemang Nkwanta (close to Gaako)",
+                        closeTo: "Opposite Christ the King Snr High (CKC)",
+                        contact: "Susana 00534816507",
+                        hours: "Mon-Fri 09:00 -18:00; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Offinso",
+                        lat: 6.93973,
+                        lng: -1.672375,
+                        address: "Newtown Street  Offinson Newtown",
+                        closeTo:
+                            "Opposite Nwabiagya Rural Bank and in the same Building with PAC FC Academy Club House",
+                        contact: "Emmanuel Quaicoe  0249518318",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Santasi",
+                        lat: 6.663403,
+                        lng: -1.643058,
+                        address:
+                            "Opposite OWASS at the Mr. Gentle fast food Anita Kwarteng lane opposite the Assemblies of God Glory Hills Chapel",
+                        closeTo:
+                            "Direct opposite Amansie Rural Bank, Opoku Ware School (OWASS)",
+                        contact: "Grace 0206776951",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Suame",
+                        lat: 6.723798,
+                        lng: -1.635346,
+                        address:
+                            "Adadiem School Area, near kropo hospital Suame Magazine",
+                        closeTo: "Charity Hospital, near Kropo hospital",
+                        contact: "Davir Kuutsema JohnBosco 0537718219",
+                        hours: "Mon-Fri 9:00am to 6:00pm; Sat 9:00am to 4:00pm",
+                        payment: "Mobile Money, Pre-pay Now",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Kumasi Tafo",
+                        lat: 6.7500293,
+                        lng: -1.6074854,
+                        address: "St.Joseph's Catholic Church, Pankrono",
+                        closeTo: "Pankrono",
+                        contact: "Leticia Aidoo 0243884128",
+                        hours: "Mon-Fri 08:30 -18:00; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Ashanti",
+                        name: "Tepa",
+                        lat: 7.005956,
+                        lng: -2.165606,
+                        address:
+                            "TEPA, Opposite Tepa Melcom, (In between franco and ehye nyame nsa cold store), in the same building with Oheneba Hardwares",
+                        closeTo:
+                            "(In between franco and ehye nyame nsa cold store), in the same building with Oheneba Hardwares",
+                        contact: "Emmanuel Quaicoe 0506183868",
+                        hours: "Mon-Fri 08:30 -18:00; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Bono",
+                        name: "Sunyani",
+                        lat: 7.3328883,
+                        lng: -2.3297728,
+                        address: "COCOBOD SUNYANI",
+                        closeTo: "POST OFFICE ROAD",
+                        contact: "Nana Asante 0261988298",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30-15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Bono",
+                        name: "Sunyani Odumase",
+                        lat: 7.369617,
+                        lng: -2.314775,
+                        address:
+                            "Suynani-Odumase, BIGEN FUEL STATION, OPPOSITE THE METHODIST SCHOOL",
+                        closeTo: "Suynani-Odumase",
+                        contact: "Sunyani Odumase 0543539325",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Bono",
+                        name: "Sunyani Tanoso",
+                        lat: 7.267324,
+                        lng: -2.235425,
+                        address:
+                            "opposite tanoso nursing training school ghana",
+                        closeTo: "opposite tanoso nursing training school",
+                        contact: "Richard Asante 0553676017",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Bono",
+                        name: "Wenchi",
+                        lat: 7.734025,
+                        lng: -2.108907,
+                        address: "Wenchi-Techiman Road",
+                        closeTo:
+                            "Opposite Wenchi Roman OR Ebenezer Cooperative credit Union, Wenchi New Market",
+                        contact: "Godfred 0537464356",
+                        hours: "Mon-Fri 08:30am - 18:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Bono East",
+                        name: "Kintampo Postoffice",
+                        lat: 8.0446111,
+                        lng: -1.7298408,
+                        address: "opposite kintampo Ghana post office",
+                        closeTo: "opposite kintampo Ghana post office",
+                        contact: "Dorcas 0545183150",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 09:30-15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Bono East",
+                        name: "Techiman",
+                        lat: 7.5795147,
+                        lng: -1.9471101,
+                        address: "TECHIMAN-SUNYANI ROAD",
+                        closeTo: "TECHIMAN",
+                        contact: "Kingsford 0544930255",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30-15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Bono East",
+                        name: "Techiman Holy Family",
+                        lat: 7.5918853,
+                        lng: -1.9403018,
+                        address: "Mortuary road Techiman(Family hospital)",
+                        closeTo:
+                            "Opposite Techiman Holy Family Hospital Mortuary gate",
+                        contact: "Kennedy 0545183081",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Central",
+                        name: "Agona Swedru Nkubem",
+                        lat: 5.527056,
+                        lng: -0.692823,
+                        address:
+                            "left eye, near home touch guest house, Agona Swedru",
+                        closeTo: "home touch guest house",
+                        contact: "PROPHET KWAME MENSAH 0592974439",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Central",
+                        name: "Agona Swedru area",
+                        lat: 5.531229,
+                        lng: -0.700017,
+                        address: "Agona swedru, opposite CBG BANK",
+                        closeTo: "CBG Bank",
+                        contact: "JENNIFER DADZIE 0543663137",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Central",
+                        name: "Assin Fosu-Atonsu",
+                        lat: 5.6802895,
+                        lng: -1.2656047,
+                        address: "Assin Atonsu",
+                        closeTo:
+                            "Assin Atonsu opposite Obuomma Construction Trade (Poly tanks",
+                        contact: "Edmund Kojo Akuffo 059 781 2932",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Central",
+                        name: "Ataabadze",
+                        lat: 5.104576,
+                        lng: -1.397723,
+                        address:
+                            "Ataabadze Station, close to Akatakyiman Rural Bank near Akatakyiman Rural Bank",
+                        closeTo: "near Akatakyiman Rural Bank",
+                        contact: "Emmanuel Kojo Wiredu 0595092406",
+                        hours: "Mon-Fri 08:30 -18:00; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Central",
+                        name: "Buduburam",
+                        lat: 5.5226213,
+                        lng: -0.4718044,
+                        address:
+                            "Budumburam estate junction,  adjacent chicken man",
+                        closeTo: "near Big Apple buduburam",
+                        contact: "CHARLES BRIGHT ADDO  0556645281",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Central",
+                        name: "Aboom",
+                        lat: 5.1086078,
+                        lng: -1.2525139,
+                        address: "Cape Coast Aboom",
+                        closeTo: "Cape coast,  Adjacent Passport office",
+                        contact: "Maame Yaa 0558544426",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Central",
+                        name: "Cape Coast Yamoransa Total Energy area",
+                        lat: 5.16714,
+                        lng: -1.198682,
+                        address:
+                            "Closer to Yamoransa total energy filing station, cape coast road",
+                        closeTo:
+                            "Closer to Yamoransa total energy filing station, cape coast road",
+                        contact: "Nana Ama 0545112605",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -15:30",
+                        payment: "Payment on delivery",
+                    },
+                    {
+                        province: "Central",
+                        name: "Capecoast Abura",
+                        lat: 5.134774,
+                        lng: -1.277334,
+                        address:
+                            "Abura station road, Opposite chicken man / Pizza man",
+                        closeTo: "Opposite chicken man / Pizza man",
+                        contact: "PROPHET KWAME MENSAH 0503426521",
+                        hours: "Mon-Fri 08:00 -17:00; Sat 09:00 -16:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Central",
+                        name: "Capecoast Pedu",
+                        lat: 5.1293056,
+                        lng: -1.2744444,
+                        address:
+                            "Pedu,Adjacent Hutchland City,Cape Coast,Central",
+                        closeTo: "Adjacent Hutchland City",
+                        contact: "Maurice 0554362755",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Central",
+                        name: "Holy Child SHS CapeCoast",
+                        lat: 5.1169444,
+                        lng: -1.2356944,
+                        address:
+                            "Total filling Station opposite the Regional Coordinating Council, Cape Coast",
+                        closeTo:
+                            "At total filling station close to Holy Child secondary school, near regional coordinating council",
+                        contact: "Perpetual Amissah 0595288527",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 9:30am- 3:30pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Central",
+                        name: "Dunkwa-On-Offin",
+                        lat: 5.968309,
+                        lng: -1.7903209,
+                        address: "Atechem",
+                        closeTo: "Obuasi- station",
+                        contact: "Joseph Sonday 0242969028",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Central",
+                        name: "Kasoa",
+                        lat: 5.5358535,
+                        lng: -0.4190711,
+                        address:
+                            "First floor on the MIC plaza, Behind kasoa second bus stop",
+                        closeTo: "MIC Plaza Building",
+                        contact: "Maud Owusu Fosua 0593972935",
+                        hours: "[Monday – Friday]: 8:30 AM – 6:00 PM; [Saturday]: 9:30 AM – 3:30 PM",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Central",
+                        name: "Kasoa American Junction",
+                        lat: 5.5155812,
+                        lng: -0.4223323,
+                        address:
+                            "BigDreams Driving School, Kasoa Nyanyano Road, American Junction",
+                        closeTo: "BigDreams Driving School",
+                        contact: "Prince Donkor 0557969194",
+                        hours: "Mon - Fri 8:30am - 6:00pm; Sat-Sun 9:30am- 3:30pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Central",
+                        name: "Kasoa CP Road",
+                        lat: 5.531235,
+                        lng: -0.4380558,
+                        address:
+                            "Seller Central Ghana, Main Kasoa- Winneba Road, Cp Junction",
+                        closeTo:
+                            "Seller Central Ghana, Main Kasoa- Winneba Road, Cp Junction",
+                        contact: "Rolanda Apusyine  0256598488",
+                        hours: "Mon-Fri 8:30am to 6:00pm; Fri 9:00am to 3:00pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Central",
+                        name: "Komenda",
+                        lat: 5.0558645,
+                        lng: -1.4986337,
+                        address: "Komendatownship Road ghana",
+                        closeTo: "Opposite the fire service",
+                        contact: "Isaac Mahu Oduro O502444420",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Central",
+                        name: "Mankessim",
+                        lat: 5.2729702,
+                        lng: -1.0200029,
+                        address: "ROYAL STREET MANKESSIM",
+                        closeTo: "Sinclair International School",
+                        contact: "Samuel  Aidoo 0206421575",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat:  09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Central",
+                        name: "Winneba",
+                        lat: 5.382338,
+                        lng: -0.645656,
+                        address:
+                            "Winneba Junction Lorry Station Mankessim Road near Riscop Pharmacy",
+                        closeTo:
+                            "WINNEBA LORRY STATION, PREPAID STORE NEXT TO Riscob Pharmacy",
+                        contact: "REV, BENITO WILLIAM OKORO 050 957 7553",
+                        hours: "Mon - Fri 8:30am - 6:00pm; Sat 8am - 5PM",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Central",
+                        name: "Winneba Beach Road",
+                        lat: 5.350131,
+                        lng: -0.6237382,
+                        address: "Beraku Road",
+                        closeTo: "Ebenezer school",
+                        contact: "Tetteh Ellis Sowah 0506957487",
+                        hours: "Mon-Fri 08:30am - 18:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Adeiso",
+                        lat: 5.797976,
+                        lng: -0.48038,
+                        address:
+                            "Close to Adieso senior high school , opposite mj lounge",
+                        closeTo: "Adieso senior high school",
+                        contact: "Michael Agyinor 0591492349",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Abiriw",
+                        lat: 5.976771,
+                        lng: -0.0921029,
+                        address:
+                            "Acheampong house near Abiriw Market, close to Akropong station and EMTS Unisex Boutique",
+                        closeTo: "Akropong station",
+                        contact:
+                            "MICHAEL AKPLORKPOE / Joshua Kwasi Korley 0242266666",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Akropong",
+                        lat: 5.9711891,
+                        lng: -0.0919999,
+                        address: "Akronpong Koforidua road",
+                        closeTo: "Close to Ojs pub",
+                        contact: "AWUAH DANIELS 0243067600",
+                        hours: "Mon - Fri: 8:30am - 6:00pm; Sat 8:30am - 2pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Akwatia",
+                        lat: 6.0462862,
+                        lng: -0.7970841,
+                        address:
+                            "Akwatia Adjacent the Hospital, St.Dominic Catholic Hospital Akwatia",
+                        closeTo: "Akwatia Adjacent the Hospital,",
+                        contact: "Peter 0592522944",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -16:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Anyinam",
+                        lat: 6.390734,
+                        lng: -0.556167,
+                        address: "Anyinam",
+                        closeTo:
+                            "Anyinam, At Ready Filling Station on Accra-Kumasi main road",
+                        contact: "Loretra 0539171674",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Asamankese",
+                        lat: 5.850224,
+                        lng: -0.653632,
+                        address:
+                            "Asamankese Accra road, Before First Stop Hotel",
+                        closeTo:
+                            "Jamestown Junction Near Jamestown junction washing bay Opposite Sabon Zongo mosque",
+                        contact: "Isaac Mahu Oduro 0503434502",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -16:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Atimpoku",
+                        lat: 6.2367364,
+                        lng: 0.0921696,
+                        address: "3610 Tema Akosombo Road",
+                        closeTo: "close to Maltic Filtered Water",
+                        contact: "JUSTICE ANTWI 0543414132",
+                        hours: "Mon - Fri: 8:30am - 6:00pm; Sat 8:30am - 2pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Koforidua  Effiduase",
+                        lat: 6.104217,
+                        lng: -0.266906,
+                        address:
+                            "Koforidua Effiduase, Opposite Later day Saint Church, near The Apostolic Church",
+                        closeTo: "Near The Apostolic Church",
+                        contact: "Christiana 0537380223",
+                        hours: "Mon-Fri: 08:30 -17:30; Sat: 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Koforidua Adweso",
+                        lat: 6.065997,
+                        lng: -0.244357,
+                        address:
+                            "Two streams lasts top opposite Brentford international academy",
+                        closeTo:
+                            "Adweso, Two streams lasts top opposite Brentford international academy",
+                        contact: "William Frimpong 0541750503",
+                        hours: "Mon-Fri 09:00 -18:00; Sat 09:00 -17:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Off SSNIT–Linda Dor, Koforidua",
+                        lat: 6.0924722,
+                        lng: -0.2608056,
+                        address: "Commercial Avenue Road",
+                        closeTo: "Off SSNIT–Linda Dor, Koforidua.",
+                        contact: "Faustina Boamah 0551418204",
+                        hours: "Mon-Fri 08:30 -17:30  ;  Sat 09:00 -16:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Kpong",
+                        lat: 6.152746,
+                        lng: 0.059197,
+                        address: "Tema - Akosombo Rd",
+                        closeTo:
+                            "Opposite Evangelical Presbyterian Church Kpong",
+                        contact: "Joe Sam 024 700 4027",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:30 -15:30",
+                        payment: "Mobile Money, Pre-pay Now",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Mamfe",
+                        lat: 5.935895,
+                        lng: -0.120522,
+                        address:
+                            "Mamfe - Akuapem, In between Everflow Microfanace and Meditrust diagnostic service",
+                        closeTo:
+                            "In between Everflow Microfanace and Meditrust diagnostic service",
+                        contact: "Emmanuel Quaicoe 0504346273",
+                        hours: "Mon-Fri 08:30 -18:00; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "New Abirem",
+                        lat: 6.342465,
+                        lng: -0.99786,
+                        address: "MTN New Abirem",
+                        closeTo: "OPP. MTN MAIN OFFICE",
+                        contact: "Moses Arthur 543975613",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 8:30am - 2pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Nkawkaw Hotel Junction",
+                        lat: 6.5558822,
+                        lng: -0.7798076,
+                        address:
+                            "Nkawkaw Hotel Junction-Below Republic FM building. Nkawkaw, Eastern",
+                        closeTo:
+                            "Nkawkaw Hotel Junction-Below Republic FM building.",
+                        contact: "Kwabena Adongo 0544334783",
+                        hours: "Mon - Fri: 8:30am - 6:00pm; Sat 8:30am - 2pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Nkawkaw Nanchia",
+                        lat: 6.538128,
+                        lng: -0.770562,
+                        address: "Y PLAZA, Agyakwa Hospital",
+                        closeTo:
+                            "Y PLAZA, Agyakwa Hospital, Nanchia,close to achievers healthcare services",
+                        contact: "Jane 0551545316",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Nsawam",
+                        lat: 5.8131588,
+                        lng: -0.3553209,
+                        address:
+                            "Nsawam Cargo Station. MTN Community Shop, opposite Jodorf Foods",
+                        closeTo:
+                            "Nsawam Cargo Station. MTN Community Shop, opposite Jodorf Foods",
+                        contact: "Bernard Baffoe 0544336170",
+                        hours: "Mon - Fri: 8:30am - 6:00pm; Sat 8:30am - 2pm",
+                        payment:
+                            "Pre-pay Now, Payment on delivery, Mobile Money",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Nsawam Doboro",
+                        lat: 5.7813251,
+                        lng: -0.3368839,
+                        address:
+                            "Nsawam Doboro, Near Doboro information center and close to Blue Skies Company",
+                        closeTo: "Jumia Pickup Station Nsawam Doboro",
+                        contact: "Justice Nana Donkor 053 745 5911",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Nsawam PWD",
+                        lat: 5.814073,
+                        lng: -0.344001,
+                        address:
+                            "Near PWD quarters,Wofapaye Market, Nsawam , hospital road",
+                        closeTo: "Near PWD quarters,Wofapaye Market, Nsawam",
+                        contact: "Devine 0547108746",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Odumase",
+                        lat: 6.1385752,
+                        lng: 0.0051067,
+                        address: "SOMANYA - KPONG HIGHWAY",
+                        closeTo: "OPPOSITE ODUMASE STATION",
+                        contact: "Stephen Sebodzi 0546228888",
+                        hours: "Mon - Fri: 8:30am - 6:00pm; Sat 8:30am - 2pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Osino",
+                        lat: 6.3494167,
+                        lng: -0.4862778,
+                        address: "Nanatel office Osino",
+                        closeTo:
+                            "Nanatel Office in front of Remnant School, Kumasi Highway ,Osino",
+                        contact: "EMMANUEL OBENG APPAH 0248274727",
+                        hours: "Mon - Friday:8:30am - 6:00pm; Sat 8:30am - 2pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Suhum",
+                        lat: 6.0375,
+                        lng: -0.4476111,
+                        address: "Unicom Filling Station, near MTN Office.",
+                        closeTo: "Unicom Filling Station, near MTN Office.",
+                        contact: "ROBERT MIDODZI  0241377171",
+                        hours: "Mon - Fri: 8:30am - 6:00pm; Sat 8:30am - 2pm",
+                        payment: "Mobile Money, Pre-pay Now",
+                    },
+                    {
+                        province: "Eastern",
+                        name: "Suhum Ageis Filling",
+                        lat: 6.037713,
+                        lng: -0.452777,
+                        address:
+                            "Suhum, Aegis Filling Station, opposite landmark Chapel Int , Nana Kwame Obeng street,",
+                        closeTo:
+                            "Aegis Filling Station, opposite landmark Chapel Int.",
+                        contact: "David and Jennifer 0554374843",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Abelemkpe",
+                        lat: 5.6114782,
+                        lng: -0.2249745,
+                        address: "OSABU STREET Abelemkpe",
+                        closeTo: "MARWAKO FAST FOOD",
+                        contact: "Richard Dogbe  0574027429",
+                        hours: "Mon-Fri: 8:30am - 6:00pm; Sat: 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Ablekuma",
+                        lat: 5.6294324,
+                        lng: -0.32695,
+                        address:
+                            "Papaye off CP Road, opposite Koan Fuel Station, Ablekuma.",
+                        closeTo: "Papaye",
+                        contact: "Ebenezer Kofi Adjei  0207762181/0550608132",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 9:30am- 5:00pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Ada Kasseh",
+                        lat: 5.895956,
+                        lng: 0.519184,
+                        address: "Accra-Aflao road.",
+                        closeTo: "Opposite Soccer Bet Center Kasseh",
+                        contact: "Etornam Magdalene +233 0201784623",
+                        hours: "Mon-Fri 08:30am - 18:00pm; Sat 9:30am- 4:00pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Adabraka",
+                        lat: 5.5606357,
+                        lng: -0.2114581,
+                        address: "Accra, Adabraka, close to Champion Bustop",
+                        closeTo: "Champion Bus Stop",
+                        contact: "William Agbanavor 0244286008/0243754554",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 9:30am- 3:30pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Adenta Lotto Kiosk",
+                        lat: 5.7062058,
+                        lng: -0.1524093,
+                        address:
+                            "Adenta Lotto kiosk, Lame Dwaahe, Opposite Reservoir",
+                        closeTo: "At DSTV in Adenta (CADMUS), close to CAC",
+                        contact: "Justice-Cadmus Electronics Ltd 030 255 7482",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Ashaiman Afariwaa",
+                        lat: 5.710674,
+                        lng: -0.014542,
+                        address: "Afariwaa off Michel Camp Road",
+                        closeTo: "Opposite Karibel International School",
+                        contact: "Justice Amoako Obiri 0201703916",
+                        hours: "Mon-Fri 08:00 -18:00; Sat 08:00 -17:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Airport",
+                        lat: 5.6040563,
+                        lng: -0.1775723,
+                        address:
+                            "SSNIT Emporium building, ground floor behind National Communication Authority (NCA), Airport City.",
+                        closeTo: "SSNIT Emporium building",
+                        contact: "Texmy Ghana Limited 0555799790",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Amasaman Cemetery Road",
+                        lat: 5.707077,
+                        lng: -0.3068,
+                        address: "Cemetary Road 1st Junction Amasaman",
+                        closeTo: "Cemetary Road 1st Junction",
+                        contact:
+                            "Elizabeth Achiaa/Sylvester Fenteng 0551929213",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Amrahia",
+                        lat: 5.759847,
+                        lng: -0.145794,
+                        address: "Amrahia Baron TAKMOS ENT",
+                        closeTo: "TAKMOS ENT near IRIDAK ROOFINGCOMPANY",
+                        contact: "AMOS KOJO TAWIAH 0201504976/0240637888",
+                        hours: "Mon-Fri: 8:30am - 6:00pm; Sat:  09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Ashaiman Lebanon",
+                        lat: 5.7127003,
+                        lng: -0.0490722,
+                        address: "Aegis Gas Station Lebanon school junction",
+                        closeTo: "Aegis Gas Station Lebanon school junction",
+                        contact: "Eugenia Dzirakor +233544616443",
+                        hours: "Mon - Fri 8:30am - 6:00pm; Sat 9:30am- 3:30pm.",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Kanewu 23",
+                        lat: 5.682067,
+                        lng: -0.0727325,
+                        address: "main community 23 road",
+                        closeTo: "Near King Solomon Taxi Rank",
+                        contact: "Kwame (pawk) +233597206010",
+                        hours: "9:00am to 6:00pm; 8:00am to 4:00pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Ashaiman Zenu-Atadeka",
+                        lat: 5.726816,
+                        lng: -0.061435,
+                        address: "PETUA STREET",
+                        closeTo: "NEAR LUCKY OIL FILLING STATION",
+                        contact: "CHARLES DJRAKEY 0244808016",
+                        hours: "Mon-Fri 9:00am to  6:00pm; Fri- 9:30am to 3:30pm",
+                        payment: "Mobile Money, Pre-pay Now",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Ashongman Estate area",
+                        lat: 5.687088,
+                        lng: -0.231236,
+                        address:
+                            "Ashongman Estate, Atomic Hills Estate Around Community Hospital",
+                        closeTo:
+                            "Opposite Jazz Hotel, Ashongman Estate, Atomic Hills Estate Around Community Hospital",
+                        contact: "Kimberly Victoria Quaicoe 0244454031",
+                        hours: "Mon-Fri 08:30 -18:00; Sat 09:00 -16:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Spintex Coastal",
+                        lat: 5.6358505,
+                        lng: -0.1020269,
+                        address: "coastal junction Adjacent Kpogas furniture",
+                        closeTo: "coastal junction Adjacent Kpogas furniture",
+                        contact: "Dzifa W Agbo  020 446 4689",
+                        hours: "Mon - Fri: 8:30am - 6:00pm; Sat: 10:00am- 4:00pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "North Industrial",
+                        lat: 5.6983552,
+                        lng: 0.0065536,
+                        address: "Otublohum Rd, Accra",
+                        closeTo: "Adjacent Melcom Plus Shopping Mall",
+                        contact: "Benedicta 0540131073",
+                        hours: "Monday - Friday from 09:00 AM to 06:00 PM; Saturdays from 09:00 AM to 03:00 PM",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Dansoman Last stop",
+                        lat: 5.5324545,
+                        lng: -0.2652553,
+                        address: "kofi ne Ama, Adjacent the The Boyz ECG shop",
+                        closeTo:
+                            "kofi ne Ama.Adjacent the The Boyz ECG shop Dansoman",
+                        contact: "Patrick Mawuli 0555898567",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 9:30am- 5:00pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Dansoman Roundabout",
+                        lat: 5.5564272,
+                        lng: -0.2641631,
+                        address: "Opp. ABSA Bank, Dansoman",
+                        closeTo:
+                            "Dansoman roundabout off Easmon Rd. Opp. ABSA Bank, Dansoman",
+                        contact: "Belinda  Puplampu 053 051 2042",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 9:00am- 6:00pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Mataheko, Accra",
+                        lat: 5.5643556,
+                        lng: -0.2401472,
+                        address: "Jonkobri Street",
+                        closeTo:
+                            "Adjacent Kaneshie West 1 Gov't School close to Lucky Herbal",
+                        contact: "Luumva Laryea 0594231901/0542096960",
+                        hours: "Mon-Fri 08:30am - 18:00pm; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Dodowa",
+                        lat: 5.8772184,
+                        lng: -0.1046599,
+                        address:
+                            "Memento Eye Center, Near Simple Sunflower Lodge, Adenta Street, Dodowa.",
+                        closeTo:
+                            "Memento Eye Center, Near Simple Sunflower Lodge, Dodowa.",
+                        contact: "Mavis 0541556789",
+                        hours: "Mon-Fri 08:30 -18:00; Sat 09:30 -15:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Dome",
+                        lat: 5.6508408,
+                        lng: -0.239794,
+                        address:
+                            "Saint Johns - Dome - Kwabenya - Brekusu Road 234 (Close to In God we trust)",
+                        closeTo: "Close to In God we trust",
+                        contact: "Raphael 0536085754",
+                        hours: "Mon-Fri 08:30am - 18:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "American House",
+                        lat: 5.647995,
+                        lng: -0.151887,
+                        address: "JRXX+66P, La-Bawaleshi Rd, Accra",
+                        closeTo: "Same building with Frankies Street Shawarma",
+                        contact: "Delali Abielekpor 0531006554",
+                        hours: "[Monday – Friday]: 8:30 AM – 6:00 PM; [Saturday]: 9:30 AM – 3:30 PM",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Gbetsele Junction-Goshen",
+                        lat: 5.7480301,
+                        lng: -0.0119775,
+                        address: "close to GB Plaza",
+                        closeTo: "GB Plaza Gbetsele",
+                        contact: "Mabel Sarpong 0531018247",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -14:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Haatso",
+                        lat: 5.6674292,
+                        lng: -0.2100518,
+                        address: "the Haatso total filling station.",
+                        closeTo: "the Haatso total filling station.",
+                        contact: "Alberta Klevor 0556024085",
+                        hours: "Mon-Fri: 8:30am - 6:00pm; Sat: 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Kwabenya",
+                        lat: 5.6832299,
+                        lng: -0.2458924,
+                        address: "Kwabenya breku road ( SEFA SHOP)",
+                        closeTo: "SEFA SHOP",
+                        contact: "Alberta Sefa 0544582725",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Lakeside",
+                        lat: 5.7022831,
+                        lng: -0.1362416,
+                        address: "Global Suites Apartment street",
+                        closeTo: "Opposite TnH Collections",
+                        contact: "Emmanuel 0531028688",
+                        hours: "Mon-Fri 08:30am - 18:00pm; Sat 10:00 -2:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Lapaz",
+                        lat: 5.605728,
+                        lng: -0.248011,
+                        address: "Berima Nkwan junction",
+                        closeTo:
+                            "Tobinco pharmaceutical/ priority insurance warehouse area",
+                        contact: "Jennifer 0531028678",
+                        hours: "Mon-Fri 08:30am - 18:00pm; Sat 10:00 -2:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Jumia Pickup station Legon Campus",
+                        lat: 5.6465611,
+                        lng: -0.1966924,
+                        address: "MENSAH SARBAH HALL ANNEX B, Legon Campus",
+                        closeTo: "Mensah Sarbah Hall Annex B",
+                        contact: "Legon 0506879146",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Mallam Area",
+                        lat: 5.575397,
+                        lng: -0.289757,
+                        address: "Mallam (close to the station )",
+                        closeTo:
+                            "Close to geo dee ventures or Melcom and Mallam station",
+                        contact: "Esther Aryee 0598862268",
+                        hours: "Mon-Fri 08:30 am -5:30 pm ; Sat 09:00 am -16:00 pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Mamobi",
+                        lat: 5.5902215,
+                        lng: -0.2014587,
+                        address:
+                            "Mamobi Mamobi, Behind Kotobaabi Government School and Adjacent Mamobi General Hospital",
+                        closeTo:
+                            "Behind Kotobaabi Government School and Adjacent Mamobi General Hospital",
+                        contact: "Emmanuel Quaicoe 0241229034",
+                        hours: "Mon-Fri 08:30 -18:00; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Mamprobi",
+                        lat: 5.5361317,
+                        lng: -0.2378878,
+                        address: "15 Eduardo Mohdlana St. Mamprobi 15",
+                        closeTo: "Adj. Sempe Cluster of Schools",
+                        contact: "MICAH LEONIDAS JOHN 0537322345",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Nima",
+                        lat: 5.5841103,
+                        lng: -0.1979021,
+                        address: "Nima, Opposite CBG Bank, Accra",
+                        closeTo: "CBG Bank",
+                        contact: "Yussifu Issaka 0558199928",
+                        hours: "Mon - Fri 8:30am - 6:00pm; Sat-Sun 9:30am- 3:30pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "North Kaneshie",
+                        lat: 5.5879735,
+                        lng: -0.233082,
+                        address:
+                            "Linxgate Venture Next to Kin-Ada Pharmacy North Kaneshie Accra Holy Trinity Hospital Junction",
+                        closeTo:
+                            "Linxgate Venture Next to Kin-Ada Pharmacy North Kaneshie Accra Holy Trinity Hospital Junction",
+                        contact: "Edmund Kojo Akuffo 0242307511",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Nungua",
+                        lat: 5.611751,
+                        lng: -0.08144,
+                        address:
+                            "Near Nii Afotey Junction on Buade Road, close to Big Ben Home",
+                        closeTo:
+                            "Near Nii Afotey Junction on Buade Road, close to Big Ben Home",
+                        contact: "Emmanuel 0531032101",
+                        hours: "Mon-Fri 08:30am - 18:00pm; Sat  9:00am to 3:00pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Ofankor Barrier",
+                        lat: 5.6585625,
+                        lng: -0.2658125,
+                        address: "Achimota-Nsawam main road",
+                        closeTo: "Close to the Ofankor Barrier Police Station",
+                        contact: "Comfort Baisel 0556537579",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Osu",
+                        lat: 5.5531116,
+                        lng: -0.1826346,
+                        address: "Opposite Christian Council, Lokko Rd, Accra",
+                        closeTo: "OPPOSITE CHRISTIAN COUNCIL, OSU",
+                        contact: "Sandra Sai  0593997143",
+                        hours: "8:30am-5:30pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Pantang",
+                        lat: 5.713454,
+                        lng: -0.185976,
+                        address:
+                            "Pantang P&T Junction, Next to Body and Hair Parlor Accra",
+                        closeTo:
+                            "Pantang P&T Junction, Next to Body and Hair Parlor Accra",
+                        contact: "Sharon Amy Kwadjo 0257868877",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Pokuase",
+                        lat: 5.6838611,
+                        lng: -0.2802222,
+                        address:
+                            "Pokuase, Ist sharp curve on the Ablekuma road from the trotro station",
+                        closeTo:
+                            "On the Pokuase cross road curve under the Pokuase Interchange.",
+                        contact: "Justice  0531028685",
+                        hours: "Mon-Fri 08:30am - 18:00pm; Sat 10:00 -2:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Prampram",
+                        lat: 5.734767,
+                        lng: 0.102832,
+                        address: "ET Mensah street Prampram",
+                        closeTo: "Torrid Filling Station",
+                        contact: "Agent 0551200120",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Sakumono",
+                        lat: 5.6278032,
+                        lng: -0.0667495,
+                        address: "Jupiter Road ( FM Bus stop) Sakumono",
+                        closeTo: "FM sawmill",
+                        contact: "Margaret Agbebiamu 0242291411",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Off Weekend",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Sege",
+                        lat: 5.875654,
+                        lng: 0.360304,
+                        address: "Sege-Battor Road, Near Tristar Pharmacy",
+                        closeTo: "Opposite Taxi Station",
+                        contact: "Amos Hattoh 053 696 1720",
+                        hours: "Mon-Fri 08:30am - 18:00pm; Sat: 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Spintex Nii martey Tsuru",
+                        lat: 5.6248333,
+                        lng: -0.1520278,
+                        address: "Nii martey Tsuru Street, Spintex",
+                        closeTo:
+                            "Opposite Fountain of Glory Assemblies of God Church",
+                        contact: "Priscilla Owusu 054 882 1057",
+                        hours: "[Monday – Friday]: 8:30 AM – 6:00 PM; [Saturday]: 9:30 AM – 3:30 PM",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Taifa",
+                        lat: 5.652546,
+                        lng: -0.250373,
+                        address:
+                            "OPPOSITE THE GOIL FILLING STATION NORWAY JUNCTION",
+                        closeTo: "OPPOSITE THE GOIL FILLING STATION",
+                        contact: "Faustina Owusu 0501811505",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Tantra Hill",
+                        lat: 5.6384535,
+                        lng: -0.2603206,
+                        address:
+                            "tantra Hill , addisshop enterprise 17 Nii Allotey Avenue , Tantra Golden door Taxi Rank",
+                        closeTo: "-",
+                        contact: "Addison Ameworlor 0544953218",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Tema Comm.12 Station",
+                        lat: 5.6709637,
+                        lng: -0.031678,
+                        address: "Tema Community 12,  Hospital Rd Link",
+                        closeTo: "adjacent  Assemblies of God Church",
+                        contact: "Judith 0550533872",
+                        hours: "8:30am-5:30pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Tema Comm.12 Station",
+                        lat: 5.6709637,
+                        lng: -0.031678,
+                        address: "Tema Community 12,  Hospital Rd Link",
+                        closeTo: "adjacent  Assemblies of God Church",
+                        contact: "Judith 0550533872",
+                        hours: "8:30am-5:30pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Tema Comm.12 Station",
+                        lat: 5.6709637,
+                        lng: -0.031678,
+                        address: "Tema Community 12,  Hospital Rd Link",
+                        closeTo: "adjacent  Assemblies of God Church",
+                        contact: "Judith 0550533872",
+                        hours: "8:30am-5:30pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Teshie Guest Inn Bus Stop",
+                        lat: 5.585379,
+                        lng: -0.106278,
+                        address:
+                            "Teshie, BUILDING OF TSIE WE FAMILY CUSTOMARY LAND SECRETARIAT (Guest Inn bus stop), Gonno to Mobile main road at Guest Inn bus stop, Teshie Market area",
+                        closeTo:
+                            "BUILDING OF TSIE WE FAMILY CUSTOMARY LAND SECRETARIAT (Guest Inn bus stop)",
+                        contact: "Josephine 0256827071",
+                        hours: "Mon  - Fri 8:30am - 5:30pm; Sat. 9am - 4pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Tsopoli",
+                        lat: 5.834103,
+                        lng: 0.215352,
+                        address: "Accra - Afloa Rd Tsopoli , ASEDA HILLS PLAZA",
+                        closeTo: "Afloa Rd Tsopoli , ASEDA HILLS PLAZA",
+                        contact: "Naomi Nuekie Zutah 0257117597",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "UPSA",
+                        lat: 5.6674581,
+                        lng: -0.1648699,
+                        address: "Westland Blvd Road",
+                        closeTo: "Madina - Rawlings Circle",
+                        contact: "Harris Ibrahim 020-393-5135",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Greater Accra",
+                        name: "Weija Old Barrier",
+                        lat: 5.5525903,
+                        lng: -0.3278266,
+                        address:
+                            "Old Barrier beside Eddy's Pizza off Winneba Road",
+                        closeTo: "Opposite Phaster Concrete.",
+                        contact: "Derrick Agyei Gyamfi 0557713359",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 9:30am- 5:00pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "North East",
+                        name: "Walewale",
+                        lat: 10.34902,
+                        lng: -0.79809,
+                        address: "Bolgatanga Tamale Highway",
+                        closeTo:
+                            "Directly opposite Walewale police station, along the Bolga-Tamale Highway",
+                        contact: "Bawah Mahama Yidana 0208283521",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Northern",
+                        name: "Bimbilla",
+                        lat: 8.8495148,
+                        lng: 0.0468038,
+                        address: "Bimbila Close to Bead FM",
+                        closeTo: "Between №3 Primary School and Bead FM",
+                        contact: "William Frimpong 0599461027",
+                        hours: "Mon-Fri 9:00am to 6:00pm; Sat 9:00am to 4:00pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Northern",
+                        name: "Kpandai",
+                        lat: 8.4709732,
+                        lng: -0.0100088,
+                        address: "Binda- Kete Krachi Road kpandai",
+                        closeTo: "Adjacent Oyoko BNJ ventures",
+                        contact:
+                            "Eli Kwablah(Pawk Solutions) 266552155 /0555136777",
+                        hours: "Mon-Fri 8:00am to 5:00pm; Sat 8:00am to 5:00pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Northern",
+                        name: "Savelugu",
+                        lat: 9.6167146,
+                        lng: -0.8310932,
+                        address:
+                            "Savelugu Close to Experimental Cluster of Schools",
+                        closeTo:
+                            "Between Kpavila and Experimental Cluster of Schools",
+                        contact: "William Frimpong 0204064201",
+                        hours: "Mon-Fri 9:00am to 6:00pm; Sat- 9:00am to 4:00pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Northern",
+                        name: "Choggu",
+                        lat: 9.417751,
+                        lng: -0.850204,
+                        address: "YaaMusah Building, Choggu, Tamale",
+                        closeTo:
+                            "Opposite Ghana Water Works Lab near Choggu Roundabout",
+                        contact: "Conrad Nugazla 0546110554",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Northern",
+                        name: "Lamashegu",
+                        lat: 9.391708,
+                        lng: -0.851753,
+                        address: "Lamashegu Opposite scab pharmacy",
+                        closeTo: "Around Justice FM and Aziz computer",
+                        contact: "William Frimpong 0595464171",
+                        hours: "Mon-Fri 9:00am to 6:00pm; Sat- 9:00am to 4:00pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Northern",
+                        name: "Tamale Star oil - Kamina",
+                        lat: 9.458933,
+                        lng: -0.845608,
+                        address: "Star Oil filling Station, Kamina",
+                        closeTo: "Kamina More filling station",
+                        contact: "William Frimpong 0541089143",
+                        hours: "Mon-Fri 8:30am to 6:00pm; Sat 9:00am to 5:00pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Northern",
+                        name: "Tamale Vitting SHS",
+                        lat: 9.3927222,
+                        lng: -0.8127222,
+                        address: "Ghana Senior High School Second Ring Road",
+                        closeTo: "Ghana Senior High School",
+                        contact: "RICHARD ATAMBIRE 0556623360",
+                        hours: "Mon-Fri 9:00am to 6:00pm; Sat 9:00am to 4:00pm",
+                        payment: "Mobile Money, Pre-pay Now",
+                    },
+                    {
+                        province: "Northern",
+                        name: "Yendi",
+                        lat: 9.4459834,
+                        lng: -0.006451,
+                        address:
+                            "Naagamni Fuel Station, Yendi-Gushegu Road. Adjacent MTN Old Office.",
+                        closeTo: "Naagamni Fuel Station",
+                        contact: "ABDUL-WAHAB MUBARIK 0241378880",
+                        hours: "Mon - Fri 8:30am - 6:00pm; Sat 9:30am- 3:30pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Oti",
+                        name: "Jasikan",
+                        lat: 7.4062784,
+                        lng: 0.4647196,
+                        address: "CF48+J47 Jasikan",
+                        closeTo: "Assembly Stores.",
+                        contact: "Elorm Atapani 0247779771",
+                        hours: "MON-FRI 8:30am - 6:00pm; 9-4pm",
+                        payment: "Mobile Money, Pre-pay Now",
+                    },
+                    {
+                        province: "Oti",
+                        name: "Kadjeibi",
+                        lat: 7.531749,
+                        lng: 0.476315,
+                        address: "Cocoa Market Road Kajebi Ghana",
+                        closeTo: "Opp. Latex Foam Depot",
+                        contact: "Roebrt Quainoo 546159917",
+                        hours: "Mon - Fri 8:30am - 6:00pm; Sat 8:30am - 2pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Oti",
+                        name: "Kpasa",
+                        lat: 8.4848224,
+                        lng: 0.3146195,
+                        address: "Main Nkwanta - Bimbila Road,Kpasa",
+                        closeTo: "Kpasa",
+                        contact: "Awali Rayan 0245758378 / 0555136777",
+                        hours: "Mon-Fri 9:30am to 6:30pm; Sat 8am to 4pm",
+                        payment: "Mobile Money, Pre-pay Now",
+                    },
+                    {
+                        province: "Oti",
+                        name: "Nkonya-Ntumda",
+                        lat: 7.1519952,
+                        lng: 0.3230285,
+                        address:
+                            "OFF NKONYA - KWAMEKROM ROAD, close to ntumda football park",
+                        closeTo: "Ntumda Presby basic school junction",
+                        contact:
+                            "Gakpo Prosper/ MICHAEL AKPLORKPOE  0542419752 / 246682008",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -16:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Oti",
+                        name: "Nkwanta",
+                        lat: 8.25114,
+                        lng: 0.523613,
+                        address:
+                            "NSANA ZONGO OPPOSITE AMDAWAY FILLING STATION Ghana",
+                        closeTo: "NSANA ZONGO OPPOSITE AMDAWAY FILLING STATION",
+                        contact: "Richard Safori 0543181512",
+                        hours: "Mon - Fri 9:00am - 2:00pm; Sat 8:30am - 2pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Savannah",
+                        name: "Damongo",
+                        lat: 9.0855992,
+                        lng: -1.8098214,
+                        address: "Sawla-Damongo road",
+                        closeTo: "Adjecent the Damongo GCB Bank",
+                        contact: "Northway Damongo 0547506366",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Upper East",
+                        name: "Bolga Estate Station",
+                        lat: 10.76725,
+                        lng: -0.8578333,
+                        address: "Tamale - Bolga Highway",
+                        closeTo: "Opposite Mount Sinai Educational Centre",
+                        contact: "Fuseini Ibrahim 0203342323",
+                        hours: "Mon-Fri 08:00 -18:00; Sat 08:00 -17:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Upper East",
+                        name: "Bolgatanga",
+                        lat: 10.7895703,
+                        lng: -0.8578449,
+                        address: "Bolgatanga Regional Post Office",
+                        closeTo: "Bolga Baba Chief Palace",
+                        contact: "Fuseini Ibrahim 0246941915",
+                        hours: "Mon - Fri 8:30am - 6:00pm; Sat 9:30am- 3:30pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Upper East",
+                        name: "Navorongo",
+                        lat: 10.896407,
+                        lng: -1.091622,
+                        address: "Cinema Palace Road (at prisons headquaters)",
+                        closeTo: "Close to Navrongo Central Prison",
+                        contact: "Uriah Avinash 0200734741",
+                        hours: "Mon-Fri 9:00am to 6:00pm; Sat 9:00am to 4:00pm",
+                        payment: "Mobile Money, Pre-pay Now",
+                    },
+                    {
+                        province: "Upper West",
+                        name: "Hamile",
+                        lat: 11.0010345,
+                        lng: -2.7474604,
+                        address: "Hamile Street,Hamile ghana",
+                        closeTo: "Close to the Hamile Customs Office",
+                        contact: "Abu Fuseini 0241720691",
+                        hours: "Mon - Fri 8:30am - 6:00pm; Sat 8PM- 5PM",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Upper West",
+                        name: "Jirapa",
+                        lat: 10.5461111,
+                        lng: -2.7036944,
+                        address: "Jirapa - Tiboro Road Ghana",
+                        closeTo: "OPPOSITE THE LORRY STATION",
+                        contact: "Mr Maurice 0551014501",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:00 -16:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Upper West",
+                        name: "Nandom",
+                        lat: 10.84903,
+                        lng: -2.75761,
+                        address:
+                            "Nandom - Lambussie Road Nandom Opposite Pastor Welding shop",
+                        closeTo:
+                            "Lambussie Road Nandom Opposite Pastor Welding shop",
+                        contact: "Abu Fuseini 0246218044",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Upper West",
+                        name: "Wa",
+                        lat: 10.0658869,
+                        lng: -2.5133327,
+                        address:
+                            "Ghana, Wa, Dobile - Charia Road, Next to Condition's Residence",
+                        closeTo: "Condition's Residence",
+                        contact: "Conrad Nugazla 0507513113",
+                        hours: "Mon - Fri 8:30am - 6:00pm; Sat 9:30am- 3:30pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Upper West",
+                        name: "Wa Bamahu",
+                        lat: 10.0197943,
+                        lng: -2.4879405,
+                        address: "WA Bamahu Road, near sujuud ventures",
+                        closeTo: "Opposite Blue Hill Hotel",
+                        contact: "Conrad N 0546110418",
+                        hours: "Mon-Fri 09:30 -18:30; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Volta",
+                        name: "Abor",
+                        lat: 6.063976,
+                        lng: 0.871855,
+                        address:
+                            "Abor - Aflao RD , Opposite In My Father's House",
+                        closeTo: "Opposite In My Father's House",
+                        contact: "Theodosia Fuga 0241905428",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Volta",
+                        name: "Aflao",
+                        lat: 6.116905,
+                        lng: 1.1884018,
+                        address: "Main Border Street Aflao",
+                        closeTo: "Adjacent ABii National Savings and Loans",
+                        contact: "PASCHAL KALE 0544336169",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 8:30am - 2pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Volta",
+                        name: "Kpetoe",
+                        lat: 6.5388981,
+                        lng: 0.710174,
+                        address:
+                            "Kpetoe, Few Minutes off from Ceps Academy near Davi's Fuel Station",
+                        closeTo:
+                            "Kpetoe, Few Minutes off from Ceps Academy near Davi's Fuel Station",
+                        contact: "PAWK +233555136777",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Volta",
+                        name: "Akatsi lorry Park",
+                        lat: 6.131302,
+                        lng: 0.797943,
+                        address: "Aho Street, Akatsi",
+                        closeTo: "Adj .Accra Lorry Station",
+                        contact: "John Teye Wayo 241877707",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 8:30am - 2pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Volta",
+                        name: "Anloga Kportorgbe Junction",
+                        lat: 5.795517,
+                        lng: 0.9051021,
+                        address: "Agbana  Anloga District Volta",
+                        closeTo: "Near Progressive Coperative Credit",
+                        contact: "Joshua Korley 0248735542",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 8:30am - 2pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Volta",
+                        name: "Ho Ashigame  ( Ho central market )",
+                        lat: 6.6209511,
+                        lng: 0.4720675,
+                        address:
+                            "Ho central market Volta RegionHo Ashigame  ( Ho central market ) adjacent the Goil filling station",
+                        closeTo: "adjacent the Goil filling station",
+                        contact: "Florence Salitsi 0544816482",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; SAT 8:30am - 2:00pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Volta",
+                        name: "Ho Poly Road",
+                        lat: 6.591968,
+                        lng: 0.470303,
+                        address:
+                            "Ho - Adidome road (close to HO Poly, Opposite Mawuli School)",
+                        closeTo: "Opposite Mawuli School",
+                        contact: "Sylvester Zokli 0244251448",
+                        hours: "Mon-Fri 08:30am - 18:00pm; 8:30am to 2pm on Saturday",
+                        payment: "Mobile Money, Pre-pay Now",
+                    },
+                    {
+                        province: "Volta",
+                        name: "Hohoe A1 Hospital Road",
+                        lat: 7.154258,
+                        lng: 0.475029,
+                        address: "Hospital Road adjacent A1 restaurant Hohoe",
+                        closeTo: "Close to A1 Restaurant",
+                        contact: "Attatsitse Gladstone 0554400070",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; SAT 08:30 - 14:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Volta",
+                        name: "Hohoe-Alabato Junction",
+                        lat: 7.1487883,
+                        lng: 0.4652534,
+                        address: "OFF ACCRA - JASIKAN ROAD- Hohoe Kpoeta",
+                        closeTo: "ALABATO JUNCTION Opposite, HOME BUILDERS",
+                        contact: "John Nartey 0532028499",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -16:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Volta",
+                        name: "Juapong",
+                        lat: 6.251055,
+                        lng: 0.131227,
+                        address: "Juapong to Atimpoku main road",
+                        closeTo: "Close to Royal Apparel",
+                        contact: "Isaac +233 24 700 8412",
+                        hours: "Mon - Sat: 8:30am to 6:00pm; Sun: 9:00am to 4:00pm",
+                        payment: "Mobile Money, Pre-pay Now",
+                    },
+                    {
+                        province: "Volta",
+                        name: "Keta Vui",
+                        lat: 5.8842279,
+                        lng: 0.982465,
+                        address: "Opposite Scoops Pub, Vui-Keta",
+                        closeTo: "Opposite Scoops Pub, Vui-Keta",
+                        contact: "Sedor Janet 0554400366",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 08:30am - 14:00pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Volta",
+                        name: "Kpando",
+                        lat: 6.989664,
+                        lng: 0.29102,
+                        address: "1st Stop beneath Lucky Boy's Building",
+                        closeTo: "CLOSE TO GCB",
+                        contact: "JOSEPH MENSAH 0546337337",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 8:30am - 2pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Volta",
+                        name: "Kpeve",
+                        lat: 6.6842799,
+                        lng: 0.3302748,
+                        address: "KPEVE (close to the market)",
+                        closeTo: "KPEVE (close to the market)",
+                        contact: "JARWIN 0209733300",
+                        hours: "Mon-Tuesday 9:00am to 6:00pm; Sat 8:00am to 4:00pm",
+                        payment: "Mobile Money, Pre-pay Now",
+                    },
+                    {
+                        province: "Volta",
+                        name: "Peki Avetile",
+                        lat: 6.521316,
+                        lng: 0.2268337,
+                        address: "Peki Atile to Peki BLENGO Road",
+                        closeTo: "close to flordem delight",
+                        contact: "Eugene Kwaku Atiase 0543845662",
+                        hours: "Mon-Fri 08:30am - 18:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Volta",
+                        name: "Sogakope",
+                        lat: 6.005002,
+                        lng: 0.609875,
+                        address: "Accra - Aflao main Road",
+                        closeTo: "Aflao main Road close to Williago lodge",
+                        contact: "Eunice Abotsi 0554400101",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 08:30am - 14:00pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Volta",
+                        name: "Vakpo",
+                        lat: 6.855169,
+                        lng: 0.283869,
+                        address: "OFF VAKPO - BOTOKU ROAD",
+                        closeTo: "OPPOSITE VAKPO POST OFFICE",
+                        contact:
+                            "Ofori Godsway / MICHAEL AKPLORKPOE  0539972406 / 246682008",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -16:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western",
+                        name: "Anyaano Mile 32",
+                        lat: 4.899669,
+                        lng: -2.089787,
+                        address:
+                            "AGONA ANYAANO , Mile 32 Customs Barrier  Miemia/Egyambra Junction Rd , Harris Divine healing Church",
+                        closeTo: "Harris Divine healing Church",
+                        contact: "MERCY AYENSU TAWIAH 0556469587",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western",
+                        name: "Agona Nkwanta",
+                        lat: 4.8785556,
+                        lng: -1.9617778,
+                        address: "Agona Nkwanta",
+                        closeTo: "Opposite Westside Educational Complex",
+                        contact: "Obed Tettehfio 0595956636",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western",
+                        name: "Asangrakwa",
+                        lat: 5.8089722,
+                        lng: -2.4398025,
+                        address:
+                            "ASANGRAKWA HOSPITAL JUNCTION OIL FILLING STATION,Asankragwa",
+                        closeTo: "NEAR STAR OIL FILLING STATION",
+                        contact: "PATRAN BUSINESS SOLUTIONS 0536693580",
+                        hours: "Mon-Fri 08:30 - 18:00; Sat 09:30 -15:30",
+                        payment: "Mobile Money, Pre-pay Now",
+                    },
+                    {
+                        province: "Western",
+                        name: "Axim",
+                        lat: 4.889666,
+                        lng: -2.215433,
+                        address: "Near Ayisakro Gas Station Axim",
+                        closeTo: "Axim (Near Ayisakro Gas Station)",
+                        contact: "Daniel Armah 0242834385",
+                        hours: "Mon-Fri 08:30am - 18:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western",
+                        name: "Bawdie",
+                        lat: 5.634068,
+                        lng: -2.099567,
+                        address:
+                            "BAWDIE , TOP CLASS HOTEL ANNEX ,OPPOSITE THE GAS STATION",
+                        closeTo: "OPPOSITE THE GAS STATION",
+                        contact: "TAYLOR 0547005417",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -16:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western",
+                        name: "Bogoso Enikokon area",
+                        lat: 5.5555752,
+                        lng: -2.0047066,
+                        address: "Bogoso Enikokon Near The Shining Star Hotel",
+                        closeTo: "Shining Star Hotel",
+                        contact: "Emmanuel Yankey 0542567470",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western",
+                        name: "Jumia Pickup station Bogoso",
+                        lat: 5.5686481,
+                        lng: -2.0146819,
+                        address:
+                            "Bogoso( MAIN LORRY STATION OPPOSITE MTN OFFICE)",
+                        closeTo: "MAIN LORRY STATION OPPOSITE MTN OFFICE",
+                        contact: "Issah Abdul Fatawu 0242573458",
+                        hours: "Mon-Fri: 8:30am - 6:00pm; Sat: 09:30 -15:30",
+                        payment: "Mobile Money, Pre-pay Now",
+                    },
+                    {
+                        province: "Western",
+                        name: "Esiama",
+                        lat: 4.940507,
+                        lng: -2.357991,
+                        address: "Close to royal beach hotel",
+                        closeTo: "adjacent Esiama cemetery",
+                        contact: "Cosmos 055 728 6617",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western",
+                        name: "Huni Valley Road",
+                        lat: 5.4706389,
+                        lng: -1.9153889,
+                        address: "Tarkwa Agyempomaa road",
+                        closeTo: "Close to huni valley health centre",
+                        contact: "Hannah Eshun 0244894711",
+                        hours: "Mon-Fri 08:30 - 18:00; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western",
+                        name: "Inchaban",
+                        lat: 4.9845731,
+                        lng: -1.6821922,
+                        address: "BENEDICT HOSPITAL INCHABAN, OPPOSITE SEKDEAF",
+                        closeTo:
+                            "Benedict Hospital Inchaban. Inchaban Hills, opp. SEKDEAF",
+                        contact: "Atapani Samuel 0547204973",
+                        hours: "Mon-Fri 8:30am - 6:00pm; closed on weekends",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western",
+                        name: "Prestea area",
+                        lat: 5.4452472,
+                        lng: -2.1313609,
+                        address:
+                            "Prestea Sankofa Police Check UP Point ,Opposite Prestea Mining betweeen the poice station and the mining entrance",
+                        closeTo: "Prestea Sankofa",
+                        contact: "Morris P.K Churcher 0554942200",
+                        hours: "Mon-Fri 08:30 -19:00; Sat 09:00 -17:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western",
+                        name: "Ituma Shama",
+                        lat: 5.023163,
+                        lng: -1.666802,
+                        address: "Harmony Driving Acadamy,Nchaaban/Shama Road",
+                        closeTo: "Near Ituma Shell Filling Stattion",
+                        contact: "George Quarmyne 0598099403",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -16:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western",
+                        name: "Anaji",
+                        lat: 4.9251111,
+                        lng: -1.7837222,
+                        address:
+                            "E. Akuffo Addo Road, Catfish Lane, Anaji, Takoradi.",
+                        closeTo: "Close to China Mall",
+                        contact: "Isaac Mahu Oduro 0246747975",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western",
+                        name: "BU-Takoradi",
+                        lat: 4.948712,
+                        lng: -1.744433,
+                        address: "Spindle scoop,fijai/BU road",
+                        closeTo: "close to Amaja Lodge, fijai Road",
+                        contact: "Ivy Eshun 0598388815",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western",
+                        name: "Effiakuma",
+                        lat: 4.9156682,
+                        lng: -1.7606421,
+                        address: "Newsite Pentecost Junction Close to TTU",
+                        closeTo: "Newsite Pentecost",
+                        contact: "Isaac Oduro Mahu 0246747975",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 9:30am - 3:30pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western",
+                        name: "Lagos Town",
+                        lat: 4.912556,
+                        lng: -1.777472,
+                        address: "35 Kwamina Ntsin Ave, Takoradi",
+                        closeTo: "Super Hideout Bakery,Kwamena Ntsil Avenue",
+                        contact: "Josephine  Danyie 0208225297",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:00-15:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western",
+                        name: "Sekondi Bakaekyir",
+                        lat: 4.936034,
+                        lng: -1.726026,
+                        address:
+                            "OLD GHANA WATER PAY POINT, SEKONDI BAKAEKYIR SEKONDI, ST. ANNES JHS JUNCTION, OPP. RADIO SILVER.",
+                        closeTo:
+                            "OLD GHANA WATER PAY POINT, SEKONDI BAKAEKYIR SEKONDI, ST. ANNES JHS JUNCTION, OPP. RADIO SILVER.",
+                        contact: "PHILIP AMISSAH 0530501274",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -16:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western",
+                        name: "TTU",
+                        lat: 4.9095,
+                        lng: -1.7582192,
+                        address: "R.S. BLAY Link Takoradi",
+                        closeTo: "TAKORADI TECHNICAL UNIVERSITY",
+                        contact: "DEBORAH 0532997985",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Saturday  10am- 4pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western",
+                        name: "Takoradi Kwesimintsim",
+                        lat: 4.9125817,
+                        lng: -1.7861467,
+                        address:
+                            "Kwame Nkrumah blvd, Takoradi to Agona Nkwante Rd",
+                        closeTo: "opposite stomach smile",
+                        contact: "DAVID Kofi WAYO 0543052647",
+                        hours: "Mon-Fri 8:30am - 6:00pm; 9:30 am-3:30pm",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western",
+                        name: "Jumia Pick Up Station Tarkwa Teberebie",
+                        lat: 5.270076,
+                        lng: -2.007672,
+                        address: "Tarkwa Teberebie Junction",
+                        closeTo: "Near Patty Beauty Kits and Spa",
+                        contact: "Dela Abena Larbu 0593327041",
+                        hours: "Mon-Fri 8:30am - 6:00pm; Sat 09:30 -15:30",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western",
+                        name: "Tarkwa Afuanta",
+                        lat: 5.284132,
+                        lng: -2.00507,
+                        address:
+                            "Main Afuanta Street Tarkwa, Opposite Lonji International Hotel",
+                        closeTo: "Opposite Lonji International Hotel",
+                        contact: "Zainab 0541078816",
+                        hours: "Mon-Fri 08:30 -17:30; Sat 09:00 -16:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western",
+                        name: "Tarkwa Market circle",
+                        lat: 5.2978268,
+                        lng: -1.9916517,
+                        address: "TARKWA MARKET CIRCLE ( Near STC BUS TERMINAL",
+                        closeTo: "Near STC BUS TERMINAL",
+                        contact: "Samuel Nana Amankwa 0509194475",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; Sat 09:30 -15:30",
+                        payment: "Pre-pay Now, Mobile Money",
+                    },
+                    {
+                        province: "Western",
+                        name: "Tarkwa-Akoon Road",
+                        lat: 5.3124031,
+                        lng: -1.9940213,
+                        address:
+                            "Opposite Alimex Gas Filling Station, Tarkwa-Akoon Road",
+                        closeTo:
+                            "Opposite Alimex Gas Filling Station, Tarkwa-Akoon Road",
+                        contact: "Hannah Eshun 0244894711",
+                        hours: "Mon-Fri 08:30 - 18:00; Sat 08:00-15:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                    {
+                        province: "Western North",
+                        name: "Bibiani",
+                        lat: 6.453291,
+                        lng: -2.312473,
+                        address: "Estate Road (opposite Sinapi Aba) Bibiani",
+                        closeTo: "Close to Pieces Gh",
+                        contact: "Wisdom Kemawor 0544817075",
+                        hours: "Mon-Fri: 08:30am - 18:00pm; SAT 08:30 - 14:00",
+                        payment:
+                            "Mobile Money, Pre-pay Now, Payment on delivery",
+                    },
+                ];
+
+                // ----- 统计省份 -----
+                const provinceSet = new Set(locations.map((p) => p.province));
+                document.getElementById("totalCount").textContent =
+                    locations.length;
+                document.getElementById("provinceCount").textContent =
+                    provinceSet.size;
+
+                // ----- 初始化地图 -----
+                const map = L.map("map", {
+                    center: [7.5, -1.5],
+                    zoom: 7,
+                    zoomControl: true,
+                    attributionControl: false,
+                });
+
+                // 暗色底图
+                L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                    maxZoom: 19,
+                    attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>',
+                }).addTo(map);
+
+
+
+                // ----- 创建信息窗口 -----
+
+
+                // ----- 生成标记 (红色水滴) -----
+                // 自定义红色水滴图标
+                const redDropIcon = L.divIcon({
+                    className: 'custom-marker-icon',
+                    html: '<svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg"><path d="M14 26C8 26 3 21 3 15C3 9 8 4 14 4C20 4 25 9 25 15C25 21 20 26 14 26Z" fill="#ff3b3b" stroke="white" stroke-width="1.2"/><circle cx="14" cy="15" r="7" fill="white" fill-opacity="0.3"/><circle cx="14" cy="15" r="4" fill="white" fill-opacity="0.15"/></svg>',
+                    iconSize: [28, 28],
+                    iconAnchor: [14, 26],
+                    popupAnchor: [0, -26],
+                });
+
+                // 存储所有标记 (用于重置视图)
+                const markers = [];
+
+                locations.forEach((item) => {
+                    const marker = L.marker([item.lat, item.lng], {
+                        icon: redDropIcon,
+                        title: item.name,
+                    }).addTo(map);
+                    marker.data = item;
+
+                    // --- popup 内容生成 (复用) ---
+                    function _popupContent(info) {
+                        const c = info.closeTo && info.closeTo !== "-"
+                            ? `<div class="detail-row"><i class="fas fa-location-dot"></i> ${info.closeTo}</div>` : "";
+                        const t = info.contact
+                            ? `<div class="detail-row"><i class="fas fa-phone"></i> <span class="contact">${info.contact}</span></div>` : "";
+                        const h = info.hours
+                            ? `<div class="detail-row"><i class="fas fa-clock"></i> ${info.hours}</div>` : "";
+                        const p = info.payment
+                            ? `<div class="detail-row"><i class="fas fa-credit-card"></i> ${info.payment}</div>` : "";
+                        return `<div class="info-window">
+                            <h3>${info.name} <span class="province-tag">${info.province}</span></h3>
+                            <div class="addr">${info.address}</div>${c}${t}${h}${p}</div>`;
+                    }
+
+                    // 悬停：打开 popup
+                    marker.on("mouseover", function() {
+                        clearTimeout(_popupTimer);
+                        marker.bindPopup(_popupContent(marker.data)).openPopup();
+                    });
+
+                    // 点击：固定显示（移出不关）
+                    marker.on("click", function(e) {
+                        clearTimeout(_popupTimer);
+                        if (!marker.isPopupOpen()) {
+                            marker.bindPopup(_popupContent(marker.data)).openPopup();
+                        }
+                        L.DomEvent.stopPropagation(e);
+                    });
+
+                    markers.push(marker);
+                });
+
+                // ----- 全局 popup 关闭逻辑 (通过 mousemove 判断鼠标位置) -----
+                var _popupTimer = null;
+                // 点击地图空白区域关闭所有 popup
+                map.on("click", function() { markers.forEach(function(m) { m.closePopup(); }); });
+                // mousemove 实时判断：鼠标在标记或 popup 上 → 保持；否则 → 延迟关闭
+                document.getElementById("mapContainer").addEventListener("mousemove", function(e) {
+                    var t = e.target;
+                    // 鼠标在网点标记的图标上 → 保持
+                    if (t.closest && t.closest(".custom-marker-icon")) {
+                        clearTimeout(_popupTimer);
+                        return;
+                    }
+                    // 鼠标在 popup 卡片上 → 保持
+                    if (t.closest && t.closest(".leaflet-popup")) {
+                        clearTimeout(_popupTimer);
+                        return;
+                    }
+                    // 鼠标不在标记也不在 popup 上 → 延迟关闭
+                    if (!_popupTimer) {
+                        _popupTimer = setTimeout(function() {
+                            markers.forEach(function(m) { if (m.isPopupOpen()) m.closePopup(); });
+                            _popupTimer = null;
+                        }, 300);
+                    } else {
+                        // 已经设置了定时器，但鼠标每动一次就重新计时
+                        clearTimeout(_popupTimer);
+                        _popupTimer = setTimeout(function() {
+                            markers.forEach(function(m) { if (m.isPopupOpen()) m.closePopup(); });
+                            _popupTimer = null;
+                        }, 300);
+                    }
+                });
+
+                // ----- 重置视图 (显示所有网点 + 边界) -----
+                function resetView() {
+                    const bounds = L.latLngBounds([[4.73, -3.27], [11.17, 1.19]]);
+                    markers.forEach((m) => bounds.extend(m.getLatLng()));
+                    map.fitBounds(bounds, { padding: [40, 40] });
+                    if (map.getZoom() > 9) {
+                        map.setZoom(9);
+                    }
+                }
+                document
+                    .getElementById("resetViewBtn")
+                    .addEventListener("click", resetView);
+
+                // 初始适应视图
+                setTimeout(resetView, 300);
+
+                // 窗口resize 重新适应
+                let resizeTimer;
+                window.addEventListener("resize", () => {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = setTimeout(() => resetView(), 200);
+                });
+
+                } catch(e) { initError(e.message + '\n\n' + e.stack); }
+            });
+        </script>
+    </body>
+</html>
