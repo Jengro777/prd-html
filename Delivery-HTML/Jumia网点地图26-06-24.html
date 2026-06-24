@@ -2831,9 +2831,10 @@
                             ? `<div class="detail-row"><i class="fas fa-clock"></i> ${info.hours}</div>` : "";
                         const p = info.payment
                             ? `<div class="detail-row"><i class="fas fa-credit-card"></i> ${info.payment}</div>` : "";
+                        const coord = `<div class="detail-row"><i class="fas fa-crosshairs"></i> ${info.lat.toFixed(6)}, ${info.lng.toFixed(6)}</div>`;
                         return `<div class="info-window">
                             <h3>${info.name} <span class="province-tag">${info.province}</span></h3>
-                            <div class="addr">${info.address}</div>${c}${t}${h}${p}</div>`;
+                            <div class="addr">${info.address}</div>${c}${t}${h}${p}${coord}</div>`;
                     }
 
                     // 悬停：打开 popup
