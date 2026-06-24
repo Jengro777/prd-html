@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>多城市围栏 - 自定义城市聚会围栏</title>
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        />
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    "Helvetica Neue", Arial, sans-serif;
+                height: 100vh;
+                display: flex;
+                color: #1a1a2e;
+            }
+
+            #sidebar {
+                width: 380px;
+                min-width: 380px;
+                background: #f8f9fa;
+                border-right: 1px solid #dee2e6;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+
+            #sidebar-header {
+                padding: 18px 20px 14px;
+                background: #fff;
+                border-bottom: 1px solid #e9ecef;
+            }
+            #sidebar-header h1 {
+                font-size: 17px;
+                font-weight: 600;
+                letter-spacing: 0.3px;
+            }
+            #sidebar-header p {
+                font-size: 12px;
+                color: #868e96;
+                margin-top: 4px;
+            }
+
+            #search-box {
+                padding: 10px 20px;
+                background: #fff;
+                border-bottom: 1px solid #e9ecef;
+            }
+            #search-box input {
+                width: 100%;
+                padding: 7px 12px;
+                border: 1px solid #dee2e6;
+                border-radius: 6px;
+                font-size: 13px;
+                outline: none;
+                transition: border-color 0.15s;
+            }
+            #search-box input:focus {
+                border-color: #1a73e8;
+                box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.15);
+            }
+
+            #selection-bar {
+                padding: 8px 20px;
+                font-size: 13px;
+                color: #495057;
+                background: #fff;
+                border-bottom: 1px solid #e9ecef;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                min-height: 40px;
+            }
+            #selection-bar .ctrl-btns {
+                display: flex;
+                gap: 4px;
+            }
+            #selection-bar .ctrl-btns button {
+                padding: 3px 10px;
+                font-size: 12px;
+                border: 1px solid #dee2e6;
+                border-radius: 4px;
+                background: #fff;
+                cursor: pointer;
+                color: #495057;
+            }
+            #selection-bar .ctrl-btns button:hover {
+                background: #e9ecef;
+            }
+            #selection-bar .ctrl-btns button:active {
+                background: #dee2e6;
+            }
+
+            #district-list {
+                flex: 1;
+                overflow-y: auto;
+            }
+
+            .region-header {
+                padding: 8px 20px;
+                font-size: 12px;
+                font-weight: 600;
+                color: #495057;
+                background: #f1f3f5;
+                cursor: pointer;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                user-select: none;
+                border-bottom: 1px solid #e9ecef;
+                letter-spacing: 0.2px;
+            }
+            .region-header:hover {
+                background: #e9ecef;
+            }
+            .region-header .arrow {
+                font-size: 10px;
+                transition: transform 0.15s;
+                color: #868e96;
+            }
+            .region-header .arrow.collapsed {
+                transform: rotate(-90deg);
+            }
+            .region-header .rg-count {
+                font-size: 11px;
+                color: #868e96;
+                font-weight: 400;
+            }
+
+            .district-item {
+                padding: 3px 20px 3px 30px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 13px;
+                cursor: pointer;
+                border-bottom: 1px solid #f1f3f5;
+            }
+            .district-item:hover {
+                background: #e9ecef;
+            }
+            .district-item input[type="checkbox"] {
+                cursor: pointer;
+                accent-color: #1a73e8;
+                flex-shrink: 0;
+            }
+            .district-item label {
+                cursor: pointer;
+                flex: 1;
+                padding: 3px 0;
+            }
+            .district-item .d-type {
+                font-size: 11px;
+                color: #868e96;
+            }
+            .district-item .region-toggle-row {
+                padding-left: 30px;
+                font-size: 12px;
+                color: #868e96;
+            }
+
+            #sidebar-footer {
+                padding: 12px 20px;
+                background: #fff;
+                border-top: 1px solid #dee2e6;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            #sidebar-footer .merged-name-row {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+            }
+            #sidebar-footer .merged-name-row label {
+                font-size: 12px;
+                color: #495057;
+                white-space: nowrap;
+            }
+            #sidebar-footer .merged-name-row input {
+                flex: 1;
+                padding: 6px 10px;
+                border: 1px solid #dee2e6;
+                border-radius: 4px;
+                font-size: 13px;
+                outline: none;
+            }
+            #sidebar-footer .merged-name-row input:focus {
+                border-color: #1a73e8;
+            }
+            #btn-export {
+                width: 100%;
+                padding: 10px;
+                background: #1a73e8;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                font-size: 14px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: background 0.15s;
+            }
+            #btn-export:hover {
+                background: #1557b0;
+            }
+            #btn-export:disabled {
+                background: #adb5bd;
+                cursor: not-allowed;
+            }
+            #btn-export .exp-count {
+                font-weight: 400;
+                opacity: 0.85;
+            }
+
+            #map-container {
+                flex: 1;
+                position: relative;
+            }
+            #map {
+                height: 100%;
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="sidebar">
+            <div id="sidebar-header">
+                <h1>多城市围栏</h1>
+                <p>选择多个行政区，合并生成联合围栏边界</p>
+            </div>
+
+            <div id="search-box">
+                <input
+                    type="text"
+                    id="search-input"
+                    placeholder="搜索行政区名称..."
+                    autocomplete="off"
+                />
+            </div>
+
+            <div id="selection-bar">
+                <span id="sel-count">已选 0 个</span>
+                <div class="ctrl-btns">
+                    <button id="btn-select-all">全选</button>
+                    <button id="btn-deselect-all">清空</button>
+                </div>
+            </div>
+
+            <div id="district-list"></div>
+
+            <div id="sidebar-footer">
+                <div class="merged-name-row">
+                    <label>联合名称</label>
+                    <input
+                        type="text"
+                        id="merged-name"
+                        placeholder="例如: 大阿克拉都会区联合围栏"
+                    />
+                </div>
+                <button id="btn-export" disabled>导出联合围栏 JSON</button>
+            </div>
+        </div>
+
+        <div id="map-container">
+            <div id="map"></div>
+        </div>
+
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+        <script src="gadm41_GHA_2.js"></script>
+        <!-- ^ loaded first so window.GADM_DATA is available for file:// protocol fallback -->
+
+        <script>
+            (function () {
+                "use strict";
+
+                /* ---- state ---- */
+                let geoData = null;
+                let featureMap = new Map();
+                let regionMap = {};
+                let selectedNames = new Set();
+                let allLayers = L.layerGroup();
+                let selLayers = L.layerGroup();
+                let mergedLayer = null;
+                let mergedLabel = null;
+
+                const map = L.map("map", {
+                    zoomControl: true,
+                    attributionControl: true,
+                }).setView([7.9465, -1.0232], 7);
+                L.tileLayer(
+                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    {
+                        attribution:
+                            '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                        maxZoom: 18,
+                    },
+                ).addTo(map);
+
+                const selFillStyle = {
+                    color: "#1a73e8",
+                    weight: 2,
+                    fillColor: "#1a73e8",
+                    fillOpacity: 0.15,
+                };
+                const allStyle = {
+                    color: "#ced4da",
+                    weight: 1,
+                    fillColor: "#f8f9fa",
+                    fillOpacity: 0.3,
+                };
+                const mergedStyle = {
+                    color: "#e74c3c",
+                    weight: 3,
+                    fillColor: "#e74c3c",
+                    fillOpacity: 0.08,
+                };
+
+                allLayers.addTo(map);
+                selLayers.addTo(map);
+
+                /* ---- helpers ---- */
+                function fmtDate(ts) {
+                    return new Date(ts).toISOString().replace(/\.\d+Z$/, "Z");
+                }
+                function esc(s) {
+                    var e = document.createElement("span");
+                    e.textContent = s;
+                    return e.innerHTML;
+                }
+                /* ---- load ---- */
+                function loadData() {
+                    // try pre-loaded global variable (from <script> tag, works with file:// protocol)
+                    if (window.GADM_DATA) {
+                        geoData = window.GADM_DATA;
+                        buildIndex(); renderList(); renderAllLayer(); map.invalidateSize();
+                        return;
+                    }
+                    fetch("gadm41_GHA_2.json")
+                        .then(function (r) {
+                            if (!r.ok) throw new Error("HTTP " + r.status);
+                            return r.json();
+                        })
+                        .then(function (data) {
+                            geoData = data;
+                            buildIndex();
+                            renderList();
+                            renderAllLayer();
+                            map.invalidateSize();
+                        })
+                        .catch(function (err) {
+                            document.getElementById("district-list").innerHTML =
+                                '<div style="padding:40px 20px;text-align:center;color:#868e96;font-size:14px;">' +
+                                "加载数据失败：" +
+                                esc(err.message) +
+                                "<br>" +
+                                "<small>请确保 <code>gadm41_GHA_2.json</code> 在同一目录下</small></div>";
+                        });
+                }
+
+                function buildIndex() {
+                    featureMap.clear();
+                    regionMap = {};
+                    for (var i = 0; i < geoData.features.length; i++) {
+                        var f = geoData.features[i];
+                        var name = f.properties.NAME_2;
+                        var region = f.properties.NAME_1;
+                        featureMap.set(name, f);
+                        if (!regionMap[region]) regionMap[region] = [];
+                        regionMap[region].push(f);
+                    }
+                }
+
+                /* ---- sidebar ---- */
+                function renderList() {
+                    var container = document.getElementById("district-list");
+                    var q = document
+                        .getElementById("search-input")
+                        .value.trim()
+                        .toLowerCase();
+                    var regions = Object.keys(regionMap).sort();
+
+                    var html = "";
+                    for (var r = 0; r < regions.length; r++) {
+                        var region = regions[r];
+                        var feats = regionMap[region]
+                            .slice()
+                            .sort(function (a, b) {
+                                return a.properties.NAME_2.localeCompare(
+                                    b.properties.NAME_2,
+                                );
+                            });
+                        var visible = [];
+                        for (var i = 0; i < feats.length; i++) {
+                            if (
+                                !q ||
+                                feats[
+                                    i
+                                ].properties.NAME_2.toLowerCase().indexOf(q) !==
+                                    -1
+                            ) {
+                                visible.push(feats[i]);
+                            }
+                        }
+                        if (visible.length === 0) continue;
+
+                        var allVisSel = true;
+                        var anyVisSel = false;
+                        for (var i = 0; i < visible.length; i++) {
+                            if (
+                                !selectedNames.has(visible[i].properties.NAME_2)
+                            )
+                                allVisSel = false;
+                            else anyVisSel = true;
+                        }
+
+                        html += '<div class="region-group">';
+                        html +=
+                            '<div class="region-header"><span><span class="arrow">&#9660;</span> ' +
+                            esc(region) +
+                            '</span><span class="rg-count">' +
+                            visible.length +
+                            "</span></div>";
+                        html += '<div class="region-body">';
+                        html +=
+                            '<div class="district-item" style="padding-left:30px;font-size:12px;color:#868e96;">';
+                        html +=
+                            '<input type="checkbox" class="region-toggle" data-region="' +
+                            esc(region) +
+                            '"' +
+                            (allVisSel ? " checked" : "") +
+                            ">";
+                        html +=
+                            '<label style="color:#868e96;font-size:12px;">全选本区域</label></div>';
+                        for (var i = 0; i < visible.length; i++) {
+                            var n = visible[i].properties.NAME_2;
+                            var checked = selectedNames.has(n);
+                            html +=
+                                '<div class="district-item" data-name="' +
+                                esc(n) +
+                                '">';
+                            html +=
+                                '<input type="checkbox"' +
+                                (checked ? " checked" : "") +
+                                ">";
+                            html +=
+                                "<label>" +
+                                esc(n) +
+                                ' <span class="d-type">' +
+                                esc(visible[i].properties.TYPE_2) +
+                                "</span></label>";
+                            html += "</div>";
+                        }
+                        html += "</div></div>";
+                    }
+                    container.innerHTML = html;
+
+                    // region collapse/expand
+                    var hdrs = container.querySelectorAll(".region-header");
+                    for (var i = 0; i < hdrs.length; i++) {
+                        hdrs[i].addEventListener("click", function (e) {
+                            if (e.target.closest("input,button")) return;
+                            var body =
+                                this.parentElement.querySelector(
+                                    ".region-body",
+                                );
+                            var arrow = this.querySelector(".arrow");
+                            if (!body) return;
+                            if (body.style.display === "none") {
+                                body.style.display = "";
+                                arrow.classList.remove("collapsed");
+                            } else {
+                                body.style.display = "none";
+                                arrow.classList.add("collapsed");
+                            }
+                        });
+                    }
+
+                    // checkbox changes
+                    container.addEventListener("change", function (e) {
+                        var cb = e.target;
+                        if (cb.classList.contains("region-toggle")) {
+                            var region = cb.dataset.region;
+                            var feats = regionMap[region] || [];
+                            var q2 = document
+                                .getElementById("search-input")
+                                .value.trim()
+                                .toLowerCase();
+                            for (var i = 0; i < feats.length; i++) {
+                                var name = feats[i].properties.NAME_2;
+                                if (q2 && name.toLowerCase().indexOf(q2) === -1)
+                                    continue;
+                                if (cb.checked) selectedNames.add(name);
+                                else selectedNames.delete(name);
+                            }
+                        } else {
+                            var item = cb.closest(".district-item");
+                            if (!item) return;
+                            var name = item.dataset.name;
+                            if (cb.checked) selectedNames.add(name);
+                            else selectedNames.delete(name);
+                        }
+                        syncCbs();
+                        updateUi();
+                    });
+
+                    // click on item row toggles checkbox
+                    container.addEventListener("click", function (e) {
+                        var item = e.target.closest(".district-item");
+                        if (!item) return;
+                        if (e.target.tagName === "INPUT") return;
+                        var cb = item.querySelector('input[type="checkbox"]');
+                        if (cb) cb.click();
+                    });
+                }
+
+                function syncCbs() {
+                    var q = document
+                        .getElementById("search-input")
+                        .value.trim()
+                        .toLowerCase();
+                    var items = document.querySelectorAll(
+                        ".district-item[data-name]",
+                    );
+                    for (var i = 0; i < items.length; i++) {
+                        var name = items[i].dataset.name;
+                        var cb = items[i].querySelector(
+                            'input[type="checkbox"]',
+                        );
+                        if (cb) cb.checked = selectedNames.has(name);
+                    }
+                    var toggles = document.querySelectorAll(".region-toggle");
+                    for (var i = 0; i < toggles.length; i++) {
+                        var region = toggles[i].dataset.region;
+                        var feats = regionMap[region] || [];
+                        var visible = [];
+                        for (var j = 0; j < feats.length; j++) {
+                            if (
+                                !q ||
+                                feats[
+                                    j
+                                ].properties.NAME_2.toLowerCase().indexOf(q) !==
+                                    -1
+                            ) {
+                                visible.push(feats[j]);
+                            }
+                        }
+                        toggles[i].checked = visible.every(function (f) {
+                            return selectedNames.has(f.properties.NAME_2);
+                        });
+                    }
+                }
+
+                /* ---- search ---- */
+                document
+                    .getElementById("search-input")
+                    .addEventListener("input", function () {
+                        renderList();
+                    });
+
+                /* ---- select all / clear ---- */
+                document
+                    .getElementById("btn-select-all")
+                    .addEventListener("click", function () {
+                        for (var i = 0; i < geoData.features.length; i++) {
+                            selectedNames.add(
+                                geoData.features[i].properties.NAME_2,
+                            );
+                        }
+                        syncCbs();
+                        updateUi();
+                    });
+                document
+                    .getElementById("btn-deselect-all")
+                    .addEventListener("click", function () {
+                        selectedNames.clear();
+                        syncCbs();
+                        updateUi();
+                    });
+
+                /* ---- update UI ---- */
+                function updateUi() {
+                    var count = selectedNames.size;
+                    document.getElementById("sel-count").textContent =
+                        "\u5df2\u9009 " + count + " \u4e2a";
+                    var btn = document.getElementById("btn-export");
+                    btn.disabled = count < 1;
+                    btn.innerHTML =
+                        count > 0
+                            ? '\u5bfc\u51fa\u8054\u5408\u56f4\u680f JSON <span class="exp-count">(' +
+                              count +
+                              " \u4e2a\u884c\u653f\u533a)</span>"
+                            : "\u5bfc\u51fa\u8054\u5408\u56f4\u680f JSON";
+
+                    var nameInput = document.getElementById("merged-name");
+                    if (count > 0 && !nameInput.value) {
+                        var arr = [];
+                        var idx = 0;
+                        for (var v of selectedNames) {
+                            if (idx++ < 3) arr.push(v);
+                        }
+                        var suffix =
+                            selectedNames.size > 3
+                                ? "\u7b49" +
+                                  selectedNames.size +
+                                  "\u4e2a\u884c\u653f\u533a"
+                                : "";
+                        nameInput.value =
+                            arr.join("\u3001") +
+                            suffix +
+                            "\u8054\u5408\u56f4\u680f";
+                    }
+                    if (count === 0) nameInput.value = "";
+
+                    updateMap();
+                }
+
+                /* ---- map ---- */
+                function renderAllLayer() {
+                    var g = L.geoJSON(geoData, {
+                        style: allStyle,
+                        interactive: false,
+                    });
+                    allLayers.clearLayers();
+                    allLayers.addLayer(g);
+                }
+
+                function updateMap() {
+                    selLayers.clearLayers();
+                    if (mergedLayer) {
+                        map.removeLayer(mergedLayer);
+                        mergedLayer = null;
+                    }
+                    if (mergedLabel) {
+                        map.removeLayer(mergedLabel);
+                        mergedLabel = null;
+                    }
+
+                    if (selectedNames.size === 0) return;
+
+                    var selFeatures = [];
+                    for (var name of selectedNames) {
+                        var feat = featureMap.get(name);
+                        if (feat) selFeatures.push(feat);
+                    }
+                    if (selFeatures.length === 0) return;
+
+                    // draw selected
+                    var selCol = {
+                        type: "FeatureCollection",
+                        features: selFeatures,
+                    };
+                    var selGeo = L.geoJSON(selCol, {
+                        style: selFillStyle,
+                        interactive: false,
+                    });
+                    selLayers.addLayer(selGeo);
+                    map.fitBounds(selGeo.getBounds(), {
+                        padding: [30, 30],
+                        maxZoom: 11,
+                    });
+
+                    // merged
+                    if (selFeatures.length >= 2) {
+                        computeMerge(selFeatures);
+                    } else {
+                        var single = {
+                            type: "FeatureCollection",
+                            features: [selFeatures[0]],
+                        };
+                        mergedLayer = L.geoJSON(single, {
+                            style: {
+                                color: "#e74c3c",
+                                weight: 3,
+                                fillColor: "#e74c3c",
+                                fillOpacity: 0.06,
+                            },
+                            interactive: false,
+                        }).addTo(map);
+                    }
+                }
+
+                function computeMerge(features) {
+                    try {
+                        var merged = turf.feature(
+                            turf.multiPolygon(features[0].geometry.coordinates),
+                        );
+                        for (var i = 1; i < features.length; i++) {
+                            var next = turf.feature(
+                                turf.multiPolygon(
+                                    features[i].geometry.coordinates,
+                                ),
+                            );
+                            try {
+                                var u = turf.union(merged, next);
+                                if (u) merged = u;
+                            } catch (e) {
+                                // non-adjacent districts, skip union for that pair
+                            }
+                        }
+
+                        var fc = {
+                            type: "FeatureCollection",
+                            features: [merged],
+                        };
+                        mergedLayer = L.geoJSON(fc, {
+                            style: {
+                                color: "#e74c3c",
+                                weight: 3,
+                                fillColor: "#e74c3c",
+                                fillOpacity: 0.06,
+                            },
+                            interactive: false,
+                        }).addTo(map);
+                    } catch (err) {
+                        // fallback: draw as individual merge display
+                        var fallback = {
+                            type: "FeatureCollection",
+                            features: features,
+                        };
+                        mergedLayer = L.geoJSON(fallback, {
+                            style: {
+                                color: "#e74c3c",
+                                weight: 2,
+                                fillColor: "#e74c3c",
+                                fillOpacity: 0.06,
+                            },
+                            interactive: false,
+                        }).addTo(map);
+                    }
+                }
+
+                /* ---- export ---- */
+                document
+                    .getElementById("btn-export")
+                    .addEventListener("click", function () {
+                        if (selectedNames.size === 0) return;
+                        var features = [];
+                        for (var name of selectedNames) {
+                            var feat = featureMap.get(name);
+                            if (feat) features.push(feat);
+                        }
+                        if (features.length === 0) return;
+                        exportJson(features);
+                    });
+
+                function exportJson(features) {
+                    var mergedGeom;
+                    if (features.length === 1) {
+                        mergedGeom = JSON.parse(
+                            JSON.stringify(features[0].geometry),
+                        );
+                    } else {
+                        try {
+                            var merged = turf.feature(
+                                turf.multiPolygon(
+                                    features[0].geometry.coordinates,
+                                ),
+                            );
+                            for (var i = 1; i < features.length; i++) {
+                                var next = turf.feature(
+                                    turf.multiPolygon(
+                                        features[i].geometry.coordinates,
+                                    ),
+                                );
+                                try {
+                                    var u = turf.union(merged, next);
+                                    if (u) merged = u;
+                                } catch (e) {}
+                            }
+                            mergedGeom = JSON.parse(
+                                JSON.stringify(merged.geometry),
+                            );
+                        } catch (err) {
+                            mergedGeom = JSON.parse(
+                                JSON.stringify(features[0].geometry),
+                            );
+                        }
+                    }
+
+
+                    // unwrap nested Feature objects (turf can bury geometry inside Feature wrappers)
+                    while (mergedGeom && mergedGeom.type === "Feature" && mergedGeom.geometry) {
+                        mergedGeom = mergedGeom.geometry;
+                    }
+                    // convert MultiPolygon -> Polygon
+                    if (mergedGeom && mergedGeom.type === "MultiPolygon") {
+                        mergedGeom = { type: "Polygon", coordinates: mergedGeom.coordinates[0] };
+                    }
+                    var now = Date.now();
+                    var siteInput = document.getElementById("merged-name").value.trim();
+
+                    var regionSet = new Set();
+                    for (var i = 0; i < features.length; i++) {
+                        regionSet.add(features[i].properties.NAME_1);
+                    }
+                    var regionName =
+                        regionSet.size === 1
+                            ? Array.from(regionSet)[0]
+                            : Array.from(regionSet).join("\u3001");
+
+                    var mid, mergedName;
+                    if (features.length === 1) {
+                        mid = features[0].properties.GID_2 || "merged_" + now;
+                        mergedName = siteInput || features[0].properties.NAME_2;
+                    } else {
+                        mid = "merged_" + now;
+                        mergedName = siteInput || "\u8054\u5408\u56f4\u680f_" + now;
+                    }
+                    var gt =
+                        mergedGeom.type === "MultiPolygon"
+                            ? "multiPolygon"
+                            : "polygon";
+
+                    var result = {
+                        type: "FeatureCollection",
+                        features: [
+                            {
+                                type: "Feature",
+                                id: mid,
+                                geometry: mergedGeom,
+                                properties: {
+                                    id: mid,
+                                    fenceType: gt,
+                                    name: mergedName,
+                                    regionName: regionName,
+                                    level: 2,
+                                    levelName: "district",
+                                    gid: mid,
+                                    updatedAt: fmtDate(now),
+                                },
+                            },
+                        ],
+                        properties: {
+                            siteId: "1536",
+                            version: 1,
+                            level: 2,
+                            levelName: "district",
+                            total: 0,
+                        },
+                    };
+
+                    var blob = new Blob([JSON.stringify(result, null, 2)], {
+                        type: "application/json",
+                    });
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement("a");
+                    a.href = url;
+                    a.download = mergedName + ".json";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }
+
+                /* ---- resize ---- */
+                window.addEventListener("resize", function () {
+                    map.invalidateSize();
+                });
+
+                /* ---- go ---- */
+                loadData();
+            })();
+        </script>
+    </body>
+</html>
