@@ -134,6 +134,11 @@
                 color: #868e96;
                 font-weight: 400;
             }
+            .region-header .region-boundary-cb {
+                margin-right: 4px;
+                cursor: pointer;
+                accent-color: #e74c3c;
+            }
 
             .district-item {
                 padding: 3px 20px 3px 30px;
@@ -159,11 +164,6 @@
             }
             .district-item .d-type {
                 font-size: 11px;
-                color: #868e96;
-            }
-            .district-item .region-toggle-row {
-                padding-left: 30px;
-                font-size: 12px;
                 color: #868e96;
             }
 
@@ -234,7 +234,7 @@
         <div id="sidebar">
             <div id="sidebar-header">
                 <h1>多城市围栏</h1>
-                <p>选择多个行政区，合并生成联合围栏边界</p>
+                <p>选择多个行政区（省/市），合并生成联合围栏边界</p>
             </div>
 
             <div id="search-box">
@@ -283,16 +283,17 @@
                 "use strict";
 
                 /* ---- state ---- */
-                let geoData = null;
-                let featureMap = new Map();
-                let regionMap = {};
-                let selectedNames = new Set();
-                let allLayers = L.layerGroup();
-                let selLayers = L.layerGroup();
-                let mergedLayer = null;
-                let mergedLabel = null;
+                var geoData = null;        // district (NAME_2) data
+                var regionData = null;     // region (NAME_1) data, loaded separately
+                var featureMap = new Map(); // name → feature (both district NAME_2 and region NAME_1)
+                var regionMap = {};         // region NAME_1 → [district features]
+                var selectedNames = new Set();
+                var allLayers = L.layerGroup();
+                var selLayers = L.layerGroup();
+                var mergedLayer = null;
+                var mergedLabel = null;
 
-                const map = L.map("map", {
+                var map = L.map("map", {
                     zoomControl: true,
                     attributionControl: true,
                 }).setView([7.9465, -1.0232], 7);
@@ -305,23 +306,17 @@
                     },
                 ).addTo(map);
 
-                const selFillStyle = {
+                var selFillStyle = {
                     color: "#1a73e8",
                     weight: 2,
                     fillColor: "#1a73e8",
                     fillOpacity: 0.15,
                 };
-                const allStyle = {
+                var allStyle = {
                     color: "#ced4da",
                     weight: 1,
                     fillColor: "#f8f9fa",
                     fillOpacity: 0.3,
-                };
-                const mergedStyle = {
-                    color: "#e74c3c",
-                    weight: 3,
-                    fillColor: "#e74c3c",
-                    fillOpacity: 0.08,
                 };
 
                 allLayers.addTo(map);
@@ -336,12 +331,16 @@
                     e.textContent = s;
                     return e.innerHTML;
                 }
+                function getFeatureLevel(feat) {
+                    // NAME_2 exists → district level (2); only NAME_1 → region level (1)
+                    return feat.properties.NAME_2 ? 2 : 1;
+                }
+
                 /* ---- load ---- */
-                function loadData() {
-                    // try pre-loaded global variable (from <script> tag, works with file:// protocol)
+                function loadDistrictData(cb) {
                     if (window.GADM_DATA) {
                         geoData = window.GADM_DATA;
-                        buildIndex(); renderList(); renderAllLayer(); map.invalidateSize();
+                        cb();
                         return;
                     }
                     fetch("gadm41_GHA_2.json")
@@ -351,24 +350,49 @@
                         })
                         .then(function (data) {
                             geoData = data;
-                            buildIndex();
-                            renderList();
-                            renderAllLayer();
-                            map.invalidateSize();
+                            cb();
                         })
                         .catch(function (err) {
                             document.getElementById("district-list").innerHTML =
                                 '<div style="padding:40px 20px;text-align:center;color:#868e96;font-size:14px;">' +
-                                "加载数据失败：" +
-                                esc(err.message) +
-                                "<br>" +
+                                "加载数据失败：" + esc(err.message) + "<br>" +
                                 "<small>请确保 <code>gadm41_GHA_2.json</code> 在同一目录下</small></div>";
                         });
+                }
+
+                function loadRegionData(cb) {
+                    fetch("gadm41_GHA_1.json")
+                        .then(function (r) {
+                            if (!r.ok) throw new Error("HTTP " + r.status);
+                            return r.json();
+                        })
+                        .then(function (data) {
+                            regionData = data;
+                            cb();
+                        })
+                        .catch(function () {
+                            // region data optional — silently ignore
+                            regionData = null;
+                            cb();
+                        });
+                }
+
+                function loadData() {
+                    loadDistrictData(function () {
+                        loadRegionData(function () {
+                            buildIndex();
+                            renderList();
+                            renderAllLayer();
+                            map.invalidateSize();
+                        });
+                    });
                 }
 
                 function buildIndex() {
                     featureMap.clear();
                     regionMap = {};
+
+                    // index district features (NAME_2) grouped under NAME_1
                     for (var i = 0; i < geoData.features.length; i++) {
                         var f = geoData.features[i];
                         var name = f.properties.NAME_2;
@@ -377,86 +401,93 @@
                         if (!regionMap[region]) regionMap[region] = [];
                         regionMap[region].push(f);
                     }
+
+                    // index region features (NAME_1) into the same featureMap
+                    if (regionData) {
+                        for (var i = 0; i < regionData.features.length; i++) {
+                            var f = regionData.features[i];
+                            var name = f.properties.NAME_1;
+                            // region boundaries keyed by NAME_1 — may already exist
+                            // but region boundaries are separate from district items
+                            featureMap.set("__region__" + name, f);
+                            if (!regionMap[name]) regionMap[name] = [];
+                        }
+                    }
                 }
 
                 /* ---- sidebar ---- */
                 function renderList() {
                     var container = document.getElementById("district-list");
-                    var q = document
-                        .getElementById("search-input")
-                        .value.trim()
-                        .toLowerCase();
+                    var q = document.getElementById("search-input").value.trim().toLowerCase();
                     var regions = Object.keys(regionMap).sort();
 
                     var html = "";
                     for (var r = 0; r < regions.length; r++) {
                         var region = regions[r];
-                        var feats = regionMap[region]
-                            .slice()
-                            .sort(function (a, b) {
-                                return a.properties.NAME_2.localeCompare(
-                                    b.properties.NAME_2,
-                                );
-                            });
+                        var feats = regionMap[region].slice().sort(function (a, b) {
+                            return (a.properties.NAME_2 || a.properties.NAME_1)
+                                .localeCompare(b.properties.NAME_2 || b.properties.NAME_1);
+                        });
                         var visible = [];
                         for (var i = 0; i < feats.length; i++) {
-                            if (
-                                !q ||
-                                feats[
-                                    i
-                                ].properties.NAME_2.toLowerCase().indexOf(q) !==
-                                    -1
-                            ) {
+                            var fn = feats[i].properties.NAME_2;
+                            if (!q || (fn && fn.toLowerCase().indexOf(q) !== -1)) {
                                 visible.push(feats[i]);
+                            } else {
+                                // also match region name in search
+                                var rn = feats[i].properties.NAME_1;
+                                if (!fn && rn && rn.toLowerCase().indexOf(q) !== -1) {
+                                    visible.push(feats[i]);
+                                }
                             }
                         }
                         if (visible.length === 0) continue;
 
-                        var allVisSel = true;
-                        var anyVisSel = false;
+                        // check region-boundary checkbox state
+                        var regionKey = "__region__" + region;
+                        var regionSel = selectedNames.has(regionKey);
+
+                        // check "全选本区域" toggle state (only for districts)
+                        var allDistSel = true;
+                        var hasDistricts = false;
                         for (var i = 0; i < visible.length; i++) {
-                            if (
-                                !selectedNames.has(visible[i].properties.NAME_2)
-                            )
-                                allVisSel = false;
-                            else anyVisSel = true;
+                            if (visible[i].properties.NAME_2) {
+                                hasDistricts = true;
+                                if (!selectedNames.has(visible[i].properties.NAME_2))
+                                    allDistSel = false;
+                            }
                         }
 
                         html += '<div class="region-group">';
-                        html +=
-                            '<div class="region-header"><span><span class="arrow">&#9660;</span> ' +
-                            esc(region) +
-                            '</span><span class="rg-count">' +
-                            visible.length +
-                            "</span></div>";
+                        html += '<div class="region-header"><span><span class="arrow">&#9660;</span> ' +
+                            esc(region) + '</span><span class="rg-count">' + visible.length + "</span></div>";
                         html += '<div class="region-body">';
-                        html +=
-                            '<div class="district-item" style="padding-left:30px;font-size:12px;color:#868e96;">';
-                        html +=
-                            '<input type="checkbox" class="region-toggle" data-region="' +
-                            esc(region) +
-                            '"' +
-                            (allVisSel ? " checked" : "") +
-                            ">";
-                        html +=
-                            '<label style="color:#868e96;font-size:12px;">全选本区域</label></div>';
+
+                        // region boundary checkbox
+                        html += '<div class="district-item" style="padding-left:30px;font-size:12px;">';
+                        html += '<input type="checkbox" class="region-boundary" data-region="' +
+                            esc(region) + '"' + (regionSel ? " checked" : "") +
+                            ' style="accent-color:#e74c3c;">';
+                        html += '<label style="color:#c0392b;font-size:12px;">' + esc(region) +
+                            ' 区域边界 <span class="d-type">Region</span></label></div>';
+
+                        // "全选本区域" for districts
+                        if (hasDistricts) {
+                            html += '<div class="district-item" style="padding-left:30px;font-size:12px;color:#868e96;">';
+                            html += '<input type="checkbox" class="region-toggle" data-region="' +
+                                esc(region) + '"' + (allDistSel ? " checked" : "") + ">";
+                            html += '<label style="color:#868e96;font-size:12px;">全选本区域(城市)</label></div>';
+                        }
+
+                        // individual district items
                         for (var i = 0; i < visible.length; i++) {
                             var n = visible[i].properties.NAME_2;
+                            if (!n) continue; // skip region-only entries
                             var checked = selectedNames.has(n);
-                            html +=
-                                '<div class="district-item" data-name="' +
-                                esc(n) +
-                                '">';
-                            html +=
-                                '<input type="checkbox"' +
-                                (checked ? " checked" : "") +
-                                ">";
-                            html +=
-                                "<label>" +
-                                esc(n) +
-                                ' <span class="d-type">' +
-                                esc(visible[i].properties.TYPE_2) +
-                                "</span></label>";
+                            html += '<div class="district-item" data-name="' + esc(n) + '">';
+                            html += '<input type="checkbox"' + (checked ? " checked" : "") + ">";
+                            html += "<label>" + esc(n) + ' <span class="d-type">' +
+                                esc(visible[i].properties.TYPE_2) + "</span></label>";
                             html += "</div>";
                         }
                         html += "</div></div>";
@@ -468,10 +499,7 @@
                     for (var i = 0; i < hdrs.length; i++) {
                         hdrs[i].addEventListener("click", function (e) {
                             if (e.target.closest("input,button")) return;
-                            var body =
-                                this.parentElement.querySelector(
-                                    ".region-body",
-                                );
+                            var body = this.parentElement.querySelector(".region-body");
                             var arrow = this.querySelector(".arrow");
                             if (!body) return;
                             if (body.style.display === "none") {
@@ -487,17 +515,19 @@
                     // checkbox changes
                     container.addEventListener("change", function (e) {
                         var cb = e.target;
-                        if (cb.classList.contains("region-toggle")) {
+                        if (cb.classList.contains("region-boundary")) {
+                            var region = cb.dataset.region;
+                            var key = "__region__" + region;
+                            if (cb.checked) selectedNames.add(key);
+                            else selectedNames.delete(key);
+                        } else if (cb.classList.contains("region-toggle")) {
                             var region = cb.dataset.region;
                             var feats = regionMap[region] || [];
-                            var q2 = document
-                                .getElementById("search-input")
-                                .value.trim()
-                                .toLowerCase();
+                            var q2 = document.getElementById("search-input").value.trim().toLowerCase();
                             for (var i = 0; i < feats.length; i++) {
+                                if (!feats[i].properties.NAME_2) continue;
                                 var name = feats[i].properties.NAME_2;
-                                if (q2 && name.toLowerCase().indexOf(q2) === -1)
-                                    continue;
+                                if (q2 && name.toLowerCase().indexOf(q2) === -1) continue;
                                 if (cb.checked) selectedNames.add(name);
                                 else selectedNames.delete(name);
                             }
@@ -505,8 +535,10 @@
                             var item = cb.closest(".district-item");
                             if (!item) return;
                             var name = item.dataset.name;
-                            if (cb.checked) selectedNames.add(name);
-                            else selectedNames.delete(name);
+                            if (name) {
+                                if (cb.checked) selectedNames.add(name);
+                                else selectedNames.delete(name);
+                            }
                         }
                         syncCbs();
                         updateUi();
@@ -523,100 +555,94 @@
                 }
 
                 function syncCbs() {
-                    var q = document
-                        .getElementById("search-input")
-                        .value.trim()
-                        .toLowerCase();
-                    var items = document.querySelectorAll(
-                        ".district-item[data-name]",
-                    );
+                    var q = document.getElementById("search-input").value.trim().toLowerCase();
+                    var items = document.querySelectorAll(".district-item[data-name]");
                     for (var i = 0; i < items.length; i++) {
                         var name = items[i].dataset.name;
-                        var cb = items[i].querySelector(
-                            'input[type="checkbox"]',
-                        );
+                        var cb = items[i].querySelector('input[type="checkbox"]');
                         if (cb) cb.checked = selectedNames.has(name);
                     }
+
+                    // sync region boundary checkboxes
+                    var bdCbs = document.querySelectorAll(".region-boundary");
+                    for (var i = 0; i < bdCbs.length; i++) {
+                        var key = "__region__" + bdCbs[i].dataset.region;
+                        bdCbs[i].checked = selectedNames.has(key);
+                    }
+
+                    // sync region toggles
                     var toggles = document.querySelectorAll(".region-toggle");
                     for (var i = 0; i < toggles.length; i++) {
                         var region = toggles[i].dataset.region;
                         var feats = regionMap[region] || [];
                         var visible = [];
                         for (var j = 0; j < feats.length; j++) {
-                            if (
-                                !q ||
-                                feats[
-                                    j
-                                ].properties.NAME_2.toLowerCase().indexOf(q) !==
-                                    -1
-                            ) {
+                            if (!feats[j].properties.NAME_2) continue;
+                            if (!q || feats[j].properties.NAME_2.toLowerCase().indexOf(q) !== -1)
                                 visible.push(feats[j]);
-                            }
                         }
-                        toggles[i].checked = visible.every(function (f) {
+                        toggles[i].checked = visible.length > 0 && visible.every(function (f) {
                             return selectedNames.has(f.properties.NAME_2);
                         });
                     }
                 }
 
                 /* ---- search ---- */
-                document
-                    .getElementById("search-input")
-                    .addEventListener("input", function () {
-                        renderList();
-                    });
+                document.getElementById("search-input").addEventListener("input", function () {
+                    renderList();
+                });
 
                 /* ---- select all / clear ---- */
-                document
-                    .getElementById("btn-select-all")
-                    .addEventListener("click", function () {
-                        for (var i = 0; i < geoData.features.length; i++) {
-                            selectedNames.add(
-                                geoData.features[i].properties.NAME_2,
-                            );
+                document.getElementById("btn-select-all").addEventListener("click", function () {
+                    // select all districts
+                    for (var i = 0; i < geoData.features.length; i++) {
+                        selectedNames.add(geoData.features[i].properties.NAME_2);
+                    }
+                    // also select all region boundaries
+                    if (regionData) {
+                        for (var i = 0; i < regionData.features.length; i++) {
+                            selectedNames.add("__region__" + regionData.features[i].properties.NAME_1);
                         }
-                        syncCbs();
-                        updateUi();
-                    });
-                document
-                    .getElementById("btn-deselect-all")
-                    .addEventListener("click", function () {
-                        selectedNames.clear();
-                        syncCbs();
-                        updateUi();
-                    });
+                    }
+                    syncCbs();
+                    updateUi();
+                });
+                document.getElementById("btn-deselect-all").addEventListener("click", function () {
+                    selectedNames.clear();
+                    syncCbs();
+                    updateUi();
+                });
 
                 /* ---- update UI ---- */
                 function updateUi() {
                     var count = selectedNames.size;
                     document.getElementById("sel-count").textContent =
-                        "\u5df2\u9009 " + count + " \u4e2a";
+                        "已选 " + count + " 个";
                     var btn = document.getElementById("btn-export");
                     btn.disabled = count < 1;
                     btn.innerHTML =
                         count > 0
-                            ? '\u5bfc\u51fa\u8054\u5408\u56f4\u680f JSON <span class="exp-count">(' +
+                            ? '导出联合围栏 JSON <span class="exp-count">(' +
                               count +
-                              " \u4e2a\u884c\u653f\u533a)</span>"
-                            : "\u5bfc\u51fa\u8054\u5408\u56f4\u680f JSON";
+                              " 个行政区)</span>"
+                            : "导出联合围栏 JSON";
 
                     var nameInput = document.getElementById("merged-name");
                     if (count > 0 && !nameInput.value) {
                         var arr = [];
                         var idx = 0;
                         for (var v of selectedNames) {
-                            if (idx++ < 3) arr.push(v);
+                            if (idx++ < 3) {
+                                // strip __region__ prefix for display
+                                arr.push(v.replace(/^__region__/, ""));
+                            }
                         }
                         var suffix =
                             selectedNames.size > 3
-                                ? "\u7b49" +
-                                  selectedNames.size +
-                                  "\u4e2a\u884c\u653f\u533a"
+                                ? "等" + selectedNames.size + "个行政区"
                                 : "";
                         nameInput.value =
-                            arr.join("\u3001") +
-                            suffix +
-                            "\u8054\u5408\u56f4\u680f";
+                            arr.join("、") + suffix + "联合围栏";
                     }
                     if (count === 0) nameInput.value = "";
 
@@ -625,24 +651,24 @@
 
                 /* ---- map ---- */
                 function renderAllLayer() {
-                    var g = L.geoJSON(geoData, {
-                        style: allStyle,
-                        interactive: false,
-                    });
+                    // render district data
+                    var g = L.geoJSON(geoData, { style: allStyle, interactive: false });
                     allLayers.clearLayers();
                     allLayers.addLayer(g);
+                    // also render region boundaries lightly
+                    if (regionData) {
+                        var rg = L.geoJSON(regionData, {
+                            style: { color: "#dee2e6", weight: 1.5, fillOpacity: 0 },
+                            interactive: false,
+                        });
+                        allLayers.addLayer(rg);
+                    }
                 }
 
                 function updateMap() {
                     selLayers.clearLayers();
-                    if (mergedLayer) {
-                        map.removeLayer(mergedLayer);
-                        mergedLayer = null;
-                    }
-                    if (mergedLabel) {
-                        map.removeLayer(mergedLabel);
-                        mergedLabel = null;
-                    }
+                    if (mergedLayer) { map.removeLayer(mergedLayer); mergedLayer = null; }
+                    if (mergedLabel) { map.removeLayer(mergedLabel); mergedLabel = null; }
 
                     if (selectedNames.size === 0) return;
 
@@ -653,36 +679,17 @@
                     }
                     if (selFeatures.length === 0) return;
 
-                    // draw selected
-                    var selCol = {
-                        type: "FeatureCollection",
-                        features: selFeatures,
-                    };
-                    var selGeo = L.geoJSON(selCol, {
-                        style: selFillStyle,
-                        interactive: false,
+                    var selGeo = L.geoJSON({ type: "FeatureCollection", features: selFeatures }, {
+                        style: selFillStyle, interactive: false,
                     });
                     selLayers.addLayer(selGeo);
-                    map.fitBounds(selGeo.getBounds(), {
-                        padding: [30, 30],
-                        maxZoom: 11,
-                    });
+                    map.fitBounds(selGeo.getBounds(), { padding: [30, 30], maxZoom: 11 });
 
-                    // merged
                     if (selFeatures.length >= 2) {
                         computeMerge(selFeatures);
                     } else {
-                        var single = {
-                            type: "FeatureCollection",
-                            features: [selFeatures[0]],
-                        };
-                        mergedLayer = L.geoJSON(single, {
-                            style: {
-                                color: "#e74c3c",
-                                weight: 3,
-                                fillColor: "#e74c3c",
-                                fillOpacity: 0.06,
-                            },
+                        mergedLayer = L.geoJSON({ type: "FeatureCollection", features: [selFeatures[0]] }, {
+                            style: { color: "#e74c3c", weight: 3, fillColor: "#e74c3c", fillOpacity: 0.06 },
                             interactive: false,
                         }).addTo(map);
                     }
@@ -690,120 +697,76 @@
 
                 function computeMerge(features) {
                     try {
-                        var merged = turf.feature(
-                            turf.multiPolygon(features[0].geometry.coordinates),
-                        );
+                        var merged = turf.feature(turf.multiPolygon(features[0].geometry.coordinates));
                         for (var i = 1; i < features.length; i++) {
-                            var next = turf.feature(
-                                turf.multiPolygon(
-                                    features[i].geometry.coordinates,
-                                ),
-                            );
-                            try {
-                                var u = turf.union(merged, next);
-                                if (u) merged = u;
-                            } catch (e) {
-                                // non-adjacent districts, skip union for that pair
-                            }
+                            var next = turf.feature(turf.multiPolygon(features[i].geometry.coordinates));
+                            try { var u = turf.union(merged, next); if (u) merged = u; } catch (e) {}
                         }
-
-                        var fc = {
-                            type: "FeatureCollection",
-                            features: [merged],
-                        };
-                        mergedLayer = L.geoJSON(fc, {
-                            style: {
-                                color: "#e74c3c",
-                                weight: 3,
-                                fillColor: "#e74c3c",
-                                fillOpacity: 0.06,
-                            },
+                        mergedLayer = L.geoJSON({ type: "FeatureCollection", features: [merged] }, {
+                            style: { color: "#e74c3c", weight: 3, fillColor: "#e74c3c", fillOpacity: 0.06 },
                             interactive: false,
                         }).addTo(map);
                     } catch (err) {
-                        // fallback: draw as individual merge display
-                        var fallback = {
-                            type: "FeatureCollection",
-                            features: features,
-                        };
-                        mergedLayer = L.geoJSON(fallback, {
-                            style: {
-                                color: "#e74c3c",
-                                weight: 2,
-                                fillColor: "#e74c3c",
-                                fillOpacity: 0.06,
-                            },
+                        mergedLayer = L.geoJSON({ type: "FeatureCollection", features: features }, {
+                            style: { color: "#e74c3c", weight: 2, fillColor: "#e74c3c", fillOpacity: 0.06 },
                             interactive: false,
                         }).addTo(map);
                     }
                 }
 
                 /* ---- export ---- */
-                document
-                    .getElementById("btn-export")
-                    .addEventListener("click", function () {
-                        if (selectedNames.size === 0) return;
-                        var features = [];
-                        for (var name of selectedNames) {
-                            var feat = featureMap.get(name);
-                            if (feat) features.push(feat);
-                        }
-                        if (features.length === 0) return;
-                        exportJson(features);
-                    });
+                document.getElementById("btn-export").addEventListener("click", function () {
+                    if (selectedNames.size === 0) return;
+                    var features = [];
+                    for (var name of selectedNames) {
+                        var feat = featureMap.get(name);
+                        if (feat) features.push(feat);
+                    }
+                    if (features.length === 0) return;
+                    exportJson(features);
+                });
 
                 function exportJson(features) {
                     var now = Date.now();
                     var siteInput = document.getElementById("merged-name").value.trim();
 
-                    // ── Step 1: cluster features by adjacency ──
-                    // turf.union succeeds → same cluster (all coords preserved)
-                    // turf.union fails    → different cluster (separate Feature)
+                    // determine level: use the finest level present in selection
+                    var minLevel = 2;
+                    for (var k = 0; k < features.length; k++) {
+                        var lv = getFeatureLevel(features[k]);
+                        if (lv < minLevel) minLevel = lv;
+                    }
+                    var lvl = minLevel;
+                    var nameKey = "NAME_" + lvl;
+                    var gidKey = "GID_" + lvl;
+                    var regionKey = (lvl === 2) ? "NAME_1" : "NAME_0";
+                    var levelNameStr = (lvl === 2) ? "district" : "region";
+
+                    // cluster features by adjacency
                     var remaining = features.slice();
-                    var clusters = []; // { feats, geom }
+                    var clusters = [];
 
                     while (remaining.length > 0) {
                         var clusterFeats = [remaining.shift()];
-                        var clusterUnion = turf.feature(
-                            turf.multiPolygon(clusterFeats[0].geometry.coordinates)
-                        );
-
+                        var clusterUnion = turf.feature(turf.multiPolygon(clusterFeats[0].geometry.coordinates));
                         var i = 0;
                         while (i < remaining.length) {
-                            var cand = turf.feature(
-                                turf.multiPolygon(remaining[i].geometry.coordinates)
-                            );
+                            var cand = turf.feature(turf.multiPolygon(remaining[i].geometry.coordinates));
                             try {
                                 var u = turf.union(clusterUnion, cand);
-                                if (u) {
-                                    clusterUnion = u;
-                                    clusterFeats.push(remaining[i]);
-                                    remaining.splice(i, 1);
-                                    // array shifted — don't increment i
-                                } else {
-                                    i++;
-                                }
-                            } catch (e) {
-                                i++;
-                            }
+                                if (u) { clusterUnion = u; clusterFeats.push(remaining[i]); remaining.splice(i, 1); }
+                                else { i++; }
+                            } catch (e) { i++; }
                         }
-                        // normalize geom: unwrap then MultiPolygon→Polygon
                         var geom = JSON.parse(JSON.stringify(clusterUnion.geometry));
-                        while (geom && geom.type === "Feature" && geom.geometry) {
-                            geom = geom.geometry;
-                        }
-                        if (geom && geom.type === "MultiPolygon" && geom.coordinates.length === 1) {
+                        while (geom && geom.type === "Feature" && geom.geometry) geom = geom.geometry;
+                        if (geom && geom.type === "MultiPolygon" && geom.coordinates.length === 1)
                             geom = { type: "Polygon", coordinates: geom.coordinates[0] };
-                        }
-                        // MultiPolygon with multiple parts (islands, etc.) —
-                        // try concave hull, then convex, last resort take first polygon
                         if (geom && geom.type === "MultiPolygon") {
                             var pts = [];
                             for (var pi = 0; pi < geom.coordinates.length; pi++) {
                                 var ring = geom.coordinates[pi][0];
-                                for (var ri = 0; ri < ring.length; ri++) {
-                                    pts.push(turf.point(ring[ri]));
-                                }
+                                for (var ri = 0; ri < ring.length; ri++) pts.push(turf.point(ring[ri]));
                             }
                             if (pts.length > 0) {
                                 var fixed = null;
@@ -816,46 +779,41 @@
                         clusters.push({ feats: clusterFeats, geom: geom });
                     }
 
-                    // ── Step 2: build region name ──
+                    // build region name
                     var regionSet = new Set();
                     for (var ri = 0; ri < features.length; ri++) {
-                        regionSet.add(features[ri].properties.NAME_1);
+                        var v = features[ri].properties[regionKey];
+                        if (v) regionSet.add(v);
                     }
-                    var regionName =
-                        regionSet.size === 1
-                            ? Array.from(regionSet)[0]
-                            : Array.from(regionSet).join("、");
+                    var regionName = regionSet.size === 1
+                        ? Array.from(regionSet)[0]
+                        : Array.from(regionSet).join("、");
 
-                    // ── Step 3: build result features ──
+                    // build result features
                     var resultFeatures = [];
                     for (var c = 0; c < clusters.length; c++) {
                         var cl = clusters[c];
                         var clMid, clName;
                         if (clusters.length === 1 && cl.feats.length === 1) {
-                            // single city
-                            clMid = cl.feats[0].properties.GID_2 || ("city_" + now);
-                            clName = siteInput || cl.feats[0].properties.NAME_2;
+                            clMid = cl.feats[0].properties[gidKey] || ("admin_" + now);
+                            clName = siteInput || cl.feats[0].properties[nameKey];
                         } else if (clusters.length === 1) {
-                            // all adjacent → single merged feature
                             clMid = "merged_" + now;
                             var allNames = [];
-                            for (var n = 0; n < cl.feats.length && n < 3; n++) {
-                                allNames.push(cl.feats[n].properties.NAME_2);
-                            }
+                            for (var n = 0; n < cl.feats.length && n < 3; n++)
+                                allNames.push(cl.feats[n].properties[nameKey]);
                             var sfx = cl.feats.length > 3 ? "等" + cl.feats.length + "个行政区" : "";
                             clName = siteInput || (allNames.join("、") + sfx + "联合围栏");
                         } else {
-                            // multiple clusters → one feature per cluster
                             clMid = "merged_" + now + "_" + (c + 1);
                             if (cl.feats.length === 1) {
                                 clName = siteInput
-                                    ? siteInput + " - " + cl.feats[0].properties.NAME_2
-                                    : cl.feats[0].properties.NAME_2;
+                                    ? siteInput + " - " + cl.feats[0].properties[nameKey]
+                                    : cl.feats[0].properties[nameKey];
                             } else {
                                 var clNames = [];
-                                for (var m = 0; m < cl.feats.length && m < 3; m++) {
-                                    clNames.push(cl.feats[m].properties.NAME_2);
-                                }
+                                for (var m = 0; m < cl.feats.length && m < 3; m++)
+                                    clNames.push(cl.feats[m].properties[nameKey]);
                                 var clSfx = cl.feats.length > 3 ? "等" + cl.feats.length + "个" : "";
                                 clName = siteInput
                                     ? siteInput + " - " + clNames.join("、") + clSfx
@@ -872,8 +830,8 @@
                                 fenceType: "polygon",
                                 name: clName,
                                 regionName: regionName,
-                                level: 2,
-                                levelName: "district",
+                                level: lvl,
+                                levelName: levelNameStr,
                                 gid: clMid,
                                 updatedAt: fmtDate(now),
                             },
@@ -881,22 +839,19 @@
                     }
 
                     var allMergedName = siteInput || "联合围栏_" + now;
-
                     var result = {
                         type: "FeatureCollection",
                         features: resultFeatures,
                         properties: {
                             siteId: "1536",
                             version: 1,
-                            level: 2,
-                            levelName: "district",
+                            level: lvl,
+                            levelName: levelNameStr,
                             total: 0,
                         },
                     };
 
-                    var blob = new Blob([JSON.stringify(result, null, 2)], {
-                        type: "application/json",
-                    });
+                    var blob = new Blob([JSON.stringify(result, null, 2)], { type: "application/json" });
                     var url = URL.createObjectURL(blob);
                     var a = document.createElement("a");
                     a.href = url;
@@ -908,9 +863,7 @@
                 }
 
                 /* ---- resize ---- */
-                window.addEventListener("resize", function () {
-                    map.invalidateSize();
-                });
+                window.addEventListener("resize", function () { map.invalidateSize(); });
 
                 /* ---- go ---- */
                 loadData();
