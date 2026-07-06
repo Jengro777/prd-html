@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COD限制规则</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --primary: #42b7ae; --primary-hover: #339b94; --primary-bg: #e6f7f6;
+  --bg: #f5f7fa; --card: #fff; --border: #e5e7eb; --border-soft: #f0f2f5;
+  --text: #333; --text-secondary: #666; --text-muted: #999;
+  --success: #52c41a; --warning: #faad14; --error: #f5222d;
+  --radius-card: 12px; --radius-control: 8px; --radius-tag: 4px;
+  --shadow-card: 0 1px 2px rgba(15,23,42,0.03);
+  --sidebar-width: 220px; --header-height: 64px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system, BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; font-size:14px; line-height:1.5; }
+.shell { min-height:100vh; display:flex; flex-direction:column; }
+
+.header { position:sticky; top:0; z-index:30; display:flex; height:var(--header-height); align-items:center; justify-content:space-between; gap:16px; padding:0 24px; border-bottom:1px solid var(--border-soft); background:rgba(255,255,255,0.96); backdrop-filter:blur(10px); }
+.brand { display:flex; align-items:center; gap:12px; }
+.brand-icon { display:flex; width:32px; height:32px; align-items:center; justify-content:center; border-radius:8px; background:var(--primary); color:#fff; font-size:16px; }
+.brand-title { color:#1f2937; font-size:18px; font-weight:600; }
+
+.main-wrap { display:flex; flex:1; min-height:0; }
+
+.sidebar { width:var(--sidebar-width); flex-shrink:0; background:#fff; border-right:1px solid var(--border-soft); padding:20px 0; position:sticky; top:var(--header-height); height:calc(100vh - var(--header-height)); overflow-y:auto; }
+#sidebar-container { width: var(--sidebar-width); flex-shrink: 0; }
+.sidebar-section { padding:0 12px; margin-bottom:24px; }
+.sidebar-label { padding:4px 12px 8px; color:var(--text-muted); font-size:11px; font-weight:600; letter-spacing:0.8px; }
+.sidebar-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; color:var(--text-secondary); font-size:14px; text-decoration:none; transition:all 0.12s; }
+.sidebar-item i { width:18px; font-size:14px; text-align:center; flex-shrink:0; }
+.sidebar-item:hover { background:var(--bg); color:var(--primary); }
+.sidebar-item.active { background:var(--primary-bg); color:var(--primary); font-weight:500; }
+
+.content { flex:1; min-width:0; padding:24px; }
+.page-header { margin-bottom:24px; }
+.page-header h1 { color:#1f2937; font-size:20px; font-weight:600; }
+.page-header p { margin-top:4px; color:var(--text-muted); font-size:13px; }
+
+.card { background:var(--card); border:1px solid var(--border-soft); border-radius:var(--radius-card); box-shadow:var(--shadow-card); padding:20px; }
+.card + .card { margin-top:20px; }
+.card-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+.card-title { font-size:16px; font-weight:600; }
+.card-desc { margin-top:4px; color:var(--text-muted); font-size:12px; }
+
+.form-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px 20px; }
+.form-row-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px 20px; }
+.form-row-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:16px 20px; }
+.form-label { display:block; margin-bottom:6px; color:var(--text-secondary); font-size:13px; }
+.form-control { width:100%; height:36px; padding:0 11px; border:1px solid var(--border); border-radius:var(--radius-control); background:#fff; color:var(--text); font-size:14px; font-family:inherit; outline:none; transition:border-color 0.2s; }
+.form-control:focus { border-color:var(--primary); box-shadow:0 0 0 2px rgba(66,183,174,0.16); }
+select.form-control { appearance:auto; cursor:pointer; }
+.form-help { margin-top:4px; color:var(--text-muted); font-size:12px; }
+
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; height:36px; padding:0 16px; border-radius:var(--radius-control); font-size:14px; font-family:inherit; font-weight:500; cursor:pointer; transition:all 0.15s; white-space:nowrap; border:1px solid var(--border); background:#fff; color:var(--text); text-decoration:none; }
+.btn:hover { border-color:#d1d5db; background:#fafafa; }
+.btn-primary { background:var(--primary); border-color:var(--primary); color:#fff; }
+.btn-primary:hover { background:var(--primary-hover); border-color:var(--primary-hover); }
+.btn-danger { color:var(--error); }
+.btn-sm { height:32px; padding:0 12px; font-size:13px; }
+.btn-xs { height:28px; padding:0 8px; font-size:12px; }
+
+.actions { display:flex; align-items:center; gap:8px; }
+.actions-right { justify-content:flex-end; }
+.mt-4 { margin-top:16px; }
+
+.table-wrap { overflow-x:auto; border:1px solid var(--border-soft); border-radius:var(--radius-card); }
+table { width:100%; border-collapse:collapse; }
+table th { padding:12px 16px; background:#fafafa; border-bottom:1px solid var(--border-soft); color:var(--text-secondary); font-size:13px; font-weight:500; text-align:left; }
+table td { padding:12px 16px; border-bottom:1px solid #f5f5f5; color:var(--text); font-size:14px; vertical-align:middle; }
+table tbody tr:last-child td { border-bottom:0; }
+table tr:hover td { background:#fafafa; }
+
+.tag { display:inline-flex; height:22px; align-items:center; padding:0 8px; border-radius:var(--radius-tag); font-size:12px; font-weight:500; line-height:20px; white-space:nowrap; }
+.tag-default { background:#f5f5f5; color:var(--text-secondary); }
+.tag-primary { background:var(--primary-bg); color:var(--primary); }
+.tag-success { background:#f0faf0; color:var(--success); }
+.tag-warning { background:#fff7e6; color:var(--warning); }
+            .priority-badge {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 28px;
+                height: 24px;
+                padding: 0 8px;
+                border-radius: 12px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: #fff;
+                font-size: 12px;
+                font-weight: 600;
+                line-height: 24px;
+            }
+.tag-error { background:#fff1f0; color:var(--error); }
+
+.pagination { display:flex; align-items:center; justify-content:flex-end; gap:4px; }
+.pagination button { display:inline-flex; align-items:center; justify-content:center; min-width:32px; height:32px; padding:0 6px; border:1px solid var(--border); border-radius:6px; background:#fff; color:var(--text); font-size:13px; cursor:pointer; }
+.pagination button:hover { border-color:var(--primary); color:var(--primary); }
+.pagination button.active { background:var(--primary); border-color:var(--primary); color:#fff; }
+.pagination button:disabled { opacity:0.4; cursor:default; }
+.pagination .info { margin-left:12px; color:var(--text-muted); font-size:13px; }
+
+.modal-overlay { display:none; position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; }
+.modal-overlay.open { display:flex; }
+.modal { width:720px; max-width:calc(100vw - 40px); max-height:calc(100vh - 40px); background:#fff; border-radius:var(--radius-card); box-shadow:0 20px 60px rgba(15,23,42,0.18); display:flex; flex-direction:column; }
+.modal-header { display:flex; align-items:center; justify-content:space-between; padding:20px 24px 0; font-size:16px; font-weight:600; }
+.modal-close { display:flex; align-items:center; justify-content:center; width:28px; height:28px; border:none; background:none; border-radius:6px; color:var(--text-muted); font-size:16px; cursor:pointer; }
+.modal-close:hover { background:var(--bg); color:var(--text); }
+.modal-body { padding:20px 24px; overflow-y:auto; flex:1; }
+.modal-footer { display:flex; align-items:center; justify-content:flex-end; gap:8px; padding:12px 24px; border-top:1px solid var(--border-soft); }
+
+.empty-state { padding:48px 20px; color:var(--text-muted); text-align:center; }
+.empty-state i { margin-bottom:12px; color:#d0d5dd; font-size:40px; }
+
+.condition-group { background:var(--bg); border-radius:8px; padding:16px; margin-bottom:12px; border:1px solid var(--border-soft); }
+.condition-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.condition-row { display:grid; grid-template-columns:160px 110px 1fr 32px; gap:8px; align-items:center; margin-bottom:8px; }
+.condition-row:last-child { margin-bottom:0; }
+.condition-row select, .condition-row input { height:32px; padding:0 8px; border:1px solid var(--border); border-radius:6px; font-size:13px; font-family:inherit; outline:none; background:#fff; }
+.condition-row select:focus, .condition-row input:focus { border-color:var(--primary); }
+.condition-row .btn-del { display:flex; align-items:center; justify-content:center; width:28px; height:28px; border:none; background:none; border-radius:6px; color:var(--text-muted); cursor:pointer; font-size:14px; }
+.condition-row .btn-del:hover { background:#fff1f0; color:var(--error); }
+
+.modal-info { padding:12px 16px; border-radius:8px; background:#e6f7f6; color:var(--primary); font-size:13px; line-height:1.5; margin-bottom:16px; }
+.modal-info i { margin-right:6px; }
+.checkbox-group { display:flex; flex-direction:column; gap:8px; }
+.checkbox-group label { display:flex; align-items:center; gap:8px; font-size:14px; cursor:pointer; }
+
+@media (max-width:960px) { .form-row { grid-template-columns:repeat(2,1fr); } .form-row-3 { grid-template-columns:repeat(2,1fr); } }
+@media (max-width:768px) { .sidebar { display:none; } }
+#sidebar-container { width: var(--sidebar-width); flex-shrink: 0; }
+@media (max-width:640px) { .header { height:56px; padding:0 16px; } .brand-title { font-size:16px; } .content { padding:16px; } .form-row,.form-row-3,.form-row-2 { grid-template-columns:1fr; } .card { padding:16px; } .condition-row { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header class="header">
+    <div class="brand">
+      <div class="brand-icon"><i class="fas fa-hand-holding-usd"></i></div>
+      <div class="brand-title">COD 限制管理</div>
+    </div>
+  </header>
+
+  <div class="main-wrap">
+              <div id="sidebar-container"></div>
+  
+    <main class="content">
+      <div class="page-header">
+        <h1>COD 限制规则</h1>
+        <p>综合商品货值、订单货值、拒签率等条件，灵活配置会员是否可以使用 COD。</p>
+      </div>
+
+      <!-- Filter -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">筛选查询</div>
+          <button class="btn btn-sm" onclick="resetFilters()">重置</button>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">规则名称</label>
+            <input class="form-control" id="filterKeyword" placeholder="搜索规则名称" oninput="render()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">执行动作</label>
+            <select class="form-control" id="filterAction" onchange="render()">
+              <option value="">全部动作</option>
+              <option value="allow">允许使用</option>
+              <option value="block">禁止使用</option>
+              <option value="warning">仅警告</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">匹配逻辑</label>
+            <select class="form-control" id="filterLogic" onchange="render()">
+              <option value="">全部逻辑</option>
+              <option value="and">全部匹配 (AND)</option>
+              <option value="or">任一匹配 (OR)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">状态</label>
+            <select class="form-control" id="filterStatus" onchange="render()">
+              <option value="">全部状态</option>
+              <option value="active">启用</option>
+              <option value="inactive">停用</option>
+            </select>
+          </div>
+        </div>
+        <div class="actions actions-right" style="margin-top:16px">
+          <button class="btn btn-sm" onclick="resetFilters()">重置</button>
+          <button class="btn btn-primary btn-sm" onclick="render()">查询</button>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">使用规则列表</div>
+            <div class="card-desc">共 <span id="totalCount">4</span> 条规则，按优先级从高到低匹配</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openModal()"><i class="fas fa-plus"></i> 新建规则</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:100px">规则名称</th>
+                <th>条件摘要</th>
+                <th style="width:80px">匹配逻辑</th>
+                <th style="width:90px">执行动作</th>
+                <th style="width:80px">优先级</th>
+                <th style="width:50px">状态</th>
+                <th style="width:90px">操作</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+        <div class="actions actions-right mt-4" id="pagination"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <span id="modalTitle">新建综合规则</span>
+        <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">规则名称 <span style="color:var(--error)">*</span></label>
+            <input class="form-control" id="formName" placeholder="如：低风险允许COD">
+          </div>
+          <div class="form-group">
+            <label class="form-label">优先级 <span style="color:var(--error)">*</span></label>
+            <input class="form-control" id="formPriority" type="number" value="10" min="1" placeholder="数字越小优先级越高">
+            <div class="form-help">数字越小，匹配优先级越高</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">匹配逻辑 <span style="color:var(--error)">*</span></label>
+            <select class="form-control" id="formLogic">
+              <option value="and">全部匹配 (AND)</option>
+              <option value="or">任一匹配 (OR)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top:4px">
+          <label class="form-label">条件列表</label>
+          <div id="conditionsContainer"></div>
+          <button class="btn btn-sm" onclick="addCondition()" style="margin-top:8px"><i class="fas fa-plus" style="font-size:12px"></i> 添加条件</button>
+        </div>
+
+        <div class="form-row-2" style="margin-top:8px">
+          <div class="form-group">
+            <label class="form-label">执行动作 <span style="color:var(--error)">*</span></label>
+            <select class="form-control" id="formAction" onchange="togglePeriodConfig()">
+              <option value="allow">允许使用 COD</option>
+              <option value="block">禁止使用 COD</option>
+              <option value="warning">仅警告，不限制</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">状态</label>
+            <select class="form-control" id="formStatus">
+              <option value="active">启用</option>
+              <option value="inactive">停用</option>
+            </select>
+          </div>
+        </div>
+        <div id="periodConfig" style="display:none">
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label">观察周期 (天)</label>
+              <div style="display:flex;gap:8px;align-items:center">
+                <input class="form-control" id="formPeriod" type="number" value="30" min="1" style="width:120px">
+                <label style="font-size:13px;color:var(--text-secondary);white-space:nowrap">
+                  <input type="checkbox" id="formPeriodUnlimited" onchange="togglePeriodUnlimited()"> 不限
+                </label>
+              </div>
+              <div class="form-help">评估规则条件时，仅统计该周期内的会员订单数据（拒签率、订单金额等），超出周期的历史记录不参与计算；勾选「不限」则考察全部历史数据</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">自动解除周期 (天)</label>
+              <div style="display:flex;gap:8px;align-items:center">
+                <input class="form-control" id="formUnlock" type="number" value="14" min="1" style="width:120px">
+                <label style="font-size:13px;color:var(--text-secondary);white-space:nowrap">
+                  <input type="checkbox" id="formUnlockUnlimited" onchange="toggleUnlockUnlimited()"> 不限
+                </label>
+              </div>
+              <div class="form-help">该规则生效后，经过此天数自动解除限制/恢复原有权限；勾选「不限」则规则永久有效</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-sm" onclick="closeModal()">取消</button>
+        <button class="btn btn-primary btn-sm" onclick="submitForm()">保存</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+  <!-- Threshold Modal -->
+  <div class="modal-overlay" id="thresholdOverlay">
+    <div class="modal" style="width:560px">
+      <div class="modal-header">
+        <span>拒签率阈值设置</span>
+        <button class="modal-close" onclick="closeThresholdModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-info"><i class="fas fa-info-circle"></i>当会员拒签率达到以下阈值时，系统将自动执行对应操作。</div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">警告线 (%)</label>
+            <input class="form-control" id="thWarning" type="number" value="20" min="1" max="100">
+            <div class="form-help">超过此比例将收到警告提醒</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">限制线 (%)</label>
+            <input class="form-control" id="thRestrict" type="number" value="40" min="1" max="100">
+            <div class="form-help">超过此比例将限制 COD 使用</div>
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">观察周期 (天)</label>
+            <input class="form-control" id="thPeriod" type="number" value="30" min="7" step="7">
+            <div class="form-help">在此周期内统计拒签率</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">自动解除周期 (天)</label>
+            <input class="form-control" id="thUnlock" type="number" value="14" min="1">
+            <div class="form-help">限制后自动解除的天数</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">限制动作</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" id="actCod" checked> 禁止使用 COD 支付</label>
+            <label><input type="checkbox" id="actFee"> 提高 COD 手续费</label>
+            <label><input type="checkbox" id="actDeposit"> 要求预付押金</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-sm" onclick="closeThresholdModal()">取消</button>
+        <button class="btn btn-primary btn-sm" onclick="closeThresholdModal()">保存</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+function renderSidebar(activeId) {
+  var container = document.getElementById('sidebar-container');
+  if (!container) return;
+  var items = [
+    { id: 'fee', href: 'COD手续费.html', icon: 'fa-percent', label: 'COD手续费' },
+    { id: 'rejection', href: '拒签报表.html', icon: 'fa-undo-alt', label: '拒签报表' },
+    { id: 'rules', href: 'COD限制规则.html', icon: 'fa-cogs', label: 'COD限制规则' },
+    { id: 'members', href: '会员管理.html', icon: 'fa-users', label: '会员列表' },
+  ];
+  var html = '<aside class="sidebar"><div class="sidebar-section"><div class="sidebar-label">COD \u9650\u5236</div>';
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    var cls = item.id === activeId ? 'sidebar-item active' : 'sidebar-item';
+    html += '<a class="' + cls + '" href="' + item.href + '"><i class="fas ' + item.icon + '"></i> ' + item.label + '</a>\n        ';
+  }
+  html += '</div></aside>';
+  container.innerHTML = html;
+}
+
+
+const dimMap = { product_value:'商品货值', order_value:'订单货值', rejection_rate:'拒签率' };
+const opMap = { gte:'>=', lte:'<=', between:'介于', gt:'>', lt:'<' };
+const actionMap = { allow:'允许使用', block:'禁止使用', warning:'仅警告' };
+const actionClass = { allow:'tag-success', block:'tag-error', warning:'tag-warning' };
+
+const thresholds = { warning: 20, restrict: 40, period: 30, unlockDays: 14 };
+
+let rules = [
+  {
+    id:1, name:'低风险自动通过', priority:10, logic:'and',
+    conditions:[
+      { dim:'product_value', op:'lte', val1:200, val2:null },
+      { dim:'rejection_rate', op:'lte', val1:10, val2:null },
+    ],
+    action:'allow', status:'active',
+    period: 30, unlockDays: 14,
+  },
+  {
+    id:2, name:'高风险直接拦截', priority:20, logic:'or',
+    conditions:[
+      { dim:'product_value', op:'gt', val1:5000, val2:null },
+      { dim:'rejection_rate', op:'gt', val1:40, val2:null },
+    ],
+    action:'block', status:'active',
+    period: 30, unlockDays: 14,
+  },
+  {
+    id:3, name:'中等风险警告', priority:30, logic:'and',
+    conditions:[
+      { dim:'rejection_rate', op:'between', val1:20, val2:40 },
+    ],
+    action:'warning', status:'active',
+    period: 30, unlockDays: 14,
+  },
+  {
+    id:4, name:'大额订单需审核', priority:40, logic:'and',
+    conditions:[
+      { dim:'order_value', op:'gt', val1:2000, val2:null },
+    ],
+    action:'warning', status:'inactive',
+    period: 30, unlockDays: 14,
+  },
+];
+
+let editingId = null;
+let currentPage = 1;
+const pageSize = 10;
+
+function getFiltered() {
+  const kw = document.getElementById('filterKeyword').value.toLowerCase();
+  const act = document.getElementById('filterAction').value;
+  const logic = document.getElementById('filterLogic').value;
+  const st = document.getElementById('filterStatus').value;
+  return rules.filter(r => {
+    if (kw && !r.name.toLowerCase().includes(kw)) return false;
+    if (act && r.action !== act) return false;
+    if (logic && r.logic !== logic) return false;
+    if (st && r.status !== st) return false;
+    return true;
+  });
+}
+
+function condText(c) {
+  const dim = dimMap[c.dim] || c.dim;
+  const op = opMap[c.op] || c.op;
+  if (c.op === 'between') return dim + ' ' + op + ' ' + c.val1 + ' ~ ' + (c.val2||'∞');
+  return dim + ' ' + op + ' ' + c.val1;
+}
+
+function render() {
+  const filtered = getFiltered();
+  document.getElementById('totalCount').textContent = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  if (currentPage > totalPages) currentPage = totalPages;
+  const start = (currentPage-1)*pageSize;
+  const page = filtered.slice(start, start+pageSize);
+
+  const tbody = document.getElementById('tableBody');
+  if (page.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-inbox"></i><div>暂无综合规则，点击上方「新建规则」创建</div></div></td></tr>';
+  } else {
+    tbody.innerHTML = page.map(r => {
+      const conds = r.conditions.map(c => condText(c)).join(r.logic==='and' ? ' 且 ' : ' 或 ');
+      return `<tr>
+        <td><div style="font-weight:500">${esc(r.name)}</div></td>
+        <td style="font-size:13px;color:var(--text-secondary)">${esc(conds)}</td>
+        <td><span class="tag ${r.logic==='and'?'tag-primary':'tag-default'}">${r.logic==='and'?'全部匹配':'任一匹配'}</span></td>
+        <td><span class="tag ${actionClass[r.action]}">${actionMap[r.action]}</span><br><span style="font-size:12px;color:var(--text-muted);line-height:1.6">${r.period ? r.period+"天" : "不限"} / ${r.unlockDays ? r.unlockDays+"天" : "不限"}</span></td>
+        <td><span class="priority-badge">${r.priority}</span></td>
+        <td><span class="tag ${r.status==='active'?'tag-success':'tag-default'}">${r.status==='active'?'启用':'停用'}</span></td>
+        <td><div class="actions" style="justify-content:flex-start">
+          <button class="btn btn-text btn-xs" onclick="edit(${r.id})">编辑</button>
+          <button class="btn btn-text btn-xs" onclick="toggleStatus(${r.id})">${r.status==='active'?'停用':'启用'}</button>
+          <button class="btn btn-text btn-xs btn-danger" onclick="del(${r.id})">删除</button>
+        </div></td>
+      </tr>`;
+    });
+  }
+
+  const pg = document.getElementById('pagination');
+  if (totalPages <= 1) { pg.innerHTML = ''; return; }
+  let h = '';
+  h += `<button ${currentPage<=1?'disabled':''} onclick="goPage(${currentPage-1})"><i class="fas fa-chevron-left"></i></button>`;
+  for (let i=1; i<=totalPages; i++) h += i===currentPage ? `<button class="active">${i}</button>` : `<button onclick="goPage(${i})">${i}</button>`;
+  h += `<button ${currentPage>=totalPages?'disabled':''} onclick="goPage(${currentPage+1})"><i class="fas fa-chevron-right"></i></button>`;
+  h += `<span class="info">共 ${filtered.length} 条</span>`;
+  pg.innerHTML = h;
+}
+
+function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function goPage(p) { currentPage = p; render(); }
+function resetFilters() {
+  ['filterKeyword','filterAction','filterLogic','filterStatus'].forEach(id => document.getElementById(id).value = '');
+  currentPage = 1; render();
+}
+
+// ===== Conditions Builder =====
+let conditionDefs = [];
+
+function renderConditions() {
+  const container = document.getElementById('conditionsContainer');
+  if (conditionDefs.length === 0) {
+    container.innerHTML = '<div style="padding:12px 0;color:var(--text-muted);font-size:13px">暂无条件，点击下方「添加条件」</div>';
+    return;
+  }
+  container.innerHTML = conditionDefs.map((c, i) => {
+    const dimOpts = ['product_value','order_value','rejection_rate'].map(d =>
+      `<option value="${d}" ${c.dim===d?'selected':''}>${dimMap[d]}</option>`
+    ).join('');
+    let opOpts = '';
+    const ops = c.dim === 'rejection_rate' ? ['lte','gte','between'] : ['lte','gte','between','gt','lt'];
+    opOpts = ops.map(o => `<option value="${o}" ${c.op===o?'selected':''}>${opMap[o]}</option>`).join('');
+    const showVal2 = c.op === 'between';
+    return `<div class="condition-group">
+      <div class="condition-header">
+        <span style="font-weight:500;font-size:13px;color:var(--text-secondary)">条件 ${i+1}</span>
+        <button class="btn btn-xs" style="color:var(--error)" onclick="removeCondition(${i})"><i class="fas fa-trash-alt"></i> 删除</button>
+      </div>
+      <div class="condition-row">
+        <select onchange="updateCondDim(${i},this.value)">${dimOpts}</select>
+        <select onchange="updateCondOp(${i},this.value)">${opOpts}</select>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="number" step="0.1" min="0" placeholder="值" value="${c.val1??''}" onchange="updateCondVal1(${i},this.value)" style="flex:1;height:32px;padding:0 8px;border:1px solid var(--border);border-radius:6px;font-size:13px;outline:none">
+          ${showVal2 ? '<span style="color:var(--text-muted)">~</span><input type="number" step="0.1" min="0" placeholder="最大值" value="'+(c.val2??'')+'" onchange="updateCondVal2('+i+',this.value)" style="flex:1;height:32px;padding:0 8px;border:1px solid var(--border);border-radius:6px;font-size:13px;outline:none">' : ''}
+        </div>
+        <div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function addCondition() {
+  conditionDefs.push({ dim:'product_value', op:'lte', val1:null, val2:null });
+  renderConditions();
+}
+
+function removeCondition(i) { conditionDefs.splice(i,1); renderConditions(); }
+function updateCondDim(i, v) { conditionDefs[i].dim = v; if (v==='rejection_rate' && (conditionDefs[i].op==='gt'||conditionDefs[i].op==='lt')) conditionDefs[i].op='lte'; renderConditions(); }
+function updateCondOp(i, v) { conditionDefs[i].op = v; if (v!=='between') conditionDefs[i].val2 = null; renderConditions(); }
+function updateCondVal1(i, v) { conditionDefs[i].val1 = v ? parseFloat(v) : null; }
+function updateCondVal2(i, v) { conditionDefs[i].val2 = v ? parseFloat(v) : null; }
+
+// ===== Modal =====
+
+function togglePeriodUnlimited() {
+  const cb = document.getElementById("formPeriodUnlimited");
+  const inp = document.getElementById("formPeriod");
+  inp.disabled = cb.checked;
+  if (cb.checked) inp.value = "";
+}
+function toggleUnlockUnlimited() {
+  const cb = document.getElementById("formUnlockUnlimited");
+  const inp = document.getElementById("formUnlock");
+  inp.disabled = cb.checked;
+  if (cb.checked) inp.value = "";
+}
+function togglePeriodConfig() {
+  const action = document.getElementById("formAction").value;
+  document.getElementById("periodConfig").style.display = (action === "allow" || action === "block") ? "block" : "none";
+}
+
+function openModal(data) {
+  editingId = data ? data.id : null;
+  document.getElementById('modalTitle').textContent = data ? '编辑综合规则' : '新建综合规则';
+  document.getElementById('formName').value = data ? data.name : '';
+  document.getElementById('formPriority').value = data ? data.priority : 10;
+  document.getElementById('formLogic').value = data ? data.logic : 'and';
+  document.getElementById('formAction').value = data ? data.action : 'allow';
+  document.getElementById('formPeriod').value = data ? (data.period || 30) : 30;
+  document.getElementById('formUnlock').value = data ? (data.unlockDays || 14) : 14;
+  document.getElementById('formPeriodUnlimited').checked = data ? data.period == null : false;
+  document.getElementById('formUnlockUnlimited').checked = data ? data.unlockDays == null : false;
+  togglePeriodUnlimited();
+  toggleUnlockUnlimited();
+  togglePeriodConfig();
+  document.getElementById('formStatus').value = data ? data.status : 'active';
+  conditionDefs = data ? JSON.parse(JSON.stringify(data.conditions)) : [];
+  renderConditions();
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); editingId = null; }
+
+function submitForm() {
+  const name = document.getElementById('formName').value.trim();
+  if (!name) { alert('请输入规则名称'); return; }
+  const priority = parseInt(document.getElementById('formPriority').value) || 10;
+  if (conditionDefs.length === 0) { alert('请至少添加一个条件'); return; }
+  // Validate conditions
+  for (let i=0; i<conditionDefs.length; i++) {
+    if (conditionDefs[i].val1 == null || conditionDefs[i].val1 === '') { alert('条件 '+(i+1)+' 的值不能为空'); return; }
+  }
+  const form = {
+    name,
+    priority,
+    logic: document.getElementById('formLogic').value,
+    conditions: JSON.parse(JSON.stringify(conditionDefs)),
+    action: document.getElementById('formAction').value,
+    status: document.getElementById('formStatus').value,
+    period: document.getElementById('formPeriodUnlimited').checked ? null : parseInt(document.getElementById('formPeriod').value) || 30,
+    unlockDays: document.getElementById('formUnlockUnlimited').checked ? null : parseInt(document.getElementById('formUnlock').value) || 14,
+  };
+  if (editingId) {
+    const i = rules.findIndex(r => r.id === editingId);
+    if (i>=0) { form.id = editingId; rules[i] = {...rules[i], ...form}; }
+  } else {
+    form.id = Date.now();
+    rules.push(form);
+  }
+  closeModal(); render();
+}
+
+function edit(id) { const r = rules.find(x => x.id === id); if (r) openModal(r); }
+function toggleStatus(id) { const r = rules.find(x => x.id === id); if (r) { r.status = r.status==='active'?'inactive':'active'; render(); } }
+function del(id) { if (!confirm('确认删除此规则？')) return; rules = rules.filter(x => x.id !== id); render(); }
+
+function openThresholdModal() {
+  document.getElementById("thWarning").value = thresholds.warning;
+  document.getElementById("thRestrict").value = thresholds.restrict;
+  document.getElementById("thPeriod").value = thresholds.period;
+  document.getElementById("thUnlock").value = thresholds.unlockDays;
+  document.getElementById("thresholdOverlay").classList.add("open");
+}
+
+function closeThresholdModal() {
+  thresholds.warning = parseInt(document.getElementById("thWarning").value) || 20;
+  thresholds.restrict = parseInt(document.getElementById("thRestrict").value) || 40;
+  thresholds.period = parseInt(document.getElementById("thPeriod").value) || 30;
+  thresholds.unlockDays = parseInt(document.getElementById("thUnlock").value) || 14;
+  document.getElementById("thresholdOverlay").classList.remove("open");
+  render();
+}
+
+renderSidebar("rules");
+render();
+</script>
+</body>
+</html>
