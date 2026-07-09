@@ -3,12 +3,9 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>验证服务商 · 供应商管理</title>
+        <title>验证服务商 · 功能概览</title>
         <script src="https://cdn.tailwindcss.com"></script>
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
         <style>
             :root {
                 --tos-primary: #42b7ae;
@@ -30,662 +27,132 @@
                 --tos-radius-card: 12px;
                 --tos-radius-control: 8px;
                 --tos-radius-tag: 4px;
-                --tos-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.03);
-                --tos-shadow-pop: 0 20px 60px rgba(15, 23, 42, 0.18);
+                --tos-shadow-card: 0 1px 2px rgba(15,23,42,0.03);
                 --sidebar-width: 240px;
             }
-
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
-
-            body {
-                background: var(--tos-bg);
-                color: var(--tos-text);
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
-                letter-spacing: 0;
-            }
-
-            .app-layout {
-                min-height: 100vh;
-                display: flex;
-            }
-
-            .tos-sidebar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                bottom: 0;
-                width: var(--sidebar-width);
-                background: #fff;
-                border-right: 1px solid var(--tos-border-soft);
-                display: flex;
-                flex-direction: column;
-                z-index: 30;
-                overflow-y: auto;
-            }
-
-            .tos-sidebar__brand {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                padding: 20px 20px 16px;
-                border-bottom: 1px solid var(--tos-border-soft);
-            }
-
-            .tos-sidebar__brand-icon {
-                width: 36px;
-                height: 36px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 10px;
-                background: var(--tos-primary-bg);
-                color: var(--tos-primary);
-                font-size: 18px;
-            }
-
-            .tos-sidebar__brand-title {
-                font-size: 18px;
-                font-weight: 700;
-                color: #1e293b;
-            }
-
-            .tos-sidebar__brand-sub {
-                font-size: 11px;
-                color: var(--tos-text-muted);
-                margin-top: 1px;
-            }
-
-            .tos-sidebar__nav {
-                flex: 1;
-                padding: 12px 12px;
-                display: flex;
-                flex-direction: column;
-                gap: 2px;
-            }
-
-            .tos-sidebar__section {
-                padding: 16px 12px 6px;
-                font-size: 11px;
-                font-weight: 600;
-                color: var(--tos-text-muted);
-                letter-spacing: 0.5px;
-            }
-
-            .tos-sidebar__item {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                padding: 10px 12px;
-                border-radius: 8px;
-                font-size: 14px;
-                font-weight: 500;
-                color: var(--tos-text-secondary);
-                cursor: pointer;
-                transition: all 0.15s;
-                text-decoration: none;
-                line-height: 1.4;
-            }
-
-            .tos-sidebar__item:hover {
-                background: var(--tos-bg);
-                color: var(--tos-text);
-            }
-
-            .tos-sidebar__item.active {
-                background: var(--tos-primary-bg);
-                color: var(--tos-primary);
-                font-weight: 600;
-            }
-
-            .tos-sidebar__item i {
-                width: 18px;
-                text-align: center;
-                font-size: 15px;
-                flex-shrink: 0;
-            }
-
-            .tos-sidebar__item .badge {
-                margin-left: auto;
-                padding: 1px 8px;
-                border-radius: 10px;
-                background: var(--tos-primary-bg);
-                color: var(--tos-primary);
-                font-size: 11px;
-                font-weight: 600;
-            }
-
-            .tos-main {
-                flex: 1;
-                margin-left: var(--sidebar-width);
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .tos-header {
-                position: sticky;
-                top: 0;
-                z-index: 20;
-                display: flex;
-                height: 60px;
-                align-items: center;
-                justify-content: space-between;
-                gap: 16px;
-                border-bottom: 1px solid var(--tos-border-soft);
-                background: rgba(255, 255, 255, 0.96);
-                padding: 0 24px;
-                backdrop-filter: blur(10px);
-            }
-
-            .tos-header__breadcrumb {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                font-size: 14px;
-                color: var(--tos-text-muted);
-            }
-
-            .tos-header__breadcrumb span {
-                color: var(--tos-text);
-                font-weight: 500;
-            }
-
-            .tos-header__actions {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-            }
-
-            .tos-header__user {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                padding: 4px 12px 4px 4px;
-                border-radius: 20px;
-                cursor: default;
-            }
-
-            .tos-header__avatar {
-                width: 30px;
-                height: 30px;
-                border-radius: 50%;
-                background: var(--tos-primary-bg);
-                color: var(--tos-primary);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 13px;
-                font-weight: 600;
-            }
-
-            .tos-page {
-                flex: 1;
-                padding: 24px;
-            }
-
-            .tos-page-title {
-                display: flex;
-                align-items: flex-start;
-                justify-content: space-between;
-                gap: 16px;
-                margin-bottom: 24px;
-            }
-
-            .tos-page-title h1 {
-                font-size: 22px;
-                font-weight: 600;
-                color: #1e293b;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-
-            .tos-page-title p {
-                margin-top: 4px;
-                color: var(--tos-text-muted);
-                font-size: 14px;
-            }
-
-            .tos-card {
-                background: #fff;
-                border: 1px solid var(--tos-border-soft);
-                border-radius: var(--tos-radius-card);
-                padding: 20px;
-                box-shadow: var(--tos-shadow-card);
-            }
-
-            .tos-card__header {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                gap: 12px;
-                margin-bottom: 16px;
-            }
-
-            .tos-card__title {
-                margin: 0;
-                color: var(--tos-text);
-                font-size: 16px;
-                font-weight: 600;
-            }
-
-            .tos-card__desc {
-                margin-top: 4px;
-                color: var(--tos-text-muted);
-                font-size: 12px;
-            }
-
-            .btn {
-                display: inline-flex;
-                height: 32px;
-                align-items: center;
-                justify-content: center;
-                padding: 0 15px;
-                border: 1px solid var(--tos-border);
-                border-radius: var(--tos-radius-control);
-                background: #fff;
-                color: var(--tos-text);
-                font-size: 14px;
-                line-height: 30px;
-                white-space: nowrap;
-                cursor: pointer;
-                transition: all 0.15s;
-                font-family: inherit;
-            }
-
-            .btn:hover {
-                border-color: #d1d5db;
-                background: #fafafa;
-            }
-
-            .btn-primary {
-                border-color: var(--tos-primary);
-                background: var(--tos-primary);
-                color: #fff;
-            }
-
-            .btn-primary:hover {
-                background: var(--tos-primary-hover);
-                border-color: var(--tos-primary-hover);
-            }
-
-            .btn-sm {
-                height: 28px;
-                padding: 0 10px;
-                font-size: 12px;
-            }
-
-            .btn-primary-outline {
-                border-color: var(--tos-primary);
-                background: transparent;
-                color: var(--tos-primary);
-            }
-
-            .btn-primary-outline:hover {
-                background: var(--tos-primary-bg);
-            }
-
-            .btn-link {
-                height: auto;
-                padding: 0 4px;
-                border: 0;
-                background: transparent;
-                color: var(--tos-primary);
-                font-size: 13px;
-            }
-
-            .btn-link:hover {
-                background: transparent;
-                text-decoration: underline;
-            }
-
-            .btn-link-danger {
-                color: var(--tos-error);
-            }
-
-            .form-label {
-                display: block;
-                margin-bottom: 6px;
-                color: var(--tos-text-secondary);
-                font-size: 13px;
-            }
-
-            .form-label sup {
-                color: var(--tos-error);
-            }
-
-            .form-field {
-                width: 100%;
-                height: 32px;
-                padding: 4px 11px;
-                border: 1px solid var(--tos-border);
-                border-radius: var(--tos-radius-control);
-                background: #fff;
-                color: var(--tos-text);
-                font-size: 14px;
-                outline: none;
-                font-family: inherit;
-                transition: border-color 0.2s;
-            }
-
-            .form-field:focus {
-                border-color: var(--tos-primary);
-                box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.1);
-            }
-
-            .form-field--textarea {
-                height: auto;
-                min-height: 72px;
-                padding: 8px 11px;
-                resize: vertical;
-                line-height: 1.5;
-            }
-
-            select.form-field {
-                appearance: auto;
-                cursor: pointer;
-            }
-
-            .form-field--disabled {
-                background: #f9fafb;
-                color: var(--tos-text-muted);
-                cursor: not-allowed;
-            }
-
-            .form-field--code {
-                font-family: "SF Mono", "Monaco", "Consolas", "Liberation Mono", monospace;
-                font-size: 13px;
-                letter-spacing: 0;
-            }
-
-            .tos-form-grid {
-                display: grid;
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 16px 24px;
-            }
-
-            .tos-form-grid--3 {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-            }
-
-            .tos-form-grid--single {
-                grid-template-columns: 1fr;
-            }
-
-            .tos-form-help {
-                margin-top: 4px;
-                color: var(--tos-text-muted);
-                font-size: 12px;
-                line-height: 1.5;
-            }
-
-            .text-right {
-                text-align: right;
-            }
-
-            .montab {
-                font-family: "SF Mono", "Monaco", "Consolas", monospace;
-            }
-
-            /* Provider tabs */
-            .provider-tabs {
-                display: flex;
-                gap: 0;
-                border-bottom: 2px solid var(--tos-border-soft);
-                margin-bottom: 24px;
-                background: #fff;
-                border-radius: 8px 8px 0 0;
-                padding: 0 4px;
-            }
-
-            .provider-tab {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                padding: 12px 20px;
-                font-size: 14px;
-                font-weight: 500;
-                color: var(--tos-text-secondary);
-                cursor: pointer;
-                border-bottom: 2px solid transparent;
-                margin-bottom: -2px;
-                transition: all 0.15s;
-                background: transparent;
-                border-left: 0;
-                border-right: 0;
-                border-top: 0;
-                font-family: inherit;
-            }
-
-            .provider-tab:hover {
-                color: var(--tos-text);
-                background: var(--tos-bg);
-            }
-
-            .provider-tab.active {
-                color: var(--tos-primary);
-                border-bottom-color: var(--tos-primary);
-                font-weight: 600;
-            }
-
-            .provider-tab .logo-dot {
-                width: 20px;
-                height: 20px;
-                border-radius: 4px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 11px;
-                font-weight: 700;
-                color: #fff;
-                flex-shrink: 0;
-            }
-
-            .provider-tab .logo-dot.sumsub {
-                background: #1677ff;
-            }
-
-            .provider-tab .logo-dot.smileid {
-                background: #f97316;
-            }
-
-            .provider-tab .logo-dot.custom {
-                background: var(--tos-text-muted);
-            }
-
-            .provider-tab .status-dot {
-                width: 6px;
-                height: 6px;
-                border-radius: 50%;
-                margin-left: 4px;
-            }
-
-            .provider-tab .status-dot.online {
-                background: var(--tos-success);
-            }
-
-            .provider-tab .status-dot.offline {
-                background: var(--tos-error);
-            }
-
-            /* Feature subtabs */
-            .feature-tabs {
-                display: flex;
-                gap: 6px;
-                margin-bottom: 20px;
-                flex-wrap: wrap;
-            }
-
-            .feature-tab {
-                padding: 6px 16px;
-                border-radius: 20px;
-                font-size: 13px;
-                font-weight: 500;
-                color: var(--tos-text-secondary);
-                background: var(--tos-bg);
-                cursor: pointer;
-                transition: all 0.15s;
-                border: 1px solid transparent;
-                font-family: inherit;
-            }
-
-            .feature-tab:hover {
-                background: #eaeef3;
-            }
-
-            .feature-tab.active {
-                background: var(--tos-primary-bg);
-                color: var(--tos-primary);
-                border-color: var(--tos-primary);
-                font-weight: 600;
-            }
-
-            .provider-panel {
-                display: none;
-            }
-
-            .provider-panel.active {
-                display: block;
-                animation: fadeIn 0.2s ease;
-            }
-
-            .feature-panel {
-                display: none;
-            }
-
-            .feature-panel.active {
-                display: block;
-                animation: fadeIn 0.2s ease;
-            }
-
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(6px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-
-            .tos-toggle {
-                position: relative;
-                display: inline-flex;
-                width: 36px;
-                height: 20px;
-                cursor: pointer;
-            }
-
-            .tos-toggle input {
-                opacity: 0;
-                width: 0;
-                height: 0;
-            }
-
-            .tos-toggle .slider {
-                position: absolute;
-                inset: 0;
-                background: #ccc;
-                border-radius: 20px;
-                transition: 0.2s;
-            }
-
-            .tos-toggle .slider::before {
-                content: "";
-                position: absolute;
-                width: 16px;
-                height: 16px;
-                left: 2px;
-                bottom: 2px;
-                background: #fff;
-                border-radius: 50%;
-                transition: 0.2s;
-            }
-
-            .tos-toggle input:checked + .slider {
-                background: var(--tos-primary);
-            }
-
-            .tos-toggle input:checked + .slider::before {
-                transform: translateX(16px);
-            }
-
-            .save-bar {
-                position: sticky;
-                bottom: 0;
-                display: flex;
-                justify-content: flex-end;
-                gap: 8px;
-                margin-top: 24px;
-                padding: 12px 20px;
-                border-top: 1px solid var(--tos-border-soft);
-                background: rgba(255, 255, 255, 0.96);
-                backdrop-filter: blur(10px);
-                border-radius: 0 0 var(--tos-radius-card) var(--tos-radius-card);
-            }
-
-            @media (max-width: 768px) {
-                .tos-sidebar { display: none; }
-                .tos-main { margin-left: 0; }
-                .tos-form-grid,
-                .tos-form-grid--3 {
-                    grid-template-columns: 1fr;
-                }
-                .provider-tabs { overflow-x: auto; }
-            }
+            * { margin:0; padding:0; box-sizing:border-box; }
+            body { background:var(--tos-bg); color:var(--tos-text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC","Microsoft YaHei",sans-serif; letter-spacing:0; }
+            .app-layout { min-height:100vh; display:flex; }
+            .tos-sidebar { position:fixed; top:0; left:0; bottom:0; width:var(--sidebar-width); background:#fff; border-right:1px solid var(--tos-border-soft); display:flex; flex-direction:column; z-index:30; overflow-y:auto; }
+            .tos-sidebar__brand { display:flex; align-items:center; gap:10px; padding:20px 20px 16px; border-bottom:1px solid var(--tos-border-soft); }
+            .tos-sidebar__brand-icon { width:36px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:10px; background:var(--tos-primary-bg); color:var(--tos-primary); font-size:18px; }
+            .tos-sidebar__brand-title { font-size:18px; font-weight:700; color:#1e293b; }
+            .tos-sidebar__brand-sub { font-size:11px; color:var(--tos-text-muted); margin-top:1px; }
+            .tos-sidebar__nav { flex:1; padding:12px 12px; display:flex; flex-direction:column; gap:2px; }
+            .tos-sidebar__section { padding:16px 12px 6px; font-size:11px; font-weight:600; color:var(--tos-text-muted); letter-spacing:0.5px; }
+            .tos-sidebar__item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; font-size:14px; font-weight:500; color:var(--tos-text-secondary); cursor:pointer; transition:all 0.15s; text-decoration:none; line-height:1.4; }
+            .tos-sidebar__item:hover { background:var(--tos-bg); color:var(--tos-text); }
+            .tos-sidebar__item.active { background:var(--tos-primary-bg); color:var(--tos-primary); font-weight:600; }
+            .tos-sidebar__item i { width:18px; text-align:center; font-size:15px; flex-shrink:0; }
+            .tos-sidebar__item .badge { margin-left:auto; padding:1px 8px; border-radius:10px; background:var(--tos-primary-bg); color:var(--tos-primary); font-size:11px; font-weight:600; }
+            .tos-main { flex:1; margin-left:var(--sidebar-width); min-height:100vh; display:flex; flex-direction:column; }
+            .tos-header { position:sticky; top:0; z-index:20; display:flex; height:60px; align-items:center; justify-content:space-between; gap:16px; border-bottom:1px solid var(--tos-border-soft); background:rgba(255,255,255,0.96); padding:0 24px; backdrop-filter:blur(10px); }
+            .tos-header__breadcrumb { display:flex; align-items:center; gap:8px; font-size:14px; color:var(--tos-text-muted); }
+            .tos-header__breadcrumb span { color:var(--tos-text); font-weight:500; }
+            .tos-header__actions { display:flex; align-items:center; gap:12px; }
+            .tos-header__user { display:flex; align-items:center; gap:8px; padding:4px 12px 4px 4px; border-radius:20px; cursor:default; }
+            .tos-header__avatar { width:30px; height:30px; border-radius:50%; background:var(--tos-primary-bg); color:var(--tos-primary); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; }
+            .tos-page { flex:1; padding:24px; }
+            .tos-page-title { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:24px; }
+            .tos-page-title h1 { font-size:22px; font-weight:600; color:#1e293b; display:flex; align-items:center; gap:10px; }
+            .tos-page-title p { margin-top:4px; color:var(--tos-text-muted); font-size:14px; }
+            .tos-card { background:#fff; border:1px solid var(--tos-border-soft); border-radius:var(--tos-radius-card); padding:20px; box-shadow:var(--tos-shadow-card); }
+            .tos-card__header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+            .tos-card__title { margin:0; color:var(--tos-text); font-size:16px; font-weight:600; display:flex; align-items:center; gap:8px; }
+            .tos-card__desc { margin-top:4px; color:var(--tos-text-muted); font-size:12px; }
+            .btn { display:inline-flex; height:32px; align-items:center; justify-content:center; padding:0 15px; border:1px solid var(--tos-border); border-radius:var(--tos-radius-control); background:#fff; color:var(--tos-text); font-size:14px; line-height:30px; white-space:nowrap; cursor:pointer; transition:all 0.15s; font-family:inherit; }
+            .btn:hover { border-color:#d1d5db; background:#fafafa; }
+            .btn-primary { border-color:var(--tos-primary); background:var(--tos-primary); color:#fff; }
+            .btn-primary:hover { background:var(--tos-primary-hover); border-color:var(--tos-primary-hover); }
+            .btn-sm { height:28px; padding:0 10px; font-size:12px; }
+            .form-label { display:block; margin-bottom:6px; color:var(--tos-text-secondary); font-size:13px; font-weight:500; }
+            .form-label sup { color:var(--tos-error); }
+            .form-field { width:100%; height:32px; padding:4px 11px; border:1px solid var(--tos-border); border-radius:var(--tos-radius-control); background:#fff; color:var(--tos-text); font-size:14px; outline:none; font-family:inherit; transition:border-color 0.2s; }
+            .form-field:focus { border-color:var(--tos-primary); box-shadow:0 0 0 2px rgba(66,183,174,0.1); }
+            select.form-field { appearance:auto; cursor:pointer; }
+            .form-field--code { font-family:"SF Mono","Monaco","Consolas",monospace; font-size:13px; }
+            .form-help { margin-top:4px; color:var(--tos-text-muted); font-size:12px; line-height:1.5; }
+            .tos-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px 24px; }
+            .tos-tag { display:inline-flex; height:22px; align-items:center; padding:0 8px; border-radius:var(--tos-radius-tag); font-size:12px; font-weight:500; line-height:20px; white-space:nowrap; }
+            .tos-tag--default { background:#f5f5f5; color:var(--tos-text-secondary); }
+            .tos-tag--success { background:var(--tos-success-bg); color:var(--tos-success); }
+            .tos-tag--primary { background:var(--tos-primary-bg); color:var(--tos-primary); }
+            .text-right { text-align:right; }
+
+            .feature-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+            .feature-card { border:1px solid var(--tos-border-soft); border-radius:var(--tos-radius-card); padding:20px; background:#fff; transition:box-shadow 0.15s; }
+            .feature-card:hover { box-shadow:0 4px 12px rgba(15,23,42,0.06); }
+            .feature-card__header { display:flex; align-items:flex-start; gap:14px; margin-bottom:12px; }
+            .feature-card__icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+            .feature-card__icon.primary { background:var(--tos-primary-bg); color:var(--tos-primary); }
+            .feature-card__icon.warning { background:var(--tos-warning-bg); color:var(--tos-warning); }
+            .feature-card__icon.success { background:var(--tos-success-bg); color:var(--tos-success); }
+            .feature-card__icon.error { background:var(--tos-error-bg); color:var(--tos-error); }
+            .feature-card__icon.default { background:var(--tos-bg); color:var(--tos-text-muted); }
+            .feature-card__name { font-size:15px; font-weight:600; color:var(--tos-text); }
+            .feature-card__desc { font-size:13px; color:var(--tos-text-secondary); line-height:1.5; margin-top:4px; }
+            .feature-card__tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+            .feature-card__badge { font-size:11px; font-weight:500; padding:2px 8px; border-radius:4px; background:var(--tos-bg); color:var(--tos-text-secondary); }
+            .coverage-row { display:flex; align-items:center; gap:12px; padding:6px 0; font-size:13px; color:var(--tos-text-secondary); }
+            .coverage-row i { width:18px; color:var(--tos-primary); }
+
+            .provider-tabs { display:flex; gap:0; border-bottom:2px solid var(--tos-border-soft); margin-bottom:24px; background:#fff; border-radius:8px 8px 0 0; padding:0 4px; }
+            .provider-tab { display:flex; align-items:center; gap:8px; padding:12px 20px; font-size:14px; font-weight:500; color:var(--tos-text-secondary); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; transition:all 0.15s; background:transparent; border-left:0; border-right:0; border-top:0; font-family:inherit; }
+            .provider-tab:hover { color:var(--tos-text); background:var(--tos-bg); }
+            .provider-tab.active { color:var(--tos-primary); border-bottom-color:var(--tos-primary); font-weight:600; }
+            .provider-tab .dot { width:6px; height:6px; border-radius:50%; }
+            .provider-tab .dot.online { background:var(--tos-success); }
+            .provider-panel { display:none; }
+            .provider-panel.active { display:block; animation:fadeIn 0.2s ease; }
+            @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+            .provider-header { display:flex; align-items:center; gap:16px; padding:16px 20px; background:#fff; border:1px solid var(--tos-border-soft); border-radius:var(--tos-radius-card); margin-bottom:20px; }
+            .provider-header__logo { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; color:#fff; flex-shrink:0; }
+            .provider-header__logo.sumsub { background:#1677ff; }
+            .provider-header__logo.smileid { background:#f97316; }
+            .provider-header__logo.custom { background:var(--tos-text-muted); }
+            .provider-header__info h3 { font-size:16px; font-weight:600; color:var(--tos-text); }
+            .provider-header__info p { font-size:13px; color:var(--tos-text-muted); margin-top:2px; }
+            .provider-header__info a { color:var(--tos-primary); }
+            .save-bar { display:flex; justify-content:flex-end; gap:8px; margin-top:20px; padding-top:16px; border-top:1px solid var(--tos-border-soft); }
+
+            .section-divider { display:flex; align-items:center; gap:12px; margin:28px 0 20px; }
+            .section-divider::after { content:""; flex:1; height:1px; background:var(--tos-border-soft); }
+            .section-divider__label { font-size:13px; font-weight:600; color:var(--tos-text-muted); letter-spacing:0.5px; white-space:nowrap; }
+
+            @media (max-width:768px) { .tos-sidebar { display:none; } .tos-main { margin-left:0; } .feature-grid,.tos-form-grid { grid-template-columns:1fr; } }
         </style>
     </head>
     <body>
         <div class="app-layout">
-            <!-- Sidebar -->
             <aside class="tos-sidebar">
                 <div class="tos-sidebar__brand">
-                    <div class="tos-sidebar__brand-icon">
-                        <i class="fas fa-shield-halved"></i>
-                    </div>
-                    <div>
-                        <div class="tos-sidebar__brand-title">TOS</div>
-                        <div class="tos-sidebar__brand-sub">KYC / KYB / PPH</div>
-                    </div>
+                    <div class="tos-sidebar__brand-icon"><i class="fas fa-shield-halved"></i></div>
+                    <div><div class="tos-sidebar__brand-title">TOS</div><div class="tos-sidebar__brand-sub">KYC / KYB / PPH</div></div>
                 </div>
                 <div class="tos-sidebar__nav">
-                    <div class="tos-sidebar__section">认证管理</div>
-                    <a href="会员验证.html" class="tos-sidebar__item">
-                        <i class="fas fa-user-check"></i>
-                        会员验证
-                        <span class="badge">+12</span>
-                    </a>
-                    <a href="商家验证.html" class="tos-sidebar__item">
-                        <i class="fas fa-building"></i>
-                        商家验证
-                        <span class="badge">+8</span>
-                    </a>
-                    <a href="验证服务商.html" class="tos-sidebar__item active">
-                        <i class="fas fa-gear"></i>
-                        验证服务商
-                    </a>
-                    <div class="tos-sidebar__section">审核记录</div>
-                    <a href="#" class="tos-sidebar__item">
-                        <i class="fas fa-clock-rotate-left"></i>
-                        审核日志
-                    </a>
+                    <div class="tos-sidebar__section">验证管理</div>
+                    <a href="会员验证规则.html" class="tos-sidebar__item"><i class="fas fa-sliders"></i>会员验证规则</a>
+                    <a href="商家验证规则.html" class="tos-sidebar__item"><i class="fas fa-sliders"></i>商家验证规则</a>
+                    <a href="验证服务商.html" class="tos-sidebar__item active"><i class="fas fa-gear"></i>验证服务商</a>
+                    <div class="tos-sidebar__section">验证记录</div>
+                    <a href="会员验证.html" class="tos-sidebar__item"><i class="fas fa-user-check"></i>会员验证<span class="badge">+12</span></a>
+                    <a href="商家验证.html" class="tos-sidebar__item"><i class="fas fa-building"></i>商家验证<span class="badge">+8</span></a>
+                    <a href="验证历史.html" class="tos-sidebar__item"><i class="fas fa-clock-rotate-left"></i>验证日志</a>
+                </aside>
 
-                </div>
-            </aside>
-
-            <!-- Main -->
             <div class="tos-main">
                 <header class="tos-header">
                     <div class="tos-header__breadcrumb">
                         <i class="fas fa-house"></i>
-                        <i class="fas fa-chevron-right" style="font-size: 10px; color: #ccc;"></i>
-                        <span>认证管理</span>
-                        <i class="fas fa-chevron-right" style="font-size: 10px; color: #ccc;"></i>
+                        <i class="fas fa-chevron-right" style="font-size:10px;color:#ccc;"></i>
+                        <span>验证管理</span>
+                        <i class="fas fa-chevron-right" style="font-size:10px;color:#ccc;"></i>
                         <span>验证服务商</span>
                     </div>
                     <div class="tos-header__actions">
                         <div class="tos-header__user">
                             <div class="tos-header__avatar">管</div>
-                            <span style="font-size: 13px; color: var(--tos-text-secondary);">管理员</span>
+                            <span style="font-size:13px;color:var(--tos-text-secondary);">管理员</span>
                         </div>
                     </div>
                 </header>
@@ -693,570 +160,294 @@
                 <div class="tos-page">
                     <section class="tos-page-title">
                         <div>
-                            <h1><i class="fas fa-gear" style="color: var(--tos-primary);"></i> 验证服务商</h1>
-                            <p>管理认证供应商对接、功能开关与参数配置。</p>
+                            <h1><i class="fas fa-gear" style="color:var(--tos-primary);"></i> 验证服务商</h1>
+                            <p>服务商能力概览与基础连接配置，具体校验规则请到对应规则页面设置。</p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span style="font-size: 12px; display: flex; align-items: center; gap: 6px; color: var(--tos-text-muted);">
-                                <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--tos-success);"></span>
+                            <span style="font-size:12px;display:flex;align-items:center;gap:6px;color:var(--tos-text-muted);">
+                                <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--tos-success);"></span>
                                 系统运行中
                             </span>
                         </div>
                     </section>
 
-                    <!-- Provider Tabs -->
-                    <div class="provider-tabs" id="providerTabs">
+                    <div class="provider-tabs">
                         <button class="provider-tab active" data-provider="sumsub">
-                            <span class="logo-dot sumsub">S</span>
-                            Sumsub
-                            <span class="status-dot online"></span>
+                            <span class="dot online"></span> Sumsub
                         </button>
                         <button class="provider-tab" data-provider="smileid">
-                            <span class="logo-dot smileid">S</span>
-                            SmileID
-                            <span class="status-dot online"></span>
+                            <span class="dot online"></span> SmileID
                         </button>
                         <button class="provider-tab" data-provider="custom">
-                            <span class="logo-dot custom"><i class="fas fa-plus" style="font-size: 10px;"></i></span>
-                            自定义
-                            <span class="status-dot offline"></span>
+                            <span class="dot" style="background:var(--tos-text-muted);"></span> 自定义
                         </button>
                     </div>
 
-                    <!-- ===== Sumsub Panel ===== -->
+                    <!-- ====== Sumsub ====== -->
                     <div class="provider-panel active" id="panel-sumsub">
-                        <!-- Feature sub-tabs -->
-                        <div class="feature-tabs">
-                            <button class="feature-tab active" data-feature="kyc">KYC</button>
-                            <button class="feature-tab" data-feature="kyb">KYB</button>
-                            <button class="feature-tab" data-feature="pph">PPH / AML</button>
-                            <button class="feature-tab" data-feature="kyt">KYT</button>
-                        </div>
-
-                        <!-- Sumsub KYC -->
-                        <div class="feature-panel active" id="feature-sumsub-kyc">
-                            <div class="tos-card" style="margin-bottom: 20px;">
-                                <div class="tos-card__header">
-                                    <div>
-                                        <h2 class="tos-card__title"><i class="fas fa-user-check" style="color: var(--tos-primary); width: 20px;"></i> KYC 基础配置</h2>
-                                        <div class="tos-card__desc">个人实名认证接口与校验参数。</div>
-                                    </div>
-                                    <label class="tos-toggle">
-                                        <input type="checkbox" checked />
-                                        <span class="slider"></span>
-                                    </label>
-                                </div>
-                                <div class="tos-form-grid">
-                                    <div>
-                                        <label class="form-label"><sup>*</sup> API Base URL</label>
-                                        <input class="form-field form-field--code" type="text" value="https://api.sumsub.com" />
-                                        <div class="tos-form-help">Sumsub API 基础地址，生产环境固定值。</div>
-                                    </div>
-                                    <div>
-                                        <label class="form-label"><sup>*</sup> API Token</label>
-                                        <input class="form-field form-field--code" type="password" value="sbx-sk_8a7f3b2c1d9e0f4a" />
-                                        <div class="tos-form-help">用于请求签名的 App Token。</div>
-                                    </div>
-                                    <div>
-                                        <label class="form-label"><sup>*</sup> Secret Key</label>
-                                        <input class="form-field form-field--code" type="password" value="••••••••••••••••••••" />
-                                        <div class="tos-form-help">用于请求签名校验的 Secret Key。</div>
-                                    </div>
-                                    <div>
-                                        <label class="form-label">环境</label>
-                                        <select class="form-field">
-                                            <option>沙箱 (Sandbox)</option>
-                                            <option selected>生产 (Production)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="tos-card" style="margin-bottom: 20px;">
-                                <div class="tos-card__header">
-                                    <h2 class="tos-card__title"><i class="fas fa-sliders" style="color: var(--tos-primary); width: 20px;"></i> 校验规则</h2>
-                                </div>
-                                <div class="tos-form-grid--3" style="display: grid; gap: 16px 24px;">
-                                    <div>
-                                        <label class="form-label">验证等级</label>
-                                        <select class="form-field">
-                                            <option selected>基础 (Basic KYC)</option>
-                                            <option>标准 (Standard KYC)</option>
-                                            <option>增强 (Enhanced KYC)</option>
-                                        </select>
-                                        <div class="tos-form-help">可选级别取决于 Sumsub 订阅套餐。</div>
-                                    </div>
-                                    <div>
-                                        <label class="form-label">证件类型</label>
-                                        <select class="form-field">
-                                            <option>身份证 (ID Card)</option>
-                                            <option selected>身份证 + 护照</option>
-                                            <option>身份证 + 护照 + 驾驶证</option>
-                                            <option>全部类型</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="form-label"><i class="fas fa-camera" style="margin-right: 4px;"></i> 活体检测</label>
-                                        <select class="form-field">
-                                            <option>关闭</option>
-                                            <option selected>基础活体检测</option>
-                                            <option>增强活体检测 (Liveness 2.0)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="tos-card">
-                                <div class="tos-card__header">
-                                    <h2 class="tos-card__title"><i class="fas fa-bell" style="color: var(--tos-primary); width: 20px;"></i> 回调配置</h2>
-                                </div>
-                                <div class="tos-form-grid">
-                                    <div>
-                                        <label class="form-label"><sup>*</sup> Webhook URL</label>
-                                        <input class="form-field form-field--code" type="text" value="https://api.tos.com/webhook/sumsub/kyc" />
-                                        <div class="tos-form-help">接收 applicantReviewed 等审核状态回调。</div>
-                                    </div>
-                                    <div>
-                                        <label class="form-label">签名密钥 (HMAC)</label>
-                                        <input class="form-field form-field--code" type="text" value="••••••••••••••••••••••" />
-                                        <div class="tos-form-help">用于校验回调请求来源合法性。</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="save-bar">
-                                <button class="btn">重置</button>
-                                <button class="btn btn-primary">保存配置</button>
+                        <div class="provider-header">
+                            <div class="provider-header__logo sumsub">S</div>
+                            <div class="provider-header__info">
+                                <h3>Sumsub</h3>
+                                <p>全球验证平台，覆盖 200+ 国家。提供 KYC、KYB、KYT、AML 一站式服务。 <a href="https://docs.sumsub.com" target="_blank">文档 →</a></p>
                             </div>
                         </div>
 
-                        <!-- Sumsub KYB -->
-                        <div class="feature-panel" id="feature-sumsub-kyb">
-                            <div class="tos-card" style="margin-bottom: 20px;">
-                                <div class="tos-card__header">
+                        <!-- 能力概览 -->
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <div class="feature-card__header">
+                                    <div class="feature-card__icon primary"><i class="fas fa-user-check"></i></div>
                                     <div>
-                                        <h2 class="tos-card__title"><i class="fas fa-building" style="color: var(--tos-primary); width: 20px;"></i> KYB 基础配置</h2>
-                                        <div class="tos-card__desc">企业资质认证接口与校验参数。</div>
+                                        <div class="feature-card__name">User Verification (KYC)</div>
+                                        <div class="feature-card__desc">个人身份验证，200+ 国家证件类型。支持 OCR、活体检测、人脸比对。</div>
                                     </div>
-                                    <label class="tos-toggle">
-                                        <input type="checkbox" checked />
-                                        <span class="slider"></span>
-                                    </label>
                                 </div>
-                                <div class="tos-form-grid">
-                                    <div>
-                                        <label class="form-label"><sup>*</sup> 企业验证端点</label>
-                                        <input class="form-field form-field--code" type="text" value="https://api.sumsub.com/resources/applicants" />
-                                        <div class="tos-form-help">KYB 专用 API 路径。</div>
-                                    </div>
-                                    <div>
-                                        <label class="form-label">验证等级</label>
-                                        <select class="form-field">
-                                            <option selected>基础企业验证</option>
-                                            <option>完整企业验证</option>
-                                            <option>增强企业验证</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="form-label">必备文件</label>
-                                        <select class="form-field">
-                                            <option selected>营业执照</option>
-                                            <option>营业执照 + 法人身份证明</option>
-                                            <option>营业执照 + 章程 + 法人证明</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="form-label">UBO 穿透</label>
-                                        <select class="form-field">
-                                            <option>关闭</option>
-                                            <option selected>25% 阈值</option>
-                                            <option>10% 阈值</option>
-                                        </select>
-                                        <div class="tos-form-help">终极受益人穿透比例阈值。</div>
-                                    </div>
+                                <div class="feature-card__tags">
+                                    <span class="feature-card__badge">身份证</span><span class="feature-card__badge">护照</span><span class="feature-card__badge">驾驶证</span><span class="feature-card__badge">活体检测</span><span class="feature-card__badge">OCR</span>
                                 </div>
                             </div>
-
-                            <div class="tos-card">
-                                <div class="tos-card__header">
-                                    <h2 class="tos-card__title"><i class="fas fa-bell" style="color: var(--tos-primary); width: 20px;"></i> 回调配置</h2>
+                            <div class="feature-card">
+                                <div class="feature-card__header">
+                                    <div class="feature-card__icon warning"><i class="fas fa-building"></i></div>
+                                    <div>
+                                        <div class="feature-card__name">Business Verification (KYB)</div>
+                                        <div class="feature-card__desc">企业资质验证、UBO 穿透、股权结构分析。</div>
+                                    </div>
                                 </div>
-                                <div class="tos-form-grid">
-                                    <div>
-                                        <label class="form-label"><sup>*</sup> Webhook URL</label>
-                                        <input class="form-field form-field--code" type="text" value="https://api.tos.com/webhook/sumsub/kyb" />
-                                    </div>
-                                    <div>
-                                        <label class="form-label">签名密钥 (HMAC)</label>
-                                        <input class="form-field form-field--code" type="text" value="••••••••••••••••••••••" />
-                                    </div>
+                                <div class="feature-card__tags">
+                                    <span class="feature-card__badge">营业执照</span><span class="feature-card__badge">法人验证</span><span class="feature-card__badge">UBO<br/>穿透</span><span class="feature-card__badge">股权结构</span>
                                 </div>
                             </div>
-                            <div class="save-bar">
-                                <button class="btn">重置</button>
-                                <button class="btn btn-primary">保存配置</button>
+                            <div class="feature-card">
+                                <div class="feature-card__header">
+                                    <div class="feature-card__icon error"><i class="fas fa-shield"></i></div>
+                                    <div>
+                                        <div class="feature-card__name">AML Screening</div>
+                                        <div class="feature-card__desc">反洗钱筛查 — UN / OFAC / EU 制裁名单、PEP、负面新闻。</div>
+                                    </div>
+                                </div>
+                                <div class="feature-card__tags">
+                                    <span class="feature-card__badge">PEP 筛查</span><span class="feature-card__badge">制裁名单</span><span class="feature-card__badge">负面新闻</span>
+                                </div>
+                            </div>
+                            <div class="feature-card">
+                                <div class="feature-card__header">
+                                    <div class="feature-card__icon default"><i class="fas fa-chart-line"></i></div>
+                                    <div>
+                                        <div class="feature-card__name">Transaction Monitoring (KYT)</div>
+                                        <div class="feature-card__desc">链上交易监控、风险评分、合规报告。</div>
+                                    </div>
+                                </div>
+                                <div class="feature-card__tags">
+                                    <span class="feature-card__badge">链上交易</span><span class="feature-card__badge">风险评分</span><span class="feature-card__badge">实时告警</span>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Sumsub PPH/AML -->
-                        <div class="feature-panel" id="feature-sumsub-pph">
-                            <div class="tos-card" style="margin-bottom: 20px;">
-                                <div class="tos-card__header">
-                                    <div>
-                                        <h2 class="tos-card__title"><i class="fas fa-shield" style="color: var(--tos-primary); width: 20px;"></i> AML / PPH 配置</h2>
-                                        <div class="tos-card__desc">反洗钱、PEP、制裁名单筛查。</div>
-                                    </div>
-                                    <label class="tos-toggle">
-                                        <input type="checkbox" checked />
-                                        <span class="slider"></span>
-                                    </label>
+                        <!-- 基础配置 -->
+                        <div class="section-divider"><span class="section-divider__label">基础连接配置</span></div>
+                        <div class="tos-card" style="margin-bottom:0;">
+                            <div class="tos-card__header"><h2 class="tos-card__title"><i class="fas fa-plug" style="color:var(--tos-primary);"></i> API 连接</h2></div>
+                            <div class="tos-form-grid">
+                                <div>
+                                    <label class="form-label"><sup>*</sup> API Base URL</label>
+                                    <input class="form-field form-field--code" type="text" value="https://api.sumsub.com" />
+                                    <div class="form-help">Sumsub API 基础地址，生产环境固定值。</div>
                                 </div>
-                                <div class="tos-form-grid">
-                                    <div>
-                                        <label class="form-label"><sup>*</sup> AML 端点</label>
-                                        <input class="form-field form-field--code" type="text" value="https://api.sumsub.com/resources/checks/aml" />
-                                    </div>
-                                    <div>
-                                        <label class="form-label">筛查范围</label>
-                                        <select class="form-field">
-                                            <option selected>PEP + 制裁名单</option>
-                                            <option>PEP + 制裁 + 负面新闻</option>
-                                            <option>仅制裁名单</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="form-label">匹配阈值</label>
-                                        <select class="form-field">
-                                            <option selected>严格 (Exact)</option>
-                                            <option>宽松 (Fuzzy)</option>
-                                        </select>
-                                        <div class="tos-form-help">宽松模式会匹配近似姓名。</div>
-                                    </div>
-                                    <div>
-                                        <label class="form-label">自动处置</label>
-                                        <select class="form-field">
-                                            <option>仅标记</option>
-                                            <option selected>高风险自动驳回</option>
-                                        </select>
-                                    </div>
+                                <div>
+                                    <label class="form-label"><sup>*</sup> App Token</label>
+                                    <input class="form-field form-field--code" type="password" value="sbx-sk_8a7f3b2c1d9e0f4a" />
+                                    <div class="form-help">用于请求签名的 App Token。</div>
                                 </div>
-                            </div>
-
-                            <div class="tos-card">
-                                <div class="tos-card__header">
-                                    <h2 class="tos-card__title"><i class="fas fa-flag" style="color: var(--tos-primary); width: 20px;"></i> 国家/地区限制</h2>
+                                <div>
+                                    <label class="form-label"><sup>*</sup> Secret Key</label>
+                                    <input class="form-field form-field--code" type="password" value="••••••••••••••••••••" />
+                                    <div class="form-help">用于请求签名校验的 Secret Key。</div>
                                 </div>
-                                <div class="tos-form-grid">
-                                    <div>
-                                        <label class="form-label">禁止注册国家</label>
-                                        <input class="form-field form-field--textarea" type="text" value="伊朗, 朝鲜, 叙利亚, 克里米亚" />
-                                        <div class="tos-form-help">以逗号分隔，提交时校验国家代码。</div>
-                                    </div>
-                                    <div>
-                                        <label class="form-label">高风险地区名单</label>
-                                        <input class="form-field form-field--textarea" type="text" value="FATF 灰名单, EU 非合作名单" />
-                                    </div>
+                                <div>
+                                    <label class="form-label">环境</label>
+                                    <select class="form-field">
+                                        <option>沙箱 (Sandbox)</option>
+                                        <option selected>生产 (Production)</option>
+                                    </select>
                                 </div>
-                            </div>
-                            <div class="save-bar">
-                                <button class="btn">重置</button>
-                                <button class="btn btn-primary">保存配置</button>
                             </div>
                         </div>
 
-                        <!-- Sumsub KYT -->
-                        <div class="feature-panel" id="feature-sumsub-kyt">
-                            <div class="tos-card" style="margin-bottom: 20px;">
-                                <div class="tos-card__header">
-                                    <div>
-                                        <h2 class="tos-card__title"><i class="fas fa-chart-line" style="color: var(--tos-primary); width: 20px;"></i> KYT 交易监控配置</h2>
-                                        <div class="tos-card__desc">交易行为监控与风险评分。</div>
-                                    </div>
-                                    <label class="tos-toggle">
-                                        <input type="checkbox" />
-                                        <span class="slider"></span>
-                                    </label>
+                        <!-- 回调配置 -->
+                        <div class="section-divider"><span class="section-divider__label">回调配置</span></div>
+                        <div class="tos-card" style="margin-bottom:0;">
+                            <div class="tos-card__header"><h2 class="tos-card__title"><i class="fas fa-bell" style="color:var(--tos-primary);"></i> Webhook</h2></div>
+                            <div class="tos-form-grid">
+                                <div>
+                                    <label class="form-label"><sup>*</sup> Webhook URL</label>
+                                    <input class="form-field form-field--code" type="text" value="https://api.tos.com/webhook/sumsub" />
+                                    <div class="form-help">接收 applicantReviewed 等审核状态回调。</div>
                                 </div>
-                                <div class="tos-form-grid">
-                                    <div>
-                                        <label class="form-label"><sup>*</sup> KYT 端点</label>
-                                        <input class="form-field form-field--code" type="text" value="https://api.sumsub.com/resources/kyt/txns" />
-                                    </div>
-                                    <div>
-                                        <label class="form-label">风险评分阈值</label>
-                                        <select class="form-field">
-                                            <option>50 (宽松)</option>
-                                            <option selected>70 (中等)</option>
-                                            <option>90 (严格)</option>
-                                        </select>
-                                        <div class="tos-form-help">高于阈值触发告警。</div>
-                                    </div>
-                                    <div>
-                                        <label class="form-label">监控币种</label>
-                                        <input class="form-field" type="text" value="USDT, USDC, BTC, ETH" />
-                                    </div>
-                                    <div>
-                                        <label class="form-label">告警通知</label>
-                                        <select class="form-field">
-                                            <option selected>邮件通知</option>
-                                            <option>邮件 + 站内信</option>
-                                            <option>邮件 + Webhook</option>
-                                        </select>
-                                    </div>
+                                <div>
+                                    <label class="form-label">签名密钥 (HMAC)</label>
+                                    <input class="form-field form-field--code" type="text" value="••••••••••••••••••••••" />
+                                    <div class="form-help">用于校验回调请求来源合法性。</div>
                                 </div>
                             </div>
-                            <div class="save-bar">
-                                <button class="btn">重置</button>
-                                <button class="btn btn-primary">保存配置</button>
-                            </div>
+                        </div>
+                        <div class="save-bar">
+                            <button class="btn btn-sm">重置</button>
+                            <button class="btn btn-sm btn-primary">保存</button>
                         </div>
                     </div>
 
-                    <!-- ===== SmileID Panel ===== -->
+                    <!-- ====== SmileID ====== -->
                     <div class="provider-panel" id="panel-smileid">
-                        <div class="feature-tabs">
-                            <button class="feature-tab active" data-feature="kyc">KYC</button>
-                            <button class="feature-tab" data-feature="kyb">KYB</button>
-                            <button class="feature-tab" data-feature="pph">PPH / AML</button>
-                        </div>
-
-                        <!-- SmileID KYC -->
-                        <div class="feature-panel active" id="feature-smileid-kyc">
-                            <div class="tos-card" style="margin-bottom: 20px;">
-                                <div class="tos-card__header">
-                                    <div>
-                                        <h2 class="tos-card__title"><i class="fas fa-user-check" style="color: var(--tos-primary); width: 20px;"></i> KYC 基础配置</h2>
-                                        <div class="tos-card__desc">个人身份验证接口与参数。</div>
-                                    </div>
-                                    <label class="tos-toggle">
-                                        <input type="checkbox" checked />
-                                        <span class="slider"></span>
-                                    </label>
-                                </div>
-                                <div class="tos-form-grid">
-                                    <div>
-                                        <label class="form-label"><sup>*</sup> API 端点</label>
-                                        <input class="form-field form-field--code" type="text" value="https://api.usesmileid.com/v2" />
-                                    </div>
-                                    <div>
-                                        <label class="form-label"><sup>*</sup> API Key</label>
-                                        <input class="form-field form-field--code" type="password" value="sm_live_a1b2c3d4e5f6g7h8" />
-                                    </div>
-                                    <div>
-                                        <label class="form-label"><sup>*</sup> Partner ID</label>
-                                        <input class="form-field" type="text" value="partner_tos_main" />
-                                    </div>
-                                    <div>
-                                        <label class="form-label">环境</label>
-                                        <select class="form-field">
-                                            <option>沙箱 (Sandbox)</option>
-                                            <option selected>生产 (Production)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="tos-card" style="margin-bottom: 20px;">
-                                <div class="tos-card__header">
-                                    <h2 class="tos-card__title"><i class="fas fa-sliders" style="color: var(--tos-primary); width: 20px;"></i> 验证方式</h2>
-                                </div>
-                                <div class="tos-form-grid">
-                                    <div>
-                                        <label class="form-label">ID 类型 (首选)</label>
-                                        <select class="form-field">
-                                            <option selected>身份证 (National ID)</option>
-                                            <option>护照 (Passport)</option>
-                                            <option>驾驶证 (Driving License)</option>
-                                            <option>Voter ID</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="form-label">生物识别验证</label>
-                                        <select class="form-field">
-                                            <option>关闭</option>
-                                            <option selected>人脸比对 (Face Match)</option>
-                                            <option>增强生物识别 (Biometric KYC)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="tos-card">
-                                <div class="tos-card__header">
-                                    <h2 class="tos-card__title"><i class="fas fa-bell" style="color: var(--tos-primary); width: 20px;"></i> 回调配置</h2>
-                                </div>
-                                <div class="tos-form-grid">
-                                    <div>
-                                        <label class="form-label"><sup>*</sup> Callback URL</label>
-                                        <input class="form-field form-field--code" type="text" value="https://api.tos.com/webhook/smileid/kyc" />
-                                    </div>
-                                    <div>
-                                        <label class="form-label">回调密钥</label>
-                                        <input class="form-field form-field--code" type="text" value="••••••••••••••••" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="save-bar">
-                                <button class="btn">重置</button>
-                                <button class="btn btn-primary">保存配置</button>
+                        <div class="provider-header">
+                            <div class="provider-header__logo smileid">S</div>
+                            <div class="provider-header__info">
+                                <h3>SmileID</h3>
+                                <p>非洲领先数字身份验证平台，8,500+ 证件类型，覆盖 220 国家。 <a href="https://docs.usesmileid.com" target="_blank">文档 →</a></p>
                             </div>
                         </div>
 
-                        <!-- SmileID KYB -->
-                        <div class="feature-panel" id="feature-smileid-kyb">
-                            <div class="tos-card" style="margin-bottom: 20px;">
-                                <div class="tos-card__header">
+                        <!-- 能力概览 -->
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <div class="feature-card__header">
+                                    <div class="feature-card__icon primary"><i class="fas fa-user-check"></i></div>
                                     <div>
-                                        <h2 class="tos-card__title"><i class="fas fa-building" style="color: var(--tos-primary); width: 20px;"></i> KYB 配置</h2>
-                                        <div class="tos-card__desc">企业身份验证。</div>
+                                        <div class="feature-card__name">Digital KYC</div>
+                                        <div class="feature-card__desc">个人身份验证，8,500+ 种证件，220 国家。支持移动端与 Web SDK。</div>
                                     </div>
-                                    <label class="tos-toggle">
-                                        <input type="checkbox" checked />
-                                        <span class="slider"></span>
-                                    </label>
                                 </div>
-                                <div class="tos-form-grid">
-                                    <div>
-                                        <label class="form-label"><sup>*</sup> Business Verification 端点</label>
-                                        <input class="form-field form-field--code" type="text" value="https://api.usesmileid.com/v2/business" />
-                                    </div>
-                                    <div>
-                                        <label class="form-label">验证类型</label>
-                                        <select class="form-field">
-                                            <option selected>企业注册信息校验</option>
-                                            <option>企业注册 + 法人验证</option>
-                                        </select>
-                                    </div>
+                                <div class="feature-card__tags">
+                                    <span class="feature-card__badge">身份证</span><span class="feature-card__badge">护照</span><span class="feature-card__badge">Voter ID</span><span class="feature-card__badge">驾照</span><span class="feature-card__badge">活体检测</span>
                                 </div>
                             </div>
-                            <div class="save-bar">
-                                <button class="btn">重置</button>
-                                <button class="btn btn-primary">保存配置</button>
+                            <div class="feature-card">
+                                <div class="feature-card__header">
+                                    <div class="feature-card__icon warning"><i class="fas fa-building"></i></div>
+                                    <div>
+                                        <div class="feature-card__name">Business Verification (KYB)</div>
+                                        <div class="feature-card__desc">企业注册信息验证，法人身份校验。</div>
+                                    </div>
+                                </div>
+                                <div class="feature-card__tags">
+                                    <span class="feature-card__badge">企业注册号</span><span class="feature-card__badge">法人验证</span><span class="feature-card__badge">经营资质</span>
+                                </div>
+                            </div>
+                            <div class="feature-card">
+                                <div class="feature-card__header">
+                                    <div class="feature-card__icon success"><i class="fas fa-file"></i></div>
+                                    <div>
+                                        <div class="feature-card__name">Document Verification</div>
+                                        <div class="feature-card__desc">通用文档验证、OCR 识别、真伪检测。</div>
+                                    </div>
+                                </div>
+                                <div class="feature-card__tags">
+                                    <span class="feature-card__badge">证件 OCR</span><span class="feature-card__badge">真伪检测</span><span class="feature-card__badge">MRZ</span>
+                                </div>
+                            </div>
+                            <div class="feature-card">
+                                <div class="feature-card__header">
+                                    <div class="feature-card__icon error"><i class="fas fa-face-viewfinder"></i></div>
+                                    <div>
+                                        <div class="feature-card__name">Biometric Verification</div>
+                                        <div class="feature-card__desc">活体检测 + 人脸比对，防照片/视频/面具攻击。</div>
+                                    </div>
+                                </div>
+                                <div class="feature-card__tags">
+                                    <span class="feature-card__badge">活体检测</span><span class="feature-card__badge">人脸比对</span><span class="feature-card__badge">Biometric KYC</span>
+                                </div>
+                            </div>
+                            <div class="feature-card">
+                                <div class="feature-card__header">
+                                    <div class="feature-card__icon default"><i class="fas fa-shield"></i></div>
+                                    <div>
+                                        <div class="feature-card__name">AML / Watchlist</div>
+                                        <div class="feature-card__desc">制裁名单 + PEP 筛查，支持定期重新筛查。</div>
+                                    </div>
+                                </div>
+                                <div class="feature-card__tags">
+                                    <span class="feature-card__badge">制裁名单</span><span class="feature-card__badge">PEP</span><span class="feature-card__badge">负面媒体</span>
+                                </div>
+                            </div>
+                            <div class="feature-card">
+                                <div class="feature-card__header">
+                                    <div class="feature-card__icon primary"><i class="fas fa-wand-magic-sparkles"></i></div>
+                                    <div>
+                                        <div class="feature-card__name">SmartCheck</div>
+                                        <div class="feature-card__desc">无代码验证，Portal 直接操作，支持 CSV 批量导入。</div>
+                                    </div>
+                                </div>
+                                <div class="feature-card__tags">
+                                    <span class="feature-card__badge">无代码</span><span class="feature-card__badge">批量验证</span><span class="feature-card__badge">Portal</span>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- SmileID PPH/AML -->
-                        <div class="feature-panel" id="feature-smileid-pph">
-                            <div class="tos-card" style="margin-bottom: 20px;">
-                                <div class="tos-card__header">
-                                    <div>
-                                        <h2 class="tos-card__title"><i class="fas fa-shield" style="color: var(--tos-primary); width: 20px;"></i> AML / PPH 配置</h2>
-                                        <div class="tos-card__desc">Watchlist 筛查与合规检查。</div>
-                                    </div>
-                                    <label class="tos-toggle">
-                                        <input type="checkbox" />
-                                        <span class="slider"></span>
-                                    </label>
+                        <!-- 基础配置 -->
+                        <div class="section-divider"><span class="section-divider__label">基础连接配置</span></div>
+                        <div class="tos-card" style="margin-bottom:0;">
+                            <div class="tos-card__header"><h2 class="tos-card__title"><i class="fas fa-plug" style="color:var(--tos-primary);"></i> API 连接</h2></div>
+                            <div class="tos-form-grid">
+                                <div>
+                                    <label class="form-label"><sup>*</sup> API 端点</label>
+                                    <input class="form-field form-field--code" type="text" value="https://api.usesmileid.com/v2" />
+                                    <div class="form-help">SmileID API 基础地址。</div>
                                 </div>
-                                <div class="tos-form-grid">
-                                    <div>
-                                        <label class="form-label">Watchlist 端点</label>
-                                        <input class="form-field form-field--code" type="text" value="https://api.usesmileid.com/v2/watchlist" />
-                                    </div>
-                                    <div>
-                                        <label class="form-label">筛查列表</label>
-                                        <select class="form-field">
-                                            <option selected>全球制裁名单</option>
-                                            <option>制裁 + PEP</option>
-                                            <option>制裁 + PEP + 负面新闻</option>
-                                        </select>
-                                    </div>
+                                <div>
+                                    <label class="form-label"><sup>*</sup> API Key</label>
+                                    <input class="form-field form-field--code" type="password" value="sm_live_a1b2c3d4e5f6g7h8" />
+                                </div>
+                                <div>
+                                    <label class="form-label"><sup>*</sup> Partner ID</label>
+                                    <input class="form-field" type="text" value="partner_tos_main" />
+                                </div>
+                                <div>
+                                    <label class="form-label">环境</label>
+                                    <select class="form-field">
+                                        <option>沙箱 (Sandbox)</option>
+                                        <option selected>生产 (Production)</option>
+                                    </select>
                                 </div>
                             </div>
-                            <div class="save-bar">
-                                <button class="btn">重置</button>
-                                <button class="btn btn-primary">保存配置</button>
+                        </div>
+
+                        <!-- 回调配置 -->
+                        <div class="section-divider"><span class="section-divider__label">回调配置</span></div>
+                        <div class="tos-card" style="margin-bottom:0;">
+                            <div class="tos-card__header"><h2 class="tos-card__title"><i class="fas fa-bell" style="color:var(--tos-primary);"></i> Callback</h2></div>
+                            <div class="tos-form-grid">
+                                <div>
+                                    <label class="form-label"><sup>*</sup> Callback URL</label>
+                                    <input class="form-field form-field--code" type="text" value="https://api.tos.com/webhook/smileid" />
+                                    <div class="form-help">接收验证状态回调。</div>
+                                </div>
+                                <div>
+                                    <label class="form-label">回调密钥</label>
+                                    <input class="form-field form-field--code" type="text" value="••••••••••••••••" />
+                                    <div class="form-help">用于校验回调请求来源。</div>
+                                </div>
                             </div>
+                        </div>
+                        <div class="save-bar">
+                            <button class="btn btn-sm">重置</button>
+                            <button class="btn btn-sm btn-primary">保存</button>
                         </div>
                     </div>
 
-                    <!-- ===== Custom Panel ===== -->
+                    <!-- ====== 自定义 ====== -->
                     <div class="provider-panel" id="panel-custom">
-                        <div class="feature-tabs">
-                            <button class="feature-tab active" data-feature="kyc">KYC</button>
-                            <button class="feature-tab" data-feature="kyb">KYB</button>
-                            <button class="feature-tab" data-feature="pph">PPH</button>
-                        </div>
-
-                        <!-- Custom KYC -->
-                        <div class="feature-panel active" id="feature-custom-kyc">
-                            <div class="tos-card" style="margin-bottom: 20px;">
-                                <div class="tos-card__header">
-                                    <div>
-                                        <h2 class="tos-card__title"><i class="fas fa-server" style="color: var(--tos-primary); width: 20px;"></i> 自定义 KYC 接口</h2>
-                                        <div class="tos-card__desc">对接自研或第三方 KYC 服务。</div>
-                                    </div>
-                                    <label class="tos-toggle">
-                                        <input type="checkbox" />
-                                        <span class="slider"></span>
-                                    </label>
-                                </div>
-                                <div class="tos-form-grid--single" style="display: grid; gap: 16px;">
-                                    <div>
-                                        <label class="form-label"><sup>*</sup> 接口 URL</label>
-                                        <input class="form-field form-field--code" type="text" placeholder="https://" />
-                                    </div>
-                                    <div>
-                                        <label class="form-label">认证方式</label>
-                                        <select class="form-field">
-                                            <option selected>API Key (Header)</option>
-                                            <option>Basic Auth</option>
-                                            <option>Bearer Token</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="form-label">API Key</label>
-                                        <input class="form-field form-field--code" type="text" placeholder="输入 API Key" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="save-bar">
-                                <button class="btn">重置</button>
-                                <button class="btn btn-primary">保存配置</button>
+                        <div class="provider-header">
+                            <div class="provider-header__logo custom"><i class="fas fa-plus" style="font-size:18px;"></i></div>
+                            <div class="provider-header__info">
+                                <h3>自定义服务商</h3>
+                                <p>对接自研或第三方验证服务。<a href="会员验证规则.html" style="color:var(--tos-primary);">会员验证规则 →</a> 中可配置自定义 API 端点。</p>
                             </div>
                         </div>
-
-                        <div class="feature-panel" id="feature-custom-kyb">
-                            <div class="tos-card">
-                                <div class="tos-card__header">
-                                    <h2 class="tos-card__title"><i class="fas fa-server" style="color: var(--tos-primary); width: 20px;"></i> 自定义 KYB 接口</h2>
-                                </div>
-                                <div class="tos-form-grid--single" style="display: grid; gap: 16px;">
-                                    <div>
-                                        <label class="form-label"><sup>*</sup> 接口 URL</label>
-                                        <input class="form-field form-field--code" type="text" placeholder="https://" />
-                                    </div>
-                                    <div>
-                                        <label class="form-label">API Key</label>
-                                        <input class="form-field form-field--code" type="text" placeholder="输入 API Key" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="save-bar">
-                                <button class="btn">重置</button>
-                                <button class="btn btn-primary">保存配置</button>
-                            </div>
-                        </div>
-
-                        <div class="feature-panel" id="feature-custom-pph">
-                            <div class="tos-card">
-                                <div class="tos-card__header">
-                                    <h2 class="tos-card__title"><i class="fas fa-server" style="color: var(--tos-primary); width: 20px;"></i> 自定义 PPH 接口</h2>
-                                </div>
-                                <div class="tos-form-grid--single" style="display: grid; gap: 16px;">
-                                    <div>
-                                        <label class="form-label"><sup>*</sup> 接口 URL</label>
-                                        <input class="form-field form-field--code" type="text" placeholder="https://" />
-                                    </div>
-                                    <div>
-                                        <label class="form-label">API Key</label>
-                                        <input class="form-field form-field--code" type="text" placeholder="输入 API Key" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="save-bar">
-                                <button class="btn">重置</button>
-                                <button class="btn btn-primary">保存配置</button>
-                            </div>
+                        <div style="text-align:center;padding:60px 20px;color:var(--tos-text-muted);">
+                            <i class="fas fa-plus-circle" style="font-size:48px;color:#d9dee8;margin-bottom:16px;"></i>
+                            <div style="font-size:16px;font-weight:500;color:var(--tos-text-secondary);margin-bottom:8px;">暂未接入自定义服务商</div>
+                            <div style="font-size:13px;">在规则页面配置自定义 API 端点与认证方式后，此处将显示能力概览。</div>
                         </div>
                     </div>
                 </div>
@@ -1264,7 +455,6 @@
         </div>
 
         <script>
-            // Provider tab switching
             document.querySelectorAll('.provider-tab').forEach(tab => {
                 tab.addEventListener('click', function() {
                     const provider = this.dataset.provider;
@@ -1272,21 +462,6 @@
                     this.classList.add('active');
                     document.querySelectorAll('.provider-panel').forEach(p => p.classList.remove('active'));
                     document.getElementById('panel-' + provider).classList.add('active');
-                });
-            });
-
-            // Feature subtab switching (within each provider panel)
-            document.querySelectorAll('.feature-tabs').forEach(tabs => {
-                tabs.querySelectorAll('.feature-tab').forEach(tab => {
-                    tab.addEventListener('click', function() {
-                        const feature = this.dataset.feature;
-                        const panel = this.closest('.provider-panel');
-                        const panelId = panel.id.replace('panel-', '');
-                        tabs.querySelectorAll('.feature-tab').forEach(t => t.classList.remove('active'));
-                        this.classList.add('active');
-                        panel.querySelectorAll('.feature-panel').forEach(p => p.classList.remove('active'));
-                        document.getElementById('feature-' + panelId + '-' + feature).classList.add('active');
-                    });
                 });
             });
         </script>

@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>会员验证规则</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        <style>
+            :root {
+                --tos-primary: #42b7ae;
+                --tos-primary-hover: #339b94;
+                --tos-primary-bg: #e6f7f6;
+                --tos-bg: #f5f7fa;
+                --tos-card: #fff;
+                --tos-border: #e5e7eb;
+                --tos-border-soft: #f0f2f5;
+                --tos-text: #333;
+                --tos-text-secondary: #666;
+                --tos-text-muted: #999;
+                --tos-success: #52c41a;
+                --tos-success-bg: #f0faf0;
+                --tos-warning: #faad14;
+                --tos-warning-bg: #fff7e6;
+                --tos-error: #f5222d;
+                --tos-error-bg: #fff1f0;
+                --tos-radius-card: 12px;
+                --tos-radius-control: 8px;
+                --tos-radius-tag: 4px;
+                --tos-shadow-card: 0 1px 2px rgba(15,23,42,0.03);
+                --sidebar-width: 240px;
+            }
+            * { margin:0; padding:0; box-sizing:border-box; }
+            body { background:var(--tos-bg); color:var(--tos-text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC","Microsoft YaHei",sans-serif; letter-spacing:0; }
+            .app-layout { min-height:100vh; display:flex; }
+            .tos-sidebar { position:fixed; top:0; left:0; bottom:0; width:var(--sidebar-width); background:#fff; border-right:1px solid var(--tos-border-soft); display:flex; flex-direction:column; z-index:30; overflow-y:auto; }
+            .tos-sidebar__brand { display:flex; align-items:center; gap:10px; padding:20px 20px 16px; border-bottom:1px solid var(--tos-border-soft); }
+            .tos-sidebar__brand-icon { width:36px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:10px; background:var(--tos-primary-bg); color:var(--tos-primary); font-size:18px; }
+            .tos-sidebar__brand-title { font-size:18px; font-weight:700; color:#1e293b; }
+            .tos-sidebar__brand-sub { font-size:11px; color:var(--tos-text-muted); margin-top:1px; }
+            .tos-sidebar__nav { flex:1; padding:12px 12px; display:flex; flex-direction:column; gap:2px; }
+            .tos-sidebar__section { padding:16px 12px 6px; font-size:11px; font-weight:600; color:var(--tos-text-muted); letter-spacing:0.5px; }
+            .tos-sidebar__item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; font-size:14px; font-weight:500; color:var(--tos-text-secondary); cursor:pointer; transition:all 0.15s; text-decoration:none; line-height:1.4; }
+            .tos-sidebar__item:hover { background:var(--tos-bg); color:var(--tos-text); }
+            .tos-sidebar__item.active { background:var(--tos-primary-bg); color:var(--tos-primary); font-weight:600; }
+            .tos-sidebar__item i { width:18px; text-align:center; font-size:15px; flex-shrink:0; }
+            .tos-sidebar__item .badge { margin-left:auto; padding:1px 8px; border-radius:10px; background:var(--tos-primary-bg); color:var(--tos-primary); font-size:11px; font-weight:600; }
+            .tos-main { flex:1; margin-left:var(--sidebar-width); min-height:100vh; display:flex; flex-direction:column; }
+            .tos-header { position:sticky; top:0; z-index:20; display:flex; height:60px; align-items:center; justify-content:space-between; gap:16px; border-bottom:1px solid var(--tos-border-soft); background:rgba(255,255,255,0.96); padding:0 24px; backdrop-filter:blur(10px); }
+            .tos-header__breadcrumb { display:flex; align-items:center; gap:8px; font-size:14px; color:var(--tos-text-muted); }
+            .tos-header__breadcrumb span { color:var(--tos-text); font-weight:500; }
+            .tos-header__actions { display:flex; align-items:center; gap:12px; }
+            .tos-header__user { display:flex; align-items:center; gap:8px; padding:4px 12px 4px 4px; border-radius:20px; cursor:default; }
+            .tos-header__avatar { width:30px; height:30px; border-radius:50%; background:var(--tos-primary-bg); color:var(--tos-primary); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; }
+            .tos-page { flex:1; padding:24px; }
+            .tos-page-title { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:24px; }
+            .tos-page-title h1 { font-size:22px; font-weight:600; color:#1e293b; display:flex; align-items:center; gap:10px; }
+            .tos-page-title p { margin-top:4px; color:var(--tos-text-muted); font-size:14px; }
+            .tos-card { background:#fff; border:1px solid var(--tos-border-soft); border-radius:var(--tos-radius-card); padding:20px; box-shadow:var(--tos-shadow-card); }
+            .tos-card__header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+            .tos-card__title { margin:0; color:var(--tos-text); font-size:16px; font-weight:600; display:flex; align-items:center; gap:8px; }
+            .tos-card__desc { margin-top:4px; color:var(--tos-text-muted); font-size:12px; }
+            .btn { display:inline-flex; height:32px; align-items:center; justify-content:center; padding:0 15px; border:1px solid var(--tos-border); border-radius:var(--tos-radius-control); background:#fff; color:var(--tos-text); font-size:14px; line-height:30px; white-space:nowrap; cursor:pointer; transition:all 0.15s; font-family:inherit; }
+            .btn:hover { border-color:#d1d5db; background:#fafafa; }
+            .btn-primary { border-color:var(--tos-primary); background:var(--tos-primary); color:#fff; }
+            .btn-primary:hover { background:var(--tos-primary-hover); border-color:var(--tos-primary-hover); }
+            .btn-sm { height:28px; padding:0 10px; font-size:12px; }
+            .btn-link { height:auto; padding:0 4px; border:0; background:transparent; color:var(--tos-primary); }
+            .btn-link:hover { text-decoration:underline; }
+            .form-label { display:block; margin-bottom:6px; color:var(--tos-text-secondary); font-size:13px; font-weight:500; }
+            .form-field { width:100%; height:32px; padding:4px 11px; border:1px solid var(--tos-border); border-radius:var(--tos-radius-control); background:#fff; color:var(--tos-text); font-size:14px; outline:none; font-family:inherit; }
+            .form-field:focus { border-color:var(--tos-primary); box-shadow:0 0 0 2px rgba(66,183,174,0.1); }
+            select.form-field { appearance:auto; cursor:pointer; }
+            .form-field--small { width:120px; }
+            .form-field--inline { width:auto; display:inline-flex; }
+            .form-help { margin-top:4px; color:var(--tos-text-muted); font-size:12px; line-height:1.5; }
+            .tos-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px 24px; }
+            .tos-form-grid--3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px 24px; }
+            .tos-tag { display:inline-flex; height:22px; align-items:center; padding:0 8px; border-radius:var(--tos-radius-tag); font-size:12px; font-weight:500; line-height:20px; white-space:nowrap; }
+            .tos-tag--default { background:#f5f5f5; color:var(--tos-text-secondary); }
+            .tos-tag--success { background:var(--tos-success-bg); color:var(--tos-success); }
+            .tos-tag--warning { background:var(--tos-warning-bg); color:var(--tos-warning); }
+            .tos-tag--error { background:var(--tos-error-bg); color:var(--tos-error); }
+            .text-right { text-align:right; }
+
+            /* Toggle switch */
+            .tos-toggle { position:relative; display:inline-flex; width:36px; height:20px; flex-shrink:0; }
+            .tos-toggle input { opacity:0; width:0; height:0; }
+            .tos-toggle .slider { position:absolute; inset:0; background:#ccc; border-radius:20px; transition:0.2s; cursor:pointer; }
+            .tos-toggle .slider::before { content:""; position:absolute; width:16px; height:16px; left:2px; bottom:2px; background:#fff; border-radius:50%; transition:0.2s; }
+            .tos-toggle input:checked+.slider { background:var(--tos-primary); }
+            .tos-toggle input:checked+.slider::before { transform:translateX(16px); }
+
+            /* Rule row */
+            .rule-row { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 0; border-bottom:1px solid #f5f5f5; }
+            .rule-row:last-child { border-bottom:0; }
+            .rule-row__info { flex:1; min-width:0; }
+            .rule-row__title { font-size:14px; font-weight:500; color:var(--tos-text); }
+            .rule-row__desc { font-size:12px; color:var(--tos-text-muted); margin-top:2px; }
+            .rule-row__control { flex-shrink:0; display:flex; align-items:center; gap:10px; }
+
+            .save-bar { display:flex; justify-content:flex-end; gap:8px; margin-top:24px; padding:12px 0; border-top:1px solid var(--tos-border-soft); }
+
+            @media (max-width:768px) { .tos-sidebar { display:none; } .tos-main { margin-left:0; } .tos-form-grid,.tos-form-grid--3 { grid-template-columns:1fr; } }
+        
+            .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:100; align-items:center; justify-content:center; }
+            .modal-overlay.open { display:flex; }
+            .modal-body { background:#fff; border-radius:var(--tos-radius-card); padding:24px; max-width:560px; width:90%; max-height:70vh; overflow-y:auto; }
+            .version-timeline { position:relative; padding-left:24px; }
+            .version-timeline::before { content:""; position:absolute; left:8px; top:8px; bottom:8px; width:2px; background:var(--tos-border-soft); }
+            .version-item { position:relative; display:flex; align-items:flex-start; gap:12px; padding:14px 0; cursor:pointer; border-radius:8px; transition:background 0.1s; }
+            .version-item:hover { background:var(--tos-bg); }
+            .version-item.current { background:var(--tos-primary-bg); }
+            .version-dot { position:absolute; left:-20px; top:18px; width:10px; height:10px; border-radius:50%; background:var(--tos-border); border:2px solid #fff; }
+            .version-item.current .version-dot { background:var(--tos-primary); }
+            .version-content { flex:1; min-width:0; }
+            .version-tag { display:inline-flex; height:20px; align-items:center; padding:0 8px; border-radius:4px; font-size:11px; font-weight:600; background:var(--tos-primary-bg); color:var(--tos-primary); }
+            .version-desc { font-size:13px; color:var(--tos-text); margin-top:4px; line-height:1.5; }
+            
+</style>
+    </head>
+    <body>
+        <div class="app-layout">
+            <aside class="tos-sidebar">
+                <div class="tos-sidebar__brand">
+                    <div class="tos-sidebar__brand-icon"><i class="fas fa-shield-halved"></i></div>
+                    <div><div class="tos-sidebar__brand-title">TOS</div><div class="tos-sidebar__brand-sub">KYC / KYB / PPH</div></div>
+                </div>
+                <div class="tos-sidebar__nav">
+                    <div class="tos-sidebar__section">验证管理</div>
+                    <a href="会员验证规则.html" class="tos-sidebar__item active"><i class="fas fa-sliders"></i>会员验证规则</a>
+                    <a href="商家验证规则.html" class="tos-sidebar__item"><i class="fas fa-sliders"></i>商家验证规则</a>
+                    <a href="验证服务商.html" class="tos-sidebar__item"><i class="fas fa-gear"></i>验证服务商</a>
+                    <div class="tos-sidebar__section">验证记录</div>
+                    <a href="会员验证.html" class="tos-sidebar__item"><i class="fas fa-user-check"></i>会员验证<span class="badge">+12</span></a>
+                    <a href="商家验证.html" class="tos-sidebar__item"><i class="fas fa-building"></i>商家验证<span class="badge">+8</span></a>
+                    <a href="验证历史.html" class="tos-sidebar__item"><i class="fas fa-clock-rotate-left"></i>验证日志</a>
+                </aside>
+
+            <div class="tos-main">
+                <header class="tos-header">
+                    <div class="tos-header__breadcrumb">
+                        <i class="fas fa-house"></i>
+                        <i class="fas fa-chevron-right" style="font-size:10px;color:#ccc;"></i>
+                        <span>验证管理</span>
+                        <i class="fas fa-chevron-right" style="font-size:10px;color:#ccc;"></i>
+                        <span>会员验证规则</span>
+                    </div>
+                    <div class="tos-header__actions">
+                        <div class="tos-header__user">
+                            <div class="tos-header__avatar">管</div>
+                            <span style="font-size:13px;color:var(--tos-text-secondary);">管理员</span>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="tos-page">
+                    <section class="tos-page-title">
+                        <div>
+                            <h1><i class="fas fa-sliders" style="color:var(--tos-primary);"></i> 会员验证规则</h1>
+                            <p>配置会员实名验证的校验规则、证件要求与审核策略。</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span style="font-size:12px;display:flex;align-items:center;gap:6px;color:var(--tos-text-muted);">
+                                <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--tos-success);"></span>
+                                规则生效中
+                            </span>
+                        </div>
+                    </section>
+                    <!-- 规则版本 -->
+                    <section class="tos-card" style="margin-bottom:20px;" id="versionCard">
+                        <div class="tos-card__header">
+                            <h2 class="tos-card__title"><i class="fas fa-clock-rotate-left" style="color:var(--tos-primary);"></i> 规则版本</h2>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span id="currentVersionBadge" style="font-size:12px;background:var(--tos-primary-bg);color:var(--tos-primary);padding:2px 10px;border-radius:4px;font-weight:600;">v2.3.1</span>
+                                <button class="btn btn-sm" onclick="openVersionHistory()">查看历史版本</button>
+                                <button class="btn btn-sm btn-primary">发布新版本</button>
+                            </div>
+                        </div>
+                        <div id="versionDesc" style="font-size:13px;color:var(--tos-text-muted);">
+                            最后更新: 2026-07-09 14:30 · 更新人: 管理员 · 变更: 调整活体检测阈值为 80%，新增港澳通行证禁用规则
+                        </div>
+                    </section>
+
+                    <!-- 证件要求 -->
+                    <section class="tos-card" style="margin-bottom:20px;">
+                        <div class="tos-card__header">
+                            <h2 class="tos-card__title"><i class="fas fa-id-card" style="color:var(--tos-primary);"></i> 证件要求</h2>
+                            <label class="tos-toggle"><input type="checkbox" checked /><span class="slider"></span></label>
+                        </div>
+                        <div class="rule-row">
+                            <div class="rule-row__info"><div class="rule-row__title">身份证 (ID Card)</div><div class="rule-row__desc">中国大陆第二代居民身份证</div></div>
+                            <div class="rule-row__control"><select class="form-field" style="width:100px;"><option>可选</option><option selected>必需</option><option>禁用</option></select></div>
+                        </div>
+                        <div class="rule-row">
+                            <div class="rule-row__info"><div class="rule-row__title">护照 (Passport)</div><div class="rule-row__desc">国际护照，含生物信息页</div></div>
+                            <div class="rule-row__control"><select class="form-field" style="width:100px;"><option selected>可选</option><option>必需</option><option>禁用</option></select></div>
+                        </div>
+                        <div class="rule-row">
+                            <div class="rule-row__info"><div class="rule-row__title">驾驶证 (Driving License)</div><div class="rule-row__desc">含驾驶人照片及基本信息</div></div>
+                            <div class="rule-row__control"><select class="form-field" style="width:100px;"><option selected>可选</option><option>必需</option><option>禁用</option></select></div>
+                        </div>
+                        <div class="rule-row">
+                            <div class="rule-row__info"><div class="rule-row__title">港澳通行证</div><div class="rule-row__desc">港澳居民来往内地通行证</div></div>
+                            <div class="rule-row__control"><select class="form-field" style="width:100px;"><option>可选</option><option>必需</option><option selected>禁用</option></select></div>
+                        </div>
+                    </section>
+
+                    <!-- 年龄与地区 -->
+                    <section class="tos-card" style="margin-bottom:20px;">
+                        <div class="tos-card__header">
+                            <h2 class="tos-card__title"><i class="fas fa-globe" style="color:var(--tos-primary);"></i> 年龄与地区限制</h2>
+                            <label class="tos-toggle"><input type="checkbox" checked /><span class="slider"></span></label>
+                        </div>
+                        <div class="tos-form-grid">
+                            <div>
+                                <label class="form-label">最低年龄</label>
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <input class="form-field form-field--small" type="number" value="18" />
+                                    <span style="color:var(--tos-text-muted);font-size:13px;">周岁</span>
+                                </div>
+                                <div class="form-help">低于此年龄自动驳回。</div>
+                            </div>
+                            <div>
+                                <label class="form-label">最高年龄</label>
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <input class="form-field form-field--small" type="number" value="70" />
+                                    <span style="color:var(--tos-text-muted);font-size:13px;">周岁</span>
+                                </div>
+                                <div class="form-help">超过此年龄需人工审核。</div>
+                            </div>
+                            <div>
+                                <label class="form-label">允许国家/地区</label>
+                                <input class="form-field" type="text" value="中国大陆, 香港, 澳门, 台湾" />
+                                <div class="form-help">仅允许列表内的国家/地区提交验证。</div>
+                            </div>
+                            <div>
+                                <label class="form-label">禁止国家/地区</label>
+                                <input class="form-field" type="text" value="伊朗, 朝鲜, 叙利亚, 克里米亚" />
+                                <div class="form-help">禁止列表国家直接拦截。</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 活体检测 -->
+                    <section class="tos-card" style="margin-bottom:20px;">
+                        <div class="tos-card__header">
+                            <h2 class="tos-card__title"><i class="fas fa-camera" style="color:var(--tos-primary);"></i> 活体检测与生物识别</h2>
+                            <label class="tos-toggle"><input type="checkbox" checked /><span class="slider"></span></label>
+                        </div>
+                        <div class="rule-row">
+                            <div class="rule-row__info"><div class="rule-row__title">活体检测 (Liveness Check)</div><div class="rule-row__desc">要求用户实时拍摄面部视频，防止照片/视频伪造</div></div>
+                            <div class="rule-row__control">
+                                <select class="form-field" style="width:120px;"><option>关闭</option><option selected>基础模式</option><option>增强模式</option></select>
+                            </div>
+                        </div>
+                        <div class="rule-row">
+                            <div class="rule-row__info"><div class="rule-row__title">人脸比对 (Face Match)</div><div class="rule-row__desc">将活体照片与证件照片进行人脸比对</div></div>
+                            <div class="rule-row__control">
+                                <select class="form-field" style="width:120px;"><option>关闭</option><option selected>启用</option></select>
+                            </div>
+                        </div>
+                        <div class="rule-row">
+                            <div class="rule-row__info"><div class="rule-row__title">比对阈值</div><div class="rule-row__desc">人脸相似度高于此值判定为同一人</div></div>
+                            <div class="rule-row__control">
+                                <select class="form-field" style="width:120px;"><option>70% (宽松)</option><option selected>80% (标准)</option><option>90% (严格)</option></select>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 审核策略 -->
+                    <section class="tos-card" style="margin-bottom:20px;">
+                        <div class="tos-card__header">
+                            <h2 class="tos-card__title"><i class="fas fa-check-double" style="color:var(--tos-primary);"></i> 审核策略</h2>
+                            <label class="tos-toggle"><input type="checkbox" checked /><span class="slider"></span></label>
+                        </div>
+                        <div class="rule-row">
+                            <div class="rule-row__info"><div class="rule-row__title">自动通过</div><div class="rule-row__desc">所有校验项均通过且无风险标记时，系统自动批准</div></div>
+                            <div class="rule-row__control"><label class="tos-toggle"><input type="checkbox" checked /><span class="slider"></span></label></div>
+                        </div>
+                        <div class="rule-row">
+                            <div class="rule-row__info"><div class="rule-row__title">高风险自动驳回</div><div class="rule-row__desc">命中制裁名单或高风险标记时自动拒绝</div></div>
+                            <div class="rule-row__control"><label class="tos-toggle"><input type="checkbox" checked /><span class="slider"></span></label></div>
+                        </div>
+                        <div class="rule-row">
+                            <div class="rule-row__info"><div class="rule-row__title">人工审核触发条件</div><div class="rule-row__desc">以下任一条件满足时转入人工审核</div></div>
+                            <div class="rule-row__control">
+                                <select class="form-field" style="width:160px;"><option selected>信息不完整</option><option>信息不完整 + 低质量图片</option><option>信息不完整 + 低质量 + 年龄异常</option></select>
+                            </div>
+                        </div>
+                        <div class="rule-row">
+                            <div class="rule-row__info"><div class="rule-row__title">重复提交限制</div><div class="rule-row__desc">同一用户每日最多提交验证次数</div></div>
+                            <div class="rule-row__control">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <input class="form-field" type="number" value="3" style="width:80px;" />
+                                    <span style="color:var(--tos-text-muted);font-size:13px;">次/天</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- OCR -->
+                    <section class="tos-card" style="margin-bottom:20px;">
+                        <div class="tos-card__header">
+                            <h2 class="tos-card__title"><i class="fas fa-file-lines" style="color:var(--tos-primary);"></i> OCR 识别设置</h2>
+                            <label class="tos-toggle"><input type="checkbox" checked /><span class="slider"></span></label>
+                        </div>
+                        <div class="tos-form-grid">
+                            <div>
+                                <label class="form-label">识别语言</label>
+                                <select class="form-field"><option selected>中文 (简体)</option><option>中文 + 英文</option><option>中文 + 英文 + 繁体</option></select>
+                                <div class="form-help">证件 OCR 识别语言包。</div>
+                            </div>
+                            <div>
+                                <label class="form-label">识别质量要求</label>
+                                <select class="form-field"><option>低 (允许模糊)</option><option selected>中 (标准)</option><option>高 (清晰)</option></select>
+                                <div class="form-help">低于质量要求提示用户重新拍摄。</div>
+                            </div>
+                            <div>
+                                <label class="form-label">MRZ 识别</label>
+                                <select class="form-field"><option>关闭</option><option selected>启用</option></select>
+                                <div class="form-help">机器可读区域识别，用于护照。</div>
+                            </div>
+                            <div>
+                                <label class="form-label">条形码/二维码识别</label>
+                                <select class="form-field"><option selected>关闭</option><option>启用</option></select>
+                            </div>
+                        </div>
+                    </section>
+
+                    
+
+                    <div class="save-bar">
+                        <button class="btn">重置</button>
+                        <button class="btn btn-primary">保存规则</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- 版本历史弹窗 -->
+        <div class="modal-overlay" id="versionModal" onclick="closeVersionHistory(event)">
+            <div class="modal-body">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                    <h3 style="font-size:18px;font-weight:600;">版本历史</h3>
+                    <button onclick="closeVersionHistory()" style="border:none;background:none;font-size:24px;cursor:pointer;color:var(--tos-text-muted);">&times;</button>
+                </div>
+                <div class="version-timeline">
+
+                    <div class="version-item current" onclick="previewVersion(4)">
+                        <div class="version-dot"></div>
+                        <div class="version-content">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span class="version-tag">当前版本</span>
+                                <span style="font-size:12px;color:var(--tos-text-muted);">2026-07-09 14:30</span>
+                            </div>
+                            <div class="version-desc">调整活体检测阈值为 80%，新增港澳通行证禁用规则</div>
+                            <div style="font-size:12px;color:var(--tos-text-muted);margin-top:4px;">更新人: 管理员</div>
+                        </div>
+                        <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();restoreVersion(4)">使用中</button>
+                    </div>
+
+                    <div class="version-item" onclick="previewVersion(3)">
+                        <div class="version-dot"></div>
+                        <div class="version-content">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span class="version-tag">v2.3.0</span>
+                                <span style="font-size:12px;color:var(--tos-text-muted);">2026-06-25 10:15</span>
+                            </div>
+                            <div class="version-desc">新增年龄限制规则，最低18岁最高70岁；优化OCR语言包</div>
+                            <div style="font-size:12px;color:var(--tos-text-muted);margin-top:4px;">更新人: 管理员</div>
+                        </div>
+                        <button class="btn btn-sm" onclick="event.stopPropagation();restoreVersion(3)">恢复</button>
+                    </div>
+
+                    <div class="version-item" onclick="previewVersion(2)">
+                        <div class="version-dot"></div>
+                        <div class="version-content">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span class="version-tag">v2.2.0</span>
+                                <span style="font-size:12px;color:var(--tos-text-muted);">2026-05-18 16:00</span>
+                            </div>
+                            <div class="version-desc">新增人脸比对功能；重复提交限制改为3次/天</div>
+                            <div style="font-size:12px;color:var(--tos-text-muted);margin-top:4px;">更新人: 张审核</div>
+                        </div>
+                        <button class="btn btn-sm" onclick="event.stopPropagation();restoreVersion(2)">恢复</button>
+                    </div>
+
+                    <div class="version-item" onclick="previewVersion(1)">
+                        <div class="version-dot"></div>
+                        <div class="version-content">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span class="version-tag">v2.1.0</span>
+                                <span style="font-size:12px;color:var(--tos-text-muted);">2026-04-10 09:30</span>
+                            </div>
+                            <div class="version-desc">初始版本。证件要求：身份证必需、护照可选、驾驶证可选</div>
+                            <div style="font-size:12px;color:var(--tos-text-muted);margin-top:4px;">更新人: 管理员</div>
+                        </div>
+                        <button class="btn btn-sm" onclick="event.stopPropagation();restoreVersion(1)">恢复</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        
+<script>
+const versions = [{"id": 4, "ver": "2.3.1", "date": "2026-07-09 14:30", "author": "\u7ba1\u7406\u5458", "desc": "\u8c03\u6574\u6d3b\u4f53\u68c0\u6d4b\u9608\u503c\u4e3a 80%\uff0c\u65b0\u589e\u6e2f\u6fb3\u901a\u884c\u8bc1\u7981\u7528\u89c4\u5219"}, {"id": 3, "ver": "2.3.0", "date": "2026-06-25 10:15", "author": "\u7ba1\u7406\u5458", "desc": "\u65b0\u589e\u5e74\u9f84\u9650\u5236\u89c4\u5219\uff0c\u6700\u4f4e18\u5c81\u6700\u9ad870\u5c81\uff1b\u4f18\u5316OCR\u8bed\u8a00\u5305"}, {"id": 2, "ver": "2.2.0", "date": "2026-05-18 16:00", "author": "\u5f20\u5ba1\u6838", "desc": "\u65b0\u589e\u4eba\u8138\u6bd4\u5bf9\u529f\u80fd\uff1b\u91cd\u590d\u63d0\u4ea4\u9650\u5236\u6539\u4e3a3\u6b21/\u5929"}, {"id": 1, "ver": "2.1.0", "date": "2026-04-10 09:30", "author": "\u7ba1\u7406\u5458", "desc": "\u521d\u59cb\u7248\u672c\u3002\u8bc1\u4ef6\u8981\u6c42\uff1a\u8eab\u4efd\u8bc1\u5fc5\u9700\u3001\u62a4\u7167\u53ef\u9009\u3001\u9a7e\u9a76\u8bc1\u53ef\u9009"}];
+            let activeVersionId = 4;
+
+            function openVersionHistory() {
+                document.getElementById('versionModal').classList.add('open');
+                // Reset preview: mark active version as current
+                document.querySelectorAll('.version-item').forEach(el => el.classList.remove('preview'));
+                updateButtonStates(activeVersionId);
+            }
+
+            function closeVersionHistory(e) {
+                if (e && e.target !== document.getElementById('versionModal')) return;
+                document.getElementById('versionModal').classList.remove('open');
+                // Reset to active version display
+                const v = versions.find(x => x.id === activeVersionId);
+                if (v) {
+                    document.getElementById('currentVersionBadge').textContent = 'v' + v.ver;
+                    document.getElementById('versionDesc').innerHTML = '最后更新: ' + v.date + ' · 更新人: ' + v.author + ' · 变更: ' + v.desc;
+                }
+                document.querySelectorAll('.version-item').forEach(el => el.classList.remove('preview'));
+                updateButtonStates(activeVersionId);
+            }
+
+            function previewVersion(id) {
+                const v = versions.find(x => x.id === id);
+                if (!v) return;
+                // Preview: update badge and description without marking "使用中"
+                document.getElementById('currentVersionBadge').textContent = 'v' + v.ver;
+                document.getElementById('versionDesc').innerHTML = '最后更新: ' + v.date + ' · 更新人: ' + v.author + ' · 变更: ' + v.desc;
+                // Highlight the row being previewed
+                document.querySelectorAll('.version-item').forEach(el => el.classList.remove('preview'));
+                document.querySelectorAll('.version-item').forEach(el => {
+                    const btn = el.querySelector('button');
+                    if (btn && btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('previewVersion(' + id + ')')) {
+                        el.classList.add('preview');
+                    }
+                });
+                updateButtonStates(activeVersionId);
+            }
+
+            function restoreVersion(id) {
+                const v = versions.find(x => x.id === id);
+                if (!v) return;
+                activeVersionId = id;
+                document.getElementById('currentVersionBadge').textContent = 'v' + v.ver;
+                document.getElementById('versionDesc').innerHTML = '最后更新: ' + v.date + ' · 更新人: ' + v.author + ' · 变更: ' + v.desc;
+                document.querySelectorAll('.version-item').forEach(el => el.classList.remove('preview'));
+                updateButtonStates(id);
+                closeVersionHistory();
+            }
+
+            function updateButtonStates(activeId) {
+                document.querySelectorAll('.version-item').forEach(el => {
+                    const btn = el.querySelector('button');
+                    if (!btn) return;
+                    const onclick = btn.getAttribute('onclick') || '';
+                    // Extract the version id from the onclick handler
+                    const match = onclick.match(/(?:previewVersion|restoreVersion)\((\d+)\)/);
+                    const vid = match ? parseInt(match[1]) : -1;
+                    if (vid === activeId) {
+                        el.classList.add('current');
+                        btn.className = 'btn btn-sm btn-primary';
+                        btn.textContent = '使用中 ✓';
+                    } else {
+                        el.classList.remove('current');
+                        btn.className = 'btn btn-sm';
+                        btn.textContent = '启用版本';
+                    }
+                });
+            }
+        </script></body>
+</html>

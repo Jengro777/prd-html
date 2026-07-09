@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>验证历史 · 操作记录</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        <style>
+            :root {
+                --tos-primary: #42b7ae;
+                --tos-primary-hover: #339b94;
+                --tos-primary-bg: #e6f7f6;
+                --tos-bg: #f5f7fa;
+                --tos-card: #fff;
+                --tos-border: #e5e7eb;
+                --tos-border-soft: #f0f2f5;
+                --tos-text: #333;
+                --tos-text-secondary: #666;
+                --tos-text-muted: #999;
+                --tos-success: #52c41a;
+                --tos-success-bg: #f0faf0;
+                --tos-warning: #faad14;
+                --tos-warning-bg: #fff7e6;
+                --tos-error: #f5222d;
+                --tos-error-bg: #fff1f0;
+                --tos-radius-card: 12px;
+                --tos-radius-control: 8px;
+                --tos-radius-tag: 4px;
+                --tos-shadow-card: 0 1px 2px rgba(15,23,42,0.03);
+                --sidebar-width: 240px;
+            }
+            * { margin:0; padding:0; box-sizing:border-box; }
+            body { background:var(--tos-bg); color:var(--tos-text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC","Microsoft YaHei",sans-serif; letter-spacing:0; }
+            .app-layout { min-height:100vh; display:flex; }
+            .tos-sidebar { position:fixed; top:0; left:0; bottom:0; width:var(--sidebar-width); background:#fff; border-right:1px solid var(--tos-border-soft); display:flex; flex-direction:column; z-index:30; overflow-y:auto; }
+            .tos-sidebar__brand { display:flex; align-items:center; gap:10px; padding:20px 20px 16px; border-bottom:1px solid var(--tos-border-soft); }
+            .tos-sidebar__brand-icon { width:36px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:10px; background:var(--tos-primary-bg); color:var(--tos-primary); font-size:18px; }
+            .tos-sidebar__brand-title { font-size:18px; font-weight:700; color:#1e293b; }
+            .tos-sidebar__brand-sub { font-size:11px; color:var(--tos-text-muted); margin-top:1px; }
+            .tos-sidebar__nav { flex:1; padding:12px 12px; display:flex; flex-direction:column; gap:2px; }
+            .tos-sidebar__section { padding:16px 12px 6px; font-size:11px; font-weight:600; color:var(--tos-text-muted); letter-spacing:0.5px; }
+            .tos-sidebar__item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; font-size:14px; font-weight:500; color:var(--tos-text-secondary); cursor:pointer; transition:all 0.15s; text-decoration:none; line-height:1.4; }
+            .tos-sidebar__item:hover { background:var(--tos-bg); color:var(--tos-text); }
+            .tos-sidebar__item.active { background:var(--tos-primary-bg); color:var(--tos-primary); font-weight:600; }
+            .tos-sidebar__item i { width:18px; text-align:center; font-size:15px; flex-shrink:0; }
+            .tos-sidebar__item .badge { margin-left:auto; padding:1px 8px; border-radius:10px; background:var(--tos-primary-bg); color:var(--tos-primary); font-size:11px; font-weight:600; }
+            .tos-main { flex:1; margin-left:var(--sidebar-width); min-height:100vh; display:flex; flex-direction:column; }
+            .tos-header { position:sticky; top:0; z-index:20; display:flex; height:60px; align-items:center; justify-content:space-between; gap:16px; border-bottom:1px solid var(--tos-border-soft); background:rgba(255,255,255,0.96); padding:0 24px; backdrop-filter:blur(10px); }
+            .tos-header__breadcrumb { display:flex; align-items:center; gap:8px; font-size:14px; color:var(--tos-text-muted); }
+            .tos-header__breadcrumb span { color:var(--tos-text); font-weight:500; }
+            .tos-header__actions { display:flex; align-items:center; gap:12px; }
+            .tos-header__user { display:flex; align-items:center; gap:8px; padding:4px 12px 4px 4px; border-radius:20px; cursor:default; }
+            .tos-header__avatar { width:30px; height:30px; border-radius:50%; background:var(--tos-primary-bg); color:var(--tos-primary); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; }
+            .tos-page { flex:1; padding:24px; }
+            .tos-page-title { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:24px; }
+            .tos-page-title h1 { font-size:22px; font-weight:600; color:#1e293b; display:flex; align-items:center; gap:10px; }
+            .tos-page-title p { margin-top:4px; color:var(--tos-text-muted); font-size:14px; }
+            .tos-card { background:#fff; border:1px solid var(--tos-border-soft); border-radius:var(--tos-radius-card); padding:20px; box-shadow:var(--tos-shadow-card); }
+            .tos-card__header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+            .tos-card__title { margin:0; color:var(--tos-text); font-size:16px; font-weight:600; display:flex; align-items:center; gap:8px; }
+            .tos-card__desc { margin-top:4px; color:var(--tos-text-muted); font-size:12px; }
+            .btn { display:inline-flex; height:32px; align-items:center; justify-content:center; padding:0 15px; border:1px solid var(--tos-border); border-radius:var(--tos-radius-control); background:#fff; color:var(--tos-text); font-size:14px; line-height:30px; white-space:nowrap; cursor:pointer; transition:all 0.15s; font-family:inherit; }
+            .btn:hover { border-color:#d1d5db; background:#fafafa; }
+            .btn-primary { border-color:var(--tos-primary); background:var(--tos-primary); color:#fff; }
+            .btn-primary:hover { background:var(--tos-primary-hover); border-color:var(--tos-primary-hover); }
+            .btn-sm { height:28px; padding:0 10px; font-size:12px; }
+            .btn-link { height:auto; padding:0 4px; border:0; background:transparent; color:var(--tos-primary); font-size:13px; }
+            .btn-link:hover { text-decoration:underline; }
+            .btn-link-danger { color:var(--tos-error); }
+            .form-label { display:block; margin-bottom:6px; color:var(--tos-text-secondary); font-size:13px; font-weight:500; }
+            .form-field { width:100%; height:32px; padding:4px 11px; border:1px solid var(--tos-border); border-radius:var(--tos-radius-control); background:#fff; color:var(--tos-text); font-size:14px; outline:none; font-family:inherit; }
+            .form-field:focus { border-color:var(--tos-primary); box-shadow:0 0 0 2px rgba(66,183,174,0.1); }
+            select.form-field { appearance:auto; cursor:pointer; }
+            .form-help { margin-top:4px; color:var(--tos-text-muted); font-size:12px; }
+            .tos-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px 20px; }
+            .tos-table-wrap { overflow-x:auto; border:1px solid var(--tos-border-soft); border-radius:var(--tos-radius-card); }
+            .tos-table { width:100%; min-width:820px; border-collapse:collapse; table-layout:fixed; }
+            .tos-table th { padding:12px 16px; background:#fafafa; border-bottom:1px solid var(--tos-border-soft); color:var(--tos-text-secondary); font-size:13px; font-weight:500; text-align:left; }
+            .tos-table td { padding:12px 16px; border-bottom:1px solid #f5f5f5; color:var(--tos-text); font-size:14px; vertical-align:middle; }
+            .tos-table tbody tr:last-child td { border-bottom:0; }
+            .tos-table tr:hover td { background:#fafafa; }
+            .tos-tag { display:inline-flex; height:22px; align-items:center; padding:0 8px; border-radius:var(--tos-radius-tag); font-size:12px; font-weight:500; line-height:20px; white-space:nowrap; }
+            .tos-tag--default { background:#f5f5f5; color:var(--tos-text-secondary); }
+            .tos-tag--primary { background:var(--tos-primary-bg); color:var(--tos-primary); }
+            .tos-tag--success { background:var(--tos-success-bg); color:var(--tos-success); }
+            .tos-tag--warning { background:var(--tos-warning-bg); color:var(--tos-warning); }
+            .tos-tag--error { background:var(--tos-error-bg); color:var(--tos-error); }
+            .text-right { text-align:right; }
+
+            .history-meta { font-size:13px; color:var(--tos-text-secondary); }
+            .history-meta strong { color:var(--tos-text); }
+            .detail-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:100; align-items:center; justify-content:center; }
+            .detail-modal.open { display:flex; }
+            .detail-modal__body { background:#fff; border-radius:var(--tos-radius-card); padding:24px; max-width:560px; width:90%; max-height:70vh; overflow-y:auto; }
+
+            @media (max-width:768px) { .tos-sidebar { display:none; } .tos-main { margin-left:0; } .tos-form-grid { grid-template-columns:1fr; } }
+        </style>
+    </head>
+    <body>
+        <div class="app-layout">
+            <aside class="tos-sidebar">
+                <div class="tos-sidebar__brand">
+                    <div class="tos-sidebar__brand-icon"><i class="fas fa-shield-halved"></i></div>
+                    <div><div class="tos-sidebar__brand-title">TOS</div><div class="tos-sidebar__brand-sub">KYC / KYB / PPH</div></div>
+                </div>
+                <div class="tos-sidebar__nav">
+                    <div class="tos-sidebar__section">验证管理</div>
+                    <a href="会员验证规则.html" class="tos-sidebar__item"><i class="fas fa-sliders"></i>会员验证规则</a>
+                    <a href="商家验证规则.html" class="tos-sidebar__item"><i class="fas fa-sliders"></i>商家验证规则</a>
+                    <a href="验证服务商.html" class="tos-sidebar__item"><i class="fas fa-gear"></i>验证服务商</a>
+                    <div class="tos-sidebar__section">验证记录</div>
+                    <a href="会员验证.html" class="tos-sidebar__item"><i class="fas fa-user-check"></i>会员验证<span class="badge">+12</span></a>
+                    <a href="商家验证.html" class="tos-sidebar__item"><i class="fas fa-building"></i>商家验证<span class="badge">+8</span></a>
+                    <a href="验证历史.html" class="tos-sidebar__item active"><i class="fas fa-clock-rotate-left"></i>验证日志</a>
+                </div>
+            </aside>
+
+            <div class="tos-main">
+                <header class="tos-header">
+                    <div class="tos-header__breadcrumb">
+                        <i class="fas fa-house"></i>
+                        <i class="fas fa-chevron-right" style="font-size:10px;color:#ccc;"></i>
+                        <span>验证记录</span>
+                        <i class="fas fa-chevron-right" style="font-size:10px;color:#ccc;"></i>
+                        <span>验证日志</span>
+                    </div>
+                    <div class="tos-header__actions">
+                        <button class="btn btn-sm" onclick="exportCSV()"><i class="fas fa-download"></i> 导出</button>
+                        <div class="tos-header__user">
+                            <div class="tos-header__avatar">管</div>
+                            <span style="font-size:13px;color:var(--tos-text-secondary);">管理员</span>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="tos-page">
+                    <section class="tos-page-title">
+                        <div>
+                            <h1><i class="fas fa-clock-rotate-left" style="color:var(--tos-primary);"></i> 验证历史</h1>
+                            <p>查看所有验证操作的操作记录与审计日志。</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span style="font-size:12px;display:flex;align-items:center;gap:6px;color:var(--tos-text-muted);">
+                                <i class="fas fa-rotate" style="cursor:pointer;" onclick="location.reload()"></i>
+                                自动刷新 <span style="color:var(--tos-primary);font-weight:600;">60s</span>
+                            </span>
+                        </div>
+                    </section>
+
+                    <!-- 统计概要 -->
+                    <section style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;">
+                        <div class="tos-card" style="padding:14px 16px;display:flex;align-items:center;gap:12px;">
+                            <div style="width:36px;height:36px;border-radius:8px;background:var(--tos-primary-bg);color:var(--tos-primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-list"></i></div>
+                            <div><div style="font-size:12px;color:var(--tos-text-muted);">总记录</div><div style="font-size:20px;font-weight:600;color:#1f2937;">1,284</div></div>
+                        </div>
+                        <div class="tos-card" style="padding:14px 16px;display:flex;align-items:center;gap:12px;">
+                            <div style="width:36px;height:36px;border-radius:8px;background:var(--tos-warning-bg);color:var(--tos-warning);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-user-check"></i></div>
+                            <div><div style="font-size:12px;color:var(--tos-text-muted);">会员验证</div><div style="font-size:20px;font-weight:600;color:#1f2937;">846</div></div>
+                        </div>
+                        <div class="tos-card" style="padding:14px 16px;display:flex;align-items:center;gap:12px;">
+                            <div style="width:36px;height:36px;border-radius:8px;background:var(--tos-primary-bg);color:var(--tos-primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-building"></i></div>
+                            <div><div style="font-size:12px;color:var(--tos-text-muted);">商家验证</div><div style="font-size:20px;font-weight:600;color:#1f2937;">342</div></div>
+                        </div>
+                        <div class="tos-card" style="padding:14px 16px;display:flex;align-items:center;gap:12px;">
+                            <div style="width:36px;height:36px;border-radius:8px;background:var(--tos-error-bg);color:var(--tos-error);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-triangle-exclamation"></i></div>
+                            <div><div style="font-size:12px;color:var(--tos-text-muted);">异常记录</div><div style="font-size:20px;font-weight:600;color:#1f2937;">23</div></div>
+                        </div>
+                    </section>
+
+                    <!-- 筛选 -->
+                    <section class="tos-card" style="margin-bottom:20px;">
+                        <div class="tos-card__header">
+                            <h2 class="tos-card__title"><i class="fas fa-filter" style="color:var(--tos-primary);"></i> 筛选</h2>
+                            <button class="btn btn-sm" onclick="resetFilters()">重置</button>
+                        </div>
+                        <div class="tos-form-grid">
+                            <div>
+                                <label class="form-label">验证类型</label>
+                                <select class="form-field" id="filterType" onchange="filterTable()">
+                                    <option value="">全部类型</option>
+                                    <option value="member">会员验证</option>
+                                    <option value="merchant">商家验证</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">操作类型</label>
+                                <select class="form-field" id="filterAction" onchange="filterTable()">
+                                    <option value="">全部操作</option>
+                                    <option value="submitted">提交验证</option>
+                                    <option value="approved">审核通过</option>
+                                    <option value="rejected">审核驳回</option>
+                                    <option value="modified">规则修改</option>
+                                    <option value="config">配置变更</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">操作人</label>
+                                <select class="form-field" id="filterOperator" onchange="filterTable()">
+                                    <option value="">全部人员</option>
+                                    <option value="admin">管理员</option>
+                                    <option value="system">系统</option>
+                                    <option value="zhang">张审核</option>
+                                    <option value="li">李审核</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">时间范围</label>
+                                <div style="display:flex;gap:8px;align-items:center;">
+                                    <input class="form-field" type="date" id="filterDateFrom" style="width:50%;" onchange="filterTable()" />
+                                    <span style="color:var(--tos-text-muted);">至</span>
+                                    <input class="form-field" type="date" id="filterDateTo" style="width:50%;" onchange="filterTable()" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tos-actions" style="margin-top:12px;">
+                            <button class="btn btn-primary btn-sm" onclick="filterTable()">查询</button>
+                        </div>
+                    </section>
+
+                    <!-- 表格 -->
+                    <section class="tos-card">
+                        <div class="tos-card__header">
+                            <div>
+                                <h2 class="tos-card__title"><i class="fas fa-clock-rotate-left" style="color:var(--tos-primary);"></i> 操作日志</h2>
+                                <div class="tos-card__desc">共 <span id="totalCount">48</span> 条记录</div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button class="btn btn-sm" onclick="exportCSV()"><i class="fas fa-download"></i> 导出 CSV</button>
+                            </div>
+                        </div>
+                        <div class="tos-table-wrap">
+                            <table class="tos-table" id="historyTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width:150px;">时间</th>
+                                        <th style="width:90px;">验证类型</th>
+                                        <th style="width:100px;">操作类型</th>
+                                        <th style="width:90px;">操作人</th>
+                                        <th>详情</th>
+                                        <th style="width:80px;">状态</th>
+                                        <th class="text-right" style="width:70px;">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tos-actions" style="margin-top:16px;">
+                            <div style="display:flex;align-items:center;gap:12px;justify-content:space-between;width:100%;">
+                                <span style="font-size:13px;color:var(--tos-text-muted);">1-10 / 48 条</span>
+                                <div style="display:flex;align-items:center;gap:6px;">
+                                    <button class="btn btn-sm" disabled style="opacity:0.5;cursor:not-allowed;">&laquo;</button>
+                                    <button class="btn btn-sm btn-primary" style="min-width:32px;padding:0 8px;">1</button>
+                                    <button class="btn btn-sm" style="min-width:32px;padding:0 8px;">2</button>
+                                    <button class="btn btn-sm" style="min-width:32px;padding:0 8px;">3</button>
+                                    <button class="btn btn-sm" style="min-width:32px;padding:0 8px;">4</button>
+                                    <button class="btn btn-sm" style="min-width:32px;padding:0 8px;">5</button>
+                                    <span style="font-size:13px;color:var(--tos-text-muted);">...</span>
+                                    <button class="btn btn-sm">&raquo;</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <!-- 详情弹窗 -->
+        <div class="detail-modal" id="detailModal">
+            <div class="detail-modal__body">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                    <h3 style="font-size:18px;font-weight:600;">操作详情</h3>
+                    <button onclick="closeDetail()" style="border:none;background:none;font-size:20px;cursor:pointer;color:var(--tos-text-muted);">&times;</button>
+                </div>
+                <div id="detailContent"></div>
+            </div>
+        </div>
+
+        <script>
+            const data = [
+                { id:1, time:"2026-07-09 14:32:18", type:"member", typeLabel:"会员验证", action:"submitted", actionLabel:"提交验证", operator:"system", operatorLabel:"系统", detail:"用户 U10086 提交实名验证申请，证件类型：身份证", status:"success", statusLabel:"已完成" },
+                { id:2, time:"2026-07-09 14:30:00", type:"merchant", typeLabel:"商家验证", action:"approved", actionLabel:"审核通过", operator:"zhang", operatorLabel:"张审核", detail:"商家「杭州锐创科技」KYB 审核通过，企业证件齐全，UBO 穿透完毕", status:"success", statusLabel:"已完成" },
+                { id:3, time:"2026-07-09 11:08:22", type:"member", typeLabel:"会员验证", action:"rejected", actionLabel:"审核驳回", operator:"li", operatorLabel:"李审核", detail:"用户 U10088 护照验证不通过 — 证件已过期，驳回要求重新上传", status:"error", statusLabel:"已驳回" },
+                { id:4, time:"2026-07-09 10:45:05", type:"merchant", typeLabel:"商家验证", action:"submitted", actionLabel:"提交验证", operator:"system", operatorLabel:"系统", detail:"商家「广州鑫源服装厂」提交 KYB 验证申请", status:"warning", statusLabel:"待审核" },
+                { id:5, time:"2026-07-09 09:20:11", type:"member", typeLabel:"会员验证", action:"approved", actionLabel:"审核通过", operator:"admin", operatorLabel:"管理员", detail:"用户 U10089 身份证验证通过，活体检测匹配度 92%", status:"success", statusLabel:"已完成" },
+                { id:6, time:"2026-07-08 17:55:30", type:"merchant", typeLabel:"商家验证", action:"rejected", actionLabel:"审核驳回", operator:"zhang", operatorLabel:"张审核", detail:"商家「武汉永诚建材」PPH 审查不通过 — 法人涉及经营异常名录", status:"error", statusLabel:"已驳回" },
+                { id:7, time:"2026-07-08 16:20:00", type:"merchant", typeLabel:"商家验证", action:"modified", actionLabel:"规则修改", operator:"admin", operatorLabel:"管理员", detail:"商家验证规则 v1.5.2 发布 — 新增 UBO 穿透 3 层限制、更新行业限制列表", status:"success", statusLabel:"已生效" },
+                { id:8, time:"2026-07-08 14:30:00", type:"member", typeLabel:"会员验证", action:"modified", actionLabel:"规则修改", operator:"admin", operatorLabel:"管理员", detail:"会员验证规则 v2.3.1 发布 — 活体检测阈值调整为 80%，新增港澳通行证禁用", status:"success", statusLabel:"已生效" },
+                { id:9, time:"2026-07-08 11:12:45", type:"member", typeLabel:"会员验证", action:"submitted", actionLabel:"提交验证", operator:"system", operatorLabel:"系统", detail:"用户 U10095 提交实名验证申请，证件类型：身份证", status:"warning", statusLabel:"待审核" },
+                { id:10, time:"2026-07-07 16:44:00", type:"merchant", typeLabel:"商家验证", action:"config", actionLabel:"配置变更", operator:"admin", operatorLabel:"管理员", detail:"Sumsub 回调地址更新为 https://api.tos.com/webhook/sumsub/v2", status:"success", statusLabel:"已生效" },
+                { id:11, time:"2026-07-07 15:30:00", type:"member", typeLabel:"会员验证", action:"approved", actionLabel:"审核通过", operator:"admin", operatorLabel:"管理员", detail:"用户 U10087 身份证验证通过，所有校验项均达标", status:"success", statusLabel:"已完成" },
+                { id:12, time:"2026-07-07 14:22:18", type:"member", typeLabel:"会员验证", action:"submitted", actionLabel:"提交验证", operator:"system", operatorLabel:"系统", detail:"用户 U10096 提交实名验证申请，证件类型：身份证", status:"success", statusLabel:"已完成" },
+                { id:13, time:"2026-07-07 11:08:00", type:"member", typeLabel:"会员验证", action:"submitted", actionLabel:"提交验证", operator:"system", operatorLabel:"系统", detail:"用户 U10090 提交实名验证申请，证件类型：驾驶证", status:"warning", statusLabel:"待审核" },
+                { id:14, time:"2026-07-07 09:30:00", type:"merchant", typeLabel:"商家验证", action:"approved", actionLabel:"审核通过", operator:"li", operatorLabel:"李审核", detail:"商家「南京博远文化」KYB 审核通过，企业信息校验一致", status:"success", statusLabel:"已完成" },
+                { id:15, time:"2026-07-06 17:05:00", type:"merchant", typeLabel:"商家验证", action:"approved", actionLabel:"审核通过", operator:"zhang", operatorLabel:"张审核", detail:"商家「深圳前海联合投资」KYB 审核通过，UBO 穿透至第二层", status:"success", statusLabel:"已完成" },
+            ];
+
+            let filteredData = [...data];
+
+            function renderTable() {
+                const tbody = document.getElementById('tableBody');
+                tbody.innerHTML = '';
+                filteredData.forEach(item => {
+                    const statusClass = item.status === 'success' ? 'tos-tag--success' : item.status === 'error' ? 'tos-tag--error' : 'tos-tag--warning';
+                    const actionIcon = item.action === 'submitted' ? 'fa-upload' : item.action === 'approved' ? 'fa-check' : item.action === 'rejected' ? 'fa-xmark' : item.action === 'modified' ? 'fa-pen' : 'fa-gear';
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="font-size:13px;color:var(--tos-text-muted);">${item.time}</td>
+                        <td><span class="tos-tag tos-tag--primary">${item.typeLabel}</span></td>
+                        <td class="history-meta"><i class="fas ${actionIcon}" style="width:16px;color:var(--tos-primary);font-size:12px;"></i> ${item.actionLabel}</td>
+                        <td class="history-meta"><strong>${item.operatorLabel}</strong></td>
+                        <td class="history-meta" style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.detail}</td>
+                        <td><span class="tos-tag ${statusClass}">${item.statusLabel}</span></td>
+                        <td class="text-right"><button class="btn btn-link" onclick="showDetail(${item.id})">详情</button></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                document.getElementById('totalCount').textContent = filteredData.length;
+            }
+
+            function filterTable() {
+                const type = document.getElementById('filterType').value;
+                const action = document.getElementById('filterAction').value;
+                const operator = document.getElementById('filterOperator').value;
+                const dateFrom = document.getElementById('filterDateFrom').value;
+                const dateTo = document.getElementById('filterDateTo').value;
+
+                filteredData = data.filter(item => {
+                    if (type && item.type !== type) return false;
+                    if (action && item.action !== action) return false;
+                    if (operator && item.operator !== operator) return false;
+                    if (dateFrom && item.time.slice(0,10) < dateFrom) return false;
+                    if (dateTo && item.time.slice(0,10) > dateTo) return false;
+                    return true;
+                });
+                renderTable();
+            }
+
+            function resetFilters() {
+                document.getElementById('filterType').value = '';
+                document.getElementById('filterAction').value = '';
+                document.getElementById('filterOperator').value = '';
+                document.getElementById('filterDateFrom').value = '';
+                document.getElementById('filterDateTo').value = '';
+                filteredData = [...data];
+                renderTable();
+            }
+
+            function showDetail(id) {
+                const item = data.find(d => d.id === id);
+                if (!item) return;
+                document.getElementById('detailContent').innerHTML = `
+                    <div style="display:grid;grid-template-columns:100px 1fr;gap:10px;font-size:14px;">
+                        <div style="color:var(--tos-text-muted);">时间</div><div>${item.time}</div>
+                        <div style="color:var(--tos-text-muted);">验证类型</div><div><span class="tos-tag tos-tag--primary">${item.typeLabel}</span></div>
+                        <div style="color:var(--tos-text-muted);">操作类型</div><div>${item.actionLabel}</div>
+                        <div style="color:var(--tos-text-muted);">操作人</div><div>${item.operatorLabel}</div>
+                        <div style="color:var(--tos-text-muted);">状态</div><div><span class="tos-tag ${item.status === 'success' ? 'tos-tag--success' : item.status === 'error' ? 'tos-tag--error' : 'tos-tag--warning'}">${item.statusLabel}</span></div>
+                        <div style="color:var(--tos-text-muted);">详情</div><div style="line-height:1.6;">${item.detail}</div>
+                    </div>
+                `;
+                document.getElementById('detailModal').classList.add('open');
+            }
+
+            function closeDetail() {
+                document.getElementById('detailModal').classList.remove('open');
+            }
+
+            function exportCSV() {
+                const headers = ['时间','验证类型','操作类型','操作人','详情','状态'];
+                const rows = filteredData.map(item => [item.time, item.typeLabel, item.actionLabel, item.operatorLabel, item.detail, item.statusLabel]);
+                const csv = [headers, ...rows].map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+                const blob = new Blob(['\uFEFF' + csv], {type:'text/csv;charset=utf-8;'});
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = '验证历史.csv';
+                a.click();
+            }
+
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('detail-modal')) closeDetail();
+            });
+
+            renderTable();
+        </script>
+    </body>
+</html>
