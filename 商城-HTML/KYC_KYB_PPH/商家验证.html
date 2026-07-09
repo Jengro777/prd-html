@@ -162,6 +162,54 @@
                 .tos-main { margin-left: 0; }
                 .tos-form-grid { grid-template-columns: 1fr; }
             }
+        
+            .review-btn { border-color:var(--tos-warning); color:var(--tos-warning); }
+            .review-btn:hover { background:var(--tos-warning-bg); border-color:var(--tos-warning); }
+            .review-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:100; align-items:center; justify-content:center; }
+            .review-modal.open { display:flex; }
+            .review-modal__body { background:#fff; border-radius:var(--tos-radius-card); padding:24px; max-width:600px; width:90%; max-height:75vh; overflow-y:auto; }
+            .review-modal__header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+            .review-modal__header h3 { font-size:18px; font-weight:600; }
+            .review-modal__close { border:none; background:none; font-size:24px; cursor:pointer; color:var(--tos-text-muted); padding:0 4px; line-height:1; }
+            .review-modal__stats { display:flex; gap:16px; margin-bottom:16px; padding:12px 16px; background:var(--tos-bg); border-radius:8px; font-size:13px; color:var(--tos-text-secondary); }
+            .review-modal__stats strong { font-size:18px; }
+            .review-item-row { display:flex; align-items:center; padding:12px 0; border-bottom:1px solid #f5f5f5; gap:12px; }
+            .review-item-row:last-child { border-bottom:0; }
+            .review-item-row__info { flex:1; min-width:0; }
+            .review-item-row__name { font-size:14px; font-weight:500; }
+            .review-item-row__meta { font-size:12px; color:var(--tos-text-muted); margin-top:2px; }
+            .review-item-row__reason { font-size:12px; color:var(--tos-warning); margin-top:2px; }
+            .review-item-row__actions { display:flex; gap:6px; flex-shrink:0; }
+
+        
+            
+            .detail-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:100; align-items:center; justify-content:center; }
+            .detail-modal.open { display:flex; }
+            .detail-layout { display:flex; gap:20px; }
+            .detail-image-panel { width:220px; flex-shrink:0; }
+            .detail-image-panel img { width:100%; border-radius:8px; border:1px solid var(--tos-border-soft); display:block; }
+            .detail-image-label { font-size:11px; color:var(--tos-text-muted); margin-top:6px; text-align:center; }
+            .detail-image-tabs { display:flex; gap:4px; margin-bottom:8px; }
+            .detail-image-tab { flex:1; padding:4px; text-align:center; font-size:11px; border:1px solid var(--tos-border-soft); border-radius:4px; cursor:pointer; background:#fafafa; color:var(--tos-text-muted); }
+            .detail-image-tab.active { background:var(--tos-primary-bg); color:var(--tos-primary); border-color:var(--tos-primary); }
+            .detail-fields-panel { flex:1; min-width:0; }
+            .detail-fields-grid { display:grid; grid-template-columns:90px 1fr; gap:8px 12px; font-size:14px; }
+            .detail-fields-grid .lbl { color:var(--tos-text-muted); }
+            .detail-fields-grid .val { color:var(--tos-text); word-break:break-all; }
+
+            .detail-timeline-item .dot { width:8px; height:8px; border-radius:50%; margin-top:5px; flex-shrink:0; }
+            .detail-timeline-item .dot.green { background:var(--tos-success); }
+            .detail-timeline-item .dot.orange { background:var(--tos-warning); }
+            .detail-timeline-item .dot.gray { background:#d9dee8; }
+            .detail-modal__body { background:#fff; border-radius:var(--tos-radius-card); padding:24px; max-width:680px; width:90%; max-height:80vh; overflow-y:auto; box-shadow:0 8px 30px rgba(0,0,0,0.15); }
+            .detail-modal__head { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+            .detail-modal__head h3 { font-size:18px; font-weight:600; }
+            .detail-modal__close { border:none; background:none; font-size:24px; cursor:pointer; color:var(--tos-text-muted); padding:0 4px; line-height:1; }
+            .detail-timeline { margin-top:16px; padding-top:12px; border-top:1px solid var(--tos-border-soft); }
+            .detail-timeline-item { display:flex; gap:8px; font-size:13px; color:var(--tos-text-secondary); margin-bottom:8px; align-items:flex-start; }
+            .detail-timeline-item:last-child { margin-bottom:0; }
+            .detail-timeline-item span { line-height:1.5; }
+
         </style>
     </head>
     <body>
@@ -213,7 +261,6 @@
                         </div>
                     </section>
 
-
                     <!-- Module tabs: KYB / PPH -->
                     <div class="module-tabs">
                         <button class="module-tab active" data-module="kyb"><i class="fas fa-building"></i> KYB 企业认证</button>
@@ -246,24 +293,23 @@
                             <div class="tos-card__header">
                                 <div><h2 class="tos-card__title">企业认证列表</h2><div class="tos-card__desc">共 10 条记录</div></div>
                                 <div class="flex items-center gap-2">
-                                    <button class="btn btn-sm"><i class="fas fa-upload"></i> 导入</button>
-                                    <button class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> 新建认证</button>
+                                    <button class="btn btn-sm review-btn" onclick="openReviewModal()"><i class="fas fa-check-double"></i> 人工审核</button>
                                 </div>
                             </div>
                             <div class="tos-table-wrap">
                                 <table class="tos-table">
                                     <thead><tr><th style="width:40px;"><input type="checkbox" /></th><th>商家编号</th><th>企业名称</th><th>法人代表</th><th>企业类型</th><th>提交时间</th><th>状态</th><th class="text-right">操作</th></tr></thead>
-                                    <tbody>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202401</span></td><td>杭州锐创科技有限公司</td><td>陈明</td><td><span class="tos-tag tos-tag--default">有限责任公司</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-06 10:32</td><td><span class="tos-tag tos-tag--warning">待审核</span></td><td class="text-right"><button class="btn btn-link">查看</button><button class="btn btn-link">审核</button></td></tr>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202402</span></td><td>深圳市飞扬贸易有限公司</td><td>李伟</td><td><span class="tos-tag tos-tag--default">有限责任公司</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-06 09:15</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link">查看</button></td></tr>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202403</span></td><td>广州鑫源服装厂</td><td>王芳</td><td><span class="tos-tag tos-tag--default">个体工商户</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-05 16:44</td><td><span class="tos-tag tos-tag--error">已驳回</span></td><td class="text-right"><button class="btn btn-link">查看</button></td></tr>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202404</span></td><td>北京智远咨询合伙企业</td><td>张磊</td><td><span class="tos-tag tos-tag--default">合伙企业</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-05 14:20</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link">查看</button></td></tr>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202405</span></td><td>上海云帆信息技术有限公司</td><td>赵敏</td><td><span class="tos-tag tos-tag--default">有限责任公司</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-04 11:08</td><td><span class="tos-tag tos-tag--warning">待审核</span></td><td class="text-right"><button class="btn btn-link">查看</button><button class="btn btn-link">审核</button></td></tr>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202406</span></td><td>成都锦城食品经营部</td><td>周强</td><td><span class="tos-tag tos-tag--default">个体工商户</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-04 10:55</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link">查看</button></td></tr>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202407</span></td><td>南京博远文化传媒有限公司</td><td>吴婷</td><td><span class="tos-tag tos-tag--default">有限责任公司</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-03 09:30</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link">查看</button></td></tr>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202408</span></td><td>武汉市汉阳区永诚建材商行</td><td>郑涛</td><td><span class="tos-tag tos-tag--default">个体工商户</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-03 08:12</td><td><span class="tos-tag tos-tag--error">已驳回</span></td><td class="text-right"><button class="btn btn-link">查看</button></td></tr>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202409</span></td><td>深圳前海联合投资中心</td><td>黄丽</td><td><span class="tos-tag tos-tag--default">合伙企业</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-02 17:05</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link">查看</button></td></tr>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202410</span></td><td>苏州工业园区广达贸易商行</td><td>林杰</td><td><span class="tos-tag tos-tag--default">个体工商户</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-02 15:40</td><td><span class="tos-tag tos-tag--warning">待审核</span></td><td class="text-right"><button class="btn btn-link">查看</button><button class="btn btn-link">审核</button></td></tr>
+                    <tbody>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202401</span></td><td>杭州锐创科技有限公司</td><td>陈明</td><td><span class="tos-tag tos-tag--default">有限责任公司</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-06 10:32</td><td><span class="tos-tag tos-tag--warning">待审核</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202401", {"field_0": "M202401", "field_1": "杭州锐创科技有限公司", "field_2": "陈明", "field_3": "有限责任公司", "field_4": "2026-07-06 10:32", "field_5": "待审核", "field_6": "查看审核"})' >查看</button></td></tr>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202402</span></td><td>深圳市飞扬贸易有限公司</td><td>李伟</td><td><span class="tos-tag tos-tag--default">有限责任公司</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-06 09:15</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202402", {"field_0": "M202402", "field_1": "深圳市飞扬贸易有限公司", "field_2": "李伟", "field_3": "有限责任公司", "field_4": "2026-07-06 09:15", "field_5": "已通过", "field_6": "查看"})' >查看</button></td></tr>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202403</span></td><td>广州鑫源服装厂</td><td>王芳</td><td><span class="tos-tag tos-tag--default">个体工商户</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-05 16:44</td><td><span class="tos-tag tos-tag--error">已驳回</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202403", {"field_0": "M202403", "field_1": "广州鑫源服装厂", "field_2": "王芳", "field_3": "个体工商户", "field_4": "2026-07-05 16:44", "field_5": "已驳回", "field_6": "查看"})' >查看</button></td></tr>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202404</span></td><td>北京智远咨询合伙企业</td><td>张磊</td><td><span class="tos-tag tos-tag--default">合伙企业</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-05 14:20</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202404", {"field_0": "M202404", "field_1": "北京智远咨询合伙企业", "field_2": "张磊", "field_3": "合伙企业", "field_4": "2026-07-05 14:20", "field_5": "已通过", "field_6": "查看"})' >查看</button></td></tr>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202405</span></td><td>上海云帆信息技术有限公司</td><td>赵敏</td><td><span class="tos-tag tos-tag--default">有限责任公司</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-04 11:08</td><td><span class="tos-tag tos-tag--warning">待审核</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202405", {"field_0": "M202405", "field_1": "上海云帆信息技术有限公司", "field_2": "赵敏", "field_3": "有限责任公司", "field_4": "2026-07-04 11:08", "field_5": "待审核", "field_6": "查看审核"})' >查看</button></td></tr>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202406</span></td><td>成都锦城食品经营部</td><td>周强</td><td><span class="tos-tag tos-tag--default">个体工商户</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-04 10:55</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202406", {"field_0": "M202406", "field_1": "成都锦城食品经营部", "field_2": "周强", "field_3": "个体工商户", "field_4": "2026-07-04 10:55", "field_5": "已通过", "field_6": "查看"})' >查看</button></td></tr>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202407</span></td><td>南京博远文化传媒有限公司</td><td>吴婷</td><td><span class="tos-tag tos-tag--default">有限责任公司</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-03 09:30</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202407", {"field_0": "M202407", "field_1": "南京博远文化传媒有限公司", "field_2": "吴婷", "field_3": "有限责任公司", "field_4": "2026-07-03 09:30", "field_5": "已通过", "field_6": "查看"})' >查看</button></td></tr>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202408</span></td><td>武汉市汉阳区永诚建材商行</td><td>郑涛</td><td><span class="tos-tag tos-tag--default">个体工商户</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-03 08:12</td><td><span class="tos-tag tos-tag--error">已驳回</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202408", {"field_0": "M202408", "field_1": "武汉市汉阳区永诚建材商行", "field_2": "郑涛", "field_3": "个体工商户", "field_4": "2026-07-03 08:12", "field_5": "已驳回", "field_6": "查看"})' >查看</button></td></tr>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202409</span></td><td>深圳前海联合投资中心</td><td>黄丽</td><td><span class="tos-tag tos-tag--default">合伙企业</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-02 17:05</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202409", {"field_0": "M202409", "field_1": "深圳前海联合投资中心", "field_2": "黄丽", "field_3": "合伙企业", "field_4": "2026-07-02 17:05", "field_5": "已通过", "field_6": "查看"})' >查看</button></td></tr>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202410</span></td><td>苏州工业园区广达贸易商行</td><td>林杰</td><td><span class="tos-tag tos-tag--default">个体工商户</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-02 15:40</td><td><span class="tos-tag tos-tag--warning">待审核</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202410", {"field_0": "M202410", "field_1": "苏州工业园区广达贸易商行", "field_2": "林杰", "field_3": "个体工商户", "field_4": "2026-07-02 15:40", "field_5": "待审核", "field_6": "查看审核"})' >查看</button></td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -305,26 +351,21 @@
                         <!-- PPH Table -->
                         <section class="tos-card">
                             <div class="tos-card__header">
-                                <div><h2 class="tos-card__title">PPH 审查列表</h2><div class="tos-card__desc">共 10 条记录</div></div>
-                                <div class="flex items-center gap-2">
-                                    <button class="btn btn-sm"><i class="fas fa-upload"></i> 导入</button>
-                                    <button class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> 新建审查</button>
-                                </div>
-                            </div>
-                            <div class="tos-table-wrap">
-                                <table class="tos-table">
-                                    <thead><tr><th style="width:40px;"><input type="checkbox" /></th><th>商家编号</th><th>商家名称</th><th>审查对象</th><th>风险等级</th><th>提交时间</th><th>状态</th><th class="text-right">操作</th></tr></thead>
-                                    <tbody>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202401</span></td><td>杭州锐创科技有限公司</td><td>陈明<br/><span style="font-size:12px;color:var(--tos-text-muted);">法人代表</span></td><td><span class="tos-tag tos-tag--default">低风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-06 10:32</td><td><span class="tos-tag tos-tag--warning">待审查</span></td><td class="text-right"><button class="btn btn-link">查看</button><button class="btn btn-link">审查</button></td></tr>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202402</span></td><td>深圳市飞扬贸易有限公司</td><td>李伟<br/><span style="font-size:12px;color:var(--tos-text-muted);">法人代表</span></td><td><span class="tos-tag tos-tag--default">低风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-06 09:15</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link">查看</button></td></tr>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202403</span></td><td>广州鑫源服装厂</td><td>王芳<br/><span style="font-size:12px;color:var(--tos-text-muted);">经营者</span></td><td><span class="tos-tag tos-tag--error">高风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-05 16:44</td><td><span class="tos-tag tos-tag--error">高风险</span></td><td class="text-right"><button class="btn btn-link">查看</button></td></tr>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202404</span></td><td>北京智远咨询合伙企业</td><td>张磊<br/><span style="font-size:12px;color:var(--tos-text-muted);">执行事务合伙人</span></td><td><span class="tos-tag tos-tag--default">低风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-05 14:20</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link">查看</button></td></tr>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202405</span></td><td>上海云帆信息技术有限公司</td><td>赵敏<br/><span style="font-size:12px;color:var(--tos-text-muted);">法人代表</span></td><td><span class="tos-tag tos-tag--warning">中风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-04 11:08</td><td><span class="tos-tag tos-tag--warning">待审查</span></td><td class="text-right"><button class="btn btn-link">查看</button><button class="btn btn-link">审查</button></td></tr>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202406</span></td><td>成都锦城食品经营部</td><td>周强<br/><span style="font-size:12px;color:var(--tos-text-muted);">经营者</span></td><td><span class="tos-tag tos-tag--default">低风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-04 10:55</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link">查看</button></td></tr>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202407</span></td><td>南京博远文化传媒有限公司</td><td>吴婷<br/><span style="font-size:12px;color:var(--tos-text-muted);">法人代表</span></td><td><span class="tos-tag tos-tag--default">低风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-03 09:30</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link">查看</button></td></tr>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202408</span></td><td>武汉市汉阳区永诚建材商行</td><td>郑涛<br/><span style="font-size:12px;color:var(--tos-text-muted);">经营者</span></td><td><span class="tos-tag tos-tag--error">高风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-03 08:12</td><td><span class="tos-tag tos-tag--error">已驳回</span></td><td class="text-right"><button class="btn btn-link">查看</button></td></tr>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202409</span></td><td>深圳前海联合投资中心</td><td>黄丽<br/><span style="font-size:12px;color:var(--tos-text-muted);">执行事务合伙人</span></td><td><span class="tos-tag tos-tag--warning">中风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-02 17:05</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link">查看</button></td></tr>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202410</span></td><td>苏州工业园区广达贸易商行</td><td>林杰<br/><span style="font-size:12px;color:var(--tos-text-muted);">经营者</span></td><td><span class="tos-tag tos-tag--default">低风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-02 15:40</td><td><span class="tos-tag tos-tag--warning">待审查</span></td><td class="text-right"><button class="btn btn-link">查看</button><button class="btn btn-link">审查</button></td></tr>
+                                <div><h2 class="tos-card__title">PPH 审查列表<tbody>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202401</span></td><td>杭州锐创科技有限公司</td><td>陈明<br/><span style="font-size:12px;color:var(--tos-text-muted);">法人代表</span></td><td><span class="tos-tag tos-tag--default">低风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-06 10:32</td><td><span class="tos-tag tos-tag--warning">待审查</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202401", {"field_0": "M202401", "field_1": "杭州锐创科技有限公司", "field_2": "陈明法人代表", "field_3": "低风险", "field_4": "2026-07-06 10:32", "field_5": "待审查", "field_6": "查看审查"})' >查看</button><button class="btn btn-link">审查</button></td></tr>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202402</span></td><td>深圳市飞扬贸易有限公司</td><td>李伟<br/><span style="font-size:12px;color:var(--tos-text-muted);">法人代表</span></td><td><span class="tos-tag tos-tag--default">低风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-06 09:15</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202402", {"field_0": "M202402", "field_1": "深圳市飞扬贸易有限公司", "field_2": "李伟法人代表", "field_3": "低风险", "field_4": "2026-07-06 09:15", "field_5": "已通过", "field_6": "查看"})' >查看</button></td></tr>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202403</span></td><td>广州鑫源服装厂</td><td>王芳<br/><span style="font-size:12px;color:var(--tos-text-muted);">经营者</span></td><td><span class="tos-tag tos-tag--error">高风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-05 16:44</td><td><span class="tos-tag tos-tag--error">高风险</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202403", {"field_0": "M202403", "field_1": "广州鑫源服装厂", "field_2": "王芳经营者", "field_3": "高风险", "field_4": "2026-07-05 16:44", "field_5": "高风险", "field_6": "查看"})' >查看</button></td></tr>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202404</span></td><td>北京智远咨询合伙企业</td><td>张磊<br/><span style="font-size:12px;color:var(--tos-text-muted);">执行事务合伙人</span></td><td><span class="tos-tag tos-tag--default">低风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-05 14:20</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202404", {"field_0": "M202404", "field_1": "北京智远咨询合伙企业", "field_2": "张磊执行事务合伙人", "field_3": "低风险", "field_4": "2026-07-05 14:20", "field_5": "已通过", "field_6": "查看"})' >查看</button></td></tr>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202405</span></td><td>上海云帆信息技术有限公司</td><td>赵敏<br/><span style="font-size:12px;color:var(--tos-text-muted);">法人代表</span></td><td><span class="tos-tag tos-tag--warning">中风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-04 11:08</td><td><span class="tos-tag tos-tag--warning">待审查</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202405", {"field_0": "M202405", "field_1": "上海云帆信息技术有限公司", "field_2": "赵敏法人代表", "field_3": "中风险", "field_4": "2026-07-04 11:08", "field_5": "待审查", "field_6": "查看审查"})' >查看</button><button class="btn btn-link">审查</button></td></tr>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202406</span></td><td>成都锦城食品经营部</td><td>周强<br/><span style="font-size:12px;color:var(--tos-text-muted);">经营者</span></td><td><span class="tos-tag tos-tag--default">低风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-04 10:55</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202406", {"field_0": "M202406", "field_1": "成都锦城食品经营部", "field_2": "周强经营者", "field_3": "低风险", "field_4": "2026-07-04 10:55", "field_5": "已通过", "field_6": "查看"})' >查看</button></td></tr>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202407</span></td><td>南京博远文化传媒有限公司</td><td>吴婷<br/><span style="font-size:12px;color:var(--tos-text-muted);">法人代表</span></td><td><span class="tos-tag tos-tag--default">低风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-03 09:30</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202407", {"field_0": "M202407", "field_1": "南京博远文化传媒有限公司", "field_2": "吴婷法人代表", "field_3": "低风险", "field_4": "2026-07-03 09:30", "field_5": "已通过", "field_6": "查看"})' >查看</button></td></tr>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202408</span></td><td>武汉市汉阳区永诚建材商行</td><td>郑涛<br/><span style="font-size:12px;color:var(--tos-text-muted);">经营者</span></td><td><span class="tos-tag tos-tag--error">高风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-03 08:12</td><td><span class="tos-tag tos-tag--error">已驳回</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202408", {"field_0": "M202408", "field_1": "武汉市汉阳区永诚建材商行", "field_2": "郑涛经营者", "field_3": "高风险", "field_4": "2026-07-03 08:12", "field_5": "已驳回", "field_6": "查看"})' >查看</button></td></tr>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202409</span></td><td>深圳前海联合投资中心</td><td>黄丽<br/><span style="font-size:12px;color:var(--tos-text-muted);">执行事务合伙人</span></td><td><span class="tos-tag tos-tag--warning">中风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-02 17:05</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202409", {"field_0": "M202409", "field_1": "深圳前海联合投资中心", "field_2": "黄丽执行事务合伙人", "field_3": "中风险", "field_4": "2026-07-02 17:05", "field_5": "已通过", "field_6": "查看"})' >查看</button></td></tr>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202410</span></td><td>苏州工业园区广达贸易商行</td><td>林杰<br/><span style="font-size:12px;color:var(--tos-text-muted);">经营者</span></td><td><span class="tos-tag tos-tag--default">低风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-02 15:40</td><td><span class="tos-tag tos-tag--warning">待审查</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202410", {"field_0": "M202410", "field_1": "苏州工业园区广达贸易商行", "field_2": "林杰经营者", "field_3": "低风险", "field_4": "2026-07-02 15:40", "field_5": "待审查", "field_6": "查看审查"})' >查看</button><button class="btn btn-link">审查</button></td></tr>
+                                    </tbody>cess">已通过</span><button class="btn btn-link" onclick='openDetail("详情", {"field_0": "M202409深圳前海联合投资中心黄丽执行事务合伙人中风险2026-07-02 17:05已通过查看"})' >查看</button></tr>
+
+                    <tr><input type="checkbox" /><span class="montab" style="color:var(--tos-text-muted);">M202410</span>苏州工业园区广达贸易商行林杰<br/><span style="font-size:12px;color:var(--tos-text-muted);">经营者</span><span class="tos-tag tos-tag--default">低风险</span>2026-07-02 15:40<span class="tos-tag tos-tag--warning">待审查</span><button class="btn btn-link" onclick='openDetail("详情", {"field_0": "M202410苏州工业园区广达贸易商行林杰经营者低风险2026-07-02 15:40待审查查看审查"})' >查看</button><button class="btn btn-link">审查</button></tr>
+
                                     </tbody>
                                 </table>
                             </div>
@@ -356,5 +397,120 @@
             });
         </script>
     
+
+        <div class="review-modal" id="reviewModal">
+            <div class="review-modal__body">
+                <div class="review-modal__header">
+                    <h3><i class="fas fa-check-double" style="color:var(--tos-primary);"></i> 人工审核</h3>
+                    <button class="review-modal__close" onclick="closeReviewModal()">&times;</button>
+                </div>
+                <div class="review-modal__stats">
+                    <span>待审核 <strong style="color:var(--tos-warning);">3</strong></span>
+                    <span>今日处理 <strong>8</strong></span>
+                    <span>平均耗时 <strong>6.8min</strong></span>
+                </div>
+                <div>
+                    <div class="review-item-row">
+                        <div class="review-item-row__info">
+                            <div class="review-item-row__name">M202401 · 杭州锐创科技</div>
+                            <div class="review-item-row__meta">法人: 陈明 · 2026-07-06 10:32</div>
+                            <div class="review-item-row__reason">注册地址与经营地址不一致</div>
+                        </div>
+                        <div class="review-item-row__actions">
+                            <button class="btn btn-sm btn-primary" onclick="reviewPass(&apos;M202401&apos;)">通过</button>
+                            <button class="btn btn-sm" onclick="reviewReject(&apos;M202401&apos;)" style="color:var(--tos-error);">驳回</button>
+                        </div>
+                    </div>
+                    <div class="review-item-row">
+                        <div class="review-item-row__info">
+                            <div class="review-item-row__name">M202405 · 上海云帆信息</div>
+                            <div class="review-item-row__meta">法人: 赵敏 · 2026-07-04 11:08</div>
+                            <div class="review-item-row__reason">法人涉及高风险地区</div>
+                        </div>
+                        <div class="review-item-row__actions">
+                            <button class="btn btn-sm btn-primary" onclick="reviewPass(&apos;M202405&apos;)">通过</button>
+                            <button class="btn btn-sm" onclick="reviewReject(&apos;M202405&apos;)" style="color:var(--tos-error);">驳回</button>
+                        </div>
+                    </div>
+                    <div class="review-item-row">
+                        <div class="review-item-row__info">
+                            <div class="review-item-row__name">M202410 · 苏州广达贸易</div>
+                            <div class="review-item-row__meta">经营者: 林杰 · 2026-07-02 15:40</div>
+                            <div class="review-item-row__reason">经营范围涉及限制行业</div>
+                        </div>
+                        <div class="review-item-row__actions">
+                            <button class="btn btn-sm btn-primary" onclick="reviewPass(&apos;M202410&apos;)">通过</button>
+                            <button class="btn btn-sm" onclick="reviewReject(&apos;M202410&apos;)" style="color:var(--tos-error);">驳回</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function openReviewModal() { document.getElementById('reviewModal').classList.add('open'); }
+            function closeReviewModal() { document.getElementById('reviewModal').classList.remove('open'); }
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('review-modal')) closeReviewModal();
+            });
+            function reviewPass(id) { if (confirm('确认通过 ' + id + ' ？')) { alert('验证已通过'); closeReviewModal(); } }
+            function reviewReject(id) { var r = prompt('请输入驳回原因：'); if (r) { alert('已驳回'); closeReviewModal(); } }
+        </script>
+
+                <div class="detail-modal" id="detailModal" onclick="closeDetail(event)">
+            <div class="detail-modal__body" style="max-width:680px;">
+                <div class="detail-modal__head">
+                    <h3 id="detailTitle"><i class="fas fa-file-lines" style="color:var(--tos-primary);"></i> <span id="detailTitleText">验证详情</span></h3>
+                    <button class="detail-modal__close" onclick="closeDetail()">&times;</button>
+                </div>
+                <div class="detail-layout">
+                    <div class="detail-image-panel" id="detailImagePanel">
+                        <div class="detail-image-tabs">
+                            <button class="detail-image-tab active" onclick="switchIdSide(&#39;front&#39;, this)">正面</button>
+                            <button class="detail-image-tab" onclick="switchIdSide(&#39;back&#39;, this)">反面</button>
+                        </div>
+                        <img id="detailImage" src="https://picsum.photos/seed/kyc1/300/200" alt="证件图片" />
+                        <div class="detail-image-label">点击切换正反面</div>
+                    </div>
+                    <div class="detail-fields-panel">
+                        <div class="detail-fields-grid" id="detailContent"></div>
+                        <div class="detail-timeline" id="detailTimeline">
+                            <h4 style="font-size:13px;font-weight:600;margin:12px 0 8px;color:var(--tos-text);">操作记录</h4>
+                            <div class="detail-timeline-item"><span class="dot green"></span><span><strong>提交验证</strong> · 系统自动提交</span></div>
+                            <div class="detail-timeline-item"><span class="dot orange"></span><span><strong>转入人工审核</strong> · OCR置信度低于阈值</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        
+        <script>
+            function openDetail(title, data, seed) {
+                document.getElementById('detailTitleText').textContent = title || '验证详情';
+                seed = seed || Math.floor(Math.random() * 1000);
+                var img = document.getElementById('detailImage');
+                if (img) { img.src = 'https://picsum.photos/seed/' + seed + '/300/200'; }
+                var html = '';
+                for (var key in data) {
+                    html += '<div class="lbl">' + key + '</div><div class="val">' + data[key] + '</div>';
+                }
+                document.getElementById('detailContent').innerHTML = html;
+                document.getElementById('detailModal').classList.add('open');
+            }
+            function switchIdSide(side, el) {
+                var img = document.getElementById('detailImage');
+                var s = side === 'front' ? 'kyc1' : 'kyc2';
+                if (img) { img.src = 'https://picsum.photos/seed/' + s + '/300/200'; }
+                var tabs = document.querySelectorAll('.detail-image-tab');
+                for (var i = 0; i < tabs.length; i++) { tabs[i].classList.remove('active'); }
+                el.classList.add('active');
+            }
+            function closeDetail(e) {
+                if (e && e.target !== document.getElementById('detailModal')) return;
+                document.getElementById('detailModal').classList.remove('open');
+            }
+        </script>
 </body>
 </html>

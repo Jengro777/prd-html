@@ -200,7 +200,6 @@
             .tos-header__user {
                 display: flex;
                 align-items: center;
-                gap: 8px;
                 padding: 4px 12px 4px 4px;
                 border-radius: 20px;
                 cursor: default;
@@ -519,6 +518,54 @@
                     grid-template-columns: 1fr;
                 }
             }
+        
+            .review-btn { border-color:var(--tos-warning); color:var(--tos-warning); }
+            .review-btn:hover { background:var(--tos-warning-bg); border-color:var(--tos-warning); }
+            .review-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:100; align-items:center; justify-content:center; }
+            .review-modal.open { display:flex; }
+            .review-modal__body { background:#fff; border-radius:var(--tos-radius-card); padding:24px; max-width:600px; width:90%; max-height:75vh; overflow-y:auto; }
+            .review-modal__header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+            .review-modal__header h3 { font-size:18px; font-weight:600; }
+            .review-modal__close { border:none; background:none; font-size:24px; cursor:pointer; color:var(--tos-text-muted); padding:0 4px; line-height:1; }
+            .review-modal__stats { display:flex; gap:16px; margin-bottom:16px; padding:12px 16px; background:var(--tos-bg); border-radius:8px; font-size:13px; color:var(--tos-text-secondary); }
+            .review-modal__stats strong { font-size:18px; }
+            .review-item-row { display:flex; align-items:center; padding:12px 0; border-bottom:1px solid #f5f5f5; gap:12px; }
+            .review-item-row:last-child { border-bottom:0; }
+            .review-item-row__info { flex:1; min-width:0; }
+            .review-item-row__name { font-size:14px; font-weight:500; }
+            .review-item-row__meta { font-size:12px; color:var(--tos-text-muted); margin-top:2px; }
+            .review-item-row__reason { font-size:12px; color:var(--tos-warning); margin-top:2px; }
+            .review-item-row__actions { display:flex; gap:6px; flex-shrink:0; }
+
+        
+            
+            .detail-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:100; align-items:center; justify-content:center; }
+            .detail-modal.open { display:flex; }
+            .detail-layout { display:flex; gap:20px; }
+            .detail-image-panel { width:220px; flex-shrink:0; }
+            .detail-image-panel img { width:100%; border-radius:8px; border:1px solid var(--tos-border-soft); display:block; }
+            .detail-image-label { font-size:11px; color:var(--tos-text-muted); margin-top:6px; text-align:center; }
+            .detail-image-tabs { display:flex; gap:4px; margin-bottom:8px; }
+            .detail-image-tab { flex:1; padding:4px; text-align:center; font-size:11px; border:1px solid var(--tos-border-soft); border-radius:4px; cursor:pointer; background:#fafafa; color:var(--tos-text-muted); }
+            .detail-image-tab.active { background:var(--tos-primary-bg); color:var(--tos-primary); border-color:var(--tos-primary); }
+            .detail-fields-panel { flex:1; min-width:0; }
+            .detail-fields-grid { display:grid; grid-template-columns:90px 1fr; gap:8px 12px; font-size:14px; }
+            .detail-fields-grid .lbl { color:var(--tos-text-muted); }
+            .detail-fields-grid .val { color:var(--tos-text); word-break:break-all; }
+
+            .detail-timeline-item .dot { width:8px; height:8px; border-radius:50%; margin-top:5px; flex-shrink:0; }
+            .detail-timeline-item .dot.green { background:var(--tos-success); }
+            .detail-timeline-item .dot.orange { background:var(--tos-warning); }
+            .detail-timeline-item .dot.gray { background:#d9dee8; }
+            .detail-modal__body { background:#fff; border-radius:var(--tos-radius-card); padding:24px; max-width:680px; width:90%; max-height:80vh; overflow-y:auto; box-shadow:0 8px 30px rgba(0,0,0,0.15); }
+            .detail-modal__head { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+            .detail-modal__head h3 { font-size:18px; font-weight:600; }
+            .detail-modal__close { border:none; background:none; font-size:24px; cursor:pointer; color:var(--tos-text-muted); padding:0 4px; line-height:1; }
+            .detail-timeline { margin-top:16px; padding-top:12px; border-top:1px solid var(--tos-border-soft); }
+            .detail-timeline-item { display:flex; gap:8px; font-size:13px; color:var(--tos-text-secondary); margin-bottom:8px; align-items:flex-start; }
+            .detail-timeline-item:last-child { margin-bottom:0; }
+            .detail-timeline-item span { line-height:1.5; }
+
         </style>
     </head>
     <body>
@@ -657,7 +704,6 @@
 
 
 
-
                     <!-- Table -->
                     <section class="tos-card">
                         <div class="tos-card__header">
@@ -666,12 +712,7 @@
                                 <div class="tos-card__desc">共 12 条记录</div>
                             </div>
                             <div class="flex items-center gap-2">
-                                <button class="btn btn-sm">
-                                    <i class="fas fa-upload"></i> 导入
-                                </button>
-                                <button class="btn btn-sm btn-primary">
-                                    <i class="fas fa-plus"></i> 新建认证
-                                </button>
+                                <button class="btn btn-sm review-btn" onclick="openReviewModal()"><i class="fas fa-check-double"></i> 人工审核</button>
                             </div>
                         </div>
                         <div class="tos-table-wrap">
@@ -688,130 +729,251 @@
                                         <th class="text-right">操作</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><input type="checkbox" /></td>
-                                        <td><span class="montab" style="color: var(--tos-text-muted);">U10086</span></td>
-                                        <td>张三</td>
-                                        <td>138****1234</td>
-                                        <td><span class="tos-tag tos-tag--default">身份证</span></td>
-                                        <td style="color: var(--tos-text-muted); font-size: 13px;">2026-07-06 10:32</td>
-                                        <td><span class="tos-tag tos-tag--warning">待审核</span></td>
-                                        <td class="text-right">
-                                            <button class="btn btn-link">查看</button>
-                                            <button class="btn btn-link">审核</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="checkbox" /></td>
-                                        <td><span class="montab" style="color: var(--tos-text-muted);">U10087</span></td>
-                                        <td>李四</td>
-                                        <td>139****5678</td>
-                                        <td><span class="tos-tag tos-tag--default">身份证</span></td>
-                                        <td style="color: var(--tos-text-muted); font-size: 13px;">2026-07-06 09:15</td>
-                                        <td><span class="tos-tag tos-tag--success">已通过</span></td>
-                                        <td class="text-right">
-                                            <button class="btn btn-link">查看</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="checkbox" /></td>
-                                        <td><span class="montab" style="color: var(--tos-text-muted);">U10088</span></td>
-                                        <td>王五</td>
-                                        <td>137****9012</td>
-                                        <td><span class="tos-tag tos-tag--default">护照</span></td>
-                                        <td style="color: var(--tos-text-muted); font-size: 13px;">2026-07-05 16:44</td>
-                                        <td><span class="tos-tag tos-tag--error">已驳回</span></td>
-                                        <td class="text-right">
-                                            <button class="btn btn-link">查看</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="checkbox" /></td>
-                                        <td><span class="montab" style="color: var(--tos-text-muted);">U10089</span></td>
-                                        <td>赵六</td>
-                                        <td>136****3456</td>
-                                        <td><span class="tos-tag tos-tag--default">身份证</span></td>
-                                        <td style="color: var(--tos-text-muted); font-size: 13px;">2026-07-05 14:20</td>
-                                        <td><span class="tos-tag tos-tag--success">已通过</span></td>
-                                        <td class="text-right">
-                                            <button class="btn btn-link">查看</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="checkbox" /></td>
-                                        <td><span class="montab" style="color: var(--tos-text-muted);">U10090</span></td>
-                                        <td>孙七</td>
-                                        <td>135****7890</td>
-                                        <td><span class="tos-tag tos-tag--default">驾驶证</span></td>
-                                        <td style="color: var(--tos-text-muted); font-size: 13px;">2026-07-04 11:08</td>
-                                        <td><span class="tos-tag tos-tag--warning">待审核</span></td>
-                                        <td class="text-right">
-                                            <button class="btn btn-link">查看</button>
-                                            <button class="btn btn-link">审核</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="checkbox" /></td>
-                                        <td><span class="montab" style="color: var(--tos-text-muted);">U10091</span></td>
-                                        <td>周八</td>
-                                        <td>134****2345</td>
-                                        <td><span class="tos-tag tos-tag--default">身份证</span></td>
-                                        <td style="color: var(--tos-text-muted); font-size: 13px;">2026-07-04 10:55</td>
-                                        <td><span class="tos-tag tos-tag--success">已通过</span></td>
-                                        <td class="text-right">
-                                            <button class="btn btn-link">查看</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="checkbox" /></td>
-                                        <td><span class="montab" style="color: var(--tos-text-muted);">U10092</span></td>
-                                        <td>吴九</td>
-                                        <td>133****6789</td>
-                                        <td><span class="tos-tag tos-tag--default">护照</span></td>
-                                        <td style="color: var(--tos-text-muted); font-size: 13px;">2026-07-03 09:30</td>
-                                        <td><span class="tos-tag tos-tag--success">已通过</span></td>
-                                        <td class="text-right">
-                                            <button class="btn btn-link">查看</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="checkbox" /></td>
-                                        <td><span class="montab" style="color: var(--tos-text-muted);">U10093</span></td>
-                                        <td>郑十</td>
-                                        <td>132****0123</td>
-                                        <td><span class="tos-tag tos-tag--default">身份证</span></td>
-                                        <td style="color: var(--tos-text-muted); font-size: 13px;">2026-07-03 08:12</td>
-                                        <td><span class="tos-tag tos-tag--error">已驳回</span></td>
-                                        <td class="text-right">
-                                            <button class="btn btn-link">查看</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="checkbox" /></td>
-                                        <td><span class="montab" style="color: var(--tos-text-muted);">U10094</span></td>
-                                        <td>陈晓</td>
-                                        <td>131****4567</td>
-                                        <td><span class="tos-tag tos-tag--default">驾驶证</span></td>
-                                        <td style="color: var(--tos-text-muted); font-size: 13px;">2026-07-02 17:05</td>
-                                        <td><span class="tos-tag tos-tag--success">已通过</span></td>
-                                        <td class="text-right">
-                                            <button class="btn btn-link">查看</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="checkbox" /></td>
-                                        <td><span class="montab" style="color: var(--tos-text-muted);">U10095</span></td>
-                                        <td>林小</td>
-                                        <td>130****8901</td>
-                                        <td><span class="tos-tag tos-tag--default">身份证</span></td>
-                                        <td style="color: var(--tos-text-muted); font-size: 13px;">2026-07-02 15:40</td>
-                                        <td><span class="tos-tag tos-tag--warning">待审核</span></td>
-                                        <td class="text-right">
-                                            <button class="btn btn-link">查看</button>
-                                            <button class="btn btn-link">审核</button>
-                                        </td>
-                                    </tr>
+                    <tbody>
+
+                    <tr>
+
+                    <td><input type="checkbox" /></td>
+
+                    <td style="color: var(--tos-text-muted);"><span class="montab" style="color: var(--tos-text-muted);">U10086</span></td>
+
+                    <td>张三</td>
+
+                    <td>138****1234</td>
+
+                    <td><span class="tos-tag tos-tag--default">身份证</span></td>
+
+                    <td>2026-07-06 10:32</td>
+
+                    <td><span class="tos-tag tos-tag--warning">待审核</span></td>
+
+                    
+
+                    <td class="text-right"><button class="btn btn-link" onclick='openDetail("张三", {"field_0": "U10086", "field_1": "张三", "field_2": "138****1234", "field_3": "身份证", "field_4": "2026-07-06 10:32", "field_5": "待审核"})' >查看</button></td>
+
+
+                    
+
+                    </tr>
+
+                    <tr>
+
+                    <td><input type="checkbox" /></td>
+
+                    <td style="color: var(--tos-text-muted);"><span class="montab" style="color: var(--tos-text-muted);">U10087</span></td>
+
+                    <td>李四</td>
+
+                    <td>139****5678</td>
+
+                    <td><span class="tos-tag tos-tag--default">身份证</span></td>
+
+                    <td>2026-07-06 09:15</td>
+
+                    <td><span class="tos-tag tos-tag--success">已通过</span></td>
+
+                    
+
+                    <td class="text-right"><button class="btn btn-link" onclick='openDetail("李四", {"field_0": "U10087", "field_1": "李四", "field_2": "139****5678", "field_3": "身份证", "field_4": "2026-07-06 09:15", "field_5": "已通过"})' >查看</button></td>
+
+                    
+
+                    </tr>
+
+                    <tr>
+
+                    <td><input type="checkbox" /></td>
+
+                    <td style="color: var(--tos-text-muted);"><span class="montab" style="color: var(--tos-text-muted);">U10088</span></td>
+
+                    <td>王五</td>
+
+                    <td>137****9012</td>
+
+                    <td><span class="tos-tag tos-tag--default">护照</span></td>
+
+                    <td>2026-07-05 16:44</td>
+
+                    <td><span class="tos-tag tos-tag--error">已驳回</span></td>
+
+                    
+
+                    <td class="text-right"><button class="btn btn-link" onclick='openDetail("王五", {"field_0": "U10088", "field_1": "王五", "field_2": "137****9012", "field_3": "护照", "field_4": "2026-07-05 16:44", "field_5": "已驳回"})' >查看</button></td>
+
+                    
+
+                    </tr>
+
+                    <tr>
+
+                    <td><input type="checkbox" /></td>
+
+                    <td style="color: var(--tos-text-muted);"><span class="montab" style="color: var(--tos-text-muted);">U10089</span></td>
+
+                    <td>赵六</td>
+
+                    <td>136****3456</td>
+
+                    <td><span class="tos-tag tos-tag--default">身份证</span></td>
+
+                    <td>2026-07-05 14:20</td>
+
+                    <td><span class="tos-tag tos-tag--success">已通过</span></td>
+
+                    
+
+                    <td class="text-right"><button class="btn btn-link" onclick='openDetail("赵六", {"field_0": "U10089", "field_1": "赵六", "field_2": "136****3456", "field_3": "身份证", "field_4": "2026-07-05 14:20", "field_5": "已通过"})' >查看</button></td>
+
+                    
+
+                    </tr>
+
+                    <tr>
+
+                    <td><input type="checkbox" /></td>
+
+                    <td style="color: var(--tos-text-muted);"><span class="montab" style="color: var(--tos-text-muted);">U10090</span></td>
+
+                    <td>孙七</td>
+
+                    <td>135****7890</td>
+
+                    <td><span class="tos-tag tos-tag--default">驾驶证</span></td>
+
+                    <td>2026-07-04 11:08</td>
+
+                    <td><span class="tos-tag tos-tag--warning">待审核</span></td>
+
+                    
+
+                    <td class="text-right"><button class="btn btn-link" onclick='openDetail("孙七", {"field_0": "U10090", "field_1": "孙七", "field_2": "135****7890", "field_3": "驾驶证", "field_4": "2026-07-04 11:08", "field_5": "待审核"})' >查看</button></td>
+
+
+                    
+
+                    </tr>
+
+                    <tr>
+
+                    <td><input type="checkbox" /></td>
+
+                    <td style="color: var(--tos-text-muted);"><span class="montab" style="color: var(--tos-text-muted);">U10091</span></td>
+
+                    <td>周八</td>
+
+                    <td>134****2345</td>
+
+                    <td><span class="tos-tag tos-tag--default">身份证</span></td>
+
+                    <td>2026-07-04 10:55</td>
+
+                    <td><span class="tos-tag tos-tag--success">已通过</span></td>
+
+                    
+
+                    <td class="text-right"><button class="btn btn-link" onclick='openDetail("周八", {"field_0": "U10091", "field_1": "周八", "field_2": "134****2345", "field_3": "身份证", "field_4": "2026-07-04 10:55", "field_5": "已通过"})' >查看</button></td>
+
+                    
+
+                    </tr>
+
+                    <tr>
+
+                    <td><input type="checkbox" /></td>
+
+                    <td style="color: var(--tos-text-muted);"><span class="montab" style="color: var(--tos-text-muted);">U10092</span></td>
+
+                    <td>吴九</td>
+
+                    <td>133****6789</td>
+
+                    <td><span class="tos-tag tos-tag--default">护照</span></td>
+
+                    <td>2026-07-03 09:30</td>
+
+                    <td><span class="tos-tag tos-tag--success">已通过</span></td>
+
+                    
+
+                    <td class="text-right"><button class="btn btn-link" onclick='openDetail("吴九", {"field_0": "U10092", "field_1": "吴九", "field_2": "133****6789", "field_3": "护照", "field_4": "2026-07-03 09:30", "field_5": "已通过"})' >查看</button></td>
+
+                    
+
+                    </tr>
+
+                    <tr>
+
+                    <td><input type="checkbox" /></td>
+
+                    <td style="color: var(--tos-text-muted);"><span class="montab" style="color: var(--tos-text-muted);">U10093</span></td>
+
+                    <td>郑十</td>
+
+                    <td>132****0123</td>
+
+                    <td><span class="tos-tag tos-tag--default">身份证</span></td>
+
+                    <td>2026-07-03 08:12</td>
+
+                    <td><span class="tos-tag tos-tag--error">已驳回</span></td>
+
+                    
+
+                    <td class="text-right"><button class="btn btn-link" onclick='openDetail("郑十", {"field_0": "U10093", "field_1": "郑十", "field_2": "132****0123", "field_3": "身份证", "field_4": "2026-07-03 08:12", "field_5": "已驳回"})' >查看</button></td>
+
+                    
+
+                    </tr>
+
+                    <tr>
+
+                    <td><input type="checkbox" /></td>
+
+                    <td style="color: var(--tos-text-muted);"><span class="montab" style="color: var(--tos-text-muted);">U10094</span></td>
+
+                    <td>陈晓</td>
+
+                    <td>131****4567</td>
+
+                    <td><span class="tos-tag tos-tag--default">驾驶证</span></td>
+
+                    <td>2026-07-02 17:05</td>
+
+                    <td><span class="tos-tag tos-tag--success">已通过</span></td>
+
+                    
+
+                    <td class="text-right"><button class="btn btn-link" onclick='openDetail("陈晓", {"field_0": "U10094", "field_1": "陈晓", "field_2": "131****4567", "field_3": "驾驶证", "field_4": "2026-07-02 17:05", "field_5": "已通过"})' >查看</button></td>
+
+                    
+
+                    </tr>
+
+                    <tr>
+
+                    <td><input type="checkbox" /></td>
+
+                    <td style="color: var(--tos-text-muted);"><span class="montab" style="color: var(--tos-text-muted);">U10095</span></td>
+
+                    <td>林小</td>
+
+                    <td>130****8901</td>
+
+                    <td><span class="tos-tag tos-tag--default">身份证</span></td>
+
+                    <td>2026-07-02 15:40</td>
+
+                    <td><span class="tos-tag tos-tag--warning">待审核</span></td>
+
+                    
+
+                    <td class="text-right"><button class="btn btn-link" onclick='openDetail("林小", {"field_0": "U10095", "field_1": "林小", "field_2": "130****8901", "field_3": "身份证", "field_4": "2026-07-02 15:40", "field_5": "待审核"})' >查看</button></td>
+
+
+                    
+
+                    </tr>
+
                                 </tbody>
                             </table>
                         </div>
@@ -831,5 +993,120 @@
             </div>
         </div>
     
+
+        <div class="review-modal" id="reviewModal">
+            <div class="review-modal__body">
+                <div class="review-modal__header">
+                    <h3><i class="fas fa-check-double" style="color:var(--tos-primary);"></i> 人工审核</h3>
+                    <button class="review-modal__close" onclick="closeReviewModal()">&times;</button>
+                </div>
+                <div class="review-modal__stats">
+                    <span>待审核 <strong style="color:var(--tos-warning);">3</strong></span>
+                    <span>今日处理 <strong>12</strong></span>
+                    <span>平均耗时 <strong>4.2min</strong></span>
+                </div>
+                <div>
+                    <div class="review-item-row">
+                        <div class="review-item-row__info">
+                            <div class="review-item-row__name">U10086 · 张三</div>
+                            <div class="review-item-row__meta">身份证 · 2026-07-06 10:32</div>
+                            <div class="review-item-row__reason">证件模糊，OCR置信度低于阈值</div>
+                        </div>
+                        <div class="review-item-row__actions">
+                            <button class="btn btn-sm btn-primary" onclick="reviewPass(&apos;U10086&apos;)">通过</button>
+                            <button class="btn btn-sm" onclick="reviewReject(&apos;U10086&apos;)" style="color:var(--tos-error);">驳回</button>
+                        </div>
+                    </div>
+                    <div class="review-item-row">
+                        <div class="review-item-row__info">
+                            <div class="review-item-row__name">U10090 · 孙七</div>
+                            <div class="review-item-row__meta">驾驶证 · 2026-07-04 11:08</div>
+                            <div class="review-item-row__reason">发证机关与居住地不匹配</div>
+                        </div>
+                        <div class="review-item-row__actions">
+                            <button class="btn btn-sm btn-primary" onclick="reviewPass(&apos;U10090&apos;)">通过</button>
+                            <button class="btn btn-sm" onclick="reviewReject(&apos;U10090&apos;)" style="color:var(--tos-error);">驳回</button>
+                        </div>
+                    </div>
+                    <div class="review-item-row">
+                        <div class="review-item-row__info">
+                            <div class="review-item-row__name">U10095 · 林小</div>
+                            <div class="review-item-row__meta">身份证 · 2026-07-02 15:40</div>
+                            <div class="review-item-row__reason">年龄超过60岁，需人工确认</div>
+                        </div>
+                        <div class="review-item-row__actions">
+                            <button class="btn btn-sm btn-primary" onclick="reviewPass(&apos;U10095&apos;)">通过</button>
+                            <button class="btn btn-sm" onclick="reviewReject(&apos;U10095&apos;)" style="color:var(--tos-error);">驳回</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function openReviewModal() { document.getElementById('reviewModal').classList.add('open'); }
+            function closeReviewModal() { document.getElementById('reviewModal').classList.remove('open'); }
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('review-modal')) closeReviewModal();
+            });
+            function reviewPass(id) { if (confirm('确认通过 ' + id + ' ？')) { alert('验证已通过'); closeReviewModal(); } }
+            function reviewReject(id) { var r = prompt('请输入驳回原因：'); if (r) { alert('已驳回'); closeReviewModal(); } }
+        </script>
+
+                <div class="detail-modal" id="detailModal" onclick="closeDetail(event)">
+            <div class="detail-modal__body" style="max-width:680px;">
+                <div class="detail-modal__head">
+                    <h3 id="detailTitle"><i class="fas fa-file-lines" style="color:var(--tos-primary);"></i> <span id="detailTitleText">验证详情</span></h3>
+                    <button class="detail-modal__close" onclick="closeDetail()">&times;</button>
+                </div>
+                <div class="detail-layout">
+                    <div class="detail-image-panel" id="detailImagePanel">
+                        <div class="detail-image-tabs">
+                            <button class="detail-image-tab active" onclick="switchIdSide(&#39;front&#39;, this)">正面</button>
+                            <button class="detail-image-tab" onclick="switchIdSide(&#39;back&#39;, this)">反面</button>
+                        </div>
+                        <img id="detailImage" src="https://picsum.photos/seed/kyc1/300/200" alt="证件图片" />
+                        <div class="detail-image-label">点击切换正反面</div>
+                    </div>
+                    <div class="detail-fields-panel">
+                        <div class="detail-fields-grid" id="detailContent"></div>
+                        <div class="detail-timeline" id="detailTimeline">
+                            <h4 style="font-size:13px;font-weight:600;margin:12px 0 8px;color:var(--tos-text);">操作记录</h4>
+                            <div class="detail-timeline-item"><span class="dot green"></span><span><strong>提交验证</strong> · 系统自动提交</span></div>
+                            <div class="detail-timeline-item"><span class="dot orange"></span><span><strong>转入人工审核</strong> · OCR置信度低于阈值</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        
+        <script>
+            function openDetail(title, data, seed) {
+                document.getElementById('detailTitleText').textContent = title || '验证详情';
+                seed = seed || Math.floor(Math.random() * 1000);
+                var img = document.getElementById('detailImage');
+                if (img) { img.src = 'https://picsum.photos/seed/' + seed + '/300/200'; }
+                var html = '';
+                for (var key in data) {
+                    html += '<div class="lbl">' + key + '</div><div class="val">' + data[key] + '</div>';
+                }
+                document.getElementById('detailContent').innerHTML = html;
+                document.getElementById('detailModal').classList.add('open');
+            }
+            function switchIdSide(side, el) {
+                var img = document.getElementById('detailImage');
+                var s = side === 'front' ? 'kyc1' : 'kyc2';
+                if (img) { img.src = 'https://picsum.photos/seed/' + s + '/300/200'; }
+                var tabs = document.querySelectorAll('.detail-image-tab');
+                for (var i = 0; i < tabs.length; i++) { tabs[i].classList.remove('active'); }
+                el.classList.add('active');
+            }
+            function closeDetail(e) {
+                if (e && e.target !== document.getElementById('detailModal')) return;
+                document.getElementById('detailModal').classList.remove('open');
+            }
+        </script>
 </body>
 </html>
