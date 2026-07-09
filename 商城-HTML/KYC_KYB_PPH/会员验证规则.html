@@ -295,45 +295,7 @@
                         </div>
                     </section>
 
-                    <!-- 审核策略 -->
-                    <section class="tos-card" style="margin-bottom:20px;">
-                        <div class="tos-card__header">
-                            <h2 class="tos-card__title"><i class="fas fa-check-double" style="color:var(--tos-primary);"></i> 审核策略</h2>
-                            <div style="display:flex;align-items:center;gap:10px;">
-    <div style="display:flex;align-items:center;gap:6px;">
-        <span style="font-size:12px;color:var(--tos-text-muted);white-space:nowrap;">服务商</span>
-        <select class="form-field form-field--small" style="width:130px;font-size:12px;padding:3px 8px;">
-            <option>Sumsub</option>
-            <option>SmileID</option>
-        </select>
-    </div>
-    <label class="tos-toggle"><input type="checkbox" checked /><span class="slider"></span></label>
-</div>
-                        </div>
-                        <div class="rule-row">
-                            <div class="rule-row__info"><div class="rule-row__title">自动通过</div><div class="rule-row__desc">所有校验项均通过且无风险标记时，系统自动批准</div></div>
-                            <div class="rule-row__control"><label class="tos-toggle"><input type="checkbox" checked /><span class="slider"></span></label></div>
-                        </div>
-                        <div class="rule-row">
-                            <div class="rule-row__info"><div class="rule-row__title">高风险自动驳回</div><div class="rule-row__desc">命中制裁名单或高风险标记时自动拒绝</div></div>
-                            <div class="rule-row__control"><label class="tos-toggle"><input type="checkbox" checked /><span class="slider"></span></label></div>
-                        </div>
-                        <div class="rule-row">
-                            <div class="rule-row__info"><div class="rule-row__title">人工审核触发条件</div><div class="rule-row__desc">以下任一条件满足时转入人工审核</div></div>
-                            <div class="rule-row__control">
-                                <select class="form-field" style="width:160px;"><option selected>信息不完整</option><option>信息不完整 + 低质量图片</option><option>信息不完整 + 低质量 + 年龄异常</option></select>
-                            </div>
-                        </div>
-                        <div class="rule-row">
-                            <div class="rule-row__info"><div class="rule-row__title">重复提交限制</div><div class="rule-row__desc">同一用户每日最多提交验证次数</div></div>
-                            <div class="rule-row__control">
-                                <div style="display:flex;align-items:center;gap:8px;">
-                                    <input class="form-field" type="number" value="3" style="width:80px;" />
-                                    <span style="color:var(--tos-text-muted);font-size:13px;">次/天</span>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
+                    
 
                     <!-- OCR -->
                     <section class="tos-card" style="margin-bottom:20px;">
@@ -373,9 +335,39 @@
                         </div>
                     </section>
 
-                    
+                    <!-- 审核策略 -->
+                    <section class="tos-card" style="margin-bottom:20px;">
+                        <div class="tos-card__header">
+                            <h2 class="tos-card__title"><i class="fas fa-check-double" style="color:var(--tos-primary);"></i> 审核策略</h2>
+                            <label class="tos-toggle"><input type="checkbox" checked /><span class="slider"></span></label>
+                        </div>
+                        <div class="rule-row">
+                            <div class="rule-row__info"><div class="rule-row__title">自动通过</div><div class="rule-row__desc">所有校验项均通过且无风险标记时，系统自动批准</div></div>
+                            <div class="rule-row__control"><label class="tos-toggle"><input type="checkbox" checked /><span class="slider"></span></label></div>
+                        </div>
+                        <div class="rule-row">
+                            <div class="rule-row__info"><div class="rule-row__title">高风险自动驳回</div><div class="rule-row__desc">命中制裁名单或高风险标记时自动拒绝</div></div>
+                            <div class="rule-row__control"><label class="tos-toggle"><input type="checkbox" checked /><span class="slider"></span></label></div>
+                        </div>
+                        <div class="rule-row">
+                            <div class="rule-row__info"><div class="rule-row__title">人工审核触发条件</div><div class="rule-row__desc">以下任一条件满足时转入人工审核</div></div>
+                            <div class="rule-row__control">
+                                <select class="form-field" style="width:160px;"><option selected>信息不完整</option><option>信息不完整 + 低质量图片</option><option>信息不完整 + 低质量 + 年龄异常</option></select>
+                            </div>
+                        </div>
+                        <div class="rule-row">
+                            <div class="rule-row__info"><div class="rule-row__title">重复提交限制</div><div class="rule-row__desc">同一用户每日最多提交验证次数</div></div>
+                            <div class="rule-row__control">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <input class="form-field" type="number" value="3" style="width:80px;" />
+                                    <span style="color:var(--tos-text-muted);font-size:13px;">次/天</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
 
-                    <div class="save-bar">
+                    
+<div class="save-bar">
                         <button class="btn">重置</button>
                         <button class="btn btn-primary">保存规则</button>
                     </div>
