@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>商家 KYB · 企业认证</title>
+        <title>会员验证 · 个人实名认证</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link
             rel="stylesheet"
@@ -332,7 +332,7 @@
 
             .tos-table {
                 width: 100%;
-                min-width: 760px;
+                min-width: 720px;
                 border-collapse: collapse;
                 table-layout: fixed;
             }
@@ -536,30 +536,26 @@
                 </div>
                 <div class="tos-sidebar__nav">
                     <div class="tos-sidebar__section">认证管理</div>
-                    <a href="商城app_kyc.html" class="tos-sidebar__item">
+                    <a href="会员验证.html" class="tos-sidebar__item active">
                         <i class="fas fa-user-check"></i>
-                        商城 App KYC
+                        会员验证
                         <span class="badge">+12</span>
                     </a>
-                    <a href="商家pc_kyb.html" class="tos-sidebar__item active">
+                    <a href="商家验证.html" class="tos-sidebar__item">
                         <i class="fas fa-building"></i>
-                        商家 KYB
-                        <span class="badge">+5</span>
+                        商家验证
+                        <span class="badge">+8</span>
                     </a>
-                    <a href="商家pc_pph.html" class="tos-sidebar__item">
-                        <i class="fas fa-file-pen"></i>
-                        商家 PPH
-                        <span class="badge">+3</span>
+                    <a href="验证服务商.html" class="tos-sidebar__item">
+                        <i class="fas fa-gear"></i>
+                        验证服务商
                     </a>
                     <div class="tos-sidebar__section">审核记录</div>
                     <a href="#" class="tos-sidebar__item">
                         <i class="fas fa-clock-rotate-left"></i>
                         审核日志
                     </a>
-                    <a href="#" class="tos-sidebar__item">
-                        <i class="fas fa-gear"></i>
-                        认证配置
-                    </a>
+
                 </div>
             </aside>
 
@@ -571,7 +567,7 @@
                         <i class="fas fa-chevron-right" style="font-size: 10px; color: #ccc;"></i>
                         <span>认证管理</span>
                         <i class="fas fa-chevron-right" style="font-size: 10px; color: #ccc;"></i>
-                        <span>商家 KYB</span>
+                        <span>会员验证</span>
                     </div>
                     <div class="tos-header__actions">
                         <button class="btn btn-sm">
@@ -587,8 +583,8 @@
                 <div class="tos-page">
                     <section class="tos-page-title">
                         <div>
-                            <h1><i class="fas fa-building" style="color: var(--tos-primary);"></i> 商家 KYB</h1>
-                            <p>管理商家的企业资质认证申请与审核。</p>
+                            <h1><i class="fas fa-user-check" style="color: var(--tos-primary);"></i> 会员验证</h1>
+                            <p>管理商城 App 用户的个人实名认证申请与审核。</p>
                         </div>
                         <div class="flex items-center gap-2">
                             <button class="btn btn-sm">
@@ -602,16 +598,16 @@
                         <div class="tos-stat">
                             <div>
                                 <div class="tos-stat__label">总认证数</div>
-                                <div class="tos-stat__value">568</div>
+                                <div class="tos-stat__value">1,284</div>
                             </div>
                             <div class="tos-stat__icon">
-                                <i class="fas fa-building"></i>
+                                <i class="fas fa-users"></i>
                             </div>
                         </div>
                         <div class="tos-stat">
                             <div>
                                 <div class="tos-stat__label">待审核</div>
-                                <div class="tos-stat__value" style="color: var(--tos-warning);">5</div>
+                                <div class="tos-stat__value" style="color: var(--tos-warning);">12</div>
                             </div>
                             <div class="tos-stat__icon" style="background: #fff7e6; color: var(--tos-warning);">
                                 <i class="fas fa-hourglass-half"></i>
@@ -620,7 +616,7 @@
                         <div class="tos-stat">
                             <div>
                                 <div class="tos-stat__label">已通过</div>
-                                <div class="tos-stat__value" style="color: var(--tos-success);">523</div>
+                                <div class="tos-stat__value" style="color: var(--tos-success);">1,201</div>
                             </div>
                             <div class="tos-stat__icon" style="background: #f0faf0; color: var(--tos-success);">
                                 <i class="fas fa-check-circle"></i>
@@ -629,7 +625,7 @@
                         <div class="tos-stat">
                             <div>
                                 <div class="tos-stat__label">已驳回</div>
-                                <div class="tos-stat__value" style="color: var(--tos-error);">40</div>
+                                <div class="tos-stat__value" style="color: var(--tos-error);">71</div>
                             </div>
                             <div class="tos-stat__icon" style="background: #fff1f0; color: var(--tos-error);">
                                 <i class="fas fa-circle-xmark"></i>
@@ -646,16 +642,7 @@
                         <div class="tos-form-grid">
                             <div>
                                 <label class="form-label">关键词</label>
-                                <input class="form-field" type="text" placeholder="搜索商家名、统一社会信用代码、法人" />
-                            </div>
-                            <div>
-                                <label class="form-label">企业类型</label>
-                                <select class="form-field">
-                                    <option value="">全部类型</option>
-                                    <option value="limited">有限责任公司</option>
-                                    <option value="sole">个体工商户</option>
-                                    <option value="joint">合伙企业</option>
-                                </select>
+                                <input class="form-field" type="text" placeholder="搜索用户 ID、姓名、手机号" />
                             </div>
                             <div>
                                 <label class="form-label">认证状态</label>
@@ -664,6 +651,15 @@
                                     <option value="pending">待审核</option>
                                     <option value="approved">已通过</option>
                                     <option value="rejected">已驳回</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">认证方式</label>
+                                <select class="form-field">
+                                    <option value="">全部方式</option>
+                                    <option value="idcard">身份证</option>
+                                    <option value="passport">护照</option>
+                                    <option value="driving_license">驾驶证</option>
                                 </select>
                             </div>
                             <div>
@@ -684,8 +680,8 @@
                     <section class="tos-card">
                         <div class="tos-card__header">
                             <div>
-                                <h2 class="tos-card__title">企业认证列表</h2>
-                                <div class="tos-card__desc">共 10 条记录</div>
+                                <h2 class="tos-card__title">认证列表</h2>
+                                <div class="tos-card__desc">共 12 条记录</div>
                             </div>
                             <div class="flex items-center gap-2">
                                 <button class="btn btn-sm">
@@ -701,10 +697,10 @@
                                 <thead>
                                     <tr>
                                         <th style="width: 40px;"><input type="checkbox" /></th>
-                                        <th>商家编号</th>
-                                        <th>企业名称</th>
-                                        <th>法人代表</th>
-                                        <th>企业类型</th>
+                                        <th>用户 ID</th>
+                                        <th>姓名</th>
+                                        <th>手机号</th>
+                                        <th>认证方式</th>
                                         <th>提交时间</th>
                                         <th>状态</th>
                                         <th class="text-right">操作</th>
@@ -713,10 +709,10 @@
                                 <tbody>
                                     <tr>
                                         <td><input type="checkbox" /></td>
-                                        <td><span class="montab" style="color: var(--tos-text-muted);">M202401</span></td>
-                                        <td>杭州锐创科技有限公司</td>
-                                        <td>陈明</td>
-                                        <td><span class="tos-tag tos-tag--default">有限责任公司</span></td>
+                                        <td><span class="montab" style="color: var(--tos-text-muted);">U10086</span></td>
+                                        <td>张三</td>
+                                        <td>138****1234</td>
+                                        <td><span class="tos-tag tos-tag--default">身份证</span></td>
                                         <td style="color: var(--tos-text-muted); font-size: 13px;">2026-07-06 10:32</td>
                                         <td><span class="tos-tag tos-tag--warning">待审核</span></td>
                                         <td class="text-right">
@@ -726,10 +722,10 @@
                                     </tr>
                                     <tr>
                                         <td><input type="checkbox" /></td>
-                                        <td><span class="montab" style="color: var(--tos-text-muted);">M202402</span></td>
-                                        <td>深圳市飞扬贸易有限公司</td>
-                                        <td>李伟</td>
-                                        <td><span class="tos-tag tos-tag--default">有限责任公司</span></td>
+                                        <td><span class="montab" style="color: var(--tos-text-muted);">U10087</span></td>
+                                        <td>李四</td>
+                                        <td>139****5678</td>
+                                        <td><span class="tos-tag tos-tag--default">身份证</span></td>
                                         <td style="color: var(--tos-text-muted); font-size: 13px;">2026-07-06 09:15</td>
                                         <td><span class="tos-tag tos-tag--success">已通过</span></td>
                                         <td class="text-right">
@@ -738,10 +734,10 @@
                                     </tr>
                                     <tr>
                                         <td><input type="checkbox" /></td>
-                                        <td><span class="montab" style="color: var(--tos-text-muted);">M202403</span></td>
-                                        <td>广州鑫源服装厂</td>
-                                        <td>王芳</td>
-                                        <td><span class="tos-tag tos-tag--default">个体工商户</span></td>
+                                        <td><span class="montab" style="color: var(--tos-text-muted);">U10088</span></td>
+                                        <td>王五</td>
+                                        <td>137****9012</td>
+                                        <td><span class="tos-tag tos-tag--default">护照</span></td>
                                         <td style="color: var(--tos-text-muted); font-size: 13px;">2026-07-05 16:44</td>
                                         <td><span class="tos-tag tos-tag--error">已驳回</span></td>
                                         <td class="text-right">
@@ -750,10 +746,10 @@
                                     </tr>
                                     <tr>
                                         <td><input type="checkbox" /></td>
-                                        <td><span class="montab" style="color: var(--tos-text-muted);">M202404</span></td>
-                                        <td>北京智远咨询合伙企业</td>
-                                        <td>张磊</td>
-                                        <td><span class="tos-tag tos-tag--default">合伙企业</span></td>
+                                        <td><span class="montab" style="color: var(--tos-text-muted);">U10089</span></td>
+                                        <td>赵六</td>
+                                        <td>136****3456</td>
+                                        <td><span class="tos-tag tos-tag--default">身份证</span></td>
                                         <td style="color: var(--tos-text-muted); font-size: 13px;">2026-07-05 14:20</td>
                                         <td><span class="tos-tag tos-tag--success">已通过</span></td>
                                         <td class="text-right">
@@ -762,10 +758,10 @@
                                     </tr>
                                     <tr>
                                         <td><input type="checkbox" /></td>
-                                        <td><span class="montab" style="color: var(--tos-text-muted);">M202405</span></td>
-                                        <td>上海云帆信息技术有限公司</td>
-                                        <td>赵敏</td>
-                                        <td><span class="tos-tag tos-tag--default">有限责任公司</span></td>
+                                        <td><span class="montab" style="color: var(--tos-text-muted);">U10090</span></td>
+                                        <td>孙七</td>
+                                        <td>135****7890</td>
+                                        <td><span class="tos-tag tos-tag--default">驾驶证</span></td>
                                         <td style="color: var(--tos-text-muted); font-size: 13px;">2026-07-04 11:08</td>
                                         <td><span class="tos-tag tos-tag--warning">待审核</span></td>
                                         <td class="text-right">
@@ -775,10 +771,10 @@
                                     </tr>
                                     <tr>
                                         <td><input type="checkbox" /></td>
-                                        <td><span class="montab" style="color: var(--tos-text-muted);">M202406</span></td>
-                                        <td>成都锦城食品经营部</td>
-                                        <td>周强</td>
-                                        <td><span class="tos-tag tos-tag--default">个体工商户</span></td>
+                                        <td><span class="montab" style="color: var(--tos-text-muted);">U10091</span></td>
+                                        <td>周八</td>
+                                        <td>134****2345</td>
+                                        <td><span class="tos-tag tos-tag--default">身份证</span></td>
                                         <td style="color: var(--tos-text-muted); font-size: 13px;">2026-07-04 10:55</td>
                                         <td><span class="tos-tag tos-tag--success">已通过</span></td>
                                         <td class="text-right">
@@ -787,10 +783,10 @@
                                     </tr>
                                     <tr>
                                         <td><input type="checkbox" /></td>
-                                        <td><span class="montab" style="color: var(--tos-text-muted);">M202407</span></td>
-                                        <td>南京博远文化传媒有限公司</td>
-                                        <td>吴婷</td>
-                                        <td><span class="tos-tag tos-tag--default">有限责任公司</span></td>
+                                        <td><span class="montab" style="color: var(--tos-text-muted);">U10092</span></td>
+                                        <td>吴九</td>
+                                        <td>133****6789</td>
+                                        <td><span class="tos-tag tos-tag--default">护照</span></td>
                                         <td style="color: var(--tos-text-muted); font-size: 13px;">2026-07-03 09:30</td>
                                         <td><span class="tos-tag tos-tag--success">已通过</span></td>
                                         <td class="text-right">
@@ -799,10 +795,10 @@
                                     </tr>
                                     <tr>
                                         <td><input type="checkbox" /></td>
-                                        <td><span class="montab" style="color: var(--tos-text-muted);">M202408</span></td>
-                                        <td>武汉市汉阳区永诚建材商行</td>
-                                        <td>郑涛</td>
-                                        <td><span class="tos-tag tos-tag--default">个体工商户</span></td>
+                                        <td><span class="montab" style="color: var(--tos-text-muted);">U10093</span></td>
+                                        <td>郑十</td>
+                                        <td>132****0123</td>
+                                        <td><span class="tos-tag tos-tag--default">身份证</span></td>
                                         <td style="color: var(--tos-text-muted); font-size: 13px;">2026-07-03 08:12</td>
                                         <td><span class="tos-tag tos-tag--error">已驳回</span></td>
                                         <td class="text-right">
@@ -811,10 +807,10 @@
                                     </tr>
                                     <tr>
                                         <td><input type="checkbox" /></td>
-                                        <td><span class="montab" style="color: var(--tos-text-muted);">M202409</span></td>
-                                        <td>深圳前海联合投资中心</td>
-                                        <td>黄丽</td>
-                                        <td><span class="tos-tag tos-tag--default">合伙企业</span></td>
+                                        <td><span class="montab" style="color: var(--tos-text-muted);">U10094</span></td>
+                                        <td>陈晓</td>
+                                        <td>131****4567</td>
+                                        <td><span class="tos-tag tos-tag--default">驾驶证</span></td>
                                         <td style="color: var(--tos-text-muted); font-size: 13px;">2026-07-02 17:05</td>
                                         <td><span class="tos-tag tos-tag--success">已通过</span></td>
                                         <td class="text-right">
@@ -823,10 +819,10 @@
                                     </tr>
                                     <tr>
                                         <td><input type="checkbox" /></td>
-                                        <td><span class="montab" style="color: var(--tos-text-muted);">M202410</span></td>
-                                        <td>苏州工业园区广达贸易商行</td>
-                                        <td>林杰</td>
-                                        <td><span class="tos-tag tos-tag--default">个体工商户</span></td>
+                                        <td><span class="montab" style="color: var(--tos-text-muted);">U10095</span></td>
+                                        <td>林小</td>
+                                        <td>130****8901</td>
+                                        <td><span class="tos-tag tos-tag--default">身份证</span></td>
                                         <td style="color: var(--tos-text-muted); font-size: 13px;">2026-07-02 15:40</td>
                                         <td><span class="tos-tag tos-tag--warning">待审核</span></td>
                                         <td class="text-right">
@@ -839,10 +835,11 @@
                         </div>
                         <div class="tos-actions" style="margin-top: 16px;">
                             <div style="display: flex; align-items: center; gap: 12px; justify-content: space-between; width: 100%;">
-                                <span style="font-size: 13px; color: var(--tos-text-muted);">共 10 条</span>
+                                <span style="font-size: 13px; color: var(--tos-text-muted);">共 12 条</span>
                                 <div style="display: flex; align-items: center; gap: 6px;">
                                     <button class="btn btn-sm" disabled style="opacity: 0.5; cursor: not-allowed;">&laquo;</button>
                                     <button class="btn btn-sm btn-primary" style="min-width: 32px; padding: 0 8px;">1</button>
+                                    <button class="btn btn-sm" style="min-width: 32px; padding: 0 8px;">2</button>
                                     <button class="btn btn-sm" disabled style="opacity: 0.5; cursor: not-allowed;">&raquo;</button>
                                 </div>
                             </div>
