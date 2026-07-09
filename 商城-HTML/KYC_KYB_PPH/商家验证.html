@@ -166,8 +166,11 @@
             .review-btn { border-color:var(--tos-warning); color:var(--tos-warning); }
             .review-btn:hover { background:var(--tos-warning-bg); border-color:var(--tos-warning); }
             .review-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:100; align-items:center; justify-content:center; }
+            .pph-review-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:100; align-items:center; justify-content:center; }
             .review-modal.open { display:flex; }
+            .pph-review-modal.open { display:flex; }
             .review-modal__body { background:#fff; border-radius:var(--tos-radius-card); padding:24px; max-width:600px; width:90%; max-height:75vh; overflow-y:auto; }
+            .pph-review-modal__body { background:#fff; border-radius:var(--tos-radius-card); padding:24px; max-width:600px; width:90%; max-height:75vh; overflow-y:auto; }
             .review-modal__header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
             .review-modal__header h3 { font-size:18px; font-weight:600; }
             .review-modal__close { border:none; background:none; font-size:24px; cursor:pointer; color:var(--tos-text-muted); padding:0 4px; line-height:1; }
@@ -351,23 +354,21 @@
                         <!-- PPH Table -->
                         <section class="tos-card">
                             <div class="tos-card__header">
-                                <div><h2 class="tos-card__title">PPH 审查列表<tbody>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202401</span></td><td>杭州锐创科技有限公司</td><td>陈明<br/><span style="font-size:12px;color:var(--tos-text-muted);">法人代表</span></td><td><span class="tos-tag tos-tag--default">低风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-06 10:32</td><td><span class="tos-tag tos-tag--warning">待审查</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202401", {"field_0": "M202401", "field_1": "杭州锐创科技有限公司", "field_2": "陈明法人代表", "field_3": "低风险", "field_4": "2026-07-06 10:32", "field_5": "待审查", "field_6": "查看审查"})' >查看</button><button class="btn btn-link">审查</button></td></tr>
+                                <div><h2 class="tos-card__title">PPH 审查列表</h2><div class="tos-card__desc">共 10 条记录</div></div><div style="display:flex;align-items:center;gap:8px;"><button class="btn btn-sm review-btn" onclick="openPphReviewModal()"><i class="fas fa-check-double"></i> 人工审核</button></div></div>
+                            <div class="tos-table-wrap">
+                                <table class="tos-table">
+                                    <thead><tr><th style="width:40px;"><input type="checkbox" /></th><th>商家编号</th><th>企业名称</th><th>法人代表 / 负责人</th><th>风险等级</th><th>提交时间</th><th>状态</th><th class="text-right">操作</th></tr></thead>
+                                    <tbody>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202401</span></td><td>杭州锐创科技有限公司</td><td>陈明<br/><span style="font-size:12px;color:var(--tos-text-muted);">法人代表</span></td><td><span class="tos-tag tos-tag--default">低风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-06 10:32</td><td><span class="tos-tag tos-tag--warning">待审查</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202401", {"field_0": "M202401", "field_1": "杭州锐创科技有限公司", "field_2": "陈明法人代表", "field_3": "低风险", "field_4": "2026-07-06 10:32", "field_5": "待审查", "field_6": "查看审查"})' >查看</button></td></tr>
                                         <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202402</span></td><td>深圳市飞扬贸易有限公司</td><td>李伟<br/><span style="font-size:12px;color:var(--tos-text-muted);">法人代表</span></td><td><span class="tos-tag tos-tag--default">低风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-06 09:15</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202402", {"field_0": "M202402", "field_1": "深圳市飞扬贸易有限公司", "field_2": "李伟法人代表", "field_3": "低风险", "field_4": "2026-07-06 09:15", "field_5": "已通过", "field_6": "查看"})' >查看</button></td></tr>
                                         <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202403</span></td><td>广州鑫源服装厂</td><td>王芳<br/><span style="font-size:12px;color:var(--tos-text-muted);">经营者</span></td><td><span class="tos-tag tos-tag--error">高风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-05 16:44</td><td><span class="tos-tag tos-tag--error">高风险</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202403", {"field_0": "M202403", "field_1": "广州鑫源服装厂", "field_2": "王芳经营者", "field_3": "高风险", "field_4": "2026-07-05 16:44", "field_5": "高风险", "field_6": "查看"})' >查看</button></td></tr>
                                         <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202404</span></td><td>北京智远咨询合伙企业</td><td>张磊<br/><span style="font-size:12px;color:var(--tos-text-muted);">执行事务合伙人</span></td><td><span class="tos-tag tos-tag--default">低风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-05 14:20</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202404", {"field_0": "M202404", "field_1": "北京智远咨询合伙企业", "field_2": "张磊执行事务合伙人", "field_3": "低风险", "field_4": "2026-07-05 14:20", "field_5": "已通过", "field_6": "查看"})' >查看</button></td></tr>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202405</span></td><td>上海云帆信息技术有限公司</td><td>赵敏<br/><span style="font-size:12px;color:var(--tos-text-muted);">法人代表</span></td><td><span class="tos-tag tos-tag--warning">中风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-04 11:08</td><td><span class="tos-tag tos-tag--warning">待审查</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202405", {"field_0": "M202405", "field_1": "上海云帆信息技术有限公司", "field_2": "赵敏法人代表", "field_3": "中风险", "field_4": "2026-07-04 11:08", "field_5": "待审查", "field_6": "查看审查"})' >查看</button><button class="btn btn-link">审查</button></td></tr>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202405</span></td><td>上海云帆信息技术有限公司</td><td>赵敏<br/><span style="font-size:12px;color:var(--tos-text-muted);">法人代表</span></td><td><span class="tos-tag tos-tag--warning">中风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-04 11:08</td><td><span class="tos-tag tos-tag--warning">待审查</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202405", {"field_0": "M202405", "field_1": "上海云帆信息技术有限公司", "field_2": "赵敏法人代表", "field_3": "中风险", "field_4": "2026-07-04 11:08", "field_5": "待审查", "field_6": "查看审查"})' >查看</button></td></tr>
                                         <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202406</span></td><td>成都锦城食品经营部</td><td>周强<br/><span style="font-size:12px;color:var(--tos-text-muted);">经营者</span></td><td><span class="tos-tag tos-tag--default">低风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-04 10:55</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202406", {"field_0": "M202406", "field_1": "成都锦城食品经营部", "field_2": "周强经营者", "field_3": "低风险", "field_4": "2026-07-04 10:55", "field_5": "已通过", "field_6": "查看"})' >查看</button></td></tr>
                                         <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202407</span></td><td>南京博远文化传媒有限公司</td><td>吴婷<br/><span style="font-size:12px;color:var(--tos-text-muted);">法人代表</span></td><td><span class="tos-tag tos-tag--default">低风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-03 09:30</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202407", {"field_0": "M202407", "field_1": "南京博远文化传媒有限公司", "field_2": "吴婷法人代表", "field_3": "低风险", "field_4": "2026-07-03 09:30", "field_5": "已通过", "field_6": "查看"})' >查看</button></td></tr>
                                         <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202408</span></td><td>武汉市汉阳区永诚建材商行</td><td>郑涛<br/><span style="font-size:12px;color:var(--tos-text-muted);">经营者</span></td><td><span class="tos-tag tos-tag--error">高风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-03 08:12</td><td><span class="tos-tag tos-tag--error">已驳回</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202408", {"field_0": "M202408", "field_1": "武汉市汉阳区永诚建材商行", "field_2": "郑涛经营者", "field_3": "高风险", "field_4": "2026-07-03 08:12", "field_5": "已驳回", "field_6": "查看"})' >查看</button></td></tr>
                                         <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202409</span></td><td>深圳前海联合投资中心</td><td>黄丽<br/><span style="font-size:12px;color:var(--tos-text-muted);">执行事务合伙人</span></td><td><span class="tos-tag tos-tag--warning">中风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-02 17:05</td><td><span class="tos-tag tos-tag--success">已通过</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202409", {"field_0": "M202409", "field_1": "深圳前海联合投资中心", "field_2": "黄丽执行事务合伙人", "field_3": "中风险", "field_4": "2026-07-02 17:05", "field_5": "已通过", "field_6": "查看"})' >查看</button></td></tr>
-                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202410</span></td><td>苏州工业园区广达贸易商行</td><td>林杰<br/><span style="font-size:12px;color:var(--tos-text-muted);">经营者</span></td><td><span class="tos-tag tos-tag--default">低风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-02 15:40</td><td><span class="tos-tag tos-tag--warning">待审查</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202410", {"field_0": "M202410", "field_1": "苏州工业园区广达贸易商行", "field_2": "林杰经营者", "field_3": "低风险", "field_4": "2026-07-02 15:40", "field_5": "待审查", "field_6": "查看审查"})' >查看</button><button class="btn btn-link">审查</button></td></tr>
-                                    </tbody>cess">已通过</span><button class="btn btn-link" onclick='openDetail("详情", {"field_0": "M202409深圳前海联合投资中心黄丽执行事务合伙人中风险2026-07-02 17:05已通过查看"})' >查看</button></tr>
-
-                    <tr><input type="checkbox" /><span class="montab" style="color:var(--tos-text-muted);">M202410</span>苏州工业园区广达贸易商行林杰<br/><span style="font-size:12px;color:var(--tos-text-muted);">经营者</span><span class="tos-tag tos-tag--default">低风险</span>2026-07-02 15:40<span class="tos-tag tos-tag--warning">待审查</span><button class="btn btn-link" onclick='openDetail("详情", {"field_0": "M202410苏州工业园区广达贸易商行林杰经营者低风险2026-07-02 15:40待审查查看审查"})' >查看</button><button class="btn btn-link">审查</button></tr>
-
-                                    </tbody>
-                                </table>
+                                        <tr><td><input type="checkbox" /></td><td><span class="montab" style="color:var(--tos-text-muted);">M202410</span></td><td>苏州工业园区广达贸易商行</td><td>林杰<br/><span style="font-size:12px;color:var(--tos-text-muted);">经营者</span></td><td><span class="tos-tag tos-tag--default">低风险</span></td><td style="color:var(--tos-text-muted);font-size:13px;">2026-07-02 15:40</td><td><span class="tos-tag tos-tag--warning">待审查</span></td><td class="text-right"><button class="btn btn-link" onclick='openDetail("M202410", {"field_0": "M202410", "field_1": "苏州工业园区广达贸易商行", "field_2": "林杰经营者", "field_3": "低风险", "field_4": "2026-07-02 15:40", "field_5": "待审查", "field_6": "查看审查"})' >查看</button></td></tr>
                             </div>
                             <div class="tos-actions" style="margin-top:16px;">
                                 <div style="display:flex;align-items:center;gap:12px;justify-content:space-between;width:100%;">
@@ -446,6 +447,54 @@
                 </div>
             </div>
         </div>
+        <div class="pph-review-modal" id="pphReviewModal">
+            <div class="pph-review-modal__body">
+                <div class="review-modal__header">
+                    <h3><i class="fas fa-shield" style="color:var(--tos-primary);"></i> PPH 人工审核</h3>
+                    <button class="review-modal__close" onclick="closePphReviewModal()">&times;</button>
+                </div>
+                <div class="review-modal__stats">
+                    <span>待审查 <strong style="color:var(--tos-warning);">3</strong></span>
+                    <span>高风险 <strong style="color:var(--tos-error);">1</strong></span>
+                    <span>平均处理 <strong>12.3min</strong></span>
+                </div>
+                <div>
+                    <div class="review-item-row">
+                        <div class="review-item-row__info">
+                            <div class="review-item-row__name">M202401 · 杭州锐创科技</div>
+                            <div class="review-item-row__meta">风险等级: 低风险 · 2026-07-06 10:32</div>
+                            <div class="review-item-row__reason">关联企业存在涉敏交易记录</div>
+                        </div>
+                        <div class="review-item-row__actions">
+                            <button class="btn btn-sm btn-primary" onclick="pphReviewPass('M202401')">通过</button>
+                            <button class="btn btn-sm" onclick="pphReviewReject('M202401')" style="color:var(--tos-error);">驳回</button>
+                        </div>
+                    </div>
+                    <div class="review-item-row">
+                        <div class="review-item-row__info">
+                            <div class="review-item-row__name">M202405 · 上海云帆信息</div>
+                            <div class="review-item-row__meta">风险等级: 中风险 · 2026-07-04 11:08</div>
+                            <div class="review-item-row__reason">受益所有人身份待核实</div>
+                        </div>
+                        <div class="review-item-row__actions">
+                            <button class="btn btn-sm btn-primary" onclick="pphReviewPass('M202405')">通过</button>
+                            <button class="btn btn-sm" onclick="pphReviewReject('M202405')" style="color:var(--tos-error);">驳回</button>
+                        </div>
+                    </div>
+                    <div class="review-item-row">
+                        <div class="review-item-row__info">
+                            <div class="review-item-row__name">M202410 · 苏州广达贸易</div>
+                            <div class="review-item-row__meta">风险等级: 低风险 · 2026-07-02 15:40</div>
+                            <div class="review-item-row__reason">经营地址与注册地跨省不一致</div>
+                        </div>
+                        <div class="review-item-row__actions">
+                            <button class="btn btn-sm btn-primary" onclick="pphReviewPass('M202410')">通过</button>
+                            <button class="btn btn-sm" onclick="pphReviewReject('M202410')" style="color:var(--tos-error);">驳回</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <script>
             function openReviewModal() { document.getElementById('reviewModal').classList.add('open'); }
@@ -455,6 +504,13 @@
             });
             function reviewPass(id) { if (confirm('确认通过 ' + id + ' ？')) { alert('验证已通过'); closeReviewModal(); } }
             function reviewReject(id) { var r = prompt('请输入驳回原因：'); if (r) { alert('已驳回'); closeReviewModal(); } }
+            function openPphReviewModal() { document.getElementById('pphReviewModal').classList.add('open'); }
+            function closePphReviewModal() { document.getElementById('pphReviewModal').classList.remove('open'); }
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('pph-review-modal')) closePphReviewModal();
+            });
+            function pphReviewPass(id) { if (confirm('确认通过 ' + id + ' ？')) { alert('审查已通过'); closePphReviewModal(); } }
+            function pphReviewReject(id) { var r = prompt('请输入驳回原因：'); if (r) { alert('已驳回'); closePphReviewModal(); } }
         </script>
 
                 <div class="detail-modal" id="detailModal" onclick="closeDetail(event)">
