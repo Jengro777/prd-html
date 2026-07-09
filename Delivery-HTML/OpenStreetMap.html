@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>简单地图加载</title>
+    <!-- Leaflet 核心 CSS 和 JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        /* 让地图占满整个屏幕 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            height: 100vh;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- 地图容器 -->
+    <div id="map"></div>
+
+    <script>
+        // 初始化地图，设置中心点和缩放级别
+        // 这里以深圳为例：经度114.07，纬度22.55，缩放级别12
+        var map = L.map('map').setView([22.55, 114.07], 12);
+
+        // 添加 OpenStreetMap 瓦片图层（不需要任何密钥）
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> 贡献者'
+        }).addTo(map);
+
+        // 可选：在地图上添加一个标记，让地图更直观
+        L.marker([22.55, 114.07]).addTo(map)
+            .bindPopup('这里是深圳')
+            .openPopup();
+
+        // 让地图自适应容器大小（如果容器尺寸变化）
+        window.addEventListener('resize', function () {
+            map.invalidateSize();
+        });
+    </script>
+</body>
+</html>
