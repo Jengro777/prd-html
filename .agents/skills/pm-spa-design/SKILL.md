@@ -18,7 +18,7 @@ disable-model-invocation: false
 8. **间距**：页面外边距 20px，卡片内边距 20px，表单项间距 16px，紧凑区 8px。信息密度要稳定，不要为了“好看”拉得过空。
 9. **响应式**：桌面优先 12 栅格/左右布局；小屏自动单列。标题、按钮、表格、卡片文字不得溢出或互相遮挡。
 10. **第一屏原则**：业务工具页面第一屏直接展示可操作内容，不做营销式 hero，不写功能说明大段文案。
-11. **H5 页面左侧菜单**：生成会员端/消费者端 H5 页面时，必须包含左侧固定导航菜单（`position:fixed; left:0`，200px 宽，纯 `<a href>` 跳转），方便在桌面浏览器中切换查看多个 H5 页面。H5 容器 414px `margin:0 auto` 居中。详细模板见 `references/page-templates.md` 第 8 节。
+11. **H5 页面左侧菜单**：生成会员端/消费者端 H5 页面时，必须包含左侧固定导航菜单（`position:fixed; left:0`，200px 宽，纯 `<a href>` 跳转），方便在桌面浏览器中切换查看多个 H5 页面。侧边栏顶部必须有 `<select class="sidebar__end-select">` 端切换下拉框，方便在会员端/运营端之间跳转。H5 容器 414px `margin:0 auto` 居中。详细模板见 `references/page-templates.md` 第 8 节。
 
 ## 工作流程
 

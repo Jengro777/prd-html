@@ -423,7 +423,12 @@ H5 页面用于会员端/消费者端。核心内容区限制 414px 宽度模拟
 ```html
 <body>
 <!-- 左侧导航：fixed 在最左边缘，仅用于桌面浏览器切换 H5 页面 -->
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
+    <!-- 端切换：方便在会员端/运营端等不同端之间跳转 -->
+    <select class="sidebar__end-select" onchange="if(this.value)location.href=this.value">
+        <option value="">会员端</option>
+        <option value="运营端/运营-xxx.html">运营端</option>
+    </select>
     <div class="sidebar__head">
         <div class="sidebar__logo"><i class="fas fa-wallet"></i></div>
         <span class="sidebar__title">会员中心</span>
@@ -457,6 +462,9 @@ body { background: #f5f7fa; font-family: -apple-system, BlinkMacSystemFont, sans
 .sidebar__head { padding: 20px 16px 16px; border-bottom: 1px solid #f0f2f5; display: flex; align-items: center; gap: 10px; }
 .sidebar__logo { width: 34px; height: 34px; border-radius: 8px; background: #42b7ae; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px; }
 .sidebar__title { font-size: 15px; font-weight: 700; }
+/* 端切换 select：TOS 规范样式 */
+.sidebar__end-select { width: calc(100% - 24px); height: 32px; margin: 8px 12px 0; padding: 0 26px 0 10px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; font-size: 13px; color: #333; outline: none; cursor: pointer; font-family: inherit; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><path d='M2 4l3 3 3-3' fill='none' stroke='%23999' stroke-width='1.5' stroke-linecap='round'/></svg>"); background-repeat: no-repeat; background-position: right 8px center; }
+.sidebar__end-select:focus { border-color: #42b7ae; box-shadow: 0 0 0 2px rgba(66,183,174,.16); }
 .sidebar__nav { flex: 1; padding: 8px 0; overflow-y: auto; }
 .sidebar__group-title { padding: 12px 14px 4px; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
 .sidebar__item { display: flex; align-items: center; gap: 8px; padding: 9px 14px; font-size: 13px; color: #666; text-decoration: none; border-left: 3px solid transparent; transition: all 0.12s; }
@@ -474,8 +482,9 @@ body { background: #f5f7fa; font-family: -apple-system, BlinkMacSystemFont, sans
 
 1. **左侧菜单是纯页面导航**，仅用 `<a href="...">` 跳转切换 H5 页面，不含任何业务逻辑。
 2. **每个 H5 页面必须包含相同的侧边栏**，仅当前页对应菜单项标记 `sidebar__item--active`。
-3. **桌面端**（>680px）：侧边栏 `position:fixed; left:0` 始终可见，H5 容器 `margin:0 auto` 居中。
-4. **移动端**（≤680px）：侧边栏隐藏，☰ 按钮唤出，H5 容器 `width:100%`。
-5. **body 不要设 `display:flex; justify-content:center`**，侧边栏用 fixed 定位，H5 容器用 margin auto 居中，自然留出间距。
-6. H5 页面内所有组件类名使用 `h5-*` 前缀，与运营端 `tos-*` 区分。
-7. 底部固定操作栏 `position:fixed; bottom:0`，宽度 414px，移动端 100%。
+3. **侧边栏顶部必须有端切换 select**，方便在会员端、运营端等不同端之间跳转。使用 `<select class="sidebar__end-select">` + `onchange` 跳转，选项为各端入口页路径，当前端设为空 value（选中不跳转）。运营端等其他端页面也同样放置此 select，只是当前端选项不同。
+4. **桌面端**（>680px）：侧边栏 `position:fixed; left:0` 始终可见，H5 容器 `margin:0 auto` 居中。
+5. **移动端**（≤680px）：侧边栏隐藏，☰ 按钮唤出，H5 容器 `width:100%`。
+6. **body 不要设 `display:flex; justify-content:center`**，侧边栏用 fixed 定位，H5 容器用 margin auto 居中，自然留出间距。
+7. H5 页面内所有组件类名使用 `h5-*` 前缀，与运营端 `tos-*` 区分。
+8. 底部固定操作栏 `position:fixed; bottom:0`，宽度 414px，移动端 100%。
