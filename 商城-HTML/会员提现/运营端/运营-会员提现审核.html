@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>运营端 · 会员提现审核</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/reset.css" />
+    <script src="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/antd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --tos-primary: #42b7ae; --tos-primary-hover: #339b94; --tos-primary-bg: #e6f7f6;
+            --tos-bg: #f5f7fa; --tos-card: #fff; --tos-border: #e5e7eb; --tos-border-soft: #f0f2f5;
+            --tos-text: #333; --tos-text-secondary: #666; --tos-text-muted: #999;
+            --tos-success: #52c41a; --tos-warning: #faad14; --tos-error: #f5222d;
+            --tos-radius-card: 12px; --tos-radius-control: 8px; --tos-radius-tag: 4px;
+            --tos-shadow-card: 0 1px 2px rgba(15,23,42,0.03);
+            --sidebar-width: 220px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: var(--tos-bg);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: var(--tos-text);
+        }
+        #app { min-height: 100vh; display: flex; }
+        /* 左侧菜单栏 */
+        .tos-sidebar {
+            position: fixed; top: 0; left: 0; bottom: 0; z-index: 30;
+            width: var(--sidebar-width); background: #fff;
+            border-right: 1px solid var(--tos-border-soft);
+            display: flex; flex-direction: column; overflow-y: auto;
+        }
+        .tos-sidebar__logo {
+            display: flex; align-items: center; gap: 10px;
+            padding: 16px 20px; border-bottom: 1px solid var(--tos-border-soft);
+        }
+        .tos-sidebar__logo-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            background: var(--tos-primary); color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; flex-shrink: 0;
+        }
+        .tos-sidebar__logo-text {
+            font-size: 16px; font-weight: 700; color: #1f2937;
+            white-space: nowrap;
+        }
+        .tos-sidebar__nav {
+            flex: 1; padding: 12px 0;
+        }
+        .tos-sidebar__group {
+            padding: 0 12px; margin-bottom: 4px;
+        }
+        .tos-sidebar__group-title {
+            padding: 8px 8px 4px; font-size: 11px; color: var(--tos-text-muted);
+            text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;
+        }
+        .tos-sidebar__item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 12px; border-radius: 8px; cursor: pointer;
+            font-size: 14px; color: var(--tos-text-secondary); transition: all 0.15s;
+            text-decoration: none; margin-bottom: 2px;
+        }
+        .tos-sidebar__item:hover { background: #f5f5f5; color: var(--tos-text); }
+        .tos-sidebar__item--active {
+            background: var(--tos-primary-bg); color: var(--tos-primary); font-weight: 600;
+        }
+        .tos-sidebar__item i { width: 18px; text-align: center; font-size: 13px; flex-shrink: 0; }
+        .tos-sidebar__badge {
+            margin-left: auto; background: var(--tos-error); color: #fff;
+            font-size: 10px; padding: 1px 6px; border-radius: 10px; font-weight: 600;
+        }
+        /* 主内容区 */
+        .tos-main {
+            margin-left: var(--sidebar-width); flex: 1; min-width: 0;
+        }
+        .tos-header {
+            position: sticky; top: 0; z-index: 20;
+            display: flex; height: 56px; align-items: center; justify-content: space-between;
+            gap: 16px; border-bottom: 1px solid var(--tos-border-soft);
+            background: rgba(255,255,255,0.96); padding: 0 20px; backdrop-filter: blur(10px);
+        }
+        .tos-header__left { display: flex; align-items: center; gap: 12px; }
+        .tos-header__title { font-size: 15px; font-weight: 600; color: #1f2937; }
+        .tos-header__breadcrumb { font-size: 12px; color: var(--tos-text-muted); }
+        .tos-page { padding: 20px; max-width: 1400px; }
+        .tos-page-title { margin-bottom: 20px; }
+        .tos-page-title h1 { margin: 0; color: #1f2937; font-size: 20px; font-weight: 600; }
+        .tos-page-title p { margin: 4px 0 0; color: var(--tos-text-muted); font-size: 13px; }
+        .tos-card {
+            background: var(--tos-card); border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card); padding: 20px;
+            box-shadow: var(--tos-shadow-card);
+        }
+        .tos-card+.tos-card { margin-top: 20px; }
+        .tos-card__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+        .tos-card__title { margin: 0; color: var(--tos-text); font-size: 16px; font-weight: 600; }
+        .tos-card__desc { margin-top: 4px; color: var(--tos-text-muted); font-size: 12px; }
+        .tos-metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+        .tos-stat {
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            padding: 16px; border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card); background: #fff;
+        }
+        .tos-stat__label { color: var(--tos-text-muted); font-size: 12px; }
+        .tos-stat__value { margin-top: 4px; color: #1f2937; font-size: 22px; font-weight: 600; }
+        .tos-stat__icon { display: inline-flex; width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: 8px; background: var(--tos-primary-bg); color: var(--tos-primary); }
+        .tos-form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 16px; }
+        .tos-actions { display: flex; align-items: center; gap: 8px; }
+        .tos-table-wrap { overflow-x: auto; }
+        .tos-table { width: 100%; min-width: 1000px; border-collapse: collapse; }
+        .tos-table th { padding: 10px 12px; background: #fafafa; border-bottom: 1px solid var(--tos-border-soft); color: var(--tos-text-secondary); font-size: 13px; font-weight: 500; text-align: left; white-space: nowrap; }
+        .tos-table td { padding: 10px 12px; border-bottom: 1px solid #f5f5f5; color: var(--tos-text); font-size: 14px; vertical-align: middle; }
+        .tos-table tr:hover td { background: #fafafa; }
+        .tos-table .checkbox-col { width: 40px; text-align: center; }
+        .tos-tag { display: inline-flex; height: 22px; align-items: center; padding: 0 8px; border-radius: var(--tos-radius-tag); font-size: 12px; font-weight: 500; white-space: nowrap; }
+        .tos-tag--default { background: #f5f5f5; color: var(--tos-text-secondary); }
+        .tos-tag--success { background: #f0faf0; color: var(--tos-success); }
+        .tos-tag--warning { background: #fff7e6; color: var(--tos-warning); }
+        .tos-tag--error { background: #fff1f0; color: var(--tos-error); }
+        .tos-tag--primary { background: var(--tos-primary-bg); color: var(--tos-primary); }
+        .amount-out { color: var(--tos-error); font-weight: 600; }
+        .amount-in { color: var(--tos-primary); font-weight: 600; }
+        .batch-bar {
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            padding: 10px 16px; background: #fffbe6; border: 1px solid #ffe58f;
+            border-radius: var(--tos-radius-control); margin-bottom: 16px; font-size: 13px;
+        }
+        .ant-btn-primary { background: var(--tos-primary); border-color: var(--tos-primary); box-shadow: none; }
+        .ant-btn-primary:hover, .ant-btn-primary:focus { background: var(--tos-primary-hover) !important; border-color: var(--tos-primary-hover) !important; }
+        .ant-btn { border-radius: var(--tos-radius-control) !important; }
+        .ant-input, .ant-select-selector, .ant-picker { border-radius: var(--tos-radius-control) !important; }
+        .ant-input:focus, .ant-select-focused .ant-select-selector { border-color: var(--tos-primary) !important; box-shadow: 0 0 0 2px rgba(66,183,174,0.16) !important; }
+        .ant-modal-content { border-radius: var(--tos-radius-card); }
+        @media (max-width: 1024px) {
+            .tos-sidebar { width: 64px; }
+            .tos-sidebar__logo-text, .tos-sidebar__group-title, .tos-sidebar__item span:not(.tos-sidebar__badge), .tos-sidebar__badge { display: none; }
+            .tos-sidebar__item { justify-content: center; padding: 10px; }
+            .tos-main { margin-left: 64px; }
+            .tos-form-grid { grid-template-columns: repeat(2, 1fr); }
+            .tos-metric-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 640px) {
+            .tos-sidebar { display: none; }
+            .tos-main { margin-left: 0; }
+            .tos-header { height: 48px; padding: 0 14px; }
+            .tos-page { padding: 14px; }
+            .tos-form-grid, .tos-metric-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <!-- 左侧菜单栏 -->
+    <aside class="tos-sidebar">
+        <div class="tos-sidebar__logo">
+            <div class="tos-sidebar__logo-icon"><i class="fas fa-layer-group"></i></div>
+            <span class="tos-sidebar__logo-text">TOS 运营中心</span>
+        </div>
+        <nav class="tos-sidebar__nav">
+            <div class="tos-sidebar__group">
+                <div class="tos-sidebar__group-title">会员管理</div>
+                <a class="tos-sidebar__item tos-sidebar__item--active" href="运营-会员提现审核.html">
+                    <i class="fas fa-check-circle"></i> <span>提现审核</span>
+                    <span class="tos-sidebar__badge">3</span>
+                </a>
+                <a class="tos-sidebar__item" href="运营-钱包明细对账.html">
+                    <i class="fas fa-file-invoice"></i> <span>钱包对账</span>
+                </a>
+                <a class="tos-sidebar__item" href="运营-会员余额管理.html">
+                    <i class="fas fa-coins"></i> <span>余额管理</span>
+                </a>
+            </div>
+            <div class="tos-sidebar__group">
+                <div class="tos-sidebar__group-title">系统设置</div>
+                <a class="tos-sidebar__item" href="#"><i class="fas fa-cog"></i> <span>提现配置</span></a>
+                <a class="tos-sidebar__item" href="#"><i class="fas fa-history"></i> <span>操作日志</span></a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- 主内容区 -->
+    <div class="tos-main">
+        <header class="tos-header">
+            <div class="tos-header__left">
+                <span class="tos-header__breadcrumb">会员管理 / </span>
+                <span class="tos-header__title">提现审核</span>
+            </div>
+            <div class="tos-actions">
+                <a-button @click="exportCSV">导出 CSV</a-button>
+            </div>
+        </header>
+
+        <main class="tos-page">
+            <section class="tos-page-title">
+                <div>
+                    <h1>会员提现审核</h1>
+                    <p>审核会员提交的提现申请，支持批量通过、驳回及查看详情。</p>
+                </div>
+            </section>
+
+            <!-- 统计指标 -->
+            <section class="tos-metric-grid">
+                <div class="tos-stat">
+                    <div>
+                        <div class="tos-stat__label">待审核</div>
+                        <div class="tos-stat__value" style="color: var(--tos-warning);">3 笔</div>
+                    </div>
+                    <div class="tos-stat__icon"><i class="fas fa-clock"></i></div>
+                </div>
+                <div class="tos-stat">
+                    <div>
+                        <div class="tos-stat__label">今日已审</div>
+                        <div class="tos-stat__value">12 笔</div>
+                    </div>
+                    <div class="tos-stat__icon"><i class="fas fa-check-circle"></i></div>
+                </div>
+                <div class="tos-stat">
+                    <div>
+                        <div class="tos-stat__label">待审核总额</div>
+                        <div class="tos-stat__value" style="color: var(--tos-error);">¥6,300.00</div>
+                    </div>
+                    <div class="tos-stat__icon"><i class="fas fa-yen-sign"></i></div>
+                </div>
+                <div class="tos-stat">
+                    <div>
+                        <div class="tos-stat__label">今日通过金额</div>
+                        <div class="tos-stat__value" style="color: var(--tos-success);">¥18,500.00</div>
+                    </div>
+                    <div class="tos-stat__icon"><i class="fas fa-arrow-up"></i></div>
+                </div>
+            </section>
+
+            <!-- 筛选 + 表格 -->
+            <section class="tos-card">
+                <div class="tos-card__header">
+                    <div>
+                        <h2 class="tos-card__title">审核列表</h2>
+                        <div class="tos-card__desc">共 7 条记录，其中 3 条待审核</div>
+                    </div>
+                    <div class="tos-actions">
+                        <a-button type="primary" @click="batchApprove">批量通过</a-button>
+                        <a-button danger @click="batchReject">批量驳回</a-button>
+                    </div>
+                </div>
+
+                <!-- 筛选 -->
+                <div class="tos-form-grid" style="margin-bottom: 16px;">
+                    <a-form-item label="审核状态">
+                        <a-select id="statusFilter" placeholder="全部" allow-clear style="width:100%;">
+                            <a-select-option value="">全部</a-select-option>
+                            <a-select-option value="pending">待审核</a-select-option>
+                            <a-select-option value="approved">已通过</a-select-option>
+                            <a-select-option value="rejected">已驳回</a-select-option>
+                        </a-select>
+                    </a-form-item>
+                    <a-form-item label="会员ID/姓名">
+                        <a-input id="memberSearch" placeholder="搜索会员编号或姓名" allow-clear />
+                    </a-form-item>
+                    <a-form-item label="提现单号">
+                        <a-input id="idSearch" placeholder="搜索提现单号" allow-clear />
+                    </a-form-item>
+                    <a-form-item label="提现方式">
+                        <a-select id="methodFilter" placeholder="全部" allow-clear style="width:100%;">
+                            <a-select-option value="">全部</a-select-option>
+                            <a-select-option value="bank">银行卡</a-select-option>
+                            <a-select-option value="alipay">支付宝</a-select-option>
+                            <a-select-option value="wechat">微信</a-select-option>
+                        </a-select>
+                    </a-form-item>
+                </div>
+                <div class="tos-actions" style="margin-bottom: 16px;">
+                    <a-button @click="resetFilter">重置</a-button>
+                </div>
+
+                <!-- 批量操作提示条 -->
+                <div class="batch-bar" id="batchBar" style="display:none;">
+                    <span>已选择 <strong id="selectCount">0</strong> 条记录</span>
+                    <span>合计金额：<strong id="selectAmount" style="color:var(--tos-error);">¥0.00</strong></span>
+                    <div class="tos-actions">
+                        <a-button size="small" type="primary" @click="batchApprove">通过所选</a-button>
+                        <a-button size="small" danger @click="batchReject">驳回所选</a-button>
+                    </div>
+                </div>
+
+                <div class="tos-table-wrap">
+                    <table class="tos-table">
+                        <thead>
+                            <tr>
+                                <th class="checkbox-col"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th>
+                                <th>提现单号</th><th>会员信息</th><th>提现金额</th><th>手续费</th>
+                                <th>到账金额</th><th>收款方式</th><th>申请时间</th><th>状态</th>
+                                <th style="text-align:right;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr data-status="pending" data-id="MWD-20260701-5008" data-amount="3500">
+                                <td class="checkbox-col"><input type="checkbox" class="row-check" onchange="updateBatchBar()"></td>
+                                <td><span style="font-family:monospace;font-size:13px;color:var(--tos-primary);">MWD-20260701-5008</span></td>
+                                <td><strong>张建国</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">UID: MEM-20240501-001</span></td>
+                                <td class="amount-out">¥3,500.00</td><td style="color:var(--tos-warning);">¥3.50</td>
+                                <td class="amount-in">¥3,496.50</td>
+                                <td>🏦 中国银行 · 尾号 8899</td>
+                                <td>2026-07-01 08:30:00</td>
+                                <td><span class="tos-tag tos-tag--warning">待审核</span></td>
+                                <td style="text-align:right;">
+                                    <a-button type="link" size="small" @click="showDetail('MWD-20260701-5008')">详情</a-button>
+                                    <a-button type="link" size="small" @click="approveOne('MWD-20260701-5008')">通过</a-button>
+                                    <a-button type="link" danger size="small" @click="rejectOne('MWD-20260701-5008')">驳回</a-button>
+                                </td>
+                            </tr>
+                            <tr data-status="pending" data-id="MWD-20260710-6012" data-amount="2000">
+                                <td class="checkbox-col"><input type="checkbox" class="row-check" onchange="updateBatchBar()"></td>
+                                <td><span style="font-family:monospace;font-size:13px;color:var(--tos-primary);">MWD-20260710-6012</span></td>
+                                <td><strong>李美玲</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">UID: MEM-20240615-082</span></td>
+                                <td class="amount-out">¥2,000.00</td><td style="color:var(--tos-warning);">¥2.00</td>
+                                <td class="amount-in">¥1,998.00</td>
+                                <td>🔵 支付宝 · ali***@qq.com</td>
+                                <td>2026-07-10 14:22:15</td>
+                                <td><span class="tos-tag tos-tag--warning">待审核</span></td>
+                                <td style="text-align:right;">
+                                    <a-button type="link" size="small" @click="showDetail('MWD-20260710-6012')">详情</a-button>
+                                    <a-button type="link" size="small" @click="approveOne('MWD-20260710-6012')">通过</a-button>
+                                    <a-button type="link" danger size="small" @click="rejectOne('MWD-20260710-6012')">驳回</a-button>
+                                </td>
+                            </tr>
+                            <tr data-status="pending" data-id="MWD-20260715-7018" data-amount="800">
+                                <td class="checkbox-col"><input type="checkbox" class="row-check" onchange="updateBatchBar()"></td>
+                                <td><span style="font-family:monospace;font-size:13px;color:var(--tos-primary);">MWD-20260715-7018</span></td>
+                                <td><strong>王大力</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">UID: MEM-20250301-156</span></td>
+                                <td class="amount-out">¥800.00</td><td style="color:var(--tos-warning);">¥1.00</td>
+                                <td class="amount-in">¥799.00</td>
+                                <td>🟢 微信零钱 · 王***力</td>
+                                <td>2026-07-15 18:40:32</td>
+                                <td><span class="tos-tag tos-tag--warning">待审核</span></td>
+                                <td style="text-align:right;">
+                                    <a-button type="link" size="small" @click="showDetail('MWD-20260715-7018')">详情</a-button>
+                                    <a-button type="link" size="small" @click="approveOne('MWD-20260715-7018')">通过</a-button>
+                                    <a-button type="link" danger size="small" @click="rejectOne('MWD-20260715-7018')">驳回</a-button>
+                                </td>
+                            </tr>
+                            <tr data-status="approved" data-id="MWD-20260610-4022" data-amount="800">
+                                <td class="checkbox-col"><input type="checkbox" class="row-check" disabled></td>
+                                <td><span style="font-family:monospace;font-size:13px;color:var(--tos-text-muted);">MWD-20260610-4022</span></td>
+                                <td><strong>张建国</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">UID: MEM-20240501-001</span></td>
+                                <td class="amount-out">¥800.00</td><td style="color:var(--tos-warning);">¥1.00</td>
+                                <td class="amount-in">¥799.00</td>
+                                <td>🏦 招商银行 · 尾号 1234</td>
+                                <td>2026-06-10 11:08:15</td>
+                                <td><span class="tos-tag tos-tag--success">已通过</span></td>
+                                <td style="text-align:right;"><a-button type="link" size="small" @click="showDetail('MWD-20260610-4022')">详情</a-button></td>
+                            </tr>
+                            <tr data-status="approved" data-id="MWD-20260401-2003" data-amount="5000">
+                                <td class="checkbox-col"><input type="checkbox" class="row-check" disabled></td>
+                                <td><span style="font-family:monospace;font-size:13px;color:var(--tos-text-muted);">MWD-20260401-2003</span></td>
+                                <td><strong>张建国</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">UID: MEM-20240501-001</span></td>
+                                <td class="amount-out">¥5,000.00</td><td style="color:var(--tos-warning);">¥5.00</td>
+                                <td class="amount-in">¥4,995.00</td>
+                                <td>🔵 支付宝 · zhang***@163.com</td>
+                                <td>2026-04-01 09:12:30</td>
+                                <td><span class="tos-tag tos-tag--success">已通过</span></td>
+                                <td style="text-align:right;"><a-button type="link" size="small" @click="showDetail('MWD-20260401-2003')">详情</a-button></td>
+                            </tr>
+                            <tr data-status="rejected" data-id="MWD-20260625-4099" data-amount="1200">
+                                <td class="checkbox-col"><input type="checkbox" class="row-check" disabled></td>
+                                <td><span style="font-family:monospace;font-size:13px;color:var(--tos-text-muted);">MWD-20260625-4099</span></td>
+                                <td><strong>李美玲</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">UID: MEM-20240615-082</span></td>
+                                <td class="amount-out">¥1,200.00</td><td style="color:var(--tos-warning);">¥1.20</td>
+                                <td class="amount-in">¥1,198.80</td>
+                                <td>🔵 支付宝 · ali***@qq.com</td>
+                                <td>2026-06-25 13:55:40</td>
+                                <td><span class="tos-tag tos-tag--error">已驳回</span></td>
+                                <td style="text-align:right;"><a-button type="link" size="small" @click="showDetail('MWD-20260625-4099')">详情</a-button></td>
+                            </tr>
+                            <tr data-status="approved" data-id="MWD-20260315-1001" data-amount="2000">
+                                <td class="checkbox-col"><input type="checkbox" class="row-check" disabled></td>
+                                <td><span style="font-family:monospace;font-size:13px;color:var(--tos-text-muted);">MWD-20260315-1001</span></td>
+                                <td><strong>张建国</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">UID: MEM-20240501-001</span></td>
+                                <td class="amount-out">¥2,000.00</td><td style="color:var(--tos-warning);">¥2.00</td>
+                                <td class="amount-in">¥1,998.00</td>
+                                <td>🏦 中国工商银行 · 6212****8899</td>
+                                <td>2026-03-15 14:23:45</td>
+                                <td><span class="tos-tag tos-tag--success">已通过</span></td>
+                                <td style="text-align:right;"><a-button type="link" size="small" @click="showDetail('MWD-20260315-1001')">详情</a-button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 驳回弹窗 -->
+    <a-modal v-model:open="rejectVisible" title="驳回提现申请" @ok="confirmReject" okText="确认驳回" cancelText="取消">
+        <a-form layout="vertical">
+            <a-form-item label="驳回原因" required>
+                <a-textarea id="rejectReason" :rows="3" placeholder="请输入驳回原因，将通知会员..." />
+            </a-form-item>
+        </a-form>
+    </a-modal>
+
+    <!-- 详情弹窗 -->
+    <a-modal v-model:open="detailVisible" title="提现详情" width="520px" :footer="null">
+        <div style="line-height:2;font-size:14px;" id="detailContent">
+            <div><strong>提现单号：</strong><span id="d-id">—</span></div>
+            <div><strong>会员：</strong><span id="d-member">—</span></div>
+            <div><strong>提现金额：</strong><span id="d-amount">—</span></div>
+            <div><strong>手续费：</strong><span id="d-fee">—</span></div>
+            <div><strong>到账金额：</strong><span id="d-arrival">—</span></div>
+            <div><strong>收款方式：</strong><span id="d-method">—</span></div>
+            <div><strong>状态：</strong><span id="d-status">—</span></div>
+            <div><strong>申请时间：</strong><span id="d-time">—</span></div>
+            <div><strong>备注：</strong><span id="d-remark">—</span></div>
+        </div>
+    </a-modal>
+</div>
+
+<script>
+    const { createApp, ref } = Vue;
+
+    const details = {
+        'MWD-20260701-5008': { member:'张建国 (UID: MEM-20240501-001)', amount:'¥3,500.00', fee:'¥3.50', arrival:'¥3,496.50', method:'🏦 中国银行 · 尾号 8899', status:'<span class="tos-tag tos-tag--warning">待审核</span>', time:'2026-07-01 08:30:00', remark:'季度收益提现' },
+        'MWD-20260710-6012': { member:'李美玲 (UID: MEM-20240615-082)', amount:'¥2,000.00', fee:'¥2.00', arrival:'¥1,998.00', method:'🔵 支付宝 · ali***@qq.com', status:'<span class="tos-tag tos-tag--warning">待审核</span>', time:'2026-07-10 14:22:15', remark:'' },
+        'MWD-20260715-7018': { member:'王大力 (UID: MEM-20250301-156)', amount:'¥800.00', fee:'¥1.00', arrival:'¥799.00', method:'🟢 微信零钱 · 王***力', status:'<span class="tos-tag tos-tag--warning">待审核</span>', time:'2026-07-15 18:40:32', remark:'推广佣金提现' },
+        'MWD-20260610-4022': { member:'张建国 (UID: MEM-20240501-001)', amount:'¥800.00', fee:'¥1.00', arrival:'¥799.00', method:'🏦 招商银行 · 尾号 1234', status:'<span class="tos-tag tos-tag--success">已通过</span>', time:'2026-06-10 11:08:15', remark:'' },
+        'MWD-20260401-2003': { member:'张建国 (UID: MEM-20240501-001)', amount:'¥5,000.00', fee:'¥5.00', arrival:'¥4,995.00', method:'🔵 支付宝 · zhang***@163.com', status:'<span class="tos-tag tos-tag--success">已通过</span>', time:'2026-04-01 09:12:30', remark:'季度收益提现' },
+        'MWD-20260625-4099': { member:'李美玲 (UID: MEM-20240615-082)', amount:'¥1,200.00', fee:'¥1.20', arrival:'¥1,198.80', method:'🔵 支付宝 · ali***@qq.com', status:'<span class="tos-tag tos-tag--error">已驳回</span>', time:'2026-06-25 13:55:40', remark:'账户信息不符' },
+        'MWD-20260315-1001': { member:'张建国 (UID: MEM-20240501-001)', amount:'¥2,000.00', fee:'¥2.00', arrival:'¥1,998.00', method:'🏦 中国工商银行 · 6212****8899', status:'<span class="tos-tag tos-tag--success">已通过</span>', time:'2026-03-15 14:23:45', remark:'3月收益提现' },
+    };
+
+    let pendingRejectId = null;
+
+    createApp({
+        setup() {
+            const rejectVisible = ref(false);
+            const detailVisible = ref(false);
+
+            function showDetail(id) {
+                const d = details[id];
+                if (!d) return;
+                document.getElementById('d-id').textContent = id;
+                document.getElementById('d-member').textContent = d.member;
+                document.getElementById('d-amount').textContent = d.amount;
+                document.getElementById('d-fee').textContent = d.fee;
+                document.getElementById('d-arrival').textContent = d.arrival;
+                document.getElementById('d-method').textContent = d.method;
+                document.getElementById('d-status').innerHTML = d.status;
+                document.getElementById('d-time').textContent = d.time;
+                document.getElementById('d-remark').textContent = d.remark || '—';
+                detailVisible.value = true;
+            }
+
+            function approveOne(id) {
+                const row = document.querySelector(`tr[data-id="${id}"]`);
+                if (row) {
+                    row.setAttribute('data-status', 'approved');
+                    row.querySelector('.tos-tag').className = 'tos-tag tos-tag--success';
+                    row.querySelector('.tos-tag').textContent = '已通过';
+                    const cb = row.querySelector('.row-check');
+                    if (cb) { cb.checked = false; cb.disabled = true; }
+                    // Hide action buttons
+                    const actions = row.querySelectorAll('td:last-child a-button');
+                    actions.forEach(b => { if (b.textContent.includes('通过') || b.textContent.includes('驳回')) b.style.display = 'none'; });
+                }
+                updateBatchBar();
+            }
+
+            function rejectOne(id) {
+                pendingRejectId = id;
+                rejectVisible.value = true;
+            }
+
+            function confirmReject() {
+                if (!pendingRejectId) return;
+                const row = document.querySelector(`tr[data-id="${pendingRejectId}"]`);
+                if (row) {
+                    row.setAttribute('data-status', 'rejected');
+                    row.querySelector('.tos-tag').className = 'tos-tag tos-tag--error';
+                    row.querySelector('.tos-tag').textContent = '已驳回';
+                    const cb = row.querySelector('.row-check');
+                    if (cb) { cb.checked = false; cb.disabled = true; }
+                    const actions = row.querySelectorAll('td:last-child a-button');
+                    actions.forEach(b => { if (b.textContent.includes('通过') || b.textContent.includes('驳回')) b.style.display = 'none'; });
+                }
+                rejectVisible.value = false;
+                pendingRejectId = null;
+                updateBatchBar();
+            }
+
+            function batchApprove() {
+                document.querySelectorAll('.row-check:checked').forEach(cb => {
+                    const row = cb.closest('tr');
+                    const id = row?.getAttribute('data-id');
+                    if (id) approveOne(id);
+                });
+            }
+            function batchReject() {
+                const checked = document.querySelectorAll('.row-check:checked');
+                if (checked.length === 0) { alert('请先选择待审核的记录'); return; }
+                pendingRejectId = '_batch_';
+                rejectVisible.value = true;
+            }
+
+            function resetFilter() {
+                document.getElementById('statusFilter')?.setAttribute('value', '');
+                document.getElementById('memberSearch')?.setAttribute('value', '');
+                document.getElementById('idSearch')?.setAttribute('value', '');
+                document.getElementById('methodFilter')?.setAttribute('value', '');
+                document.querySelectorAll('#tableBody tr').forEach(tr => tr.style.display = '');
+            }
+
+            function exportCSV() {
+                const rows = [];
+                document.querySelectorAll('#tableBody tr').forEach(tr => {
+                    if (tr.style.display === 'none') return;
+                    const cells = tr.querySelectorAll('td');
+                    if (cells.length >= 9) {
+                        rows.push(Array.from(cells).slice(1, 9).map(c => c.textContent.replace(/\n/g,' ').trim()));
+                    }
+                });
+                const csv = [['单号','会员','金额','手续费','到账','方式','时间','状态'], ...rows]
+                    .map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+                const b = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8;'});
+                const a = document.createElement('a'); a.href = URL.createObjectURL(b);
+                a.download = '提现审核_' + new Date().toISOString().slice(0,10) + '.csv';
+                a.click(); URL.revokeObjectURL(a.href);
+            }
+
+            return { rejectVisible, detailVisible, showDetail, approveOne, rejectOne, confirmReject, batchApprove, batchReject, resetFilter, exportCSV };
+        },
+    }).use(antd).mount("#app");
+</script>
+
+<script>
+    // Vanilla JS for batch bar and filtering
+    function updateBatchBar() {
+        const checked = document.querySelectorAll('.row-check:checked');
+        const bar = document.getElementById('batchBar');
+        if (bar) {
+            bar.style.display = checked.length > 0 ? 'flex' : 'none';
+            document.getElementById('selectCount').textContent = checked.length;
+            let total = 0;
+            checked.forEach(cb => {
+                const row = cb.closest('tr');
+                total += parseFloat(row?.getAttribute('data-amount') || 0);
+            });
+            document.getElementById('selectAmount').textContent = '¥' + total.toFixed(2);
+        }
+    }
+    function toggleSelectAll(el) {
+        document.querySelectorAll('.row-check:not([disabled])').forEach(cb => { cb.checked = el.checked; });
+        updateBatchBar();
+    }
+    setTimeout(() => {
+        const sel = document.getElementById('statusFilter');
+        if (sel) sel.addEventListener('change', () => {
+            const v = sel.getAttribute('value') || '';
+            document.querySelectorAll('#tableBody tr').forEach(tr => {
+                tr.style.display = (!v || tr.getAttribute('data-status') === v) ? '' : 'none';
+            });
+        });
+    }, 500);
+</script>
+</body>
+</html>

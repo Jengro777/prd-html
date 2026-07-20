@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>提现</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root { --tos-primary: #42b7ae; --tos-primary-hover: #339b94; --tos-primary-bg: #e6f7f6; --tos-bg: #f5f7fa; --tos-text: #333; --tos-text-secondary: #666; --tos-text-muted: #999; --tos-success: #52c41a; --tos-warning: #faad14; --tos-error: #f5222d; --tos-border: #e5e7eb; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--tos-bg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--tos-text); -webkit-font-smoothing: antialiased; }
+        /* 页面整体布局：左侧菜单 + H5内容区 */
+        /* 左侧菜单栏 */
+        .sidebar { width: 200px; flex-shrink: 0; background: #fff; border-right: 1px solid #f0f2f5; position: fixed; left: 0; top: 0; bottom: 0; display: flex; flex-direction: column; z-index: 10; }
+        .sidebar__head { padding: 20px 16px 16px; border-bottom: 1px solid #f0f2f5; display: flex; align-items: center; gap: 10px; }
+        .sidebar__logo { width: 34px; height: 34px; border-radius: 8px; background: var(--tos-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+        .sidebar__title { font-size: 15px; font-weight: 700; white-space: nowrap; }
+        .sidebar__nav { flex: 1; padding: 8px 0; overflow-y: auto; }
+        .sidebar__group-title { padding: 12px 14px 4px; font-size: 10px; color: var(--tos-text-muted); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
+        .sidebar__item { display: flex; align-items: center; gap: 8px; padding: 9px 14px; font-size: 13px; color: var(--tos-text-secondary); cursor: pointer; text-decoration: none; border-left: 3px solid transparent; transition: all .12s; }
+        .sidebar__item:hover { background: #f5f5f5; color: var(--tos-text); }
+        .sidebar__item--active { color: var(--tos-primary); font-weight: 600; background: var(--tos-primary-bg); border-left-color: var(--tos-primary); }
+        .sidebar__item i { width: 16px; text-align: center; font-size: 12px; }
+        /* H5 内容区 */
+        .h5-container { width: 414px; margin: 0 auto; min-height: 100vh; background: var(--tos-bg); position: relative; }
+        .h5-header { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 16px; background: #fff; border-bottom: 1px solid var(--tos-border); }
+        .h5-header__back { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--tos-text); cursor: pointer; background: none; border: none; }
+        .h5-header__title { flex: 1; font-size: 17px; font-weight: 600; text-align: center; }
+        .h5-header__action { font-size: 14px; color: var(--tos-primary); cursor: pointer; background: none; border: none; font-weight: 500; white-space: nowrap; }
+        .h5-header__menu { width: 32px; height: 32px; display: none; align-items: center; justify-content: center; font-size: 20px; color: var(--tos-text); cursor: pointer; background: none; border: none; flex-shrink: 0; }
+        .h5-page { padding: 16px; padding-bottom: 80px; }
+        .h5-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+        .h5-metric { background: #fff; border-radius: 10px; padding: 14px; border: 1px solid #f0f2f5; }
+        .h5-metric__label { font-size: 12px; color: var(--tos-text-muted); }
+        .h5-metric__value { font-size: 20px; font-weight: 700; margin-top: 4px; }
+        .h5-card { background: #fff; border-radius: 10px; padding: 16px; margin-bottom: 12px; border: 1px solid #f0f2f5; }
+        .h5-card__title { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+        .h5-pay-methods { display: flex; gap: 8px; margin-bottom: 16px; }
+        .h5-pay-method { flex: 1; padding: 12px 8px; border: 1px solid var(--tos-border); border-radius: 8px; text-align: center; cursor: pointer; font-size: 13px; background: #fff; transition: .15s; }
+        .h5-pay-method--active { border-color: var(--tos-primary); background: var(--tos-primary-bg); color: var(--tos-primary); font-weight: 600; }
+        .h5-pay-method__icon { font-size: 22px; display: block; margin-bottom: 4px; }
+        .h5-account-chips { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+        .h5-account-chip { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--tos-border); border-radius: 8px; cursor: pointer; font-size: 14px; background: #fff; }
+        .h5-account-chip--active { border-color: var(--tos-primary); background: var(--tos-primary-bg); }
+        .h5-account-chip__info { flex: 1; }
+        .h5-account-chip__name { font-weight: 600; font-size: 14px; }
+        .h5-account-chip__detail { font-size: 11px; color: var(--tos-text-muted); margin-top: 2px; }
+        .h5-account-chip__tag { font-size: 10px; background: var(--tos-primary-bg); color: var(--tos-primary); padding: 1px 6px; border-radius: 3px; margin-left: 6px; }
+        .h5-form-group { margin-bottom: 14px; }
+        .h5-form-label { font-size: 13px; font-weight: 600; color: var(--tos-text-secondary); margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
+        .h5-form-label .req { color: var(--tos-error); }
+        .h5-input { width: 100%; height: 44px; padding: 0 12px; border: 1px solid var(--tos-border); border-radius: 8px; font-size: 16px; background: #fff; outline: none; font-family: inherit; }
+        .h5-input:focus { border-color: var(--tos-primary); }
+        .h5-input--disabled { background: #fafafa; color: var(--tos-text-secondary); }
+        .h5-input-wrap { position: relative; }
+        .h5-input-suffix { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 13px; color: var(--tos-text-muted); font-weight: 600; pointer-events: none; }
+        .h5-form-hint { font-size: 11px; color: var(--tos-text-muted); margin-top: 4px; }
+        .h5-bottom-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 414px; padding: 12px 16px; padding-bottom: max(12px, env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid #f0f2f5; display: flex; gap: 10px; z-index: 30; }
+        .h5-btn { flex: 1; height: 44px; border-radius: 8px; font-size: 16px; font-weight: 600; border: none; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; }
+        .h5-btn--outline { background: #fff; border: 1px solid var(--tos-border); color: var(--tos-text-secondary); }
+        .h5-btn--primary { background: var(--tos-primary); color: #fff; }
+        .h5-btn--primary:active { background: var(--tos-primary-hover); }
+        .h5-btn--outline:active { background: #f5f5f5; }
+        .h5-alert { background: #e6f7f6; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: var(--tos-primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .h5-modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 100; display: flex; align-items: flex-end; justify-content: center; }
+        .h5-modal { background: #fff; border-radius: 12px 12px 0 0; width: 100%; max-width: 414px; padding: 20px 16px; padding-bottom: max(20px, env(safe-area-inset-bottom)); animation: slideUp .25s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .h5-modal h3 { font-size: 17px; font-weight: 700; text-align: center; margin-bottom: 12px; }
+        .h5-modal .success-icon { font-size: 44px; text-align: center; margin-bottom: 8px; }
+        .h5-modal .info-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; border-bottom: 1px solid #f5f5f5; }
+        .h5-modal .info-row:last-child { border-bottom: none; }
+        /* 移动端：隐藏侧边栏，显示汉堡菜单 */
+        @media (max-width: 680px) {
+            .sidebar { display: none; }
+            .h5-header__menu { display: flex; }
+            .h5-header__title { margin-right: 0; }
+            .h5-container { width: 100%; }
+            .h5-bottom-bar { width: 100%; max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 左侧菜单栏 -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar__head">
+            <div class="sidebar__logo"><i class="fas fa-wallet"></i></div>
+            <span class="sidebar__title">会员中心</span>
+        </div>
+        <nav class="sidebar__nav">
+            <div class="sidebar__group-title">提现管理</div>
+            <a class="sidebar__item sidebar__item--active" href="会员提现申请.html"><i class="fas fa-coins"></i> 提现</a>
+            <a class="sidebar__item" href="会员提现记录.html"><i class="fas fa-list-check"></i> 提现记录</a>
+            <a class="sidebar__item" href="会员钱包明细.html"><i class="fas fa-file-invoice"></i> 钱包明细</a>
+            <a class="sidebar__item" href="会员提现详情.html"><i class="fas fa-receipt"></i> 提现详情</a>
+            <div class="sidebar__group-title">账户管理</div>
+            <a class="sidebar__item" href="会员卡包管理.html"><i class="fas fa-credit-card"></i> 我的卡包</a>
+            <a class="sidebar__item" href="会员绑定银行卡.html"><i class="fas fa-plus-circle"></i> 绑定银行卡</a>
+        </nav>
+    </aside>
+
+    <!-- H5 内容区 -->
+    <div class="h5-container" id="app">
+        <div class="h5-header">
+            <button class="h5-header__menu" onclick="document.getElementById('sidebar').style.display='block';this.style.display='none';">☰</button>
+            <span class="h5-header__title">提现</span>
+            <span class="h5-header__action" onclick="location.href='会员提现记录.html'">记录</span>
+        </div>
+
+        <div class="h5-page">
+            <div class="h5-metrics">
+                <div class="h5-metric"><div class="h5-metric__label">可提现余额</div><div class="h5-metric__value" style="color:var(--tos-primary);">¥10,250.00</div></div>
+                <div class="h5-metric"><div class="h5-metric__label">冻结金额</div><div class="h5-metric__value" style="color:var(--tos-warning);">¥1,330.00</div></div>
+                <div class="h5-metric"><div class="h5-metric__label">账户总余额</div><div class="h5-metric__value">¥12,580.00</div></div>
+                <div class="h5-metric"><div class="h5-metric__label">待结算奖励</div><div class="h5-metric__value">¥1,000.00</div></div>
+            </div>
+
+            <div class="h5-card">
+                <div class="h5-card__title">收款方式</div>
+                <div class="h5-pay-methods" id="payMethods">
+                    <div class="h5-pay-method h5-pay-method--active" data-method="bank" onclick="switchMethod('bank')"><span class="h5-pay-method__icon">🏦</span>银行卡</div>
+                    <div class="h5-pay-method" data-method="alipay" onclick="switchMethod('alipay')"><span class="h5-pay-method__icon">🔵</span>支付宝</div>
+                    <div class="h5-pay-method" data-method="wechat" onclick="switchMethod('wechat')"><span class="h5-pay-method__icon">🟢</span>微信</div>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <span style="font-size:13px;font-weight:600;color:var(--tos-text-secondary);">收款账户</span>
+                    <span style="font-size:13px;color:var(--tos-primary);cursor:pointer;" onclick="goCardManage()">管理卡包 ›</span>
+                </div>
+                <div class="h5-account-chips" id="accountChips">
+                    <div class="h5-account-chip h5-account-chip--active" data-id="BANK_001" onclick="selectAccount(this)"><span style="font-size:20px;">🏦</span><div class="h5-account-chip__info"><div class="h5-account-chip__name">中国工商银行 <span class="h5-account-chip__tag">默认</span></div><div class="h5-account-chip__detail">6212****8899 · 张三</div></div></div>
+                    <div class="h5-account-chip" data-id="BANK_002" onclick="selectAccount(this)"><span style="font-size:20px;">🏦</span><div class="h5-account-chip__info"><div class="h5-account-chip__name">中国建设银行</div><div class="h5-account-chip__detail">4367****1234 · 张三</div></div></div>
+                    <div class="h5-account-chip" data-id="BANK_003" onclick="selectAccount(this)"><span style="font-size:20px;">🏦</span><div class="h5-account-chip__info"><div class="h5-account-chip__name">招商银行</div><div class="h5-account-chip__detail">6225****5678 · 张三</div></div></div>
+                </div>
+            </div>
+
+            <div class="h5-card">
+                <div class="h5-card__title">提现金额</div>
+                <div class="h5-form-group">
+                    <div class="h5-form-label">提现金额 (CNY) <span class="req">*</span></div>
+                    <div class="h5-input-wrap"><input class="h5-input" id="amountInput" type="number" step="0.01" min="10" max="50000" placeholder="最低 ¥10.00" oninput="calcFee()" style="padding-right:50px;"><span class="h5-input-suffix">CNY</span></div>
+                    <div class="h5-form-hint">可提现余额 ¥10,250.00，单笔上限 ¥50,000.00</div>
+                </div>
+                <div class="h5-form-group"><div class="h5-form-label">预计到账</div><input class="h5-input h5-input--disabled" id="arrivalInput" value="¥0.00" readonly disabled><div class="h5-form-hint" id="feeHint">手续费 ¥0.00（费率 0.1%）</div></div>
+                <div class="h5-form-group"><div class="h5-form-label">备注（选填）</div><input class="h5-input" id="remarkInput" placeholder="如：3月推广佣金提现" maxlength="100"></div>
+                <div class="h5-alert">💰 手续费 0.1%，每笔最低 ¥1.00，最高 ¥25.00。银行卡 1-3 工作日到账。</div>
+            </div>
+        </div>
+
+        <div class="h5-bottom-bar">
+            <button class="h5-btn h5-btn--outline" onclick="resetForm()">重置</button>
+            <button class="h5-btn h5-btn--primary" onclick="submitWithdraw()">确认提现</button>
+        </div>
+
+        <div class="h5-modal-mask" id="successModal" style="display:none;">
+            <div class="h5-modal">
+                <div class="success-icon">✅</div>
+                <h3 style="color:var(--tos-primary);">提现申请已提交</h3>
+                <div class="info-row"><span>提现单号</span><strong id="mId">—</strong></div>
+                <div class="info-row"><span>提现金额</span><strong id="mAmount">—</strong></div>
+                <div class="info-row"><span>手续费</span><strong id="mFee">—</strong></div>
+                <div class="info-row"><span>到账金额</span><strong style="color:var(--tos-primary);" id="mArrival">—</strong></div>
+                <div class="info-row"><span>收款方式</span><strong id="mMethod">—</strong></div>
+                <div style="display:flex;gap:10px;margin-top:16px;">
+                    <button class="h5-btn h5-btn--outline" onclick="closeModal()">知道了</button>
+                    <button class="h5-btn h5-btn--primary" onclick="location.href='会员提现记录.html'">查看记录</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentMethod='bank',selectedAccountId='BANK_001';
+const FEE_RATE=0.001;
+function calcFee(a){if(!a||a<=0)return 0;let fee=a*FEE_RATE;if(fee<1)fee=1;if(fee>25)fee=25;return Math.round(fee*100)/100;}
+function switchMethod(m){currentMethod=m;document.querySelectorAll('.h5-pay-method').forEach(el=>el.classList.remove('h5-pay-method--active'));document.querySelector('.h5-pay-method[data-method="'+m+'"]').classList.add('h5-pay-method--active');const chips=document.getElementById('accountChips');if(m==='bank'){chips.innerHTML='<div class="h5-account-chip h5-account-chip--active" data-id="BANK_001" onclick="selectAccount(this)"><span style="font-size:20px;">🏦</span><div class="h5-account-chip__info"><div class="h5-account-chip__name">中国工商银行 <span class="h5-account-chip__tag">默认</span></div><div class="h5-account-chip__detail">6212****8899 · 张三</div></div></div><div class="h5-account-chip" data-id="BANK_002" onclick="selectAccount(this)"><span style="font-size:20px;">🏦</span><div class="h5-account-chip__info"><div class="h5-account-chip__name">中国建设银行</div><div class="h5-account-chip__detail">4367****1234 · 张三</div></div></div><div class="h5-account-chip" data-id="BANK_003" onclick="selectAccount(this)"><span style="font-size:20px;">🏦</span><div class="h5-account-chip__info"><div class="h5-account-chip__name">招商银行</div><div class="h5-account-chip__detail">6225****5678 · 张三</div></div></div>';selectedAccountId='BANK_001';}else if(m==='alipay'){chips.innerHTML='<div class="h5-account-chip h5-account-chip--active" data-id="ALI_001" onclick="selectAccount(this)"><span style="font-size:20px;">🔵</span><div class="h5-account-chip__info"><div class="h5-account-chip__name">支付宝</div><div class="h5-account-chip__detail">zhang***@163.com</div></div></div>';selectedAccountId='ALI_001';}else{chips.innerHTML='<div class="h5-account-chip h5-account-chip--active" data-id="WX_001" onclick="selectAccount(this)"><span style="font-size:20px;">🟢</span><div class="h5-account-chip__info"><div class="h5-account-chip__name">微信零钱</div><div class="h5-account-chip__detail">张***三</div></div></div>';selectedAccountId='WX_001';}}
+function selectAccount(el){document.querySelectorAll('.h5-account-chip').forEach(c=>c.classList.remove('h5-account-chip--active'));el.classList.add('h5-account-chip--active');selectedAccountId=el.getAttribute('data-id');}
+function goCardManage(){if(currentMethod==='bank')location.href='会员卡包管理.html';else alert('支付宝/微信账户绑定请咨询客服');}
+function calcFeeDisplay(){const a=parseFloat(document.getElementById('amountInput').value)||0;const fee=calcFee(a);document.getElementById('arrivalInput').value=a>0?'¥'+(a-fee).toFixed(2):'¥0.00';document.getElementById('feeHint').textContent='手续费 ¥'+fee.toFixed(2)+'（费率 0.1%）';}
+function submitWithdraw(){const a=parseFloat(document.getElementById('amountInput').value)||0;if(!a||a<10){alert('最低提现金额 ¥10.00');return;}if(a>50000){alert('单笔上限 ¥50,000.00');return;}if(a>10250){alert('超过可提现余额');return;}const fee=calcFee(a);const arrival=a-fee;const chip=document.querySelector('.h5-account-chip--active');const chipName=chip?.querySelector('.h5-account-chip__name')?.textContent?.trim()||'银行卡';const mL=currentMethod==='bank'?'银行卡':(currentMethod==='alipay'?'支付宝':'微信零钱');const now=new Date();const id='MWD-'+now.toISOString().slice(0,10).replace(/-/g,'')+'-'+String(Math.floor(Math.random()*9000+1000));try{const s=localStorage.getItem('member_withdraw_records');const r=s?JSON.parse(s):[];r.unshift({id,timestamp:now.toLocaleString(),amount:a,fee,arrival,method:currentMethod,methodLabel:mL,accountLabel:chipName,accountDetail:chipName,status:'pending',statusLabel:'处理中',remark:document.getElementById('remarkInput').value||''});localStorage.setItem('member_withdraw_records',JSON.stringify(r));}catch(e){}document.getElementById('mId').textContent=id;document.getElementById('mAmount').textContent='¥'+a.toFixed(2);document.getElementById('mFee').textContent='-¥'+fee.toFixed(2);document.getElementById('mArrival').textContent='¥'+arrival.toFixed(2);document.getElementById('mMethod').textContent=mL+' · '+chipName;document.getElementById('successModal').style.display='flex';}
+function closeModal(){document.getElementById('successModal').style.display='none';}
+function resetForm(){document.getElementById('amountInput').value='';document.getElementById('arrivalInput').value='¥0.00';document.getElementById('remarkInput').value='';document.getElementById('feeHint').textContent='手续费 ¥0.00（费率 0.1%）';switchMethod('bank');}
+document.getElementById('amountInput').addEventListener('input',calcFeeDisplay);
+document.getElementById('successModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+</script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>提现记录</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root { --tos-primary: #42b7ae; --tos-primary-hover: #339b94; --tos-primary-bg: #e6f7f6; --tos-bg: #f5f7fa; --tos-text: #333; --tos-text-secondary: #666; --tos-text-muted: #999; --tos-success: #52c41a; --tos-warning: #faad14; --tos-error: #f5222d; --tos-border: #e5e7eb; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--tos-bg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--tos-text); -webkit-font-smoothing: antialiased; }
+        .sidebar { width: 200px; flex-shrink: 0; background: #fff; border-right: 1px solid #f0f2f5; position: fixed; left: 0; top: 0; bottom: 0; display: flex; flex-direction: column; z-index: 10; }
+        .sidebar__head { padding: 20px 16px 16px; border-bottom: 1px solid #f0f2f5; display: flex; align-items: center; gap: 10px; }
+        .sidebar__logo { width: 34px; height: 34px; border-radius: 8px; background: var(--tos-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+        .sidebar__title { font-size: 15px; font-weight: 700; white-space: nowrap; }
+        .sidebar__nav { flex: 1; padding: 8px 0; overflow-y: auto; }
+        .sidebar__group-title { padding: 12px 14px 4px; font-size: 10px; color: var(--tos-text-muted); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
+        .sidebar__item { display: flex; align-items: center; gap: 8px; padding: 9px 14px; font-size: 13px; color: var(--tos-text-secondary); cursor: pointer; text-decoration: none; border-left: 3px solid transparent; transition: all .12s; }
+        .sidebar__item:hover { background: #f5f5f5; color: var(--tos-text); }
+        .sidebar__item--active { color: var(--tos-primary); font-weight: 600; background: var(--tos-primary-bg); border-left-color: var(--tos-primary); }
+        .sidebar__item i { width: 16px; text-align: center; font-size: 12px; }
+        .h5-container { width: 414px; margin: 0 auto; min-height: 100vh; background: var(--tos-bg); position: relative; }
+        .h5-header { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 16px; background: #fff; border-bottom: 1px solid var(--tos-border); }
+        .h5-header__back { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--tos-text); cursor: pointer; background: none; border: none; }
+        .h5-header__title { flex: 1; font-size: 17px; font-weight: 600; text-align: center; }
+        .h5-header__menu { width: 32px; height: 32px; display: none; align-items: center; justify-content: center; font-size: 20px; color: var(--tos-text); cursor: pointer; background: none; border: none; flex-shrink: 0; }
+        .h5-page { padding: 12px 16px 24px; }
+        .h5-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .h5-stat { background: #fff; border-radius: 8px; padding: 12px; border: 1px solid #f0f2f5; }
+        .h5-stat__label { font-size: 11px; color: var(--tos-text-muted); }
+        .h5-stat__value { font-size: 18px; font-weight: 700; margin-top: 2px; }
+        .h5-filter { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+        .h5-filter-chip { flex-shrink: 0; padding: 6px 14px; border-radius: 16px; font-size: 13px; border: 1px solid var(--tos-border); background: #fff; color: var(--tos-text-secondary); cursor: pointer; white-space: nowrap; }
+        .h5-filter-chip--active { background: var(--tos-primary); color: #fff; border-color: var(--tos-primary); }
+        .h5-record-list { display: flex; flex-direction: column; gap: 8px; }
+        .h5-record-card { background: #fff; border-radius: 10px; padding: 14px; border: 1px solid #f0f2f5; }
+        .h5-record-card__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .h5-record-card__id { font-family: monospace; font-size: 13px; color: var(--tos-primary); font-weight: 600; }
+        .h5-record-card__row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
+        .h5-record-card__row .label { color: var(--tos-text-muted); }
+        .h5-record-card__row .value { font-weight: 500; text-align: right; }
+        .h5-record-card__footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; font-size: 12px; }
+        .h5-tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; }
+        .h5-tag--success { background: #f0faf0; color: var(--tos-success); }
+        .h5-tag--warning { background: #fff7e6; color: var(--tos-warning); }
+        .h5-tag--error { background: #fff1f0; color: var(--tos-error); }
+        .h5-tag--primary { background: var(--tos-primary-bg); color: var(--tos-primary); }
+        .h5-tag--default { background: #f5f5f5; color: var(--tos-text-secondary); }
+        .h5-empty { text-align: center; padding: 48px 20px; color: var(--tos-text-muted); font-size: 14px; }
+        .h5-modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 100; display: none; align-items: flex-end; justify-content: center; }
+        .h5-modal-mask.show { display: flex; }
+        .h5-modal { background: #fff; border-radius: 12px 12px 0 0; width: 100%; max-width: 414px; padding: 20px 16px; padding-bottom: max(20px, env(safe-area-inset-bottom)); animation: slideUp .25s ease; max-height: 70vh; overflow-y: auto; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .h5-modal h3 { font-size: 17px; font-weight: 700; text-align: center; margin-bottom: 12px; }
+        .h5-modal .info-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; border-bottom: 1px solid #f5f5f5; }
+        .h5-modal .info-row:last-child { border-bottom: none; }
+        .h5-btn-main { width: 100%; height: 44px; border-radius: 8px; font-size: 16px; font-weight: 600; border: none; cursor: pointer; font-family: inherit; margin-top: 12px; background: var(--tos-primary); color: #fff; }
+        @media (max-width: 680px) { .sidebar { display: none; } .h5-header__menu { display: flex; } .h5-container { width: 100%; } }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar__head"><div class="sidebar__logo"><i class="fas fa-wallet"></i></div><span class="sidebar__title">会员中心</span></div>
+        <nav class="sidebar__nav">
+            <div class="sidebar__group-title">提现管理</div>
+            <a class="sidebar__item" href="会员提现申请.html"><i class="fas fa-coins"></i> 提现</a>
+            <a class="sidebar__item sidebar__item--active" href="会员提现记录.html"><i class="fas fa-list-check"></i> 提现记录</a>
+            <a class="sidebar__item" href="会员钱包明细.html"><i class="fas fa-file-invoice"></i> 钱包明细</a>
+            <a class="sidebar__item" href="会员提现详情.html"><i class="fas fa-receipt"></i> 提现详情</a>
+            <div class="sidebar__group-title">账户管理</div>
+            <a class="sidebar__item" href="会员卡包管理.html"><i class="fas fa-credit-card"></i> 我的卡包</a>
+            <a class="sidebar__item" href="会员绑定银行卡.html"><i class="fas fa-plus-circle"></i> 绑定银行卡</a>
+        </nav>
+    </aside>
+    <div class="h5-container">
+        <div class="h5-header">
+            <button class="h5-header__menu" onclick="document.getElementById('sidebar').style.display='block';this.style.display='none';">☰</button>
+            <button class="h5-header__back" onclick="location.href='会员提现申请.html'">←</button>
+            <span class="h5-header__title">提现记录</span>
+            <span style="width:32px;"></span>
+        </div>
+        <div class="h5-page">
+            <div class="h5-stats">
+                <div class="h5-stat"><div class="h5-stat__label">全部提现</div><div class="h5-stat__value">7 笔</div></div>
+                <div class="h5-stat"><div class="h5-stat__label">累计提现</div><div class="h5-stat__value" style="color:var(--tos-error);">¥15,000</div></div>
+                <div class="h5-stat"><div class="h5-stat__label">已到账</div><div class="h5-stat__value" style="color:var(--tos-success);">¥7,991</div></div>
+                <div class="h5-stat"><div class="h5-stat__label">处理中</div><div class="h5-stat__value" style="color:var(--tos-warning);">¥7,000</div></div>
+            </div>
+            <div class="h5-filter" id="filterBar">
+                <span class="h5-filter-chip h5-filter-chip--active" data-status="" onclick="filterStatus(this,'')">全部</span>
+                <span class="h5-filter-chip" data-status="pending" onclick="filterStatus(this,'pending')">处理中</span>
+                <span class="h5-filter-chip" data-status="processing" onclick="filterStatus(this,'processing')">审核中</span>
+                <span class="h5-filter-chip" data-status="completed" onclick="filterStatus(this,'completed')">已到账</span>
+                <span class="h5-filter-chip" data-status="rejected" onclick="filterStatus(this,'rejected')">已驳回</span>
+            </div>
+            <div class="h5-record-list" id="recordList"></div>
+        </div>
+        <div class="h5-modal-mask" id="detailModal"><div class="h5-modal"><h3>提现详情</h3><div id="detailContent"></div><button class="h5-btn-main" onclick="closeDetail()">关闭</button></div></div>
+    </div>
+</div>
+<script>
+const records=[{id:'MWD-20260315-1001',time:'2026-03-15 14:23',amount:2000,fee:2,arrival:1998,method:'🏦 银行卡',account:'中国工商银行 · 6212****8899',status:'completed',statusLabel:'已到账',remark:'3月收益提现'},{id:'MWD-20260401-2003',time:'2026-04-01 09:12',amount:5000,fee:5,arrival:4995,method:'🔵 支付宝',account:'支付宝 · zhang***@163.com',status:'completed',statusLabel:'已到账',remark:'季度提现'},{id:'MWD-20260520-3015',time:'2026-05-20 16:45',amount:1500,fee:1.5,arrival:998.3,method:'🟢 微信零钱',account:'微信零钱 · 张***三',status:'completed',statusLabel:'已到账',remark:'佣金提现'},{id:'MWD-20260610-4022',time:'2026-06-10 11:08',amount:800,fee:1,arrival:799,method:'🏦 银行卡',account:'招商银行 · 尾号1234',status:'processing',statusLabel:'审核中',remark:''},{id:'MWD-20260701-5008',time:'2026-07-01 08:30',amount:3500,fee:3.5,arrival:3496.5,method:'🏦 银行卡',account:'中国银行 · 尾号8899',status:'pending',statusLabel:'处理中',remark:''},{id:'MWD-20260625-4099',time:'2026-06-25 13:55',amount:1200,fee:1.2,arrival:1198.8,method:'🔵 支付宝',account:'支付宝 · zhang***@163.com',status:'rejected',statusLabel:'已驳回',remark:'账户信息有误'},{id:'MWD-20260715-6012',time:'2026-07-15 18:22',amount:1000,fee:1,arrival:999,method:'🏦 银行卡',account:'中国建设银行 · 4367****1234',status:'failed',statusLabel:'失败',remark:'银行通道异常'}];
+const tagClass={completed:'h5-tag--success',processing:'h5-tag--primary',pending:'h5-tag--warning',rejected:'h5-tag--error',failed:'h5-tag--default'};
+let currentFilter='';
+function renderList(){const filtered=currentFilter?records.filter(r=>r.status===currentFilter):records;const c=document.getElementById('recordList');if(!filtered.length){c.innerHTML='<div class="h5-empty">📭<br>暂无提现记录</div>';return;}c.innerHTML=filtered.map(r=>'<div class="h5-record-card" data-status="'+r.status+'"><div class="h5-record-card__header"><span class="h5-record-card__id" onclick="showDetail(\''+r.id+'\')">'+r.id+'</span><span class="h5-tag '+tagClass[r.status]+'">'+r.statusLabel+'</span></div><div class="h5-record-card__row"><span class="label">提现金额</span><span class="value" style="color:var(--tos-error);">-¥'+r.amount.toFixed(2)+'</span></div><div class="h5-record-card__row"><span class="label">手续费</span><span class="value" style="color:var(--tos-warning);">-¥'+r.fee.toFixed(2)+'</span></div><div class="h5-record-card__row"><span class="label">到账金额</span><span class="value" style="color:var(--tos-primary);">¥'+r.arrival.toFixed(2)+'</span></div><div class="h5-record-card__footer"><span style="color:var(--tos-text-muted);">'+r.time+' · '+r.method+'</span><span style="color:var(--tos-primary);cursor:pointer;" onclick="showDetail(\''+r.id+'\')">详情 ›</span></div></div>').join('');}
+function filterStatus(el,status){currentFilter=status;document.querySelectorAll('.h5-filter-chip').forEach(c=>c.classList.remove('h5-filter-chip--active'));el.classList.add('h5-filter-chip--active');renderList();}
+function showDetail(id){const r=records.find(x=>x.id===id);if(!r)return;document.getElementById('detailContent').innerHTML='<div class="info-row"><span>单号</span><strong style="font-family:monospace;">'+r.id+'</strong></div><div class="info-row"><span>时间</span><strong>'+r.time+'</strong></div><div class="info-row"><span>金额</span><strong style="color:var(--tos-error);">-¥'+r.amount.toFixed(2)+'</strong></div><div class="info-row"><span>手续费</span><strong style="color:var(--tos-warning);">-¥'+r.fee.toFixed(2)+'</strong></div><div class="info-row"><span>到账</span><strong style="color:var(--tos-primary);font-size:16px;">¥'+r.arrival.toFixed(2)+'</strong></div><div class="info-row"><span>方式</span><strong>'+r.method+'</strong></div><div class="info-row"><span>账户</span><strong>'+r.account+'</strong></div><div class="info-row"><span>状态</span><span class="h5-tag '+tagClass[r.status]+'">'+r.statusLabel+'</span></div><div class="info-row"><span>备注</span><strong>'+(r.remark||'—')+'</strong></div>';document.getElementById('detailModal').classList.add('show');}
+function closeDetail(){document.getElementById('detailModal').classList.remove('show');}
+document.getElementById('detailModal').addEventListener('click',function(e){if(e.target===this)closeDetail();});
+renderList();
+</script>
+</body>
+</html>

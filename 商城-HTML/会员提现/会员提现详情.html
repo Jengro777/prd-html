@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>提现详情</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root { --tos-primary: #42b7ae; --tos-primary-bg: #e6f7f6; --tos-bg: #f5f7fa; --tos-text: #333; --tos-text-secondary: #666; --tos-text-muted: #999; --tos-success: #52c41a; --tos-warning: #faad14; --tos-error: #f5222d; --tos-border: #e5e7eb; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--tos-bg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--tos-text); -webkit-font-smoothing: antialiased; }
+        .sidebar { width: 200px; flex-shrink: 0; background: #fff; border-right: 1px solid #f0f2f5; position: fixed; left: 0; top: 0; bottom: 0; display: flex; flex-direction: column; z-index: 10; }
+        .sidebar__head { padding: 20px 16px 16px; border-bottom: 1px solid #f0f2f5; display: flex; align-items: center; gap: 10px; }
+        .sidebar__logo { width: 34px; height: 34px; border-radius: 8px; background: var(--tos-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+        .sidebar__title { font-size: 15px; font-weight: 700; white-space: nowrap; }
+        .sidebar__nav { flex: 1; padding: 8px 0; overflow-y: auto; }
+        .sidebar__group-title { padding: 12px 14px 4px; font-size: 10px; color: var(--tos-text-muted); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
+        .sidebar__item { display: flex; align-items: center; gap: 8px; padding: 9px 14px; font-size: 13px; color: var(--tos-text-secondary); cursor: pointer; text-decoration: none; border-left: 3px solid transparent; transition: all .12s; }
+        .sidebar__item:hover { background: #f5f5f5; color: var(--tos-text); }
+        .sidebar__item--active { color: var(--tos-primary); font-weight: 600; background: var(--tos-primary-bg); border-left-color: var(--tos-primary); }
+        .sidebar__item i { width: 16px; text-align: center; font-size: 12px; }
+        .h5-container { width: 414px; margin: 0 auto; min-height: 100vh; background: var(--tos-bg); position: relative; }
+        .h5-header { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 16px; background: #fff; border-bottom: 1px solid var(--tos-border); }
+        .h5-header__back { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--tos-text); cursor: pointer; background: none; border: none; }
+        .h5-header__title { flex: 1; font-size: 17px; font-weight: 600; text-align: center; }
+        .h5-header__menu { width: 32px; height: 32px; display: none; align-items: center; justify-content: center; font-size: 20px; color: var(--tos-text); cursor: pointer; background: none; border: none; flex-shrink: 0; }
+        .h5-page { padding: 16px; }
+        .h5-card { background: #fff; border-radius: 10px; padding: 16px; margin-bottom: 12px; border: 1px solid #f0f2f5; }
+        .h5-card__title { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .info-item__label { font-size: 11px; color: var(--tos-text-muted); }
+        .info-item__value { font-size: 15px; font-weight: 600; margin-top: 2px; }
+        .timeline { display: flex; align-items: center; gap: 4px; padding: 8px 0; overflow-x: auto; font-size: 12px; }
+        .timeline-dot { width: 6px; height: 6px; border-radius: 50%; background: #d9d9d9; flex-shrink: 0; }
+        .timeline-dot--done { background: var(--tos-success); }
+        .timeline-dot--current { background: var(--tos-primary); box-shadow: 0 0 0 3px rgba(66,183,174,.25); }
+        .timeline-step { color: var(--tos-text-muted); white-space: nowrap; }
+        .timeline-step--done { color: var(--tos-success); }
+        .timeline-step--current { color: var(--tos-primary); font-weight: 600; }
+        .timeline-arrow { color: #d9d9d9; font-size: 10px; }
+        .tx-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f5f5f5; font-size: 13px; }
+        .tx-row:last-child { border-bottom: none; }
+        .tx-row__left { display: flex; flex-direction: column; }
+        .tx-row__left .label { color: var(--tos-text-muted); font-size: 11px; }
+        .tx-row__left .value { font-weight: 600; margin-top: 2px; }
+        .amount-in { color: var(--tos-success); font-weight: 700; }
+        .amount-out { color: var(--tos-error); font-weight: 700; }
+        .bill-id { font-family: monospace; font-size: 11px; background: var(--tos-primary-bg); color: var(--tos-primary); padding: 1px 6px; border-radius: 3px; }
+        .h5-btn-back { width: 100%; height: 44px; border-radius: 8px; font-size: 16px; font-weight: 600; border: 1px solid var(--tos-border); background: #fff; color: var(--tos-text-secondary); cursor: pointer; font-family: inherit; margin-top: 12px; }
+        @media (max-width: 680px) { .sidebar { display: none; } .h5-header__menu { display: flex; } .h5-container { width: 100%; } }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar__head"><div class="sidebar__logo"><i class="fas fa-wallet"></i></div><span class="sidebar__title">会员中心</span></div>
+        <nav class="sidebar__nav">
+            <div class="sidebar__group-title">提现管理</div>
+            <a class="sidebar__item" href="会员提现申请.html"><i class="fas fa-coins"></i> 提现</a>
+            <a class="sidebar__item" href="会员提现记录.html"><i class="fas fa-list-check"></i> 提现记录</a>
+            <a class="sidebar__item" href="会员钱包明细.html"><i class="fas fa-file-invoice"></i> 钱包明细</a>
+            <a class="sidebar__item sidebar__item--active" href="会员提现详情.html"><i class="fas fa-receipt"></i> 提现详情</a>
+            <div class="sidebar__group-title">账户管理</div>
+            <a class="sidebar__item" href="会员卡包管理.html"><i class="fas fa-credit-card"></i> 我的卡包</a>
+            <a class="sidebar__item" href="会员绑定银行卡.html"><i class="fas fa-plus-circle"></i> 绑定银行卡</a>
+        </nav>
+    </aside>
+    <div class="h5-container">
+        <div class="h5-header">
+            <button class="h5-header__menu" onclick="document.getElementById('sidebar').style.display='block';this.style.display='none';">☰</button>
+            <button class="h5-header__back" onclick="location.href='会员提现记录.html'">←</button>
+            <span class="h5-header__title">提现详情</span>
+            <span style="width:32px;"></span>
+        </div>
+        <div class="h5-page">
+            <div class="h5-card">
+                <div class="h5-card__title">提现主单</div>
+                <div class="info-grid">
+                    <div><div class="info-item__label">提现单号</div><div class="info-item__value" style="font-family:monospace;font-size:13px;">MWD-20260401-2003</div></div>
+                    <div><div class="info-item__label">提现金额</div><div class="info-item__value" style="color:var(--tos-error);">¥5,000.00</div></div>
+                    <div><div class="info-item__label">申请时间</div><div class="info-item__value" style="font-size:13px;">2026-04-01 09:12</div></div>
+                    <div><div class="info-item__label">实际到账</div><div class="info-item__value" style="color:var(--tos-primary);">¥4,995.00</div></div>
+                    <div><div class="info-item__label">手续费</div><div class="info-item__value" style="color:var(--tos-warning);font-size:13px;">¥5.00</div></div>
+                    <div><div class="info-item__label">收款方式</div><div class="info-item__value" style="font-size:13px;">🔵 支付宝</div></div>
+                </div>
+                <div style="margin-top:12px;padding-top:12px;border-top:1px solid #f0f2f5;">
+                    <div style="font-size:11px;color:var(--tos-text-muted);margin-bottom:4px;">处理进度</div>
+                    <div class="timeline">
+                        <span class="timeline-dot timeline-dot--done"></span><span class="timeline-step timeline-step--done">申请</span><span class="timeline-arrow">→</span>
+                        <span class="timeline-dot timeline-dot--done"></span><span class="timeline-step timeline-step--done">审核</span><span class="timeline-arrow">→</span>
+                        <span class="timeline-dot timeline-dot--done"></span><span class="timeline-step timeline-step--done">划拨</span><span class="timeline-arrow">→</span>
+                        <span class="timeline-dot timeline-dot--current"></span><span class="timeline-step timeline-step--current">已到账</span>
+                    </div>
+                </div>
+            </div>
+            <div class="h5-card">
+                <div class="h5-card__title">资金来源拆分</div>
+                <div class="tx-row"><div class="tx-row__left"><span class="label"><span class="bill-id">MBL-WD-...001-01</span></span><span class="value">STL-20260215-004</span></div><div style="text-align:right;"><div style="font-size:11px;color:var(--tos-text-muted);">02/01-02/28</div><div class="amount-in">+¥3,200.00 → <span class="amount-out">划出 ¥3,196.80</span></div></div></div>
+                <div class="tx-row"><div class="tx-row__left"><span class="label"><span class="bill-id">MBL-WD-...001-02</span></span><span class="value">STL-20260320-007</span></div><div style="text-align:right;"><div style="font-size:11px;color:var(--tos-text-muted);">03/01-03/31</div><div class="amount-in">+¥5,000.00 → <span class="amount-out">划出 ¥1,803.20</span></div></div></div>
+                <div style="text-align:right;font-size:12px;color:var(--tos-text-muted);margin-top:8px;">提现总额 ¥5,000.00 = ¥3,196.80 + ¥1,803.20 ✓</div>
+            </div>
+            <div class="h5-card">
+                <div class="h5-card__title">费用明细</div>
+                <div class="tx-row"><span>提现总金额</span><span class="amount-out">¥5,000.00</span></div>
+                <div class="tx-row"><span>手续费（0.1%）</span><span class="amount-out">-¥5.00</span></div>
+                <div class="tx-row" style="background:var(--tos-primary-bg);margin:0 -16px;padding:10px 16px;"><span style="font-weight:700;">实际到账</span><span class="amount-in" style="font-size:16px;">¥4,995.00</span></div>
+            </div>
+            <button class="h5-btn-back" onclick="location.href='会员提现记录.html'">返回记录</button>
+    </div>
+</div>
+</body>
+</html>

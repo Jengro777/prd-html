@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>我的卡包</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root { --tos-primary: #42b7ae; --tos-primary-bg: #e6f7f6; --tos-bg: #f5f7fa; --tos-text: #333; --tos-text-secondary: #666; --tos-text-muted: #999; --tos-success: #52c41a; --tos-warning: #faad14; --tos-error: #f5222d; --tos-border: #e5e7eb; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--tos-bg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--tos-text); -webkit-font-smoothing: antialiased; }
+        .sidebar { width: 200px; flex-shrink: 0; background: #fff; border-right: 1px solid #f0f2f5; position: fixed; left: 0; top: 0; bottom: 0; display: flex; flex-direction: column; z-index: 10; }
+        .sidebar__head { padding: 20px 16px 16px; border-bottom: 1px solid #f0f2f5; display: flex; align-items: center; gap: 10px; }
+        .sidebar__logo { width: 34px; height: 34px; border-radius: 8px; background: var(--tos-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+        .sidebar__title { font-size: 15px; font-weight: 700; white-space: nowrap; }
+        .sidebar__nav { flex: 1; padding: 8px 0; overflow-y: auto; }
+        .sidebar__group-title { padding: 12px 14px 4px; font-size: 10px; color: var(--tos-text-muted); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
+        .sidebar__item { display: flex; align-items: center; gap: 8px; padding: 9px 14px; font-size: 13px; color: var(--tos-text-secondary); cursor: pointer; text-decoration: none; border-left: 3px solid transparent; transition: all .12s; }
+        .sidebar__item:hover { background: #f5f5f5; color: var(--tos-text); }
+        .sidebar__item--active { color: var(--tos-primary); font-weight: 600; background: var(--tos-primary-bg); border-left-color: var(--tos-primary); }
+        .sidebar__item i { width: 16px; text-align: center; font-size: 12px; }
+        .h5-container { width: 414px; margin: 0 auto; min-height: 100vh; background: var(--tos-bg); position: relative; }
+        .h5-header { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 16px; background: #fff; border-bottom: 1px solid var(--tos-border); }
+        .h5-header__back { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--tos-text); cursor: pointer; background: none; border: none; }
+        .h5-header__title { flex: 1; font-size: 17px; font-weight: 600; text-align: center; }
+        .h5-header__menu { width: 32px; height: 32px; display: none; align-items: center; justify-content: center; font-size: 20px; color: var(--tos-text); cursor: pointer; background: none; border: none; flex-shrink: 0; }
+        .h5-page { padding: 16px; }
+        .h5-alert { background: #e6f7f6; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: var(--tos-primary); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+        .card-list { display: flex; flex-direction: column; gap: 10px; }
+        .bank-card { background: #fff; border-radius: 10px; padding: 16px; border: 1px solid #f0f2f5; display: flex; gap: 12px; }
+        .bank-card--default { border-color: var(--tos-primary); background: var(--tos-primary-bg); }
+        .bank-card__icon { width: 44px; height: 32px; border-radius: 6px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .bank-card__info { flex: 1; min-width: 0; }
+        .bank-card__bank { font-size: 15px; font-weight: 700; }
+        .bank-card__num { font-family: monospace; font-size: 13px; color: var(--tos-text-secondary); margin-top: 2px; }
+        .bank-card__holder { font-size: 12px; color: var(--tos-text-muted); }
+        .bank-card__tags { display: flex; gap: 4px; margin-top: 4px; }
+        .bank-card__tag { font-size: 10px; padding: 1px 6px; border-radius: 3px; font-weight: 600; }
+        .tag-default { background: #f0faf0; color: var(--tos-success); }
+        .tag-debit { background: #e6f7f6; color: var(--tos-primary); }
+        .tag-credit { background: #fff7e6; color: var(--tos-warning); }
+        .bank-card__actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+        .btn-sm { padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; border: 1px solid var(--tos-border); background: #fff; cursor: pointer; font-family: inherit; white-space: nowrap; }
+        .btn-sm--danger { border-color: #fecaca; color: var(--tos-error); background: #fff; }
+        .btn-sm--primary { border-color: var(--tos-primary); color: var(--tos-primary); }
+        .add-btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px; border: 1px dashed var(--tos-border); border-radius: 10px; color: var(--tos-text-secondary); font-size: 15px; cursor: pointer; margin-top: 8px; }
+        .add-btn:active { border-color: var(--tos-primary); color: var(--tos-primary); background: rgba(66,183,174,.04); }
+        .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 100; display: none; align-items: center; justify-content: center; }
+        .modal-mask.show { display: flex; }
+        .modal-box { background: #fff; border-radius: 12px; width: 300px; padding: 20px; text-align: center; }
+        .modal-box h3 { font-size: 16px; margin-bottom: 8px; }
+        .modal-box p { font-size: 14px; color: var(--tos-text-secondary); margin-bottom: 16px; }
+        .modal-box .btns { display: flex; gap: 8px; }
+        .btn { flex: 1; height: 40px; border-radius: 8px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; font-family: inherit; }
+        .btn--outline { background: #fff; border: 1px solid var(--tos-border); color: var(--tos-text-secondary); }
+        .btn--danger { background: var(--tos-error); color: #fff; }
+        @media (max-width: 680px) { .sidebar { display: none; } .h5-header__menu { display: flex; } .h5-container { width: 100%; } }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar__head"><div class="sidebar__logo"><i class="fas fa-wallet"></i></div><span class="sidebar__title">会员中心</span></div>
+        <nav class="sidebar__nav">
+            <div class="sidebar__group-title">提现管理</div>
+            <a class="sidebar__item" href="会员提现申请.html"><i class="fas fa-coins"></i> 提现</a>
+            <a class="sidebar__item" href="会员提现记录.html"><i class="fas fa-list-check"></i> 提现记录</a>
+            <a class="sidebar__item" href="会员钱包明细.html"><i class="fas fa-file-invoice"></i> 钱包明细</a>
+            <a class="sidebar__item" href="会员提现详情.html"><i class="fas fa-receipt"></i> 提现详情</a>
+            <div class="sidebar__group-title">账户管理</div>
+            <a class="sidebar__item sidebar__item--active" href="会员卡包管理.html"><i class="fas fa-credit-card"></i> 我的卡包</a>
+            <a class="sidebar__item" href="会员绑定银行卡.html"><i class="fas fa-plus-circle"></i> 绑定银行卡</a>
+        </nav>
+    </aside>
+    <div class="h5-container">
+        <div class="h5-header">
+            <button class="h5-header__menu" onclick="document.getElementById('sidebar').style.display='block';this.style.display='none';">☰</button>
+            <button class="h5-header__back" onclick="location.href='会员提现申请.html'">←</button>
+            <span class="h5-header__title">我的卡包</span>
+            <span style="width:32px;"></span>
+        </div>
+        <div class="h5-page">
+            <div class="h5-alert">💡 已绑定 <strong id="cardCount">3</strong> / 5 张银行卡，默认卡优先用于提现。</div>
+            <div class="card-list" id="cardList">
+                <div class="bank-card bank-card--default" data-id="CARD_001"><div class="bank-card__icon">🏦</div><div class="bank-card__info"><div class="bank-card__bank">中国工商银行</div><div class="bank-card__num">6212 **** **** 8899</div><div class="bank-card__holder">持卡人：张三</div><div class="bank-card__tags"><span class="bank-card__tag tag-default">默认卡</span><span class="bank-card__tag tag-debit">储蓄卡</span></div></div></div>
+                <div class="bank-card" data-id="CARD_002"><div class="bank-card__icon">🏦</div><div class="bank-card__info"><div class="bank-card__bank">中国建设银行</div><div class="bank-card__num">4367 **** **** 1234</div><div class="bank-card__holder">持卡人：张三</div><div class="bank-card__tags"><span class="bank-card__tag tag-debit">储蓄卡</span></div></div><div class="bank-card__actions"><button class="btn-sm btn-sm--primary" onclick="setDefault('CARD_002')">设为默认</button><button class="btn-sm btn-sm--danger" onclick="confirmUnbind('CARD_002','中国建设银行','4367****1234')">解绑</button></div></div>
+                <div class="bank-card" data-id="CARD_003"><div class="bank-card__icon">🏛️</div><div class="bank-card__info"><div class="bank-card__bank">招商银行</div><div class="bank-card__num">6225 **** **** 5678</div><div class="bank-card__holder">持卡人：张三</div><div class="bank-card__tags"><span class="bank-card__tag tag-credit">信用卡</span></div></div><div class="bank-card__actions"><button class="btn-sm btn-sm--primary" onclick="setDefault('CARD_003')">设为默认</button><button class="btn-sm btn-sm--danger" onclick="confirmUnbind('CARD_003','招商银行','6225****5678')">解绑</button></div></div>
+            </div>
+            <div class="add-btn" onclick="location.href='会员绑定银行卡.html'">＋ 添加新银行卡</div>
+        </div>
+        <div class="modal-mask" id="unbindModal"><div class="modal-box"><h3>确认解绑</h3><p id="unbindText">确定要解绑该银行卡吗？</p><div class="btns"><button class="btn btn--outline" onclick="closeUnbind()">取消</button><button class="btn btn--danger" onclick="doUnbind()">确认解绑</button></div></div></div>
+    </div>
+</div>
+<script>
+let pendingUnbindId=null;
+function setDefault(id){document.querySelectorAll('.bank-card').forEach(card=>{card.classList.remove('bank-card--default');const tags=card.querySelector('.bank-card__tags');const defTag=tags?.querySelector('.tag-default');if(defTag)defTag.remove();const actions=card.querySelector('.bank-card__actions');if(actions){const btns=actions.querySelectorAll('button');btns.forEach(b=>{if(b.textContent.includes('设为默认'))b.style.display='';});}});const target=document.querySelector('.bank-card[data-id="'+id+'"]');if(target){target.classList.add('bank-card--default');const tags=target.querySelector('.bank-card__tags');if(tags&&!tags.querySelector('.tag-default')){const span=document.createElement('span');span.className='bank-card__tag tag-default';span.textContent='默认卡';tags.insertBefore(span,tags.firstChild);}const actions=target.querySelector('.bank-card__actions');if(actions){const btns=actions.querySelectorAll('button');btns.forEach(b=>{if(b.textContent.includes('设为默认'))b.style.display='none';});}}}
+function confirmUnbind(id,name,num){pendingUnbindId=id;document.getElementById('unbindText').textContent='确定要解绑 '+name+'（'+num+'）吗？解绑后将从卡包中移除。';document.getElementById('unbindModal').classList.add('show');}
+function closeUnbind(){document.getElementById('unbindModal').classList.remove('show');pendingUnbindId=null;}
+function doUnbind(){if(!pendingUnbindId)return;const el=document.querySelector('.bank-card[data-id="'+pendingUnbindId+'"]');const wasDefault=el?.classList.contains('bank-card--default');el?.remove();if(wasDefault){const first=document.querySelector('.bank-card:not([data-id=""])');if(first)setDefault(first.getAttribute('data-id'));}const count=document.querySelectorAll('.bank-card').length;document.getElementById('cardCount').textContent=count;closeUnbind();}
+document.getElementById('unbindModal').addEventListener('click',function(e){if(e.target===this)closeUnbind();});
+</script>
+</body>
+</html>

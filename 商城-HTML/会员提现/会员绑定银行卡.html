@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>绑定银行卡</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root { --tos-primary: #42b7ae; --tos-primary-hover: #339b94; --tos-primary-bg: #e6f7f6; --tos-bg: #f5f7fa; --tos-text: #333; --tos-text-secondary: #666; --tos-text-muted: #999; --tos-success: #52c41a; --tos-warning: #faad14; --tos-error: #f5222d; --tos-border: #e5e7eb; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--tos-bg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--tos-text); -webkit-font-smoothing: antialiased; }
+        .sidebar { width: 200px; flex-shrink: 0; background: #fff; border-right: 1px solid #f0f2f5; position: fixed; left: 0; top: 0; bottom: 0; display: flex; flex-direction: column; z-index: 10; }
+        .sidebar__head { padding: 20px 16px 16px; border-bottom: 1px solid #f0f2f5; display: flex; align-items: center; gap: 10px; }
+        .sidebar__logo { width: 34px; height: 34px; border-radius: 8px; background: var(--tos-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+        .sidebar__title { font-size: 15px; font-weight: 700; white-space: nowrap; }
+        .sidebar__nav { flex: 1; padding: 8px 0; overflow-y: auto; }
+        .sidebar__group-title { padding: 12px 14px 4px; font-size: 10px; color: var(--tos-text-muted); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
+        .sidebar__item { display: flex; align-items: center; gap: 8px; padding: 9px 14px; font-size: 13px; color: var(--tos-text-secondary); cursor: pointer; text-decoration: none; border-left: 3px solid transparent; transition: all .12s; }
+        .sidebar__item:hover { background: #f5f5f5; color: var(--tos-text); }
+        .sidebar__item--active { color: var(--tos-primary); font-weight: 600; background: var(--tos-primary-bg); border-left-color: var(--tos-primary); }
+        .sidebar__item i { width: 16px; text-align: center; font-size: 12px; }
+        .h5-container { width: 414px; margin: 0 auto; min-height: 100vh; background: var(--tos-bg); position: relative; }
+        .h5-header { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 16px; background: #fff; border-bottom: 1px solid var(--tos-border); }
+        .h5-header__back { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--tos-text); cursor: pointer; background: none; border: none; }
+        .h5-header__title { flex: 1; font-size: 17px; font-weight: 600; text-align: center; }
+        .h5-header__menu { width: 32px; height: 32px; display: none; align-items: center; justify-content: center; font-size: 20px; color: var(--tos-text); cursor: pointer; background: none; border: none; flex-shrink: 0; }
+        .h5-page { padding: 16px; padding-bottom: 90px; }
+        .h5-steps { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 16px; padding: 12px; background: #fff; border-radius: 10px; border: 1px solid #f0f2f5; }
+        .h5-step { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--tos-text-muted); }
+        .h5-step__num { width: 22px; height: 22px; border-radius: 50%; background: #e5e7eb; color: var(--tos-text-muted); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+        .h5-step--active { color: var(--tos-primary); font-weight: 600; } .h5-step--active .h5-step__num { background: var(--tos-primary); color: #fff; }
+        .h5-step--done { color: var(--tos-success); } .h5-step--done .h5-step__num { background: var(--tos-success); color: #fff; }
+        .h5-step-arrow { margin: 0 6px; color: #d9d9d9; font-size: 10px; }
+        .h5-card { background: #fff; border-radius: 10px; padding: 16px; margin-bottom: 12px; border: 1px solid #f0f2f5; }
+        .h5-card__title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+        .h5-card__desc { font-size: 12px; color: var(--tos-text-muted); margin-bottom: 14px; }
+        .h5-form-group { margin-bottom: 14px; }
+        .h5-form-label { font-size: 13px; font-weight: 600; color: var(--tos-text-secondary); margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
+        .h5-form-label .req { color: var(--tos-error); }
+        .h5-input { width: 100%; height: 44px; padding: 0 12px; border: 1px solid var(--tos-border); border-radius: 8px; font-size: 16px; background: #fff; outline: none; font-family: inherit; }
+        .h5-input:focus { border-color: var(--tos-primary); }
+        .h5-select { width: 100%; height: 44px; padding: 0 12px; border: 1px solid var(--tos-border); border-radius: 8px; font-size: 16px; background: #fff; outline: none; font-family: inherit; appearance: none; -webkit-appearance: none; }
+        .h5-form-hint { font-size: 11px; color: var(--tos-text-muted); margin-top: 4px; }
+        .h5-sms-row { display: flex; gap: 8px; } .h5-sms-row .h5-input { flex: 1; }
+        .h5-sms-btn { flex-shrink: 0; height: 44px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--tos-primary); background: #fff; color: var(--tos-primary); font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; }
+        .h5-sms-btn:disabled { opacity: .5; }
+        .bank-detect { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 8px; background: #f0faf0; border: 1px solid #bbf7d0; font-size: 14px; margin-bottom: 12px; }
+        .bank-detect__name { font-weight: 700; color: var(--tos-success); }
+        .h5-bottom { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 414px; padding: 12px 16px; padding-bottom: max(12px, env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid #f0f2f5; display: flex; gap: 10px; z-index: 30; }
+        .h5-btn { flex: 1; height: 44px; border-radius: 8px; font-size: 16px; font-weight: 600; border: none; cursor: pointer; font-family: inherit; }
+        .h5-btn--outline { background: #fff; border: 1px solid var(--tos-border); color: var(--tos-text-secondary); }
+        .h5-btn--primary { background: var(--tos-primary); color: #fff; } .h5-btn--primary:active { background: var(--tos-primary-hover); }
+        .success-box { text-align: center; padding: 24px 0; } .success-box .icon { font-size: 48px; margin-bottom: 8px; }
+        .success-box h3 { color: var(--tos-success); margin-bottom: 4px; }
+        .success-box .info { background: #fafafa; border-radius: 8px; padding: 12px; text-align: left; line-height: 2; font-size: 14px; margin-top: 12px; }
+        @media (max-width: 680px) { .sidebar { display: none; } .h5-header__menu { display: flex; } .h5-container { width: 100%; } .h5-bottom { width: 100%; } }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar__head"><div class="sidebar__logo"><i class="fas fa-wallet"></i></div><span class="sidebar__title">会员中心</span></div>
+        <nav class="sidebar__nav">
+            <div class="sidebar__group-title">提现管理</div>
+            <a class="sidebar__item" href="会员提现申请.html"><i class="fas fa-coins"></i> 提现</a>
+            <a class="sidebar__item" href="会员提现记录.html"><i class="fas fa-list-check"></i> 提现记录</a>
+            <a class="sidebar__item" href="会员钱包明细.html"><i class="fas fa-file-invoice"></i> 钱包明细</a>
+            <a class="sidebar__item" href="会员提现详情.html"><i class="fas fa-receipt"></i> 提现详情</a>
+            <div class="sidebar__group-title">账户管理</div>
+            <a class="sidebar__item" href="会员卡包管理.html"><i class="fas fa-credit-card"></i> 我的卡包</a>
+            <a class="sidebar__item sidebar__item--active" href="会员绑定银行卡.html"><i class="fas fa-plus-circle"></i> 绑定银行卡</a>
+        </nav>
+    </aside>
+    <div class="h5-container">
+        <div class="h5-header">
+            <button class="h5-header__menu" onclick="document.getElementById('sidebar').style.display='block';this.style.display='none';">☰</button>
+            <button class="h5-header__back" onclick="goBack()">←</button>
+            <span class="h5-header__title">绑定银行卡</span>
+            <span style="width:32px;"></span>
+        </div>
+        <div class="h5-page">
+            <div class="h5-steps" id="stepsBar">
+                <span class="h5-step h5-step--active" id="step1Mark"><span class="h5-step__num">1</span>卡信息</span><span class="h5-step-arrow">→</span>
+                <span class="h5-step" id="step2Mark"><span class="h5-step__num">2</span>身份验证</span><span class="h5-step-arrow">→</span>
+                <span class="h5-step" id="step3Mark"><span class="h5-step__num">3</span>完成</span>
+            </div>
+            <div id="step1"><div class="h5-card"><div class="h5-card__title">银行卡信息</div><div class="h5-card__desc">请输入持卡人本人的银行卡信息。</div><div class="h5-form-group"><div class="h5-form-label">持卡人姓名 <span class="req">*</span></div><input class="h5-input" id="holderName" placeholder="请输入真实姓名" maxlength="20"></div><div class="h5-form-group"><div class="h5-form-label">银行卡号 <span class="req">*</span></div><input class="h5-input" id="cardNumber" placeholder="请输入16-19位卡号" maxlength="19" oninput="detectBank()" onblur="detectBank()"></div><div class="bank-detect" id="bankDetect" style="display:none;"><span>🏦</span><span class="bank-detect__name" id="detectName">—</span><span style="font-size:12px;color:var(--tos-text-muted);">已自动识别</span></div><div class="h5-form-group"><div class="h5-form-label">开户银行 <span class="req">*</span></div><select class="h5-select" id="bankSelect"><option value="">请选择开户银行</option><option value="icbc">中国工商银行</option><option value="ccb">中国建设银行</option><option value="abc">中国农业银行</option><option value="boc">中国银行</option><option value="cmb">招商银行</option><option value="comm">交通银行</option><option value="psbc">中国邮政储蓄银行</option><option value="other">其他银行</option></select></div><div class="h5-form-group"><div class="h5-form-label">卡类型 <span class="req">*</span></div><select class="h5-select" id="cardType"><option value="">请选择卡类型</option><option value="debit">储蓄卡</option><option value="credit">信用卡</option></select></div></div></div>
+            <div id="step2" style="display:none;"><div class="h5-card"><div class="h5-card__title">身份验证</div><div class="h5-card__desc">验证银行预留信息以确保本人操作。</div><div class="h5-form-group"><div class="h5-form-label">身份证号码 <span class="req">*</span></div><input class="h5-input" id="idNumber" placeholder="请输入18位身份证号" maxlength="18"></div><div class="h5-form-group"><div class="h5-form-label">银行预留手机号 <span class="req">*</span></div><input class="h5-input" id="phone" placeholder="请输入11位手机号" maxlength="11"></div><div class="h5-form-group"><div class="h5-form-label">短信验证码 <span class="req">*</span></div><div class="h5-sms-row"><input class="h5-input" id="smsCode" placeholder="请输入6位验证码" maxlength="6"><button class="h5-sms-btn" id="smsBtn" onclick="sendSms()">获取验证码</button></div><div class="h5-form-hint">演示验证码：123456</div></div></div></div>
+            <div id="step3" style="display:none;"><div class="h5-card"><div class="success-box"><div class="icon">✅</div><h3>绑定成功</h3><p style="color:var(--tos-text-muted);font-size:14px;">银行卡已添加到您的卡包</p><div class="info"><div><strong>银行：</strong><span id="rBank">—</span></div><div><strong>卡号：</strong><span id="rCard">—</span></div><div><strong>类型：</strong><span id="rType">—</span></div><div><strong>持卡人：</strong><span id="rHolder">—</span></div></div></div></div></div>
+        </div>
+        <div class="h5-bottom" id="bottomBar"><button class="h5-btn h5-btn--outline" id="prevBtn" onclick="prevStep()">取消</button><button class="h5-btn h5-btn--primary" id="nextBtn" onclick="nextStep()">下一步</button></div>
+    </div>
+</div>
+<script>
+const BANK_BINS={'6222':'icbc','6212':'ccb','4367':'ccb','6228':'abc','6217':'boc','6225':'cmb','6210':'psbc','6226':'comm','6227':'cmbc','6221':'spdb','6223':'citic','6215':'ceb','6282':'icbc','6259':'cmb','5187':'cmb','3568':'cmb','4392':'cmb'};
+const BANK_NAMES={icbc:'中国工商银行',ccb:'中国建设银行',abc:'中国农业银行',boc:'中国银行',cmb:'招商银行',comm:'交通银行',cmbc:'中国民生银行',psbc:'中国邮政储蓄银行',spdb:'浦发银行',citic:'中信银行',ceb:'中国光大银行'};
+let step=1,smsTimer=null,smsSeconds=0;
+function detectBank(){const raw=document.getElementById('cardNumber').value.replace(/\s/g,'');const detect=document.getElementById('bankDetect');const detectName=document.getElementById('detectName');const bankSelect=document.getElementById('bankSelect');for(const[prefix,code]of Object.entries(BANK_BINS)){if(raw.startsWith(prefix)){detect.style.display='flex';detectName.textContent=BANK_NAMES[code]||code;bankSelect.value=code;return;}}if(raw.length>=4){detect.style.display='flex';detectName.textContent='未能识别，请手动选择';}else{detect.style.display='none';}}
+function nextStep(){if(step===1){const holder=document.getElementById('holderName').value.trim();const card=document.getElementById('cardNumber').value.replace(/\s/g,'');const bank=document.getElementById('bankSelect').value;const type=document.getElementById('cardType').value;if(!holder||holder.length<2){alert('请输入持卡人姓名');return;}if(!/^\d{16,19}$/.test(card)){alert('银行卡号为16-19位数字');return;}if(!bank){alert('请选择开户银行');return;}if(!type){alert('请选择卡类型');return;}step=2;document.getElementById('step1').style.display='none';document.getElementById('step2').style.display='block';document.getElementById('prevBtn').textContent='上一步';document.getElementById('nextBtn').textContent='确认绑定';updateSteps();}else if(step===2){const idNum=document.getElementById('idNumber').value.trim();const phone=document.getElementById('phone').value.trim();const sms=document.getElementById('smsCode').value.trim();if(!/^\d{17}[\dXx]$/.test(idNum)){alert('身份证格式不正确');return;}if(!/^1\d{10}$/.test(phone)){alert('手机号格式不正确');return;}if(!/^\d{6}$/.test(sms)){alert('验证码为6位数字');return;}const holderName=document.getElementById('holderName').value.trim();const cardRaw=document.getElementById('cardNumber').value.replace(/\s/g,'');const masked=cardRaw.slice(0,4)+'****'+cardRaw.slice(-4);const bankCode=document.getElementById('bankSelect').value;document.getElementById('rBank').textContent=BANK_NAMES[bankCode]||bankCode;document.getElementById('rCard').textContent=masked;document.getElementById('rType').textContent=document.getElementById('cardType').value==='credit'?'信用卡':'储蓄卡';document.getElementById('rHolder').textContent=holderName;step=3;document.getElementById('step2').style.display='none';document.getElementById('step3').style.display='block';document.getElementById('bottomBar').style.display='none';updateSteps();}}
+function prevStep(){if(step===1){location.href='会员卡包管理.html';}else if(step===2){step=1;document.getElementById('step2').style.display='none';document.getElementById('step1').style.display='block';document.getElementById('prevBtn').textContent='取消';document.getElementById('nextBtn').textContent='下一步';updateSteps();}}
+function updateSteps(){const s1=document.getElementById('step1Mark'),s2=document.getElementById('step2Mark'),s3=document.getElementById('step3Mark');[s1,s2,s3].forEach(s=>{s.className='h5-step';});if(step===1)s1.classList.add('h5-step--active');else if(step===2){s1.classList.add('h5-step--done');s2.classList.add('h5-step--active');}else{s1.classList.add('h5-step--done');s2.classList.add('h5-step--done');s3.classList.add('h5-step--done');}}
+function sendSms(){const phone=document.getElementById('phone').value.trim();if(!/^1\d{10}$/.test(phone)){alert('请先输入正确的手机号');return;}smsSeconds=60;const btn=document.getElementById('smsBtn');btn.disabled=true;btn.textContent=smsSeconds+'s';alert('验证码已发送至 '+phone+'（演示：123456）');smsTimer=setInterval(()=>{smsSeconds--;btn.textContent=smsSeconds+'s';if(smsSeconds<=0){clearInterval(smsTimer);btn.disabled=false;btn.textContent='获取验证码';}},1000);}
+function goBack(){if(step>1)prevStep();else location.href='会员卡包管理.html';}
+</script>
+</body>
+</html>
