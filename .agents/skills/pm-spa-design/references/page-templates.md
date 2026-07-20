@@ -402,3 +402,80 @@ createApp({
     .use(antd)
     .mount("#app");
 ```
+
+## 8. H5 移动端页面模板
+
+H5 页面用于会员端/消费者端。核心内容区限制 414px 宽度模拟手机屏幕。**每个 H5 页面必须包含左侧固定导航菜单**，方便在桌面浏览器中切换查看多个 H5 页面。
+
+### 核心布局
+
+```
+┌──────────┐                    ┌──────────────┐
+│ 左侧菜单  │                    │              │
+│ fixed    │  ← 自然间距 →      │  H5 414px    │
+│ left:0   │                    │  margin:auto │
+│ 200px    │                    │              │
+└──────────┘                    └──────────────┘
+```
+
+### 布局骨架
+
+```html
+<body>
+<!-- 左侧导航：fixed 在最左边缘，仅用于桌面浏览器切换 H5 页面 -->
+<aside class="sidebar">
+    <div class="sidebar__head">
+        <div class="sidebar__logo"><i class="fas fa-wallet"></i></div>
+        <span class="sidebar__title">会员中心</span>
+    </div>
+    <nav class="sidebar__nav">
+        <div class="sidebar__group-title">功能分组</div>
+        <a class="sidebar__item sidebar__item--active" href="page1.html"><i class="fas fa-home"></i> 页面一</a>
+        <a class="sidebar__item" href="page2.html"><i class="fas fa-list"></i> 页面二</a>
+        <a class="sidebar__item" href="page3.html"><i class="fas fa-cog"></i> 页面三</a>
+    </nav>
+</aside>
+
+<!-- H5 内容容器：414px 居中 -->
+<div class="h5-container">
+    <div class="h5-header">
+        <button class="h5-header__menu" onclick="document.getElementById('sidebar').style.display='block';this.style.display='none'">☰</button>
+        <span class="h5-header__title">页面标题</span>
+    </div>
+    <div class="h5-page">
+        <!-- 页面内容 -->
+    </div>
+</div>
+</body>
+```
+
+### 必需的 CSS
+
+```css
+body { background: #f5f7fa; font-family: -apple-system, BlinkMacSystemFont, sans-serif; color: #333; }
+.sidebar { width: 200px; background: #fff; border-right: 1px solid #f0f2f5; position: fixed; left: 0; top: 0; bottom: 0; display: flex; flex-direction: column; z-index: 10; }
+.sidebar__head { padding: 20px 16px 16px; border-bottom: 1px solid #f0f2f5; display: flex; align-items: center; gap: 10px; }
+.sidebar__logo { width: 34px; height: 34px; border-radius: 8px; background: #42b7ae; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+.sidebar__title { font-size: 15px; font-weight: 700; }
+.sidebar__nav { flex: 1; padding: 8px 0; overflow-y: auto; }
+.sidebar__group-title { padding: 12px 14px 4px; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+.sidebar__item { display: flex; align-items: center; gap: 8px; padding: 9px 14px; font-size: 13px; color: #666; text-decoration: none; border-left: 3px solid transparent; transition: all 0.12s; }
+.sidebar__item:hover { background: #f5f5f5; color: #333; }
+.sidebar__item--active { color: #42b7ae; font-weight: 600; background: #e6f7f6; border-left-color: #42b7ae; }
+.h5-container { width: 414px; margin: 0 auto; min-height: 100vh; background: #f5f7fa; }
+.h5-header { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 16px; background: #fff; border-bottom: 1px solid #e5e7eb; }
+.h5-header__menu { width: 32px; height: 32px; display: none; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; background: none; border: none; }
+.h5-header__title { flex: 1; font-size: 17px; font-weight: 600; text-align: center; }
+.h5-page { padding: 16px; }
+@media (max-width: 680px) { .sidebar { display: none; } .h5-header__menu { display: flex; } .h5-container { width: 100%; } }
+```
+
+### 规则要点
+
+1. **左侧菜单是纯页面导航**，仅用 `<a href="...">` 跳转切换 H5 页面，不含任何业务逻辑。
+2. **每个 H5 页面必须包含相同的侧边栏**，仅当前页对应菜单项标记 `sidebar__item--active`。
+3. **桌面端**（>680px）：侧边栏 `position:fixed; left:0` 始终可见，H5 容器 `margin:0 auto` 居中。
+4. **移动端**（≤680px）：侧边栏隐藏，☰ 按钮唤出，H5 容器 `width:100%`。
+5. **body 不要设 `display:flex; justify-content:center`**，侧边栏用 fixed 定位，H5 容器用 margin auto 居中，自然留出间距。
+6. H5 页面内所有组件类名使用 `h5-*` 前缀，与运营端 `tos-*` 区分。
+7. 底部固定操作栏 `position:fixed; bottom:0`，宽度 414px，移动端 100%。
