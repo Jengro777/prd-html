@@ -58,9 +58,7 @@
         .provider-card__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
         .provider-card__name { font-size: 15px; font-weight: 600; }
         .provider-card__code { font-size: 11px; color: var(--tos-text-muted); margin-bottom: 8px; }
-        .provider-card__balance { font-size: 20px; font-weight: 600; margin: 8px 0; }
-        .provider-card__balance--pay { color: var(--tos-error); }
-        .provider-card__balance--collect { color: var(--tos-success); }
+        .provider-card__balance { font-size: 20px; font-weight: 600; margin: 8px 0; color: var(--tos-primary); }
         .provider-card__meta { font-size: 12px; color: var(--tos-text-muted); margin-bottom: 10px; }
         .provider-card__actions { display: flex; gap: 6px; flex-wrap: wrap; }
         .tos-tag { display: inline-flex; height: 22px; align-items: center; padding: 0 8px; border-radius: 4px; font-size: 12px; font-weight: 500; }
@@ -89,6 +87,8 @@
         .form-group input, .form-group select, .form-group textarea { width: 100%; height: 36px; padding: 0 10px; border: 1px solid var(--tos-border); border-radius: var(--tos-radius-control); font-size: 13px; font-family: inherit; outline: none; }
         .form-group textarea { height: auto; padding: 8px 10px; resize: vertical; }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--tos-primary); box-shadow: 0 0 0 2px rgba(66,183,174,0.16); }
+        .form-group input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--tos-primary); cursor: pointer; margin: 0; }
+        .check-label { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; color: var(--tos-text); cursor: pointer; }
         @media (max-width: 1024px) { .tos-sidebar { width: 64px; } .tos-sidebar__logo-text, .tos-sidebar__group-title, .tos-sidebar__item span { display: none; } .tos-sidebar__item { justify-content: center; padding: 10px; } .tos-main { margin-left: 64px; } .provider-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 640px) { .tos-sidebar { display: none; } .tos-main { margin-left: 0; } .provider-grid { grid-template-columns: 1fr; } }
     </style>
@@ -135,44 +135,17 @@
                 <p>管理收款和付款两类服务商，配置 API 密钥、启用状态及账户充值。</p>
             </section>
 
-            <!-- 收款服务商 -->
+            <!-- 服务商列表 -->
             <section class="tos-card">
                 <div class="tos-card__header">
                     <div>
-                        <h2 class="tos-card__title"><i class="fas fa-arrow-down" style="color:var(--tos-success);margin-right:8px;"></i>收款服务商</h2>
-                        <p class="tos-card__desc">用于接收会员充值、支付入账的服务商账户。</p>
+                        <h2 class="tos-card__title"><i class="fas fa-credit-card" style="margin-right:8px;color:var(--tos-primary);"></i>支付服务商列表</h2>
+                        <p class="tos-card__desc">管理所有收款和付款服务商，共 <span id="providerCount">0</span> 个。</p>
                     </div>
                 </div>
-                <div class="provider-grid" id="collectProviders"></div>
+                <div class="provider-grid" id="allProviders"></div>
             </section>
 
-            <!-- 付款服务商 -->
-            <section class="tos-card">
-                <div class="tos-card__header">
-                    <div>
-                        <h2 class="tos-card__title"><i class="fas fa-arrow-up" style="color:var(--tos-error);margin-right:8px;"></i>付款服务商</h2>
-                        <p class="tos-card__desc">用于会员提现、转账付款的服务商账户。</p>
-                    </div>
-                </div>
-                <div class="provider-grid" id="payProviders"></div>
-            </section>
-
-            <!-- 操作记录 -->
-            <section class="tos-card">
-                <div class="tos-card__header">
-                    <div>
-                        <h2 class="tos-card__title"><i class="fas fa-history" style="margin-right:8px;color:var(--tos-primary);"></i>操作记录</h2>
-                        <p class="tos-card__desc">最近的充值、配置变更记录。</p>
-                    </div>
-                    <button class="tos-btn" onclick="exportLogCSV()"><i class="fas fa-download" style="margin-right:4px;"></i> 导出 CSV</button>
-                </div>
-                <div class="tos-table-wrap">
-                    <table class="tos-table" id="logTable">
-                        <thead><tr><th>时间</th><th>服务商</th><th>类型</th><th>操作</th><th>金额</th><th>操作后余额</th><th>备注</th></tr></thead>
-                        <tbody id="logTbody"></tbody>
-                    </table>
-                </div>
-            </section>
         </main>
     </div>
 </div>
@@ -188,7 +161,18 @@
             <div class="form-group"><label>服务商名称 <span style="color:var(--tos-error);">*</span></label><input type="text" id="eName" placeholder="例：Pyvio、Stripe" /></div>
             <div class="form-group"><label>标识码 <span style="color:var(--tos-error);">*</span></label><input type="text" id="eCode" placeholder="英文代码 (pyvio / stripe)" /></div>
             <div class="form-group"><label>服务类型 <span style="color:var(--tos-error);">*</span></label>
-                <select id="eType"><option value="collect">收款服务商</option><option value="pay">付款服务商</option></select>
+                <div style="display:flex;flex-direction:column;gap:2px;padding-top:2px;">
+                    <div style="font-size:11px;color:var(--tos-text-muted);font-weight:600;">收款</div>
+                    <div style="display:flex;gap:24px;padding:4px 0;">
+                        <label class="check-label"><input type="checkbox" id="eTypeMemberCollect" /> 会员收款</label>
+                        <label class="check-label"><input type="checkbox" id="eTypeMerchantCollect" /> 商户收款</label>
+                    </div>
+                    <div style="font-size:11px;color:var(--tos-text-muted);font-weight:600;">付款</div>
+                    <div style="display:flex;gap:24px;padding:4px 0;">
+                        <label class="check-label"><input type="checkbox" id="eTypeMemberPay" /> 会员付款</label>
+                        <label class="check-label"><input type="checkbox" id="eTypeMerchantPay" /> 商户付款</label>
+                    </div>
+                </div>
             </div>
             <div class="form-group"><label>账户余额 (CNY)</label><input type="number" id="eBalance" min="0" step="0.01" placeholder="0.00" /></div>
             <div class="form-group"><label>API Key</label><input type="text" id="eApiKey" placeholder="服务商提供的 API Key" /></div>
@@ -225,49 +209,74 @@
 
 <script>
 var providers = [
-    { id: 1, name: 'Pyvio', code: 'pyvio', type: 'collect', balance: 156800.00, status: 'active', apiKey: '****a1b2', merchantId: 'PYV-20240001', createdAt: '2025-03-10' },
-    { id: 2, name: 'Stripe', code: 'stripe', type: 'collect', balance: 284500.00, status: 'active', apiKey: '****c3d4', merchantId: 'STP-20240002', createdAt: '2025-01-15' },
-    { id: 3, name: 'Adyen', code: 'adyen', type: 'collect', balance: 92300.00, status: 'disabled', apiKey: '****e5f6', merchantId: 'ADY-20240003', createdAt: '2025-05-20' },
-    { id: 4, name: 'Payoneer', code: 'payoneer', type: 'pay', balance: 432000.00, status: 'active', apiKey: '****g7h8', merchantId: 'PAY-20240004', createdAt: '2024-11-01' },
-    { id: 5, name: 'Wise', code: 'wise', type: 'pay', balance: 218600.00, status: 'active', apiKey: '****i9j0', merchantId: 'WIS-20240005', createdAt: '2025-02-28' },
-    { id: 6, name: 'PingPong', code: 'pingpong', type: 'pay', balance: 167200.00, status: 'disabled', apiKey: '****k1l2', merchantId: 'PP-20240006', createdAt: '2025-04-15' }
+    { id: 1, name: 'Pyvio', code: 'pyvio', type: 'member_collect,member_pay', balance: 156800.00, status: 'active', apiKey: '****a1b2', merchantId: 'PYV-20240001', createdAt: '2025-03-10' },
+    { id: 2, name: 'Stripe', code: 'stripe', type: 'member_collect,merchant_collect', balance: 284500.00, status: 'active', apiKey: '****c3d4', merchantId: 'STP-20240002', createdAt: '2025-01-15' },
+    { id: 3, name: 'Adyen', code: 'adyen', type: 'merchant_collect', balance: 92300.00, status: 'disabled', apiKey: '****e5f6', merchantId: 'ADY-20240003', createdAt: '2025-05-20' },
+    { id: 4, name: 'Payoneer', code: 'payoneer', type: 'member_pay,merchant_pay', balance: 432000.00, status: 'active', apiKey: '****g7h8', merchantId: 'PAY-20240004', createdAt: '2024-11-01' },
+    { id: 5, name: 'Wise', code: 'wise', type: 'member_pay', balance: 218600.00, status: 'active', apiKey: '****i9j0', merchantId: 'WIS-20240005', createdAt: '2025-02-28' },
+    { id: 6, name: 'PingPong', code: 'pingpong', type: 'member_collect,merchant_collect,member_pay,merchant_pay', balance: 167200.00, status: 'disabled', apiKey: '****k1l2', merchantId: 'PP-20240006', createdAt: '2025-04-15' },
+    { id: 7, name: 'MOMO', code: 'momo', type: 'member_collect,member_pay', balance: 345000.00, status: 'active', apiKey: '****m3n4', merchantId: 'MOM-20240007', createdAt: '2025-06-01' },
+    { id: 8, name: 'Tingg', code: 'tingg', type: 'member_collect,merchant_collect,member_pay', balance: 189500.00, status: 'active', apiKey: '****o5p6', merchantId: 'TNG-20240008', createdAt: '2025-06-15' },
+    { id: 9, name: 'Wigal', code: 'wigal', type: 'member_collect', balance: 76200.00, status: 'disabled', apiKey: '****q7r8', merchantId: 'WGL-20240009', createdAt: '2025-07-01' },
+    { id: 10, name: 'Brij', code: 'brij', type: 'member_pay,merchant_pay', balance: 523000.00, status: 'active', apiKey: '****s9t0', merchantId: 'BRJ-20240010', createdAt: '2025-07-10' },
+    { id: 11, name: 'Paystack', code: 'paystack', type: 'member_collect,merchant_collect', balance: 298400.00, status: 'active', apiKey: '****u1v2', merchantId: 'PST-20240011', createdAt: '2025-07-20' }
 ];
 var logs = [
-    { time: '2026-07-23 14:30', providerName: 'Pyvio', type: '收款', action: '充值', amount: 50000, newBalance: 156800, memo: '季度运营资金补充' },
-    { time: '2026-07-22 10:15', providerName: 'Payoneer', type: '付款', action: '充值', amount: 100000, newBalance: 432000, memo: '提现储备金' },
-    { time: '2026-07-20 09:00', providerName: 'Stripe', type: '收款', action: '配置变更', amount: 0, newBalance: 284500, memo: '更新 API Key' },
-    { time: '2026-07-18 16:45', providerName: 'Adyen', type: '收款', action: '禁用', amount: 0, newBalance: 92300, memo: '暂停使用' },
-    { time: '2026-07-15 11:20', providerName: 'Wise', type: '付款', action: '充值', amount: 50000, newBalance: 218600, memo: '提现通道补充' }
+    { time: '2026-07-23 14:30', providerName: 'Pyvio', type: '会员收款,会员付款', action: '充值', amount: 50000, newBalance: 156800, memo: '季度运营资金补充' },
+    { time: '2026-07-22 10:15', providerName: 'Payoneer', type: '会员付款,商户付款', action: '充值', amount: 100000, newBalance: 432000, memo: '提现储备金' },
+    { time: '2026-07-20 09:00', providerName: 'Stripe', type: '会员收款,商户收款', action: '配置变更', amount: 0, newBalance: 284500, memo: '更新 API Key' },
+    { time: '2026-07-18 16:45', providerName: 'Adyen', type: '商户收款', action: '禁用', amount: 0, newBalance: 92300, memo: '暂停使用' },
+    { time: '2026-07-15 11:20', providerName: 'Wise', type: '会员付款', action: '充值', amount: 50000, newBalance: 218600, memo: '提现通道补充' }
 ];
 var editId = null;
 
 function formatCNY(v) { return '¥' + Number(v).toLocaleString('zh-CN', { minimumFractionDigits: 2 }); }
 
+function hasType(t, key) { return (t || '').split(',').indexOf(key) !== -1; }
+function typeBadge(t) {
+    var tags = [];
+    if (hasType(t, 'member_collect')) tags.push('<span class="tos-tag tos-tag--success">会员收款</span>');
+    if (hasType(t, 'merchant_collect')) tags.push('<span class="tos-tag tos-tag--primary">商户收款</span>');
+    if (hasType(t, 'member_pay')) tags.push('<span class="tos-tag tos-tag--error">会员付款</span>');
+    if (hasType(t, 'merchant_pay')) tags.push('<span class="tos-tag tos-tag--warning">商户付款</span>');
+    return tags.join(' ') || '<span class="tos-tag tos-tag--default">—</span>';
+}
+
+function typeLabel(t) {
+    var parts = [];
+    if (hasType(t, 'member_collect')) parts.push('会员收款');
+    if (hasType(t, 'merchant_collect')) parts.push('商户收款');
+    if (hasType(t, 'member_pay')) parts.push('会员付款');
+    if (hasType(t, 'merchant_pay')) parts.push('商户付款');
+    return parts.join(',') || '—';
+}
 function renderProviders() {
-    var collectHtml = '', payHtml = '';
+    var html = '';
     providers.forEach(function(p) {
         var card = '<div class="provider-card' + (p.status === 'disabled' ? ' provider-card--disabled' : '') + '">' +
             '<div class="provider-card__header"><span class="provider-card__name">' + p.name + '</span>' +
             (p.status === 'active' ? '<span class="tos-tag tos-tag--success">启用</span>' : '<span class="tos-tag tos-tag--default">禁用</span>') +
             '</div>' +
             '<div class="provider-card__code">' + p.code + ' · 商户号: ' + p.merchantId + '</div>' +
-            '<div class="provider-card__balance ' + (p.type === 'collect' ? 'provider-card__balance--collect' : 'provider-card__balance--pay') + '">' + formatCNY(p.balance) + '</div>' +
+            '<div style="margin:4px 0;">' + typeBadge(p.type) + '</div>' +
+            '<div class="provider-card__balance">' + formatCNY(p.balance) + '</div>' +
             '<div class="provider-card__meta">API Key: ' + p.apiKey + ' · 创建于 ' + p.createdAt + '</div>' +
             '<div class="provider-card__actions">' +
             '<button class="tos-btn tos-btn--sm" onclick="rechargeProvider(' + p.id + ')">充值</button>' +
             '<button class="tos-btn tos-btn--sm" onclick="editProvider(' + p.id + ')">编辑</button>' +
             '<button class="tos-btn tos-btn--sm" onclick="toggleProvider(' + p.id + ')" style="color:' + (p.status === 'active' ? 'var(--tos-error)' : 'var(--tos-success)') + ';">' + (p.status === 'active' ? '禁用' : '启用') + '</button>' +
             '</div></div>';
-        if (p.type === 'collect') collectHtml += card; else payHtml += card;
+        html += card;
     });
-    document.getElementById('collectProviders').innerHTML = collectHtml || '<div style="grid-column:1/-1;text-align:center;color:var(--tos-text-muted);padding:20px;">暂无收款服务商</div>';
-    document.getElementById('payProviders').innerHTML = payHtml || '<div style="grid-column:1/-1;text-align:center;color:var(--tos-text-muted);padding:20px;">暂无付款服务商</div>';
+    document.getElementById('allProviders').innerHTML = html || '<div style="grid-column:1/-1;text-align:center;color:var(--tos-text-muted);padding:20px;">暂无服务商</div>';
+    document.getElementById('providerCount').textContent = providers.length;
 }
 
 function renderLogs() {
     var html = '';
     logs.forEach(function(l) {
-        html += '<tr><td style="font-size:12px;">' + l.time + '</td><td>' + l.providerName + '</td><td><span class="tos-tag ' + (l.type === '收款' ? 'tos-tag--success' : 'tos-tag--error') + '">' + l.type + '</span></td><td>' + l.action + '</td><td class="' + (l.type === '收款' ? 'amount-in' : 'amount-out') + '">' + (l.amount > 0 ? formatCNY(l.amount) : '—') + '</td><td>' + formatCNY(l.newBalance) + '</td><td style="font-size:12px;color:var(--tos-text-muted);">' + l.memo + '</td></tr>';
+        var amtClass = (l.type.indexOf('收款') !== -1 && l.type.indexOf('付款') === -1) ? 'amount-in' : ((l.type.indexOf('付款') !== -1 && l.type.indexOf('收款') === -1) ? 'amount-out' : '');
+        html += '<tr><td style="font-size:12px;">' + l.time + '</td><td>' + l.providerName + '</td><td style="font-size:12px;">' + l.type + '</td><td>' + l.action + '</td><td class="' + amtClass + '">' + (l.amount > 0 ? formatCNY(l.amount) : '—') + '</td><td>' + formatCNY(l.newBalance) + '</td><td style="font-size:12px;color:var(--tos-text-muted);">' + l.memo + '</td></tr>';
     });
     document.getElementById('logTbody').innerHTML = html || '<tr><td colspan="7" style="text-align:center;color:var(--tos-text-muted);">暂无记录</td></tr>';
 }
@@ -276,7 +285,10 @@ function addProvider() {
     editId = null;
     document.getElementById('editModalTitle').textContent = '新增服务商';
     ['eName','eCode','eBalance','eApiKey','eMerchantId'].forEach(function(id) { document.getElementById(id).value = ''; });
-    document.getElementById('eType').value = 'collect';
+    document.getElementById('eTypeMemberCollect').checked = true;
+    document.getElementById('eTypeMerchantCollect').checked = false;
+    document.getElementById('eTypeMemberPay').checked = false;
+    document.getElementById('eTypeMerchantPay').checked = false;
     document.getElementById('eStatus').value = 'active';
     document.getElementById('editModal').classList.add('tos-modal-overlay--show');
     document.body.style.overflow = 'hidden';
@@ -289,7 +301,10 @@ function editProvider(id) {
     document.getElementById('editModalTitle').textContent = '编辑服务商';
     document.getElementById('eName').value = p.name;
     document.getElementById('eCode').value = p.code;
-    document.getElementById('eType').value = p.type;
+    document.getElementById('eTypeMemberCollect').checked = hasType(p.type, 'member_collect');
+    document.getElementById('eTypeMerchantCollect').checked = hasType(p.type, 'merchant_collect');
+    document.getElementById('eTypeMemberPay').checked = hasType(p.type, 'member_pay');
+    document.getElementById('eTypeMerchantPay').checked = hasType(p.type, 'merchant_pay');
     document.getElementById('eBalance').value = p.balance;
     document.getElementById('eApiKey').value = p.apiKey;
     document.getElementById('eMerchantId').value = p.merchantId;
@@ -307,9 +322,15 @@ function saveProvider() {
     var name = document.getElementById('eName').value.trim();
     var code = document.getElementById('eCode').value.trim();
     if (!name || !code) { alert('请填写服务商名称和标识码'); return; }
+    var types = [];
+    if (document.getElementById('eTypeMemberCollect').checked) types.push('member_collect');
+    if (document.getElementById('eTypeMerchantCollect').checked) types.push('merchant_collect');
+    if (document.getElementById('eTypeMemberPay').checked) types.push('member_pay');
+    if (document.getElementById('eTypeMerchantPay').checked) types.push('merchant_pay');
+    if (types.length === 0) { alert('请至少选择一种服务类型'); return; }
     var data = {
         name: name, code: code,
-        type: document.getElementById('eType').value,
+        type: types.join(','),
         balance: parseFloat(document.getElementById('eBalance').value) || 0,
         apiKey: document.getElementById('eApiKey').value || '****',
         merchantId: document.getElementById('eMerchantId').value || '—',
@@ -331,7 +352,7 @@ function toggleProvider(id) {
     var p = providers.find(function(x) { return x.id === id; });
     if (!p) return;
     p.status = p.status === 'active' ? 'disabled' : 'active';
-    logs.unshift({ time: new Date().toLocaleString('zh-CN'), providerName: p.name, type: p.type === 'collect' ? '收款' : '付款', action: p.status === 'active' ? '启用' : '禁用', amount: 0, newBalance: p.balance, memo: '状态变更' });
+    logs.unshift({ time: new Date().toLocaleString('zh-CN'), providerName: p.name, type: typeLabel(p.type), action: p.status === 'active' ? '启用' : '禁用', amount: 0, newBalance: p.balance, memo: '状态变更' });
     renderProviders();
     renderLogs();
 }
@@ -357,7 +378,7 @@ function executeRecharge() {
     var p = providers.find(function(x) { return x.id === id; });
     if (!p) return;
     p.balance += amt;
-    logs.unshift({ time: new Date().toLocaleString('zh-CN'), providerName: p.name, type: p.type === 'collect' ? '收款' : '付款', action: '充值', amount: amt, newBalance: p.balance, memo: memo || '手动充值' });
+    logs.unshift({ time: new Date().toLocaleString('zh-CN'), providerName: p.name, type: typeLabel(p.type), action: '充值', amount: amt, newBalance: p.balance, memo: memo || '手动充值' });
     closeRechargeModal();
     renderProviders();
     renderLogs();
