@@ -106,7 +106,7 @@
                 <div class="tos-sidebar__group-title">会员钱包</div>
                 <a class="tos-sidebar__item" href="运营-会员提现审核.html"><i class="fas fa-check-circle"></i> <span>提现审核</span></a>
                 <a class="tos-sidebar__item tos-sidebar__item--active" href="运营-提现转账.html"><i class="fas fa-exchange-alt"></i> <span>提现转账</span></a>
-                <a class="tos-sidebar__item" href="运营-转账记录.html"><i class="fas fa-history"></i> <span>转账记录</span></a>
+                <a class="tos-sidebar__item" href="运营-提现记录.html"><i class="fas fa-history"></i> <span>提现记录</span></a>
                 <a class="tos-sidebar__item" href="运营-钱包明细对账.html"><i class="fas fa-file-invoice"></i> <span>钱包对账</span></a>
                 <a class="tos-sidebar__item" href="运营-会员余额管理.html"><i class="fas fa-coins"></i> <span>会员钱包</span></a>
             </div>
@@ -122,10 +122,6 @@
             <div class="tos-header__left">
                 <span class="tos-header__breadcrumb">会员钱包 / </span>
                 <span class="tos-header__title">提现转账</span>
-            </div>
-            <div class="tos-actions">
-                <button class="tos-btn" onclick="batchTransfer()"><i class="fas fa-paper-plane" style="margin-right:4px;"></i> 批量转账</button>
-                <button class="tos-btn tos-btn--primary" onclick="exportCSV()"><i class="fas fa-download" style="margin-right:4px;"></i> 导出报表</button>
             </div>
         </header>
 
@@ -161,17 +157,19 @@
             <section class="tos-card">
                 <div class="tos-card__header">
                     <div>
-                        <h2 class="tos-card__title"><i class="fas fa-list-ul" style="margin-right:8px;color:var(--tos-primary);"></i>待转账列表</h2>
-                        <p class="tos-card__desc">已审核通过待执行转账的提现申请，共 8 笔。</p>
+                        <h2 class="tos-card__title"><i class="fas fa-list-ul" style="margin-right:8px;color:var(--tos-primary);"></i>转账处理列表</h2>
+                        <p class="tos-card__desc">已审核通过的提现申请，含待转账、处理中及转账失败记录，共 14 笔。</p>
                     </div>
                     <div class="tos-actions">
                         <input type="text" class="tos-input" id="searchPending" placeholder="搜索会员姓名/ID" style="width:200px;height:34px;padding:0 10px;border:1px solid var(--tos-border);border-radius:var(--tos-radius-control);font-size:13px;outline:none;" oninput="filterTable('pendingTable', this.value)" />
+                        <button class="tos-btn" onclick="batchTransfer()"><i class="fas fa-paper-plane" style="margin-right:4px;"></i> 批量转账</button>
+                        <button class="tos-btn tos-btn--primary" onclick="exportCSV()"><i class="fas fa-download" style="margin-right:4px;"></i> 导出报表</button>
                     </div>
                 </div>
                 <div class="tos-table-wrap">
                     <table class="tos-table" id="pendingTable">
                         <thead>
-                            <tr><th><input type="checkbox" id="selectAll" onchange="toggleAllCheckbox(this)" /></th><th>转账单号</th><th>会员信息</th><th>提现金额</th><th>收款银行</th><th>收款卡号</th><th>审核通过时间</th><th style="text-align:right;">操作</th></tr>
+                            <tr><th><input type="checkbox" id="selectAll" onchange="toggleAllCheckbox(this)" /></th><th>转账单号</th><th>会员信息</th><th>提现金额</th><th>收款银行</th><th>收款卡号</th><th>审核通过时间</th><th>状态</th><th style="text-align:right;">操作</th></tr>
                         </thead>
                         <tbody>
                             <tr>
@@ -182,6 +180,7 @@
                                 <td>工商银行</td>
                                 <td class="text-mono">6222 **** **** 3851</td>
                                 <td style="font-size:12px;">2026-07-23 09:15</td>
+                                <td><span class="tos-tag tos-tag--default">待转账</span></td>
                                 <td style="text-align:right;">
                                     <button class="tos-btn tos-btn--primary tos-btn--sm" onclick="doTransfer('TX-20260723-001','张建国','12580')">执行转账</button>
                                     <button class="tos-btn tos-btn--link tos-btn--sm" onclick="alert('查看详情（演示模式）')">详情</button>
@@ -195,6 +194,7 @@
                                 <td>建设银行</td>
                                 <td class="text-mono">6217 **** **** 9023</td>
                                 <td style="font-size:12px;">2026-07-23 09:30</td>
+                                <td><span class="tos-tag tos-tag--default">待转账</span></td>
                                 <td style="text-align:right;">
                                     <button class="tos-btn tos-btn--primary tos-btn--sm" onclick="doTransfer('TX-20260723-002','李美玲','8700')">执行转账</button>
                                     <button class="tos-btn tos-btn--link tos-btn--sm" onclick="alert('查看详情（演示模式）')">详情</button>
@@ -208,6 +208,7 @@
                                 <td>招商银行</td>
                                 <td class="text-mono">6214 **** **** 5671</td>
                                 <td style="font-size:12px;">2026-07-22 16:20</td>
+                                <td><span class="tos-tag tos-tag--default">待转账</span></td>
                                 <td style="text-align:right;">
                                     <button class="tos-btn tos-btn--primary tos-btn--sm" onclick="doTransfer('TX-20260722-005','王大力','3500')">执行转账</button>
                                     <button class="tos-btn tos-btn--link tos-btn--sm" onclick="alert('查看详情（演示模式）')">详情</button>
@@ -221,9 +222,80 @@
                                 <td>中国银行</td>
                                 <td class="text-mono">6216 **** **** 3402</td>
                                 <td style="font-size:12px;">2026-07-22 14:05</td>
+                                <td><span class="tos-tag tos-tag--default">待转账</span></td>
                                 <td style="text-align:right;">
                                     <button class="tos-btn tos-btn--primary tos-btn--sm" onclick="doTransfer('TX-20260722-003','陈小红','15000')">执行转账</button>
                                     <button class="tos-btn tos-btn--link tos-btn--sm" onclick="alert('查看详情（演示模式）')">详情</button>
+                                </td>
+                            </tr>
+                            <!-- 处理中 -->
+                            <tr>
+                                <td></td>
+                                <td class="text-mono">TX-20260723-009</td>
+                                <td><strong>黄志强</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">MEM-287</span></td>
+                                <td class="amount-positive">¥3,150.00</td>
+                                <td>中国银行</td>
+                                <td class="text-mono">6216 **** **** 7803</td>
+                                <td style="font-size:12px;">2026-07-23 11:45</td>
+                                <td><span class="tos-tag tos-tag--warning">处理中</span></td>
+                                <td style="text-align:right;">
+                                    <button class="tos-btn tos-btn--link tos-btn--sm" onclick="alert('查询银行处理状态（演示模式）')">查询</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td class="text-mono">TX-20260722-008</td>
+                                <td><strong>周丽华</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">MEM-301</span></td>
+                                <td class="amount-positive">¥2,500.00</td>
+                                <td>建设银行</td>
+                                <td class="text-mono">6217 **** **** 4308</td>
+                                <td style="font-size:12px;">2026-07-22 15:45</td>
+                                <td><span class="tos-tag tos-tag--warning">处理中</span></td>
+                                <td style="text-align:right;">
+                                    <button class="tos-btn tos-btn--link tos-btn--sm" onclick="alert('查询银行处理状态（演示模式）')">查询</button>
+                                </td>
+                            </tr>
+                            <!-- 转账失败 -->
+                            <tr>
+                                <td></td>
+                                <td class="text-mono">TX-20260722-002</td>
+                                <td><strong>吴刚</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">MEM-063</span></td>
+                                <td class="amount-error">¥4,300.00</td>
+                                <td>招商银行</td>
+                                <td class="text-mono">6214 **** **** 1892</td>
+                                <td style="font-size:12px;">2026-07-22 11:10</td>
+                                <td><span class="tos-tag tos-tag--error">转账失败</span></td>
+                                <td style="text-align:right;">
+                                    <button class="tos-btn tos-btn--danger tos-btn--sm" onclick="doTransfer('TX-20260722-002','吴刚','4300')">重试</button>
+                                    <button class="tos-btn tos-btn--link tos-btn--sm">标记异常</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td class="text-mono">TX-20260721-015</td>
+                                <td><strong>马海龙</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">MEM-409</span></td>
+                                <td class="amount-error">¥7,800.00</td>
+                                <td>工商银行</td>
+                                <td class="text-mono">6222 **** **** 6734</td>
+                                <td style="font-size:12px;">2026-07-21 14:30</td>
+                                <td><span class="tos-tag tos-tag--error">转账失败</span></td>
+                                <td style="text-align:right;">
+                                    <button class="tos-btn tos-btn--danger tos-btn--sm" onclick="doTransfer('TX-20260721-015','马海龙','7800')">重试</button>
+                                    <button class="tos-btn tos-btn--link tos-btn--sm">标记异常</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td class="text-mono">TX-20260719-011</td>
+                                <td><strong>韩雪梅</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">MEM-331</span></td>
+                                <td class="amount-error">¥1,200.00</td>
+                                <td>兴业银行</td>
+                                <td class="text-mono">6229 **** **** 1156</td>
+                                <td style="font-size:12px;">2026-07-19 16:40</td>
+                                <td><span class="tos-tag tos-tag--error">转账失败</span></td>
+                                <td style="text-align:right;">
+                                    <button class="tos-btn tos-btn--danger tos-btn--sm" onclick="doTransfer('TX-20260719-011','韩雪梅','1200')">重试</button>
+                                    <button class="tos-btn tos-btn--link tos-btn--sm">标记异常</button>
                                 </td>
                             </tr>
                         </tbody>
