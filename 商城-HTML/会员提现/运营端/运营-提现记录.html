@@ -86,6 +86,15 @@
         .tos-pagination .page-info { padding: 0 8px; }
         .tos-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; padding: 10px 24px; border-radius: var(--tos-radius-control); background: var(--tos-success); color: #fff; font-size: 14px; font-weight: 500; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
         .tos-toast--show { opacity: 1; }
+        .tos-modal-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.45); align-items: center; justify-content: center; }
+        .tos-modal-overlay--show { display: flex; }
+        .tos-modal { background: #fff; border-radius: var(--tos-radius-card); box-shadow: 0 6px 30px rgba(0,0,0,0.15); width: 520px; max-width: 90vw; max-height: 85vh; overflow-y: auto; }
+        .tos-modal__header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--tos-border-soft); }
+        .tos-modal__title { font-size: 16px; font-weight: 600; color: #1f2937; }
+        .tos-modal__close { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: none; background: none; cursor: pointer; font-size: 18px; color: var(--tos-text-muted); border-radius: 6px; }
+        .tos-modal__close:hover { background: #f5f5f5; color: var(--tos-text); }
+        .tos-modal__body { padding: 20px; font-size: 14px; line-height: 1.8; }
+        .tos-modal__footer { display: flex; justify-content: flex-end; gap: 10px; padding: 12px 20px; border-top: 1px solid var(--tos-border-soft); }
         @media (max-width: 1024px) {
             .tos-sidebar { width: 64px; } .tos-sidebar__logo-text, .tos-sidebar__group-title, .tos-sidebar__item span { display: none; }
             .tos-sidebar__item { justify-content: center; padding: 10px; } .tos-main { margin-left: 64px; }
@@ -203,7 +212,7 @@
                                 <td style="font-size:12px;">2026-07-23 10:32</td>
                                 <td><span class="tos-tag tos-tag--success">提现成功</span></td>
                                 <td style="font-size:12px;color:var(--tos-text-muted);">银行处理号: BOF20260723103001</td>
-                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm">回单</button></td>
+                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm" onclick="showReceiptModal('TX-20260723-006')">回单</button></td>
                             </tr>
                             <tr data-status="success">
                                 <td class="text-mono">TX-20260723-004</td>
@@ -216,7 +225,7 @@
                                 <td style="font-size:12px;">2026-07-23 09:01</td>
                                 <td><span class="tos-tag tos-tag--success">提现成功</span></td>
                                 <td style="font-size:12px;color:var(--tos-text-muted);">银行处理号: ICBC20260723090012</td>
-                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm">回单</button></td>
+                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm" onclick="showReceiptModal('TX-20260723-004')">回单</button></td>
                             </tr>
                             <tr data-status="voided">
                                 <td class="text-mono">TX-20260723-007</td>
@@ -229,7 +238,7 @@
                                 <td style="font-size:12px;color:var(--tos-text-muted);">--</td>
                                 <td><span class="tos-tag tos-tag--default">已作废</span></td>
                                 <td style="font-size:12px;color:var(--tos-text-muted);">会员主动取消提现申请</td>
-                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm">详情</button></td>
+                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm" onclick="showRecordDetail('TX-20260723-006')">详情</button></td>
                             </tr>
                             <tr data-status="success">
                                 <td class="text-mono">TX-20260722-010</td>
@@ -242,7 +251,7 @@
                                 <td style="font-size:12px;">2026-07-22 17:03</td>
                                 <td><span class="tos-tag tos-tag--success">提现成功</span></td>
                                 <td style="font-size:12px;color:var(--tos-text-muted);">银行处理号: CCB20260722170045</td>
-                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm">回单</button></td>
+                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm" onclick="showReceiptModal('TX-20260723-007')">回单</button></td>
                             </tr>
                             <tr data-status="voided">
                                 <td class="text-mono">TX-20260722-013</td>
@@ -255,7 +264,7 @@
                                 <td style="font-size:12px;color:var(--tos-text-muted);">--</td>
                                 <td><span class="tos-tag tos-tag--default">已作废</span></td>
                                 <td style="font-size:12px;color:var(--tos-text-muted);">审核驳回：收款卡信息不符</td>
-                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm">详情</button></td>
+                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm" onclick="showRecordDetail('TX-20260722-010')">详情</button></td>
                             </tr>
                             <tr data-status="success">
                                 <td class="text-mono">TX-20260721-012</td>
@@ -268,7 +277,7 @@
                                 <td style="font-size:12px;">2026-07-21 08:57</td>
                                 <td><span class="tos-tag tos-tag--success">提现成功</span></td>
                                 <td style="font-size:12px;color:var(--tos-text-muted);">银行处理号: BOC20260721085533</td>
-                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm">回单</button></td>
+                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm" onclick="showReceiptModal('TX-20260722-013')">回单</button></td>
                             </tr>
                             <tr data-status="voided">
                                 <td class="text-mono">TX-20260721-020</td>
@@ -281,7 +290,7 @@
                                 <td style="font-size:12px;color:var(--tos-text-muted);">--</td>
                                 <td><span class="tos-tag tos-tag--default">已作废</span></td>
                                 <td style="font-size:12px;color:var(--tos-text-muted);">超时未处理自动作废</td>
-                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm">详情</button></td>
+                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm" onclick="showRecordDetail('TX-20260721-012')">详情</button></td>
                             </tr>
                             <tr data-status="success">
                                 <td class="text-mono">TX-20260720-007</td>
@@ -294,7 +303,7 @@
                                 <td style="font-size:12px;">2026-07-20 13:16</td>
                                 <td><span class="tos-tag tos-tag--success">提现成功</span></td>
                                 <td style="font-size:12px;color:var(--tos-text-muted);">银行处理号: CMB20260720131522</td>
-                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm">回单</button></td>
+                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm" onclick="showReceiptModal('TX-20260721-020')">回单</button></td>
                             </tr>
                             <tr data-status="voided">
                                 <td class="text-mono">TX-20260720-001</td>
@@ -307,7 +316,7 @@
                                 <td style="font-size:12px;color:var(--tos-text-muted);">--</td>
                                 <td><span class="tos-tag tos-tag--default">已作废</span></td>
                                 <td style="font-size:12px;color:var(--tos-text-muted);">转账多次失败，标记作废</td>
-                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm">详情</button></td>
+                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm" onclick="showRecordDetail('TX-20260720-007')">详情</button></td>
                             </tr>
                             <tr data-status="success">
                                 <td class="text-mono">TX-20260720-003</td>
@@ -320,7 +329,7 @@
                                 <td style="font-size:12px;">2026-07-20 09:22</td>
                                 <td><span class="tos-tag tos-tag--success">提现成功</span></td>
                                 <td style="font-size:12px;color:var(--tos-text-muted);">银行处理号: PSBC20260720092008</td>
-                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm">回单</button></td>
+                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm" onclick="showReceiptModal('TX-20260720-001')">回单</button></td>
                             </tr>
                             <tr data-status="success">
                                 <td class="text-mono">TX-20260719-005</td>
@@ -333,7 +342,7 @@
                                 <td style="font-size:12px;">2026-07-19 10:01</td>
                                 <td><span class="tos-tag tos-tag--success">提现成功</span></td>
                                 <td style="font-size:12px;color:var(--tos-text-muted);">银行处理号: BCOM20260719100055</td>
-                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm">回单</button></td>
+                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm" onclick="showReceiptModal('TX-20260719-005')">回单</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -354,6 +363,20 @@
     </div>
 </div>
 
+<!-- 详情弹窗 -->
+<div class="tos-modal-overlay" id="recordModal">
+    <div class="tos-modal">
+        <div class="tos-modal__header">
+            <span class="tos-modal__title" id="rmTitle">详情</span>
+            <button class="tos-modal__close" onclick="closeRecordModal()">&times;</button>
+        </div>
+        <div class="tos-modal__body" id="rmBody"></div>
+        <div class="tos-modal__footer" id="rmFooter">
+            <button class="tos-btn tos-btn--primary" onclick="closeRecordModal()">关闭</button>
+        </div>
+    </div>
+</div>
+
 <script>
     var currentStatus = 'all';
 
@@ -363,6 +386,88 @@
         t.classList.add('tos-toast--show');
         clearTimeout(t._timer);
         t._timer = setTimeout(function() { t.classList.remove('tos-toast--show'); }, 2000);
+    }
+
+    function openRecordModal(title, bodyHtml) {
+        document.getElementById('rmTitle').textContent = title;
+        document.getElementById('rmBody').innerHTML = bodyHtml;
+        document.getElementById('recordModal').classList.add('tos-modal-overlay--show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeRecordModal() {
+        document.getElementById('recordModal').classList.remove('tos-modal-overlay--show');
+        document.body.style.overflow = '';
+    }
+
+    function getRowData(txId) {
+        var rows = document.querySelectorAll('#recordTable tbody tr');
+        for (var i = 0; i < rows.length; i++) {
+            var firstTd = rows[i].querySelector('td.text-mono');
+            if (firstTd && firstTd.textContent.trim() === txId) {
+                var cells = rows[i].querySelectorAll('td');
+                return {
+                    txId: txId,
+                    name: cells[1].textContent.trim(),
+                    uid: cells[2].textContent.trim(),
+                    amount: cells[3].textContent.trim(),
+                    bank: cells[4].textContent.trim(),
+                    card: cells[5].textContent.trim(),
+                    doneTime: cells[6].textContent.trim(),
+                    arrivalTime: cells[7].textContent.trim(),
+                    status: cells[8].textContent.trim(),
+                    remark: cells[9].textContent.trim()
+                };
+            }
+        }
+        return null;
+    }
+
+    function showRecordDetail(txId) {
+        var d = getRowData(txId);
+        if (!d) return;
+        var html = '<div style="display:flex;flex-direction:column;gap:12px;">' +
+            '<div style="background:#fafafa;border-radius:6px;padding:12px;">' +
+            '<div style="font-size:12px;color:var(--tos-text-muted);margin-bottom:6px;font-weight:600;">会员信息</div>' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:13px;">' +
+            '<div><span style="color:var(--tos-text-muted);">姓名：</span><strong>' + d.name + '</strong></div>' +
+            '<div><span style="color:var(--tos-text-muted);">会员ID：</span><span style="font-family:monospace;">' + d.uid + '</span></div>' +
+            '</div></div>' +
+            '<div style="background:#fafafa;border-radius:6px;padding:12px;">' +
+            '<div style="font-size:12px;color:var(--tos-text-muted);margin-bottom:6px;font-weight:600;">提现信息</div>' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:13px;">' +
+            '<div><span style="color:var(--tos-text-muted);">单号：</span><span style="font-family:monospace;font-size:12px;">' + d.txId + '</span></div>' +
+            '<div><span style="color:var(--tos-text-muted);">状态：</span>' + d.status + '</div>' +
+            '<div><span style="color:var(--tos-text-muted);">金额：</span><strong style="color:var(--tos-primary);">' + d.amount + '</strong></div>' +
+            '<div><span style="color:var(--tos-text-muted);">收款银行：</span>' + d.bank + '</div>' +
+            '<div><span style="color:var(--tos-text-muted);">收款卡号：</span><span style="font-family:monospace;font-size:12px;">' + d.card + '</span></div>' +
+            '<div><span style="color:var(--tos-text-muted);">完成时间：</span>' + d.doneTime + '</div>' +
+            '<div><span style="color:var(--tos-text-muted);">到账时间：</span>' + d.arrivalTime + '</div>' +
+            '<div style="grid-column:1/-1;"><span style="color:var(--tos-text-muted);">备注：</span>' + d.remark + '</div>' +
+            '</div></div></div>';
+        openRecordModal('提现详情', html);
+    }
+
+    function showReceiptModal(txId) {
+        var d = getRowData(txId);
+        if (!d) return;
+        var html = '<div style="text-align:center;padding:10px 0;">' +
+            '<div style="font-size:48px;color:var(--tos-success);margin-bottom:8px;"><i class="fas fa-check-circle"></i></div>' +
+            '<div style="font-size:16px;font-weight:600;margin-bottom:16px;">转账成功</div>' +
+            '<div style="background:#fafafa;border-radius:8px;padding:14px;text-align:left;">' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;font-size:13px;">' +
+            '<div><span style="color:var(--tos-text-muted);">转账单号</span></div><div style="text-align:right;font-family:monospace;">' + d.txId + '</div>' +
+            '<div><span style="color:var(--tos-text-muted);">收款人</span></div><div style="text-align:right;"><strong>' + d.name + '</strong></div>' +
+            '<div><span style="color:var(--tos-text-muted);">金额</span></div><div style="text-align:right;font-weight:600;color:var(--tos-primary);">' + d.amount + '</div>' +
+            '<div><span style="color:var(--tos-text-muted);">收款银行</span></div><div style="text-align:right;">' + d.bank + '</div>' +
+            '<div><span style="color:var(--tos-text-muted);">收款卡号</span></div><div style="text-align:right;font-family:monospace;">' + d.card + '</div>' +
+            '<div><span style="color:var(--tos-text-muted);">完成时间</span></div><div style="text-align:right;">' + d.doneTime + '</div>' +
+            '<div><span style="color:var(--tos-text-muted);">到账时间</span></div><div style="text-align:right;">' + d.arrivalTime + '</div>' +
+            '<div><span style="color:var(--tos-text-muted);">银行流水号</span></div><div style="text-align:right;font-family:monospace;font-size:11px;">' + d.remark.replace('银行处理号: ','') + '</div>' +
+            '</div></div>' +
+            '<div style="margin-top:12px;font-size:12px;color:var(--tos-text-muted);">电子回单 · TOS运营中心</div>' +
+            '</div>';
+        openRecordModal('转账回单', html);
     }
 
     function filterByStatus(status, btn) {
