@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>运营端 · 提现配置</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --tos-primary: #42b7ae; --tos-primary-hover: #339b94; --tos-primary-bg: #e6f7f6;
+            --tos-bg: #f5f7fa; --tos-card: #fff; --tos-border: #e5e7eb; --tos-border-soft: #f0f2f5;
+            --tos-text: #333; --tos-text-secondary: #666; --tos-text-muted: #999;
+            --tos-success: #52c41a; --tos-warning: #faad14; --tos-error: #f5222d;
+            --tos-radius-card: 12px; --tos-radius-control: 8px; --tos-radius-tag: 4px;
+            --tos-shadow-card: 0 1px 2px rgba(15,23,42,0.03);
+            --sidebar-width: 220px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--tos-bg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: var(--tos-text); }
+        #app { min-height: 100vh; display: flex; }
+        .tos-sidebar { position: fixed; top: 0; left: 0; bottom: 0; z-index: 30; width: var(--sidebar-width); background: #fff; border-right: 1px solid var(--tos-border-soft); display: flex; flex-direction: column; overflow-y: auto; }
+
+        .sidebar__end-select { width: calc(100% - 24px); height: 32px; margin: 8px 12px 0; padding: 0 26px 0 10px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; font-size: 13px; color: #333; outline: none; cursor: pointer; font-family: inherit; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><path d='M2 4l3 3 3-3' fill='none' stroke='%23999' stroke-width='1.5' stroke-linecap='round'/></svg>"); background-repeat: no-repeat; background-position: right 8px center; }
+        .sidebar__end-select:focus { border-color: #42b7ae; box-shadow: 0 0 0 2px rgba(66,183,174,.16); }
+        .tos-sidebar__logo { display: flex; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid var(--tos-border-soft); }
+        .tos-sidebar__logo-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--tos-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+        .tos-sidebar__logo-text { font-size: 16px; font-weight: 700; color: #1f2937; white-space: nowrap; }
+        .tos-sidebar__nav { flex: 1; padding: 12px 0; }
+        .tos-sidebar__group { padding: 0 12px; margin-bottom: 4px; }
+        .tos-sidebar__group-title { padding: 8px 8px 4px; font-size: 11px; color: var(--tos-text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+        .tos-sidebar__item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; color: var(--tos-text-secondary); transition: all 0.15s; text-decoration: none; margin-bottom: 2px; }
+        .tos-sidebar__item:hover { background: #f5f5f5; color: var(--tos-text); }
+        .tos-sidebar__item--active { background: var(--tos-primary-bg); color: var(--tos-primary); font-weight: 600; }
+        .tos-sidebar__item i { width: 18px; text-align: center; font-size: 13px; flex-shrink: 0; }
+        .tos-main { margin-left: var(--sidebar-width); flex: 1; min-width: 0; }
+        .tos-header { position: sticky; top: 0; z-index: 20; display: flex; height: 56px; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--tos-border-soft); background: rgba(255,255,255,0.96); padding: 0 20px; backdrop-filter: blur(10px); }
+        .tos-header__left { display: flex; align-items: center; gap: 12px; }
+        .tos-header__title { font-size: 15px; font-weight: 600; color: #1f2937; }
+        .tos-header__breadcrumb { font-size: 12px; color: var(--tos-text-muted); }
+        .tos-page { padding: 20px; max-width: 1400px; }
+        .tos-page-title { margin-bottom: 20px; }
+        .tos-page-title h1 { margin: 0; color: #1f2937; font-size: 20px; font-weight: 600; }
+        .tos-page-title p { margin: 4px 0 0; color: var(--tos-text-muted); font-size: 13px; }
+        .tos-card { background: var(--tos-card); border: 1px solid var(--tos-border-soft); border-radius: var(--tos-radius-card); padding: 20px; box-shadow: var(--tos-shadow-card); }
+        .tos-card+.tos-card { margin-top: 20px; }
+        .tos-card__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+        .tos-card__title { margin: 0; color: var(--tos-text); font-size: 16px; font-weight: 600; }
+        .tos-card__desc { margin-top: 2px; color: var(--tos-text-muted); font-size: 13px; }
+        .tos-form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 20px; }
+        .tos-form-grid--3 { grid-template-columns: repeat(3, 1fr); }
+        .tos-actions { display: flex; align-items: center; gap: 8px; }
+        .tos-divider { border: none; border-top: 1px solid var(--tos-border-soft); margin: 16px 0; }
+        .tos-bank-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .tos-bank-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border: 1px solid var(--tos-border-soft); border-radius: var(--tos-radius-control); background: #fafafa; font-size: 14px; }
+        .tos-bank-item label { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; color: var(--tos-text); }
+        .tos-bank-item input[type="checkbox"] { display: none; }
+        .tos-bank-toggle { position: relative; width: 36px; height: 20px; border-radius: 10px; background: #d9d9d9; transition: background 0.2s; cursor: pointer; flex-shrink: 0; }
+        .tos-bank-toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.15); }
+        .tos-bank-item input:checked+.tos-bank-toggle { background: var(--tos-primary); }
+        .tos-bank-item input:checked+.tos-bank-toggle::after { transform: translateX(16px); }
+        .tos-footer-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding-top: 20px; }
+        .tos-btn { display: inline-flex; align-items: center; justify-content: center; height: 36px; padding: 0 16px; border: 1px solid var(--tos-border); border-radius: var(--tos-radius-control); background: #fff; color: var(--tos-text); font-size: 14px; cursor: pointer; transition: all 0.15s; font-family: inherit; white-space: nowrap; }
+        .tos-btn:hover { border-color: var(--tos-primary); color: var(--tos-primary); }
+        .tos-btn--primary { background: var(--tos-primary); border-color: var(--tos-primary); color: #fff; }
+        .tos-btn--primary:hover { background: var(--tos-primary-hover); border-color: var(--tos-primary-hover); color: #fff; }
+        .tos-btn--lg { height: 42px; padding: 0 24px; font-size: 15px; }
+        .tos-input { width: 100%; height: 36px; padding: 0 12px; border: 1px solid var(--tos-border); border-radius: var(--tos-radius-control); font-size: 14px; color: var(--tos-text); outline: none; font-family: inherit; transition: border-color 0.15s; background: #fff; }
+        .tos-input:focus { border-color: var(--tos-primary); box-shadow: 0 0 0 2px rgba(66,183,174,0.16); }
+        .tos-input--time { width: 100%; height: 36px; padding: 0 12px; border: 1px solid var(--tos-border); border-radius: var(--tos-radius-control); font-size: 14px; color: var(--tos-text); outline: none; font-family: inherit; transition: border-color 0.15s; background: #fff; }
+        .tos-input--time:focus { border-color: var(--tos-primary); box-shadow: 0 0 0 2px rgba(66,183,174,0.16); }
+        .tos-form-item { margin-bottom: 16px; }
+        .tos-form-item label { display: block; margin-bottom: 4px; font-size: 13px; color: var(--tos-text-secondary); font-weight: 500; }
+        .tos-form-item .hint { font-size: 11px; color: var(--tos-text-muted); margin-top: 2px; }
+        .tos-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; padding: 10px 24px; border-radius: var(--tos-radius-control); background: var(--tos-success); color: #fff; font-size: 14px; font-weight: 500; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+        .tos-toast--show { opacity: 1; }
+        @media (max-width: 1024px) {
+            .tos-sidebar { width: 64px; } .tos-sidebar__logo-text, .tos-sidebar__group-title, .tos-sidebar__item span { display: none; }
+            .tos-sidebar__item { justify-content: center; padding: 10px; } .tos-main { margin-left: 64px; }
+            .tos-form-grid { grid-template-columns: repeat(2, 1fr); }
+            .tos-bank-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 640px) {
+            .tos-sidebar { display: none; } .tos-main { margin-left: 0; }
+            .tos-header { height: 48px; padding: 0 14px; } .tos-page { padding: 14px; }
+            .tos-form-grid { grid-template-columns: 1fr; }
+            .tos-bank-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <!-- Toast 提示 -->
+    <div id="toast" class="tos-toast"></div>
+
+    <aside class="tos-sidebar">
+        <select class="sidebar__end-select" onchange="if(this.value)location.href=this.value"><option value="../会员提现申请.html">会员端</option><option value="" selected>运营端</option></select>
+        <div class="tos-sidebar__logo">
+            <div class="tos-sidebar__logo-icon"><i class="fas fa-layer-group"></i></div>
+            <span class="tos-sidebar__logo-text">TOS 运营中心</span>
+        </div>
+        <nav class="tos-sidebar__nav">
+            <div class="tos-sidebar__group">
+                <div class="tos-sidebar__group-title">会员钱包</div>
+                <a class="tos-sidebar__item" href="运营-会员提现审核.html"><i class="fas fa-check-circle"></i> <span>提现审核</span></a>
+                <a class="tos-sidebar__item" href="运营-提现转账.html"><i class="fas fa-exchange-alt"></i> <span>提现转账</span></a>
+                <a class="tos-sidebar__item" href="运营-转账记录.html"><i class="fas fa-history"></i> <span>转账记录</span></a>
+                <a class="tos-sidebar__item" href="运营-钱包明细对账.html"><i class="fas fa-file-invoice"></i> <span>钱包对账</span></a>
+                <a class="tos-sidebar__item" href="运营-会员余额管理.html"><i class="fas fa-coins"></i> <span>会员钱包</span></a>
+            </div>
+            <div class="tos-sidebar__group">
+                <div class="tos-sidebar__group-title">系统设置</div>
+                <a class="tos-sidebar__item tos-sidebar__item--active" href="运营-提现配置.html"><i class="fas fa-cog"></i> <span>提现配置</span></a>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="tos-main">
+        <header class="tos-header">
+            <div class="tos-header__left">
+                <span class="tos-header__breadcrumb">会员钱包 / 系统设置 / </span>
+                <span class="tos-header__title">提现配置</span>
+            </div>
+            <div class="tos-actions">
+                <button class="tos-btn" onclick="resetDefaults()">恢复默认</button>
+                <button class="tos-btn tos-btn--primary" onclick="saveConfig()">
+                    <i class="fas fa-check" style="margin-right:4px;"></i> 保存配置
+                </button>
+            </div>
+        </header>
+
+        <main class="tos-page">
+            <section class="tos-page-title">
+                <div>
+                    <h1>提现配置</h1>
+                    <p>管理会员提现规则，包括金额限制、次数上限、手续费率及支持银行等全局设置。</p>
+                </div>
+            </section>
+
+            <!-- 提现规则配置 -->
+            <section class="tos-card">
+                <div class="tos-card__header">
+                    <div>
+                        <h2 class="tos-card__title"><i class="fas fa-sliders-h" style="margin-right:8px;color:var(--tos-primary);"></i>提现规则</h2>
+                        <p class="tos-card__desc">设置单笔提现金额上下限及手续费规则。</p>
+                    </div>
+                </div>
+                <div class="tos-form-grid">
+                    <div class="tos-form-item">
+                        <label>单笔最低提现金额 (CNY)</label>
+                        <input type="number" class="tos-input" id="minAmount" value="10.00" min="0.01" step="0.01" />
+                    </div>
+                    <div class="tos-form-item">
+                        <label>单笔最高提现金额 (CNY)</label>
+                        <input type="number" class="tos-input" id="maxAmount" value="50000.00" min="0.01" step="0.01" />
+                    </div>
+                    <div class="tos-form-item">
+                        <label>手续费率 (%)</label>
+                        <input type="number" class="tos-input" id="feeRate" value="0.5" min="0" max="100" step="0.1" />
+                    </div>
+                    <div class="tos-form-item">
+                        <label>单笔手续费上限 (CNY)</label>
+                        <input type="number" class="tos-input" id="maxFee" value="25.00" min="0" step="0.01" />
+                    </div>
+                </div>
+            </section>
+
+            <!-- 审批与限额 -->
+            <section class="tos-card">
+                <div class="tos-card__header">
+                    <div>
+                        <h2 class="tos-card__title"><i class="fas fa-shield-alt" style="margin-right:8px;color:var(--tos-primary);"></i>审批与限额</h2>
+                        <p class="tos-card__desc">配置自动审核阈值、提现频次与日累计上限。</p>
+                    </div>
+                </div>
+                <div class="tos-form-grid">
+                    <div class="tos-form-item">
+                        <label>自动审核通过阈值 (CNY)</label>
+                        <input type="number" class="tos-input" id="autoAuditThreshold" value="1000.00" min="0" step="0.01" />
+                        <div class="hint">低于此金额的提现申请将自动通过</div>
+                    </div>
+                    <div class="tos-form-item">
+                        <label>单日累计提现上限 (CNY)</label>
+                        <input type="number" class="tos-input" id="dailyLimit" value="100000.00" min="0" step="0.01" />
+                    </div>
+                    <div class="tos-form-item">
+                        <label>单日提现次数上限</label>
+                        <input type="number" class="tos-input" id="dailyCountLimit" value="5" min="1" step="1" />
+                    </div>
+                    <div class="tos-form-item">
+                        <label>每月提现次数上限</label>
+                        <input type="number" class="tos-input" id="monthlyCountLimit" value="20" min="1" step="1" />
+                    </div>
+                </div>
+
+                <hr class="tos-divider" />
+
+                <div class="tos-form-grid">
+                    <div class="tos-form-item">
+                        <label>提现处理时段（开始）</label>
+                        <input type="time" class="tos-input--time" id="processStartTime" value="09:00" />
+                    </div>
+                    <div class="tos-form-item">
+                        <label>提现处理时段（结束）</label>
+                        <input type="time" class="tos-input--time" id="processEndTime" value="18:00" />
+                    </div>
+                    <div class="tos-form-item">
+                        <label>到账时效说明</label>
+                        <input type="text" class="tos-input" id="arrivalNotice" value="T+1 工作日到账" placeholder="例：T+1 工作日到账" />
+                    </div>
+                    <div class="tos-form-item">
+                        <label>是否需要人工复核</label>
+                        <div style="display:flex;align-items:center;gap:10px;height:36px;">
+                            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;">
+                                <input type="checkbox" id="requireManualReview" style="width:16px;height:16px;accent-color:var(--tos-primary);" />
+                                开启人工复核
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 支持银行 -->
+            <section class="tos-card">
+                <div class="tos-card__header">
+                    <div>
+                        <h2 class="tos-card__title"><i class="fas fa-university" style="margin-right:8px;color:var(--tos-primary);"></i>支持银行</h2>
+                        <p class="tos-card__desc">启用或禁用会员可绑定的提现银行卡。</p>
+                    </div>
+                    <button class="tos-btn" onclick="toggleAllBanks()">全部启用</button>
+                </div>
+                <div class="tos-bank-grid" id="bankGrid">
+                    <div class="tos-bank-item">
+                        <span>工商银行</span>
+                        <label><input type="checkbox" class="bank-cb" data-bank="工商银行" checked /><span class="tos-bank-toggle"></span></label>
+                    </div>
+                    <div class="tos-bank-item">
+                        <span>农业银行</span>
+                        <label><input type="checkbox" class="bank-cb" data-bank="农业银行" checked /><span class="tos-bank-toggle"></span></label>
+                    </div>
+                    <div class="tos-bank-item">
+                        <span>中国银行</span>
+                        <label><input type="checkbox" class="bank-cb" data-bank="中国银行" checked /><span class="tos-bank-toggle"></span></label>
+                    </div>
+                    <div class="tos-bank-item">
+                        <span>建设银行</span>
+                        <label><input type="checkbox" class="bank-cb" data-bank="建设银行" checked /><span class="tos-bank-toggle"></span></label>
+                    </div>
+                    <div class="tos-bank-item">
+                        <span>交通银行</span>
+                        <label><input type="checkbox" class="bank-cb" data-bank="交通银行" checked /><span class="tos-bank-toggle"></span></label>
+                    </div>
+                    <div class="tos-bank-item">
+                        <span>招商银行</span>
+                        <label><input type="checkbox" class="bank-cb" data-bank="招商银行" checked /><span class="tos-bank-toggle"></span></label>
+                    </div>
+                    <div class="tos-bank-item">
+                        <span>中信银行</span>
+                        <label><input type="checkbox" class="bank-cb" data-bank="中信银行" checked /><span class="tos-bank-toggle"></span></label>
+                    </div>
+                    <div class="tos-bank-item">
+                        <span>光大银行</span>
+                        <label><input type="checkbox" class="bank-cb" data-bank="光大银行" checked /><span class="tos-bank-toggle"></span></label>
+                    </div>
+                    <div class="tos-bank-item">
+                        <span>平安银行</span>
+                        <label><input type="checkbox" class="bank-cb" data-bank="平安银行" checked /><span class="tos-bank-toggle"></span></label>
+                    </div>
+                    <div class="tos-bank-item">
+                        <span>民生银行</span>
+                        <label><input type="checkbox" class="bank-cb" data-bank="民生银行" checked /><span class="tos-bank-toggle"></span></label>
+                    </div>
+                    <div class="tos-bank-item">
+                        <span>兴业银行</span>
+                        <label><input type="checkbox" class="bank-cb" data-bank="兴业银行" checked /><span class="tos-bank-toggle"></span></label>
+                    </div>
+                    <div class="tos-bank-item">
+                        <span>邮储银行</span>
+                        <label><input type="checkbox" class="bank-cb" data-bank="邮储银行" checked /><span class="tos-bank-toggle"></span></label>
+                    </div>
+                    <div class="tos-bank-item">
+                        <span>浦发银行</span>
+                        <label><input type="checkbox" class="bank-cb" data-bank="浦发银行" /><span class="tos-bank-toggle"></span></label>
+                    </div>
+                    <div class="tos-bank-item">
+                        <span>华夏银行</span>
+                        <label><input type="checkbox" class="bank-cb" data-bank="华夏银行" /><span class="tos-bank-toggle"></span></label>
+                    </div>
+                    <div class="tos-bank-item">
+                        <span>广发银行</span>
+                        <label><input type="checkbox" class="bank-cb" data-bank="广发银行" /><span class="tos-bank-toggle"></span></label>
+                    </div>
+                    <div class="tos-bank-item">
+                        <span>北京银行</span>
+                        <label><input type="checkbox" class="bank-cb" data-bank="北京银行" /><span class="tos-bank-toggle"></span></label>
+                    </div>
+                </div>
+            </section>
+
+            <div class="tos-footer-actions">
+                <button class="tos-btn tos-btn--lg" onclick="resetDefaults()">恢复默认</button>
+                <button class="tos-btn tos-btn--lg tos-btn--primary" onclick="saveConfig()">
+                    <i class="fas fa-check" style="margin-right:6px;"></i> 保存配置
+                </button>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    function showToast(msg) {
+        var t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('tos-toast--show');
+        clearTimeout(t._timer);
+        t._timer = setTimeout(function() { t.classList.remove('tos-toast--show'); }, 2000);
+    }
+
+    function toggleAllBanks() {
+        var cbs = document.querySelectorAll('.bank-cb');
+        var allChecked = Array.from(cbs).every(function(cb) { return cb.checked; });
+        cbs.forEach(function(cb) { cb.checked = !allChecked; });
+        var btn = document.querySelector('.tos-bank-grid').parentElement.querySelector('.tos-card__header .tos-btn');
+        btn.textContent = allChecked ? '全部启用' : '全部禁用';
+    }
+
+    // 更新全部按钮文案（当手动点击单个开关时）
+    document.addEventListener('DOMContentLoaded', function() {
+        var cbs = document.querySelectorAll('.bank-cb');
+        cbs.forEach(function(cb) {
+            cb.addEventListener('change', function() {
+                var all = document.querySelectorAll('.bank-cb');
+                var allChecked = Array.from(all).every(function(c) { return c.checked; });
+                var btn = document.querySelector('.tos-bank-grid').parentElement.querySelector('.tos-card__header .tos-btn');
+                btn.textContent = allChecked ? '全部禁用' : '全部启用';
+            });
+        });
+    });
+
+    function saveConfig() {
+        var banks = [];
+        document.querySelectorAll('.bank-cb:checked').forEach(function(cb) {
+            banks.push(cb.getAttribute('data-bank'));
+        });
+        showToast('配置已保存');
+    }
+
+    function resetDefaults() {
+        document.getElementById('minAmount').value = '10.00';
+        document.getElementById('maxAmount').value = '50000.00';
+        document.getElementById('feeRate').value = '0.5';
+        document.getElementById('maxFee').value = '25.00';
+        document.getElementById('autoAuditThreshold').value = '1000.00';
+        document.getElementById('dailyLimit').value = '100000.00';
+        document.getElementById('dailyCountLimit').value = '5';
+        document.getElementById('monthlyCountLimit').value = '20';
+        document.getElementById('processStartTime').value = '09:00';
+        document.getElementById('processEndTime').value = '18:00';
+        document.getElementById('arrivalNotice').value = 'T+1 工作日到账';
+        document.getElementById('requireManualReview').checked = false;
+        var cbs = document.querySelectorAll('.bank-cb');
+        var defaultEnabled = ['工商银行','农业银行','中国银行','建设银行','交通银行','招商银行','中信银行','光大银行','平安银行','民生银行','兴业银行','邮储银行'];
+        cbs.forEach(function(cb) {
+            cb.checked = defaultEnabled.indexOf(cb.getAttribute('data-bank')) !== -1;
+        });
+        var btn = document.querySelector('.tos-bank-grid').parentElement.querySelector('.tos-card__header .tos-btn');
+        btn.textContent = '全部禁用';
+        showToast('已恢复默认配置');
+    }
+</script>
+</body>
+</html>

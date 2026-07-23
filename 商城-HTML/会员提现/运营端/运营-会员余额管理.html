@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>运营端 · 会员余额管理</title>
+    <title>运营端 · 会员钱包</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/reset.css" />
@@ -94,15 +94,16 @@
         </div>
         <nav class="tos-sidebar__nav">
             <div class="tos-sidebar__group">
-                <div class="tos-sidebar__group-title">会员管理</div>
+                <div class="tos-sidebar__group-title">会员钱包</div>
                 <a class="tos-sidebar__item" href="运营-会员提现审核.html"><i class="fas fa-check-circle"></i> <span>提现审核</span></a>
+                <a class="tos-sidebar__item" href="运营-提现转账.html"><i class="fas fa-exchange-alt"></i> <span>提现转账</span></a>
+                <a class="tos-sidebar__item" href="运营-转账记录.html"><i class="fas fa-history"></i> <span>转账记录</span></a>
                 <a class="tos-sidebar__item" href="运营-钱包明细对账.html"><i class="fas fa-file-invoice"></i> <span>钱包对账</span></a>
-                <a class="tos-sidebar__item tos-sidebar__item--active" href="运营-会员余额管理.html"><i class="fas fa-coins"></i> <span>余额管理</span></a>
+                <a class="tos-sidebar__item tos-sidebar__item--active" href="运营-会员余额管理.html"><i class="fas fa-coins"></i> <span>会员钱包</span></a>
             </div>
             <div class="tos-sidebar__group">
                 <div class="tos-sidebar__group-title">系统设置</div>
-                <a class="tos-sidebar__item"><i class="fas fa-cog"></i> <span>提现配置</span></a>
-                <a class="tos-sidebar__item"><i class="fas fa-history"></i> <span>操作日志</span></a>
+                <a class="tos-sidebar__item" href="运营-提现配置.html"><i class="fas fa-cog"></i> <span>提现配置</span></a>
             </div>
         </nav>
     </aside>
@@ -110,8 +111,8 @@
     <div class="tos-main">
         <header class="tos-header">
             <div class="tos-header__left">
-                <span class="tos-header__breadcrumb">会员管理 / </span>
-                <span class="tos-header__title">余额管理</span>
+                <span class="tos-header__breadcrumb">会员钱包 / </span>
+                <span class="tos-header__title">会员钱包</span>
             </div>
             <div class="tos-actions">
                 <a-button @click="exportCSV">导出 CSV</a-button>
@@ -121,7 +122,7 @@
         <main class="tos-page">
             <section class="tos-page-title">
                 <div>
-                    <h1>会员余额管理</h1>
+                    <h1>会员钱包</h1>
                     <p>查看和调整会员账户余额，支持手动调账、冻结/解冻操作。</p>
                 </div>
             </section>

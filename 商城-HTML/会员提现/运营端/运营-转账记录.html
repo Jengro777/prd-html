@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>运营端 · 转账记录</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --tos-primary: #42b7ae; --tos-primary-hover: #339b94; --tos-primary-bg: #e6f7f6;
+            --tos-bg: #f5f7fa; --tos-card: #fff; --tos-border: #e5e7eb; --tos-border-soft: #f0f2f5;
+            --tos-text: #333; --tos-text-secondary: #666; --tos-text-muted: #999;
+            --tos-success: #52c41a; --tos-warning: #faad14; --tos-error: #f5222d;
+            --tos-radius-card: 12px; --tos-radius-control: 8px; --tos-radius-tag: 4px;
+            --tos-shadow-card: 0 1px 2px rgba(15,23,42,0.03);
+            --sidebar-width: 220px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--tos-bg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: var(--tos-text); }
+        #app { min-height: 100vh; display: flex; }
+        .tos-sidebar { position: fixed; top: 0; left: 0; bottom: 0; z-index: 30; width: var(--sidebar-width); background: #fff; border-right: 1px solid var(--tos-border-soft); display: flex; flex-direction: column; overflow-y: auto; }
+
+        .sidebar__end-select { width: calc(100% - 24px); height: 32px; margin: 8px 12px 0; padding: 0 26px 0 10px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; font-size: 13px; color: #333; outline: none; cursor: pointer; font-family: inherit; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><path d='M2 4l3 3 3-3' fill='none' stroke='%23999' stroke-width='1.5' stroke-linecap='round'/></svg>"); background-repeat: no-repeat; background-position: right 8px center; }
+        .sidebar__end-select:focus { border-color: #42b7ae; box-shadow: 0 0 0 2px rgba(66,183,174,.16); }
+        .tos-sidebar__logo { display: flex; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid var(--tos-border-soft); }
+        .tos-sidebar__logo-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--tos-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+        .tos-sidebar__logo-text { font-size: 16px; font-weight: 700; color: #1f2937; white-space: nowrap; }
+        .tos-sidebar__nav { flex: 1; padding: 12px 0; }
+        .tos-sidebar__group { padding: 0 12px; margin-bottom: 4px; }
+        .tos-sidebar__group-title { padding: 8px 8px 4px; font-size: 11px; color: var(--tos-text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+        .tos-sidebar__item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; color: var(--tos-text-secondary); transition: all 0.15s; text-decoration: none; margin-bottom: 2px; }
+        .tos-sidebar__item:hover { background: #f5f5f5; color: var(--tos-text); }
+        .tos-sidebar__item--active { background: var(--tos-primary-bg); color: var(--tos-primary); font-weight: 600; }
+        .tos-sidebar__item i { width: 18px; text-align: center; font-size: 13px; flex-shrink: 0; }
+        .tos-main { margin-left: var(--sidebar-width); flex: 1; min-width: 0; }
+        .tos-header { position: sticky; top: 0; z-index: 20; display: flex; height: 56px; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--tos-border-soft); background: rgba(255,255,255,0.96); padding: 0 20px; backdrop-filter: blur(10px); }
+        .tos-header__left { display: flex; align-items: center; gap: 12px; }
+        .tos-header__title { font-size: 15px; font-weight: 600; color: #1f2937; }
+        .tos-header__breadcrumb { font-size: 12px; color: var(--tos-text-muted); }
+        .tos-page { padding: 20px; max-width: 1400px; }
+        .tos-page-title { margin-bottom: 20px; }
+        .tos-page-title h1 { margin: 0; color: #1f2937; font-size: 20px; font-weight: 600; }
+        .tos-page-title p { margin: 4px 0 0; color: var(--tos-text-muted); font-size: 13px; }
+        .tos-metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+        .tos-stat { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px; border: 1px solid var(--tos-border-soft); border-radius: var(--tos-radius-card); background: #fff; }
+        .tos-stat__label { color: var(--tos-text-muted); font-size: 12px; }
+        .tos-stat__value { margin-top: 4px; color: #1f2937; font-size: 22px; font-weight: 600; }
+        .tos-stat__icon { display: inline-flex; width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: 8px; background: var(--tos-primary-bg); color: var(--tos-primary); }
+        .tos-card { background: var(--tos-card); border: 1px solid var(--tos-border-soft); border-radius: var(--tos-radius-card); padding: 20px; box-shadow: var(--tos-shadow-card); }
+        .tos-card+.tos-card { margin-top: 20px; }
+        .tos-card__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+        .tos-card__title { margin: 0; color: var(--tos-text); font-size: 16px; font-weight: 600; }
+        .tos-card__desc { margin-top: 2px; color: var(--tos-text-muted); font-size: 13px; }
+        .tos-actions { display: flex; align-items: center; gap: 8px; }
+        .tos-table-wrap { overflow-x: auto; }
+        .tos-table { width: 100%; min-width: 1000px; border-collapse: collapse; }
+        .tos-table th { padding: 10px 12px; background: #fafafa; border-bottom: 1px solid var(--tos-border-soft); color: var(--tos-text-secondary); font-size: 13px; font-weight: 500; text-align: left; white-space: nowrap; }
+        .tos-table td { padding: 10px 12px; border-bottom: 1px solid #f5f5f5; color: var(--tos-text); font-size: 14px; vertical-align: middle; }
+        .tos-table tr:hover td { background: #fafafa; }
+        .tos-tag { display: inline-flex; height: 22px; align-items: center; padding: 0 8px; border-radius: var(--tos-radius-tag); font-size: 12px; font-weight: 500; white-space: nowrap; }
+        .tos-tag--success { background: #f0faf0; color: var(--tos-success); }
+        .tos-tag--warning { background: #fff7e6; color: var(--tos-warning); }
+        .tos-tag--error { background: #fff0f0; color: var(--tos-error); }
+        .tos-tag--default { background: #f5f5f5; color: var(--tos-text-secondary); }
+        .tos-btn { display: inline-flex; align-items: center; justify-content: center; height: 34px; padding: 0 14px; border: 1px solid var(--tos-border); border-radius: var(--tos-radius-control); background: #fff; color: var(--tos-text); font-size: 13px; cursor: pointer; transition: all 0.15s; font-family: inherit; white-space: nowrap; text-decoration: none; }
+        .tos-btn:hover { border-color: var(--tos-primary); color: var(--tos-primary); }
+        .tos-btn--primary { background: var(--tos-primary); border-color: var(--tos-primary); color: #fff; }
+        .tos-btn--primary:hover { background: var(--tos-primary-hover); border-color: var(--tos-primary-hover); color: #fff; }
+        .tos-btn--danger { color: var(--tos-error); border-color: #ffccc7; }
+        .tos-btn--danger:hover { color: #fff; background: var(--tos-error); border-color: var(--tos-error); }
+        .tos-btn--sm { height: 28px; padding: 0 10px; font-size: 12px; }
+        .tos-btn--link { border: none; background: none; color: var(--tos-primary); padding: 0; height: auto; }
+        .tos-btn--link:hover { color: var(--tos-primary-hover); }
+        .tos-btn+.tos-btn { margin-left: 8px; }
+        .amount-positive { color: var(--tos-primary); font-weight: 600; }
+        .amount-error { color: var(--tos-error); font-weight: 600; }
+        .text-mono { font-family: "SF Mono", "Fira Code", "Consolas", monospace; font-size: 12px; }
+        .tos-filter-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+        .tos-filter-tabs { display: flex; gap: 2px; background: #f5f5f5; border-radius: var(--tos-radius-control); padding: 3px; }
+        .tos-filter-tab { height: 30px; padding: 0 14px; border: none; border-radius: 6px; background: transparent; color: var(--tos-text-secondary); font-size: 13px; cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
+        .tos-filter-tab:hover { color: var(--tos-text); }
+        .tos-filter-tab--active { background: #fff; color: var(--tos-primary); font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+        .tos-input { height: 34px; padding: 0 10px; border: 1px solid var(--tos-border); border-radius: var(--tos-radius-control); font-size: 13px; color: var(--tos-text); outline: none; font-family: inherit; background: #fff; }
+        .tos-input:focus { border-color: var(--tos-primary); box-shadow: 0 0 0 2px rgba(66,183,174,0.16); }
+        .tos-pagination { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 16px; font-size: 13px; color: var(--tos-text-secondary); }
+        .tos-pagination .page-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--tos-border); border-radius: 6px; background: #fff; cursor: pointer; font-size: 13px; color: var(--tos-text); transition: all 0.15s; }
+        .tos-pagination .page-btn:hover { border-color: var(--tos-primary); color: var(--tos-primary); }
+        .tos-pagination .page-btn--active { background: var(--tos-primary); border-color: var(--tos-primary); color: #fff; }
+        .tos-pagination .page-info { padding: 0 8px; }
+        .tos-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; padding: 10px 24px; border-radius: var(--tos-radius-control); background: var(--tos-success); color: #fff; font-size: 14px; font-weight: 500; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+        .tos-toast--show { opacity: 1; }
+        @media (max-width: 1024px) {
+            .tos-sidebar { width: 64px; } .tos-sidebar__logo-text, .tos-sidebar__group-title, .tos-sidebar__item span { display: none; }
+            .tos-sidebar__item { justify-content: center; padding: 10px; } .tos-main { margin-left: 64px; }
+            .tos-metric-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 640px) {
+            .tos-sidebar { display: none; } .tos-main { margin-left: 0; }
+            .tos-header { height: 48px; padding: 0 14px; } .tos-page { padding: 14px; }
+            .tos-metric-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div id="toast" class="tos-toast"></div>
+
+    <aside class="tos-sidebar">
+        <select class="sidebar__end-select" onchange="if(this.value)location.href=this.value"><option value="../会员提现申请.html">会员端</option><option value="" selected>运营端</option></select>
+        <div class="tos-sidebar__logo">
+            <div class="tos-sidebar__logo-icon"><i class="fas fa-layer-group"></i></div>
+            <span class="tos-sidebar__logo-text">TOS 运营中心</span>
+        </div>
+        <nav class="tos-sidebar__nav">
+            <div class="tos-sidebar__group">
+                <div class="tos-sidebar__group-title">会员钱包</div>
+                <a class="tos-sidebar__item" href="运营-会员提现审核.html"><i class="fas fa-check-circle"></i> <span>提现审核</span></a>
+                <a class="tos-sidebar__item" href="运营-提现转账.html"><i class="fas fa-exchange-alt"></i> <span>提现转账</span></a>
+                <a class="tos-sidebar__item tos-sidebar__item--active" href="运营-转账记录.html"><i class="fas fa-history"></i> <span>转账记录</span></a>
+                <a class="tos-sidebar__item" href="运营-钱包明细对账.html"><i class="fas fa-file-invoice"></i> <span>钱包对账</span></a>
+                <a class="tos-sidebar__item" href="运营-会员余额管理.html"><i class="fas fa-coins"></i> <span>会员钱包</span></a>
+            </div>
+            <div class="tos-sidebar__group">
+                <div class="tos-sidebar__group-title">系统设置</div>
+                <a class="tos-sidebar__item" href="运营-提现配置.html"><i class="fas fa-cog"></i> <span>提现配置</span></a>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="tos-main">
+        <header class="tos-header">
+            <div class="tos-header__left">
+                <span class="tos-header__breadcrumb">会员钱包 / </span>
+                <span class="tos-header__title">转账记录</span>
+            </div>
+            <div class="tos-actions">
+                <button class="tos-btn" onclick="resetFilters()">重置筛选</button>
+                <button class="tos-btn tos-btn--primary" onclick="exportCSV()"><i class="fas fa-download" style="margin-right:4px;"></i> 导出 CSV</button>
+            </div>
+        </header>
+
+        <main class="tos-page">
+            <section class="tos-page-title">
+                <div>
+                    <h1>转账记录</h1>
+                    <p>查看所有提现转账的处理记录，支持按状态、日期范围和关键词筛选。</p>
+                </div>
+            </section>
+
+            <!-- 指标卡片 -->
+            <section class="tos-metric-grid">
+                <div class="tos-stat">
+                    <div><div class="tos-stat__label">转账总笔数</div><div class="tos-stat__value">1,482 笔</div></div>
+                    <div class="tos-stat__icon"><i class="fas fa-list"></i></div>
+                </div>
+                <div class="tos-stat">
+                    <div><div class="tos-stat__label">转账成功</div><div class="tos-stat__value" style="color:var(--tos-success);">1,398 笔</div></div>
+                    <div class="tos-stat__icon"><i class="fas fa-check-circle"></i></div>
+                </div>
+                <div class="tos-stat">
+                    <div><div class="tos-stat__label">转账失败</div><div class="tos-stat__value" style="color:var(--tos-error);">47 笔</div></div>
+                    <div class="tos-stat__icon"><i class="fas fa-exclamation-circle"></i></div>
+                </div>
+                <div class="tos-stat">
+                    <div><div class="tos-stat__label">累计转账金额</div><div class="tos-stat__value" style="color:var(--tos-primary);">¥8,263,500.00</div></div>
+                    <div class="tos-stat__icon"><i class="fas fa-coins"></i></div>
+                </div>
+            </section>
+
+            <!-- 转账记录列表 -->
+            <section class="tos-card">
+                <div class="tos-card__header">
+                    <div>
+                        <h2 class="tos-card__title"><i class="fas fa-history" style="margin-right:8px;color:var(--tos-primary);"></i>转账记录</h2>
+                        <p class="tos-card__desc">共 1,482 条记录，支持按条件筛选与导出。</p>
+                    </div>
+                </div>
+
+                <!-- 筛选栏 -->
+                <div class="tos-filter-bar">
+                    <div class="tos-filter-tabs" id="statusTabs">
+                        <button class="tos-filter-tab tos-filter-tab--active" onclick="filterByStatus('all', this)">全部</button>
+                        <button class="tos-filter-tab" onclick="filterByStatus('success', this)">转账成功</button>
+                        <button class="tos-filter-tab" onclick="filterByStatus('pending', this)">处理中</button>
+                        <button class="tos-filter-tab" onclick="filterByStatus('failed', this)">转账失败</button>
+                    </div>
+                    <input type="date" class="tos-input" id="dateFrom" style="width:140px;" onchange="applyFilters()" />
+                    <span style="color:var(--tos-text-muted);font-size:13px;">至</span>
+                    <input type="date" class="tos-input" id="dateTo" style="width:140px;" onchange="applyFilters()" />
+                    <input type="text" class="tos-input" id="searchKeyword" placeholder="搜索单号 / 会员姓名 / ID" style="width:220px;" oninput="applyFilters()" />
+                </div>
+
+                <div class="tos-table-wrap">
+                    <table class="tos-table" id="recordTable">
+                        <thead>
+                            <tr><th>转账单号</th><th>会员</th><th>会员ID</th><th>金额</th><th>收款银行</th><th>收款卡号</th><th>执行时间</th><th>到账时间</th><th>状态</th><th>备注</th><th style="text-align:right;">操作</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr data-status="success">
+                                <td class="text-mono">TX-20260723-006</td>
+                                <td>赵小明</td>
+                                <td class="text-mono">MEM-045</td>
+                                <td class="amount-positive">¥6,200.00</td>
+                                <td>农业银行</td>
+                                <td class="text-mono">6228 **** **** 3821</td>
+                                <td style="font-size:12px;">2026-07-23 10:30</td>
+                                <td style="font-size:12px;">2026-07-23 10:32</td>
+                                <td><span class="tos-tag tos-tag--success">转账成功</span></td>
+                                <td style="font-size:12px;color:var(--tos-text-muted);">银行处理号: BOF20260723103001</td>
+                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm">回单</button></td>
+                            </tr>
+                            <tr data-status="success">
+                                <td class="text-mono">TX-20260723-004</td>
+                                <td>刘建国</td>
+                                <td class="text-mono">MEM-112</td>
+                                <td class="amount-positive">¥9,800.00</td>
+                                <td>工商银行</td>
+                                <td class="text-mono">6222 **** **** 5102</td>
+                                <td style="font-size:12px;">2026-07-23 09:00</td>
+                                <td style="font-size:12px;">2026-07-23 09:01</td>
+                                <td><span class="tos-tag tos-tag--success">转账成功</span></td>
+                                <td style="font-size:12px;color:var(--tos-text-muted);">银行处理号: ICBC20260723090012</td>
+                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm">回单</button></td>
+                            </tr>
+                            <tr data-status="pending">
+                                <td class="text-mono">TX-20260723-009</td>
+                                <td>黄志强</td>
+                                <td class="text-mono">MEM-287</td>
+                                <td class="amount-positive">¥3,150.00</td>
+                                <td>中国银行</td>
+                                <td class="text-mono">6216 **** **** 7803</td>
+                                <td style="font-size:12px;">2026-07-23 11:45</td>
+                                <td style="font-size:12px;color:var(--tos-text-muted);">--</td>
+                                <td><span class="tos-tag tos-tag--warning">处理中</span></td>
+                                <td style="font-size:12px;color:var(--tos-text-muted);">银行处理中，预计 2 小时内到账</td>
+                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm">查询</button></td>
+                            </tr>
+                            <tr data-status="success">
+                                <td class="text-mono">TX-20260722-010</td>
+                                <td>杨柳</td>
+                                <td class="text-mono">MEM-178</td>
+                                <td class="amount-positive">¥18,500.00</td>
+                                <td>建设银行</td>
+                                <td class="text-mono">6217 **** **** 2390</td>
+                                <td style="font-size:12px;">2026-07-22 17:00</td>
+                                <td style="font-size:12px;">2026-07-22 17:03</td>
+                                <td><span class="tos-tag tos-tag--success">转账成功</span></td>
+                                <td style="font-size:12px;color:var(--tos-text-muted);">银行处理号: CCB20260722170045</td>
+                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm">回单</button></td>
+                            </tr>
+                            <tr data-status="pending">
+                                <td class="text-mono">TX-20260722-008</td>
+                                <td>周丽华</td>
+                                <td class="text-mono">MEM-301</td>
+                                <td class="amount-positive">¥2,500.00</td>
+                                <td>建设银行</td>
+                                <td class="text-mono">6217 **** **** 4308</td>
+                                <td style="font-size:12px;">2026-07-22 15:45</td>
+                                <td style="font-size:12px;color:var(--tos-text-muted);">--</td>
+                                <td><span class="tos-tag tos-tag--warning">处理中</span></td>
+                                <td style="font-size:12px;color:var(--tos-text-muted);">银行处理中，预计 2 小时内到账</td>
+                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm">查询</button></td>
+                            </tr>
+                            <tr data-status="failed">
+                                <td class="text-mono">TX-20260722-002</td>
+                                <td>吴刚</td>
+                                <td class="text-mono">MEM-063</td>
+                                <td class="amount-error">¥4,300.00</td>
+                                <td>招商银行</td>
+                                <td class="text-mono">6214 **** **** 1892</td>
+                                <td style="font-size:12px;">2026-07-22 11:10</td>
+                                <td style="font-size:12px;color:var(--tos-error);">到账失败</td>
+                                <td><span class="tos-tag tos-tag--error">转账失败</span></td>
+                                <td style="font-size:12px;color:var(--tos-text-muted);">收款卡号校验不通过，请联系会员核实</td>
+                                <td style="text-align:right;">
+                                    <button class="tos-btn tos-btn--danger tos-btn--sm" onclick="retryTransfer('TX-20260722-002','吴刚')">重试</button>
+                                    <button class="tos-btn tos-btn--link tos-btn--sm">标记异常</button>
+                                </td>
+                            </tr>
+                            <tr data-status="failed">
+                                <td class="text-mono">TX-20260721-015</td>
+                                <td>马海龙</td>
+                                <td class="text-mono">MEM-409</td>
+                                <td class="amount-error">¥7,800.00</td>
+                                <td>工商银行</td>
+                                <td class="text-mono">6222 **** **** 6734</td>
+                                <td style="font-size:12px;">2026-07-21 14:30</td>
+                                <td style="font-size:12px;color:var(--tos-error);">到账失败</td>
+                                <td><span class="tos-tag tos-tag--error">转账失败</span></td>
+                                <td style="font-size:12px;color:var(--tos-text-muted);">银行通道异常，已自动原路退回</td>
+                                <td style="text-align:right;">
+                                    <button class="tos-btn tos-btn--danger tos-btn--sm" onclick="retryTransfer('TX-20260721-015','马海龙')">重试</button>
+                                    <button class="tos-btn tos-btn--link tos-btn--sm">标记异常</button>
+                                </td>
+                            </tr>
+                            <tr data-status="success">
+                                <td class="text-mono">TX-20260721-012</td>
+                                <td>孙大伟</td>
+                                <td class="text-mono">MEM-055</td>
+                                <td class="amount-positive">¥20,000.00</td>
+                                <td>中国银行</td>
+                                <td class="text-mono">6216 **** **** 9024</td>
+                                <td style="font-size:12px;">2026-07-21 08:55</td>
+                                <td style="font-size:12px;">2026-07-21 08:57</td>
+                                <td><span class="tos-tag tos-tag--success">转账成功</span></td>
+                                <td style="font-size:12px;color:var(--tos-text-muted);">银行处理号: BOC20260721085533</td>
+                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm">回单</button></td>
+                            </tr>
+                            <tr data-status="success">
+                                <td class="text-mono">TX-20260720-007</td>
+                                <td>林雅文</td>
+                                <td class="text-mono">MEM-220</td>
+                                <td class="amount-positive">¥5,600.00</td>
+                                <td>招商银行</td>
+                                <td class="text-mono">6214 **** **** 3307</td>
+                                <td style="font-size:12px;">2026-07-20 13:15</td>
+                                <td style="font-size:12px;">2026-07-20 13:16</td>
+                                <td><span class="tos-tag tos-tag--success">转账成功</span></td>
+                                <td style="font-size:12px;color:var(--tos-text-muted);">银行处理号: CMB20260720131522</td>
+                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm">回单</button></td>
+                            </tr>
+                            <tr data-status="success">
+                                <td class="text-mono">TX-20260720-003</td>
+                                <td>钱伟明</td>
+                                <td class="text-mono">MEM-089</td>
+                                <td class="amount-positive">¥12,000.00</td>
+                                <td>邮储银行</td>
+                                <td class="text-mono">6221 **** **** 4902</td>
+                                <td style="font-size:12px;">2026-07-20 09:20</td>
+                                <td style="font-size:12px;">2026-07-20 09:22</td>
+                                <td><span class="tos-tag tos-tag--success">转账成功</span></td>
+                                <td style="font-size:12px;color:var(--tos-text-muted);">银行处理号: PSBC20260720092008</td>
+                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm">回单</button></td>
+                            </tr>
+                            <tr data-status="failed">
+                                <td class="text-mono">TX-20260719-011</td>
+                                <td>韩雪梅</td>
+                                <td class="text-mono">MEM-331</td>
+                                <td class="amount-error">¥1,200.00</td>
+                                <td>兴业银行</td>
+                                <td class="text-mono">6229 **** **** 1156</td>
+                                <td style="font-size:12px;">2026-07-19 16:40</td>
+                                <td style="font-size:12px;color:var(--tos-error);">到账失败</td>
+                                <td><span class="tos-tag tos-tag--error">转账失败</span></td>
+                                <td style="font-size:12px;color:var(--tos-text-muted);">账户状态异常，请联系发卡行</td>
+                                <td style="text-align:right;">
+                                    <button class="tos-btn tos-btn--danger tos-btn--sm" onclick="retryTransfer('TX-20260719-011','韩雪梅')">重试</button>
+                                    <button class="tos-btn tos-btn--link tos-btn--sm">标记异常</button>
+                                </td>
+                            </tr>
+                            <tr data-status="success">
+                                <td class="text-mono">TX-20260719-005</td>
+                                <td>郑光明</td>
+                                <td class="text-mono">MEM-156</td>
+                                <td class="amount-positive">¥8,900.00</td>
+                                <td>交通银行</td>
+                                <td class="text-mono">6222 **** **** 8201</td>
+                                <td style="font-size:12px;">2026-07-19 10:00</td>
+                                <td style="font-size:12px;">2026-07-19 10:01</td>
+                                <td><span class="tos-tag tos-tag--success">转账成功</span></td>
+                                <td style="font-size:12px;color:var(--tos-text-muted);">银行处理号: BCOM20260719100055</td>
+                                <td style="text-align:right;"><button class="tos-btn tos-btn--link tos-btn--sm">回单</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 分页 -->
+                <div class="tos-pagination">
+                    <span class="page-info">共 1,482 条，第 1/149 页</span>
+                    <button class="page-btn page-btn--active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <span style="padding:0 2px;">…</span>
+                    <button class="page-btn">149</button>
+                    <button class="page-btn" onclick="showToast('已加载下一页（演示模式）')"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<script>
+    var currentStatus = 'all';
+
+    function showToast(msg) {
+        var t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('tos-toast--show');
+        clearTimeout(t._timer);
+        t._timer = setTimeout(function() { t.classList.remove('tos-toast--show'); }, 2000);
+    }
+
+    function filterByStatus(status, btn) {
+        currentStatus = status;
+        document.querySelectorAll('#statusTabs .tos-filter-tab').forEach(function(tab) {
+            tab.classList.remove('tos-filter-tab--active');
+        });
+        btn.classList.add('tos-filter-tab--active');
+        applyFilters();
+    }
+
+    function applyFilters() {
+        var rows = document.querySelectorAll('#recordTable tbody tr');
+        var keyword = (document.getElementById('searchKeyword').value || '').toLowerCase();
+        var dateFrom = document.getElementById('dateFrom').value || '';
+        var dateTo = document.getElementById('dateTo').value || '';
+
+        rows.forEach(function(tr) {
+            var show = true;
+
+            // 状态筛选
+            if (currentStatus !== 'all') {
+                var rowStatus = tr.getAttribute('data-status');
+                if (rowStatus !== currentStatus) show = false;
+            }
+
+            // 关键词搜索
+            if (keyword && show) {
+                show = tr.textContent.toLowerCase().indexOf(keyword) !== -1;
+            }
+
+            // 日期范围（执行时间在第7列 cells[6]）
+            if ((dateFrom || dateTo) && show) {
+                var dateCell = tr.cells[6].textContent.trim().split(' ')[0];
+                if (dateFrom && dateCell < dateFrom) show = false;
+                if (dateTo && dateCell > dateTo) show = false;
+            }
+
+            tr.style.display = show ? '' : 'none';
+        });
+    }
+
+    function resetFilters() {
+        document.getElementById('searchKeyword').value = '';
+        document.getElementById('dateFrom').value = '';
+        document.getElementById('dateTo').value = '';
+        currentStatus = 'all';
+        document.querySelectorAll('#statusTabs .tos-filter-tab').forEach(function(tab, i) {
+            tab.classList.toggle('tos-filter-tab--active', i === 0);
+        });
+        document.querySelectorAll('#recordTable tbody tr').forEach(function(tr) {
+            tr.style.display = '';
+        });
+    }
+
+    function retryTransfer(txId, name) {
+        if (confirm('确认对 ' + name + ' 重新发起转账？\n单号：' + txId)) {
+            showToast('已重新提交转账：' + txId);
+        }
+    }
+
+    function exportCSV() {
+        var rows = [];
+        document.querySelectorAll('#recordTable tbody tr').forEach(function(tr) {
+            if (tr.style.display !== 'none') {
+                var cells = tr.querySelectorAll('td');
+                rows.push(Array.from(cells).slice(0, 10).map(function(c) { return c.textContent.replace(/\n/g,' ').trim(); }));
+            }
+        });
+        var csv = [['转账单号','会员','会员ID','金额','收款银行','收款卡号','执行时间','到账时间','状态','备注'], rows]
+            .map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g,'""') + '"'; }).join(','); }).join('\n');
+        var b = new Blob(['﻿' + csv], {type:'text/csv;charset=utf-8;'});
+        var a = document.createElement('a'); a.href = URL.createObjectURL(b);
+        a.download = '转账记录_' + new Date().toISOString().slice(0,10) + '.csv';
+        a.click(); URL.revokeObjectURL(a.href);
+        showToast('导出成功');
+    }
+</script>
+</body>
+</html>
