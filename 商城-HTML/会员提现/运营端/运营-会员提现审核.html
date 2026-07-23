@@ -25,7 +25,8 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             color: var(--tos-text);
         }
-        #app { min-height: 100vh; display: flex; }
+        #app { min-height: 100vh; }
+        .tos-app-shell { display: flex; min-height: 100vh; }
         /* 左侧菜单栏 */
         .tos-sidebar {
             position: fixed; top: 0; left: 0; bottom: 0; z-index: 30;
@@ -156,6 +157,7 @@
 </head>
 <body>
 <div id="app">
+    <div class="tos-app-shell">
     <!-- 左侧菜单栏 -->
     <aside class="tos-sidebar">
         <select class="sidebar__end-select" onchange="if(this.value)location.href=this.value"><option value="../会员提现申请.html">会员端</option><option value="" selected>运营端</option></select>
@@ -193,7 +195,9 @@
                 <span class="tos-header__title">提现审核</span>
             </div>
             <div class="tos-actions">
-                <a-button @click="exportCSV">导出 CSV</a-button>
+                <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--tos-text-secondary);">
+                    <i class="fas fa-user-circle" style="font-size:16px;color:var(--tos-text-muted);"></i> 运营管理员
+                </span>
             </div>
         </header>
 
@@ -245,39 +249,42 @@
                         <div class="tos-card__desc">共 7 条记录，其中 3 条待审核</div>
                     </div>
                     <div class="tos-actions">
+                        <a-button @click="exportCSV">导出 CSV</a-button>
                         <a-button type="primary" @click="batchApprove">批量通过</a-button>
                         <a-button danger @click="batchReject">批量驳回</a-button>
                     </div>
                 </div>
 
                 <!-- 筛选 -->
-                <div class="tos-form-grid" style="margin-bottom: 16px;">
-                    <a-form-item label="审核状态">
-                        <a-select id="statusFilter" placeholder="全部" allow-clear style="width:100%;">
-                            <a-select-option value="">全部</a-select-option>
-                            <a-select-option value="pending">待审核</a-select-option>
-                            <a-select-option value="approved">已通过</a-select-option>
-                            <a-select-option value="rejected">已驳回</a-select-option>
-                        </a-select>
-                    </a-form-item>
-                    <a-form-item label="会员ID/姓名">
-                        <a-input id="memberSearch" placeholder="搜索会员编号或姓名" allow-clear />
-                    </a-form-item>
-                    <a-form-item label="提现单号">
-                        <a-input id="idSearch" placeholder="搜索提现单号" allow-clear />
-                    </a-form-item>
-                    <a-form-item label="提现方式">
-                        <a-select id="methodFilter" placeholder="全部" allow-clear style="width:100%;">
-                            <a-select-option value="">全部</a-select-option>
-                            <a-select-option value="bank">银行卡</a-select-option>
-                            <a-select-option value="alipay">支付宝</a-select-option>
-                            <a-select-option value="wechat">微信</a-select-option>
-                        </a-select>
-                    </a-form-item>
-                </div>
-                <div class="tos-actions" style="margin-bottom: 16px;">
-                    <a-button @click="resetFilter">重置</a-button>
-                </div>
+                <a-form layout="vertical">
+                    <div class="tos-form-grid" style="margin-bottom: 16px;">
+                        <a-form-item label="审核状态">
+                            <a-select id="statusFilter" placeholder="全部" allow-clear style="width:100%;">
+                                <a-select-option value="">全部</a-select-option>
+                                <a-select-option value="pending">待审核</a-select-option>
+                                <a-select-option value="approved">已通过</a-select-option>
+                                <a-select-option value="rejected">已驳回</a-select-option>
+                            </a-select>
+                        </a-form-item>
+                        <a-form-item label="会员ID/姓名">
+                            <a-input id="memberSearch" placeholder="搜索会员编号或姓名" allow-clear />
+                        </a-form-item>
+                        <a-form-item label="提现单号">
+                            <a-input id="idSearch" placeholder="搜索提现单号" allow-clear />
+                        </a-form-item>
+                        <a-form-item label="提现方式">
+                            <a-select id="methodFilter" placeholder="全部" allow-clear style="width:100%;">
+                                <a-select-option value="">全部</a-select-option>
+                                <a-select-option value="bank">银行卡</a-select-option>
+                                <a-select-option value="alipay">支付宝</a-select-option>
+                                <a-select-option value="wechat">微信</a-select-option>
+                            </a-select>
+                        </a-form-item>
+                    </div>
+                    <div class="tos-actions" style="margin-bottom: 16px;">
+                        <a-button @click="resetFilter">重置</a-button>
+                    </div>
+                </a-form>
 
                 <!-- 批量操作提示条 -->
                 <div class="batch-bar" id="batchBar" style="display:none;">
@@ -395,9 +402,10 @@
             </section>
         </main>
     </div>
+    </div><!-- .tos-app-shell -->
 
     <!-- 驳回弹窗 -->
-    <a-modal v-model:open="rejectVisible" title="驳回提现申请" @ok="confirmReject" okText="确认驳回" cancelText="取消">
+    <a-modal v-model:open="rejectVisible" title="驳回提现申请" @ok="confirmReject" okText="确认驳回" cancelText="取消" :getContainer="() => document.body">
         <a-form layout="vertical">
             <a-form-item label="驳回原因" required>
                 <a-textarea id="rejectReason" :rows="3" placeholder="请输入驳回原因，将通知会员..." />
@@ -406,7 +414,7 @@
     </a-modal>
 
     <!-- 详情弹窗 -->
-    <a-modal v-model:open="detailVisible" title="提现详情" width="520px" :footer="null">
+    <a-modal v-model:open="detailVisible" title="提现详情" width="520px" :footer="null" :getContainer="() => document.body">
         <div style="line-height:2;font-size:14px;" id="detailContent">
             <div><strong>提现单号：</strong><span id="d-id">—</span></div>
             <div><strong>会员：</strong><span id="d-member">—</span></div>
