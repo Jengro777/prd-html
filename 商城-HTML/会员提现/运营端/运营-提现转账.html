@@ -79,6 +79,20 @@
         .text-mono { font-family: "SF Mono", "Fira Code", "Consolas", monospace; font-size: 12px; }
         .tos-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; padding: 10px 24px; border-radius: var(--tos-radius-control); background: var(--tos-success); color: #fff; font-size: 14px; font-weight: 500; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
         .tos-toast--show { opacity: 1; }
+        .tos-filter-tabs { display: flex; gap: 2px; background: #f5f5f5; border-radius: var(--tos-radius-control); padding: 3px; width: fit-content; }
+        .tos-filter-tab { height: 30px; padding: 0 14px; border: none; border-radius: 6px; background: transparent; color: var(--tos-text-secondary); font-size: 13px; cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
+        .tos-filter-tab:hover { color: var(--tos-text); }
+        .tos-filter-tab--active { background: #fff; color: var(--tos-primary); font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+        /* 弹窗 */
+        .tos-modal-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.45); align-items: center; justify-content: center; }
+        .tos-modal-overlay--show { display: flex; }
+        .tos-modal { background: #fff; border-radius: var(--tos-radius-card); box-shadow: 0 6px 30px rgba(0,0,0,0.15); width: 480px; max-width: 90vw; max-height: 85vh; overflow-y: auto; }
+        .tos-modal__header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--tos-border-soft); }
+        .tos-modal__title { font-size: 16px; font-weight: 600; color: #1f2937; }
+        .tos-modal__close { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: none; background: none; cursor: pointer; font-size: 18px; color: var(--tos-text-muted); border-radius: 6px; }
+        .tos-modal__close:hover { background: #f5f5f5; color: var(--tos-text); }
+        .tos-modal__body { padding: 20px; font-size: 14px; line-height: 1.8; }
+        .tos-modal__footer { display: flex; justify-content: flex-end; gap: 10px; padding: 12px 20px; border-top: 1px solid var(--tos-border-soft); }
         @media (max-width: 1024px) {
             .tos-sidebar { width: 64px; } .tos-sidebar__logo-text, .tos-sidebar__group-title, .tos-sidebar__item span { display: none; }
             .tos-sidebar__item { justify-content: center; padding: 10px; } .tos-main { margin-left: 64px; }
@@ -144,7 +158,7 @@
                     <div class="tos-stat__icon"><i class="fas fa-coins"></i></div>
                 </div>
                 <div class="tos-stat">
-                    <div><div class="tos-stat__label">今日已完成</div><div class="tos-stat__value" style="color:var(--tos-success);">12 笔</div></div>
+                    <div><div class="tos-stat__label">处理中</div><div class="tos-stat__value" style="color:var(--tos-warning);">2 笔</div></div>
                     <div class="tos-stat__icon"><i class="fas fa-check-circle"></i></div>
                 </div>
                 <div class="tos-stat">
@@ -166,13 +180,19 @@
                         <button class="tos-btn tos-btn--primary" onclick="exportCSV()"><i class="fas fa-download" style="margin-right:4px;"></i> 导出报表</button>
                     </div>
                 </div>
+                <!-- 状态筛选选项卡 -->
+                <div class="tos-filter-tabs" id="transferTabs" style="margin-bottom:16px;">
+                    <button class="tos-filter-tab tos-filter-tab--active" onclick="filterByTransferStatus('pending', this)">待转账</button>
+                    <button class="tos-filter-tab" onclick="filterByTransferStatus('processing', this)">处理中</button>
+                    <button class="tos-filter-tab" onclick="filterByTransferStatus('failed', this)">转账失败</button>
+                </div>
                 <div class="tos-table-wrap">
                     <table class="tos-table" id="pendingTable">
                         <thead>
                             <tr><th><input type="checkbox" id="selectAll" onchange="toggleAllCheckbox(this)" /></th><th>转账单号</th><th>会员信息</th><th>提现金额</th><th>收款银行</th><th>收款卡号</th><th>审核通过时间</th><th>状态</th><th style="text-align:right;">操作</th></tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            <tr data-status="pending">
                                 <td><input type="checkbox" class="row-cb" /></td>
                                 <td class="text-mono">TX-20260723-001</td>
                                 <td><strong>张建国</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">MEM-001</span></td>
@@ -183,10 +203,10 @@
                                 <td><span class="tos-tag tos-tag--default">待转账</span></td>
                                 <td style="text-align:right;">
                                     <button class="tos-btn tos-btn--primary tos-btn--sm" onclick="doTransfer('TX-20260723-001','张建国','12580')">执行转账</button>
-                                    <button class="tos-btn tos-btn--link tos-btn--sm" onclick="alert('查看详情（演示模式）')">详情</button>
+                                    <button class="tos-btn tos-btn--link tos-btn--sm" onclick="showTransferDetail('TX-20260723-001')">详情</button>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr data-status="pending">
                                 <td><input type="checkbox" class="row-cb" /></td>
                                 <td class="text-mono">TX-20260723-002</td>
                                 <td><strong>李美玲</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">MEM-082</span></td>
@@ -197,10 +217,10 @@
                                 <td><span class="tos-tag tos-tag--default">待转账</span></td>
                                 <td style="text-align:right;">
                                     <button class="tos-btn tos-btn--primary tos-btn--sm" onclick="doTransfer('TX-20260723-002','李美玲','8700')">执行转账</button>
-                                    <button class="tos-btn tos-btn--link tos-btn--sm" onclick="alert('查看详情（演示模式）')">详情</button>
+                                    <button class="tos-btn tos-btn--link tos-btn--sm" onclick="showTransferDetail('TX-20260723-002')">详情</button>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr data-status="pending">
                                 <td><input type="checkbox" class="row-cb" /></td>
                                 <td class="text-mono">TX-20260722-005</td>
                                 <td><strong>王大力</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">MEM-156</span></td>
@@ -211,10 +231,10 @@
                                 <td><span class="tos-tag tos-tag--default">待转账</span></td>
                                 <td style="text-align:right;">
                                     <button class="tos-btn tos-btn--primary tos-btn--sm" onclick="doTransfer('TX-20260722-005','王大力','3500')">执行转账</button>
-                                    <button class="tos-btn tos-btn--link tos-btn--sm" onclick="alert('查看详情（演示模式）')">详情</button>
+                                    <button class="tos-btn tos-btn--link tos-btn--sm" onclick="showTransferDetail('TX-20260722-005')">详情</button>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr data-status="pending">
                                 <td><input type="checkbox" class="row-cb" /></td>
                                 <td class="text-mono">TX-20260722-003</td>
                                 <td><strong>陈小红</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">MEM-203</span></td>
@@ -225,11 +245,11 @@
                                 <td><span class="tos-tag tos-tag--default">待转账</span></td>
                                 <td style="text-align:right;">
                                     <button class="tos-btn tos-btn--primary tos-btn--sm" onclick="doTransfer('TX-20260722-003','陈小红','15000')">执行转账</button>
-                                    <button class="tos-btn tos-btn--link tos-btn--sm" onclick="alert('查看详情（演示模式）')">详情</button>
+                                    <button class="tos-btn tos-btn--link tos-btn--sm" onclick="showTransferDetail('TX-20260722-003')">详情</button>
                                 </td>
                             </tr>
                             <!-- 处理中 -->
-                            <tr>
+                            <tr data-status="processing">
                                 <td></td>
                                 <td class="text-mono">TX-20260723-009</td>
                                 <td><strong>黄志强</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">MEM-287</span></td>
@@ -239,10 +259,10 @@
                                 <td style="font-size:12px;">2026-07-23 11:45</td>
                                 <td><span class="tos-tag tos-tag--warning">处理中</span></td>
                                 <td style="text-align:right;">
-                                    <button class="tos-btn tos-btn--link tos-btn--sm" onclick="alert('查询银行处理状态（演示模式）')">查询</button>
+                                    <button class="tos-btn tos-btn--link tos-btn--sm" onclick="queryTransferStatus('TX-20260723-009')">查询</button>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr data-status="processing">
                                 <td></td>
                                 <td class="text-mono">TX-20260722-008</td>
                                 <td><strong>周丽华</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">MEM-301</span></td>
@@ -252,11 +272,11 @@
                                 <td style="font-size:12px;">2026-07-22 15:45</td>
                                 <td><span class="tos-tag tos-tag--warning">处理中</span></td>
                                 <td style="text-align:right;">
-                                    <button class="tos-btn tos-btn--link tos-btn--sm" onclick="alert('查询银行处理状态（演示模式）')">查询</button>
+                                    <button class="tos-btn tos-btn--link tos-btn--sm" onclick="queryTransferStatus('TX-20260722-008')">查询</button>
                                 </td>
                             </tr>
                             <!-- 转账失败 -->
-                            <tr>
+                            <tr data-status="failed">
                                 <td></td>
                                 <td class="text-mono">TX-20260722-002</td>
                                 <td><strong>吴刚</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">MEM-063</span></td>
@@ -267,10 +287,10 @@
                                 <td><span class="tos-tag tos-tag--error">转账失败</span></td>
                                 <td style="text-align:right;">
                                     <button class="tos-btn tos-btn--danger tos-btn--sm" onclick="doTransfer('TX-20260722-002','吴刚','4300')">重试</button>
-                                    <button class="tos-btn tos-btn--link tos-btn--sm">标记异常</button>
+                                    
                                 </td>
                             </tr>
-                            <tr>
+                            <tr data-status="failed">
                                 <td></td>
                                 <td class="text-mono">TX-20260721-015</td>
                                 <td><strong>马海龙</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">MEM-409</span></td>
@@ -281,10 +301,10 @@
                                 <td><span class="tos-tag tos-tag--error">转账失败</span></td>
                                 <td style="text-align:right;">
                                     <button class="tos-btn tos-btn--danger tos-btn--sm" onclick="doTransfer('TX-20260721-015','马海龙','7800')">重试</button>
-                                    <button class="tos-btn tos-btn--link tos-btn--sm">标记异常</button>
+                                    
                                 </td>
                             </tr>
-                            <tr>
+                            <tr data-status="failed">
                                 <td></td>
                                 <td class="text-mono">TX-20260719-011</td>
                                 <td><strong>韩雪梅</strong><br><span style="font-size:12px;color:var(--tos-text-muted);">MEM-331</span></td>
@@ -295,7 +315,7 @@
                                 <td><span class="tos-tag tos-tag--error">转账失败</span></td>
                                 <td style="text-align:right;">
                                     <button class="tos-btn tos-btn--danger tos-btn--sm" onclick="doTransfer('TX-20260719-011','韩雪梅','1200')">重试</button>
-                                    <button class="tos-btn tos-btn--link tos-btn--sm">标记异常</button>
+                                    
                                 </td>
                             </tr>
                         </tbody>
@@ -307,7 +327,37 @@
     </div>
 </div>
 
+<!-- 通用弹窗 -->
+<div class="tos-modal-overlay" id="transferModal">
+    <div class="tos-modal">
+        <div class="tos-modal__header">
+            <span class="tos-modal__title" id="modalTitle">提示</span>
+            <button class="tos-modal__close" onclick="closeTransferModal()">&times;</button>
+        </div>
+        <div class="tos-modal__body" id="modalBody"></div>
+        <div class="tos-modal__footer" id="modalFooter"></div>
+    </div>
+</div>
+
 <script>
+    // ===== 弹窗工具 =====
+    var _modalCallback = null;
+
+    function openModal(title, bodyHtml, footerHtml, callback) {
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalBody').innerHTML = bodyHtml;
+        document.getElementById('modalFooter').innerHTML = footerHtml || '';
+        _modalCallback = callback || null;
+        document.getElementById('transferModal').classList.add('tos-modal-overlay--show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeTransferModal() {
+        document.getElementById('transferModal').classList.remove('tos-modal-overlay--show');
+        document.body.style.overflow = '';
+        _modalCallback = null;
+    }
+
     function showToast(msg) {
         var t = document.getElementById('toast');
         t.textContent = msg;
@@ -316,21 +366,152 @@
         t._timer = setTimeout(function() { t.classList.remove('tos-toast--show'); }, 2000);
     }
 
+    var currentTransferStatus = 'pending';
+
+    function applyStatusFilter() {
+        var rows = document.querySelectorAll('#pendingTable tbody tr');
+        for (var i = 0; i < rows.length; i++) {
+            var s = rows[i].getAttribute('data-status');
+            rows[i].style.display = (s === currentTransferStatus) ? '' : 'none';
+        }
+    }
+
+    function filterByTransferStatus(status, btn) {
+        currentTransferStatus = status;
+        var tabs = document.querySelectorAll('#transferTabs .tos-filter-tab');
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].classList.remove('tos-filter-tab--active');
+        }
+        btn.classList.add('tos-filter-tab--active');
+        applyStatusFilter();
+        // 同时更新关键词搜索
+        var kw = document.getElementById('searchPending').value;
+        if (kw) filterTable('pendingTable', kw);
+    }
+
+    // 详情弹窗
+    function showTransferDetail(txId) {
+        var rows = document.querySelectorAll('#pendingTable tbody tr');
+        var info = {};
+        for (var i = 0; i < rows.length; i++) {
+            var td = rows[i].querySelector('td.text-mono');
+            if (td && td.textContent.trim() === txId) {
+                var cells = rows[i].querySelectorAll('td');
+                info.txId = txId;
+                info.name = (cells[2].querySelector('strong') || {}).textContent || '';
+                info.amount = cells[3].textContent.trim();
+                info.bank = cells[4].textContent.trim();
+                info.card = cells[5].textContent.trim();
+                info.time = cells[6].textContent.trim();
+                info.status = cells[7].textContent.trim();
+                break;
+            }
+        }
+        var html = '<div style="display:flex;flex-direction:column;gap:10px;">' +
+            '<div style="background:#fafafa;border-radius:6px;padding:12px;">' +
+            '<div style="font-size:12px;color:var(--tos-text-muted);margin-bottom:6px;font-weight:600;">转账信息</div>' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:13px;">' +
+            '<div><span style="color:var(--tos-text-muted);">单号：</span><span style="font-family:monospace;font-size:12px;">' + (info.txId || '—') + '</span></div>' +
+            '<div><span style="color:var(--tos-text-muted);">会员：</span><strong>' + (info.name || '—') + '</strong></div>' +
+            '<div><span style="color:var(--tos-text-muted);">金额：</span><strong style="color:var(--tos-primary);">' + (info.amount || '—') + '</strong></div>' +
+            '<div><span style="color:var(--tos-text-muted);">状态：</span>' + (info.status || '—') + '</div>' +
+            '<div><span style="color:var(--tos-text-muted);">收款银行：</span>' + (info.bank || '—') + '</div>' +
+            '<div><span style="color:var(--tos-text-muted);">收款卡号：</span><span style="font-family:monospace;font-size:12px;">' + (info.card || '—') + '</span></div>' +
+            '<div style="grid-column:1/-1;"><span style="color:var(--tos-text-muted);">时间：</span>' + (info.time || '—') + '</div>' +
+            '</div></div></div>';
+        openModal('转账详情', html, '<button class="tos-btn tos-btn--primary" onclick="closeTransferModal()">关闭</button>');
+    }
+
+    function queryTransferStatus(txId) {
+        openModal('查询转账状态',
+            '<p>转账单号：<strong>' + txId + '</strong></p><p>当前状态：银行处理中</p><p style="color:var(--tos-text-muted);">预计 2 小时内到账，请耐心等待。</p>',
+            '<button class="tos-btn tos-btn--primary" onclick="closeTransferModal()">确定</button>');
+    }
+
     function toggleAllCheckbox(el) {
         var cbs = document.querySelectorAll('#pendingTable .row-cb');
         cbs.forEach(function(cb) { cb.checked = el.checked; });
     }
 
+    var paymentInfoMap = {
+        icbc:  { name: '工商银行', card: '6222 0000 1122 8899', holder: 'TOS运营中心' },
+        ccb:   { name: '建设银行', card: '6217 0000 3344 5566', holder: 'TOS运营中心' },
+        abc:   { name: '农业银行', card: '6228 0000 7788 9900', holder: 'TOS运营中心' },
+        boc:   { name: '中国银行', card: '6216 0000 2233 4455', holder: 'TOS运营中心' },
+        cmb:   { name: '招商银行', card: '6214 0000 6677 8890', holder: 'TOS运营中心' },
+        bocom: { name: '交通银行', card: '6222 0000 9988 7766', holder: 'TOS运营中心' },
+        psbc:  { name: '邮储银行', card: '6221 0000 5544 3322', holder: 'TOS运营中心' },
+        wechat:{ name: '微信支付', card: '商户号 1800009888', holder: 'TOS运营中心' },
+        alipay:{ name: '支付宝',   card: '商户号 2088001234567890', holder: 'TOS运营中心' }
+    };
+
+    function showPaymentInfo(selectEl) {
+        var infoDiv = document.getElementById('paymentInfo');
+        if (!infoDiv) return;
+        if (!selectEl.value) { infoDiv.innerHTML = ''; return; }
+        var info = paymentInfoMap[selectEl.value];
+        if (!info) { infoDiv.innerHTML = ''; return; }
+        infoDiv.innerHTML = '<div style="background:#f6ffed;border:1px solid #b7eb8f;border-radius:6px;padding:10px 14px;margin-top:8px;">' +
+            '<div style="font-size:12px;color:var(--tos-text-muted);margin-bottom:4px;">付款账户信息</div>' +
+            '<div style="font-size:13px;"><span style="color:var(--tos-text-muted);">户名：</span><strong>' + info.holder + '</strong></div>' +
+            '<div style="font-size:13px;"><span style="color:var(--tos-text-muted);">' + (selectEl.value === 'wechat' || selectEl.value === 'alipay' ? '商户号' : '账号') + '：</span><span style="font-family:monospace;">' + info.card + '</span></div>' +
+            '</div>';
+    }
+
     function doTransfer(txId, name, amount) {
-        if (confirm('确认对 ' + name + ' 执行转账 ¥' + amount + '？\n单号：' + txId)) {
-            showToast('转账指令已提交：' + txId + ' — ' + name + ' ¥' + amount);
+        var channelOpts = '<option value="">请选择付款方式</option>';
+        for (var k in paymentInfoMap) {
+            channelOpts += '<option value="' + k + '">' + paymentInfoMap[k].name + '</option>';
         }
+        var bodyHtml = '<p>确认对 <strong>' + name + '</strong> 发起银行转账？</p>' +
+            '<p>转账单号：<strong>' + txId + '</strong></p>' +
+            '<p>转账金额：<strong style="color:var(--tos-primary);">¥' + amount + '</strong></p>' +
+            '<div style="margin-top:12px;"><label style="display:block;font-size:13px;color:var(--tos-text-secondary);margin-bottom:4px;">付款方式</label>' +
+            '<select id="transferChannel" onchange="showPaymentInfo(this)" style="width:100%;height:36px;padding:0 10px;border:1px solid var(--tos-border);border-radius:var(--tos-radius-control);font-size:13px;font-family:inherit;outline:none;">' + channelOpts + '</select>' +
+            '<div id="paymentInfo"></div></div>' +
+            '<p style="color:var(--tos-text-muted);margin-top:10px;">转账提交后将由银行处理，通常 2 小时内到账。</p>';
+        openModal('执行转账', bodyHtml,
+            '<button class="tos-btn" onclick="closeTransferModal()">取消</button><button class="tos-btn tos-btn--primary" onclick="confirmDoTransfer()">确认转账</button>',
+            { action: 'doTransfer', txId: txId, name: name, amount: amount });
+    }
+
+    function confirmDoTransfer() {
+        if (!_modalCallback || _modalCallback.action !== 'doTransfer') return;
+        var channel = document.getElementById('transferChannel');
+        if (!channel || !channel.value) { alert('请选择付款方式'); return; }
+        var channelText = channel.options[channel.selectedIndex].textContent;
+        var cb = _modalCallback;
+        // 找到对应行更新状态
+        var rows = document.querySelectorAll('#pendingTable tbody tr');
+        for (var i = 0; i < rows.length; i++) {
+            var td = rows[i].querySelector('td.text-mono');
+            if (td && td.textContent.trim() === cb.txId) {
+                rows[i].setAttribute('data-status', 'processing');
+                var tag = rows[i].querySelector('.tos-tag');
+                if (tag) { tag.className = 'tos-tag tos-tag--warning'; tag.textContent = '处理中'; }
+                var cbEl = rows[i].querySelector('.row-cb');
+                if (cbEl) { cbEl.checked = false; cbEl.disabled = true; }
+                var btns = rows[i].querySelectorAll('td:last-child > button');
+                for (var j = 0; j < btns.length; j++) { btns[j].style.display = 'none'; }
+                // 添加查询按钮
+                var td2 = rows[i].querySelector('td:last-child');
+                var qbtn = document.createElement('button');
+                qbtn.className = 'tos-btn tos-btn--link tos-btn--sm';
+                qbtn.textContent = '查询';
+                qbtn.setAttribute('onclick', "queryTransferStatus('" + cb.txId + "')");
+                td2.appendChild(qbtn);
+                break;
+            }
+        }
+        closeTransferModal();
+        applyStatusFilter();
+        showToast('转账已提交 [' + channelText + ']：' + cb.txId);
     }
 
     function batchTransfer() {
         var cbs = document.querySelectorAll('#pendingTable .row-cb:checked');
         if (cbs.length === 0) {
-            alert('请至少勾选一笔待转账记录');
+            openModal('提示', '<p>请至少勾选一笔待转账记录。</p>', '<button class="tos-btn tos-btn--primary" onclick="closeTransferModal()">确定</button>');
             return;
         }
         var rows = [];
@@ -339,24 +520,67 @@
             var txId = tr.cells[1].textContent.trim();
             var name = tr.querySelector('strong').textContent;
             var amount = tr.cells[3].textContent.trim();
-            rows.push(txId + ' ' + name + ' ' + amount);
+            rows.push({ txId: txId, name: name, amount: amount, cb: cb });
         });
-        if (confirm('确认批量执行 ' + cbs.length + ' 笔转账？\n' + rows.join('\n'))) {
-            showToast('已提交 ' + cbs.length + ' 笔批量转账指令');
-            cbs.forEach(function(cb) { cb.checked = false; });
-            document.getElementById('selectAll').checked = false;
+        var listHtml = rows.map(function(r) { return '<li>' + r.txId + ' — ' + r.name + ' — ' + r.amount + '</li>'; }).join('');
+        var channelOpts = '<option value="">请选择付款方式</option>';
+        for (var k in paymentInfoMap) {
+            channelOpts += '<option value="' + k + '">' + paymentInfoMap[k].name + '</option>';
         }
+        var bodyHtml = '<p>确认执行 <strong>' + rows.length + '</strong> 笔转账？</p>' +
+            '<ul style="font-size:13px;color:var(--tos-text-secondary);padding-left:20px;margin-bottom:12px;">' + listHtml + '</ul>' +
+            '<div><label style="display:block;font-size:13px;color:var(--tos-text-secondary);margin-bottom:4px;">付款方式</label>' +
+            '<select id="transferChannel" onchange="showPaymentInfo(this)" style="width:100%;height:36px;padding:0 10px;border:1px solid var(--tos-border);border-radius:var(--tos-radius-control);font-size:13px;font-family:inherit;outline:none;">' + channelOpts + '</select>' +
+            '<div id="paymentInfo"></div></div>';
+        openModal('批量转账', bodyHtml,
+            '<button class="tos-btn" onclick="closeTransferModal()">取消</button><button class="tos-btn tos-btn--primary" onclick="confirmBatchTransfer()">确认转账</button>',
+            { action: 'batchTransfer', rows: rows });
+    }
+
+    function confirmBatchTransfer() {
+        if (!_modalCallback || _modalCallback.action !== 'batchTransfer') return;
+        var channel = document.getElementById('transferChannel');
+        if (!channel || !channel.value) { alert('请选择付款方式'); return; }
+        var channelText = channel.options[channel.selectedIndex].textContent;
+        var rows = _modalCallback.rows;
+        rows.forEach(function(r) {
+            r.cb.checked = false; r.cb.disabled = true;
+            var tr = r.cb.closest('tr');
+            tr.setAttribute('data-status', 'processing');
+            var tag = tr.querySelector('.tos-tag');
+            if (tag) { tag.className = 'tos-tag tos-tag--warning'; tag.textContent = '处理中'; }
+            var btns = tr.querySelectorAll('td:last-child > button');
+            for (var j = 0; j < btns.length; j++) { btns[j].style.display = 'none'; }
+            var qbtn = document.createElement('button');
+            qbtn.className = 'tos-btn tos-btn--link tos-btn--sm';
+            qbtn.textContent = '查询';
+            qbtn.setAttribute('onclick', "queryTransferStatus('" + r.txId + "')");
+            tr.querySelector('td:last-child').appendChild(qbtn);
+        });
+        document.getElementById('selectAll').checked = false;
+        closeTransferModal();
+        applyStatusFilter();
+        showToast('已提交 ' + rows.length + ' 笔转账 [' + channelText + ']');
     }
 
     function filterTable(tableId, keyword) {
         var table = document.getElementById(tableId);
         var rows = table.querySelectorAll('tbody tr');
         var kw = keyword.toLowerCase();
-        rows.forEach(function(tr) {
-            if (!kw) { tr.style.display = ''; return; }
-            tr.style.display = tr.textContent.toLowerCase().indexOf(kw) !== -1 ? '' : 'none';
-        });
+        for (var i = 0; i < rows.length; i++) {
+            var tr = rows[i];
+            var show = (tr.getAttribute('data-status') === currentTransferStatus);
+            if (show && kw) {
+                show = tr.textContent.toLowerCase().indexOf(kw) !== -1;
+            }
+            tr.style.display = show ? '' : 'none';
+        }
     }
+
+    // 页面加载完成后应用默认筛选
+    document.addEventListener('DOMContentLoaded', function() {
+        applyStatusFilter();
+    });
 
     function exportCSV() {
         var rows = [];
