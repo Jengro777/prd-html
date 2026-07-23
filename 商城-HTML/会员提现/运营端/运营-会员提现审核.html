@@ -132,6 +132,9 @@
             padding: 10px 16px; background: #fffbe6; border: 1px solid #ffe58f;
             border-radius: var(--tos-radius-control); margin-bottom: 16px; font-size: 13px;
         }
+        .tos-filter-tabs { display: flex; gap: 2px; background: #f5f5f5; border-radius: var(--tos-radius-control); padding: 3px; width: fit-content; }
+        .tos-filter-tab { height: 32px; padding: 0 16px; border: none; border-radius: 6px; background: transparent; color: var(--tos-text-secondary); font-size: 13px; cursor: default; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
+        .tos-filter-tab--active { background: #fff; color: var(--tos-primary); font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
         .ant-btn-primary { background: var(--tos-primary); border-color: var(--tos-primary); box-shadow: none; }
         .ant-btn-primary:hover, .ant-btn-primary:focus { background: var(--tos-primary-hover) !important; border-color: var(--tos-primary-hover) !important; }
         .ant-btn { border-radius: var(--tos-radius-control) !important; }
@@ -254,9 +257,9 @@
                         <div class="tos-card__desc">共 7 条记录，其中 3 条待审核</div>
                     </div>
                     <div class="tos-actions">
-                        <a-button @click="exportCSV">导出 CSV</a-button>
-                        <a-button type="primary" @click="batchApprove">批量通过</a-button>
-                        <a-button danger @click="batchReject">批量驳回</a-button>
+                        <a-button disabled>导出 CSV</a-button>
+                        <a-button type="primary" disabled>批量通过</a-button>
+                        <a-button danger disabled>批量驳回</a-button>
                     </div>
                 </div>
 
@@ -264,12 +267,12 @@
                 <a-form layout="vertical">
                     <div class="tos-form-grid" style="margin-bottom: 16px;">
                         <a-form-item label="审核状态">
-                            <a-select id="statusFilter" placeholder="全部" allow-clear style="width:100%;">
-                                <a-select-option value="">全部</a-select-option>
-                                <a-select-option value="pending">待审核</a-select-option>
-                                <a-select-option value="approved">已通过</a-select-option>
-                                <a-select-option value="rejected">已驳回</a-select-option>
-                            </a-select>
+                            <div class="tos-filter-tabs">
+                                <span class="tos-filter-tab tos-filter-tab--active">全部</span>
+                                <span class="tos-filter-tab">待审核</span>
+                                <span class="tos-filter-tab">已通过</span>
+                                <span class="tos-filter-tab">已驳回</span>
+                            </div>
                         </a-form-item>
                         <a-form-item label="会员ID/姓名">
                             <a-input id="memberSearch" placeholder="搜索会员编号或姓名" allow-clear />
@@ -278,8 +281,7 @@
                             <a-input id="idSearch" placeholder="搜索提现单号" allow-clear />
                         </a-form-item>
                         <a-form-item label="提现方式">
-                            <a-select id="methodFilter" placeholder="全部" allow-clear style="width:100%;">
-                                <a-select-option value="">全部</a-select-option>
+                            <a-select id="methodFilter" mode="multiple" placeholder="全部" allow-clear style="width:100%;">
                                 <a-select-option value="bank">银行卡</a-select-option>
                                 <a-select-option value="alipay">支付宝</a-select-option>
                                 <a-select-option value="wechat">微信</a-select-option>
