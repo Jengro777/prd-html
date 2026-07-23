@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>运营端 · 支付服务商管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --tos-primary: #42b7ae; --tos-primary-hover: #339b94; --tos-primary-bg: #e6f7f6;
+            --tos-bg: #f5f7fa; --tos-card: #fff; --tos-border: #e5e7eb; --tos-border-soft: #f0f2f5;
+            --tos-text: #333; --tos-text-secondary: #666; --tos-text-muted: #999;
+            --tos-success: #52c41a; --tos-warning: #faad14; --tos-error: #f5222d;
+            --tos-radius-card: 12px; --tos-radius-control: 8px;
+            --sidebar-width: 220px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--tos-bg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: var(--tos-text); }
+        #app { min-height: 100vh; display: flex; }
+        .tos-sidebar { position: fixed; top: 0; left: 0; bottom: 0; z-index: 30; width: var(--sidebar-width); background: #fff; border-right: 1px solid var(--tos-border-soft); display: flex; flex-direction: column; overflow-y: auto; }
+        .sidebar__end-select { width: calc(100% - 24px); height: 32px; margin: 8px 12px 0; padding: 0 26px 0 10px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; font-size: 13px; color: #333; outline: none; cursor: pointer; font-family: inherit; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><path d='M2 4l3 3 3-3' fill='none' stroke='%23999' stroke-width='1.5' stroke-linecap='round'/></svg>"); background-repeat: no-repeat; background-position: right 8px center; }
+        .sidebar__end-select:focus { border-color: #42b7ae; box-shadow: 0 0 0 2px rgba(66,183,174,.16); }
+        .tos-sidebar__logo { display: flex; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid var(--tos-border-soft); }
+        .tos-sidebar__logo-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--tos-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+        .tos-sidebar__logo-text { font-size: 16px; font-weight: 700; color: #1f2937; white-space: nowrap; }
+        .tos-sidebar__nav { flex: 1; padding: 12px 0; }
+        .tos-sidebar__group { padding: 0 12px; margin-bottom: 4px; }
+        .tos-sidebar__group-title { padding: 8px 8px 4px; font-size: 11px; color: var(--tos-text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+        .tos-sidebar__item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; color: var(--tos-text-secondary); transition: all 0.15s; text-decoration: none; margin-bottom: 2px; }
+        .tos-sidebar__item:hover { background: #f5f5f5; color: var(--tos-text); }
+        .tos-sidebar__item--active { background: var(--tos-primary-bg); color: var(--tos-primary); font-weight: 600; }
+        .tos-sidebar__item i { width: 18px; text-align: center; font-size: 13px; flex-shrink: 0; }
+        .tos-main { margin-left: var(--sidebar-width); flex: 1; min-width: 0; }
+        .tos-header { position: sticky; top: 0; z-index: 20; display: flex; height: 56px; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--tos-border-soft); background: rgba(255,255,255,0.96); padding: 0 20px; backdrop-filter: blur(10px); }
+        .tos-header__left { display: flex; align-items: center; gap: 12px; }
+        .tos-header__title { font-size: 15px; font-weight: 600; color: #1f2937; }
+        .tos-header__breadcrumb { font-size: 12px; color: var(--tos-text-muted); }
+        .tos-page { padding: 20px; max-width: 1400px; }
+        .tos-page-title { margin-bottom: 20px; }
+        .tos-page-title h1 { margin: 0; color: #1f2937; font-size: 20px; font-weight: 600; }
+        .tos-page-title p { margin: 4px 0 0; color: var(--tos-text-muted); font-size: 13px; }
+        .tos-card { background: var(--tos-card); border: 1px solid var(--tos-border-soft); border-radius: var(--tos-radius-card); padding: 20px; box-shadow: 0 1px 2px rgba(15,23,42,0.03); }
+        .tos-card+.tos-card { margin-top: 20px; }
+        .tos-card__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+        .tos-card__title { margin: 0; color: var(--tos-text); font-size: 16px; font-weight: 600; }
+        .tos-card__desc { margin-top: 2px; color: var(--tos-text-muted); font-size: 13px; }
+        .tos-actions { display: flex; align-items: center; gap: 8px; }
+        .tos-btn { display: inline-flex; align-items: center; justify-content: center; height: 34px; padding: 0 14px; border: 1px solid var(--tos-border); border-radius: var(--tos-radius-control); background: #fff; color: var(--tos-text); font-size: 13px; cursor: pointer; transition: all 0.15s; font-family: inherit; white-space: nowrap; }
+        .tos-btn:hover { border-color: var(--tos-primary); color: var(--tos-primary); }
+        .tos-btn--primary { background: var(--tos-primary); border-color: var(--tos-primary); color: #fff; }
+        .tos-btn--primary:hover { background: var(--tos-primary-hover); border-color: var(--tos-primary-hover); color: #fff; }
+        .tos-btn--sm { height: 28px; padding: 0 10px; font-size: 12px; }
+        .provider-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .provider-card { border: 1px solid var(--tos-border-soft); border-radius: var(--tos-radius-card); padding: 16px; background: #fff; transition: box-shadow 0.2s; }
+        .provider-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .provider-card--disabled { opacity: 0.55; }
+        .provider-card__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .provider-card__name { font-size: 15px; font-weight: 600; }
+        .provider-card__code { font-size: 11px; color: var(--tos-text-muted); margin-bottom: 8px; }
+        .provider-card__balance { font-size: 20px; font-weight: 600; margin: 8px 0; }
+        .provider-card__balance--pay { color: var(--tos-error); }
+        .provider-card__balance--collect { color: var(--tos-success); }
+        .provider-card__meta { font-size: 12px; color: var(--tos-text-muted); margin-bottom: 10px; }
+        .provider-card__actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        .tos-tag { display: inline-flex; height: 22px; align-items: center; padding: 0 8px; border-radius: 4px; font-size: 12px; font-weight: 500; }
+        .tos-tag--success { background: #f0faf0; color: var(--tos-success); }
+        .tos-tag--error { background: #fff0f0; color: var(--tos-error); }
+        .tos-tag--default { background: #f5f5f5; color: var(--tos-text-secondary); }
+        .tos-tag--primary { background: var(--tos-primary-bg); color: var(--tos-primary); }
+        .tos-table-wrap { overflow-x: auto; }
+        .tos-table { width: 100%; min-width: 700px; border-collapse: collapse; }
+        .tos-table th { padding: 10px 12px; background: #fafafa; border-bottom: 1px solid var(--tos-border-soft); color: var(--tos-text-secondary); font-size: 13px; font-weight: 500; text-align: left; }
+        .tos-table td { padding: 10px 12px; border-bottom: 1px solid #f5f5f5; font-size: 14px; }
+        .tos-table tr:hover td { background: #fafafa; }
+        .amount-in { color: var(--tos-success); font-weight: 600; }
+        .amount-out { color: var(--tos-error); font-weight: 600; }
+        .tos-modal-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.45); align-items: center; justify-content: center; }
+        .tos-modal-overlay--show { display: flex; }
+        .tos-modal { background: #fff; border-radius: var(--tos-radius-card); box-shadow: 0 6px 30px rgba(0,0,0,0.15); width: 480px; max-width: 90vw; max-height: 85vh; overflow-y: auto; }
+        .tos-modal__header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--tos-border-soft); }
+        .tos-modal__title { font-size: 16px; font-weight: 600; color: #1f2937; }
+        .tos-modal__close { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: none; background: none; cursor: pointer; font-size: 18px; color: var(--tos-text-muted); border-radius: 6px; }
+        .tos-modal__close:hover { background: #f5f5f5; color: var(--tos-text); }
+        .tos-modal__body { padding: 20px; font-size: 14px; }
+        .tos-modal__footer { display: flex; justify-content: flex-end; gap: 10px; padding: 12px 20px; border-top: 1px solid var(--tos-border-soft); }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 13px; color: var(--tos-text-secondary); margin-bottom: 4px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; height: 36px; padding: 0 10px; border: 1px solid var(--tos-border); border-radius: var(--tos-radius-control); font-size: 13px; font-family: inherit; outline: none; }
+        .form-group textarea { height: auto; padding: 8px 10px; resize: vertical; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--tos-primary); box-shadow: 0 0 0 2px rgba(66,183,174,0.16); }
+        @media (max-width: 1024px) { .tos-sidebar { width: 64px; } .tos-sidebar__logo-text, .tos-sidebar__group-title, .tos-sidebar__item span { display: none; } .tos-sidebar__item { justify-content: center; padding: 10px; } .tos-main { margin-left: 64px; } .provider-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 640px) { .tos-sidebar { display: none; } .tos-main { margin-left: 0; } .provider-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div id="app">
+    <aside class="tos-sidebar">
+        <select class="sidebar__end-select" onchange="if(this.value)location.href=this.value"><option value="../会员提现申请.html">会员端</option><option value="" selected>运营端</option></select>
+        <div class="tos-sidebar__logo">
+            <div class="tos-sidebar__logo-icon"><i class="fas fa-layer-group"></i></div>
+            <span class="tos-sidebar__logo-text">TOS 运营中心</span>
+        </div>
+        <nav class="tos-sidebar__nav">
+            <div class="tos-sidebar__group">
+                <div class="tos-sidebar__group-title">会员钱包</div>
+                <a class="tos-sidebar__item" href="运营-会员提现审核.html"><i class="fas fa-check-circle"></i> <span>提现审核</span></a>
+                <a class="tos-sidebar__item" href="运营-提现转账.html"><i class="fas fa-exchange-alt"></i> <span>提现转账</span></a>
+                <a class="tos-sidebar__item" href="运营-提现记录.html"><i class="fas fa-history"></i> <span>提现记录</span></a>
+                <a class="tos-sidebar__item" href="运营-钱包明细对账.html"><i class="fas fa-file-invoice"></i> <span>钱包对账</span></a>
+                <a class="tos-sidebar__item" href="运营-会员余额管理.html"><i class="fas fa-coins"></i> <span>会员钱包</span></a>
+            </div>
+            <div class="tos-sidebar__group">
+                <div class="tos-sidebar__group-title">系统设置</div>
+                <a class="tos-sidebar__item" href="运营-提现配置.html"><i class="fas fa-cog"></i> <span>提现配置</span></a>
+                <a class="tos-sidebar__item tos-sidebar__item--active" href="运营-支付服务商管理.html"><i class="fas fa-credit-card"></i> <span>支付服务商</span></a>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="tos-main">
+        <header class="tos-header">
+            <div class="tos-header__left">
+                <span class="tos-header__breadcrumb">系统设置 / </span>
+                <span class="tos-header__title">支付服务商管理</span>
+            </div>
+            <div class="tos-actions">
+                <button class="tos-btn" onclick="addProvider()"><i class="fas fa-plus" style="margin-right:4px;"></i> 新增服务商</button>
+            </div>
+        </header>
+
+        <main class="tos-page">
+            <section class="tos-page-title">
+                <h1>支付服务商管理</h1>
+                <p>管理收款和付款两类服务商，配置 API 密钥、启用状态及账户充值。</p>
+            </section>
+
+            <!-- 收款服务商 -->
+            <section class="tos-card">
+                <div class="tos-card__header">
+                    <div>
+                        <h2 class="tos-card__title"><i class="fas fa-arrow-down" style="color:var(--tos-success);margin-right:8px;"></i>收款服务商</h2>
+                        <p class="tos-card__desc">用于接收会员充值、支付入账的服务商账户。</p>
+                    </div>
+                </div>
+                <div class="provider-grid" id="collectProviders"></div>
+            </section>
+
+            <!-- 付款服务商 -->
+            <section class="tos-card">
+                <div class="tos-card__header">
+                    <div>
+                        <h2 class="tos-card__title"><i class="fas fa-arrow-up" style="color:var(--tos-error);margin-right:8px;"></i>付款服务商</h2>
+                        <p class="tos-card__desc">用于会员提现、转账付款的服务商账户。</p>
+                    </div>
+                </div>
+                <div class="provider-grid" id="payProviders"></div>
+            </section>
+
+            <!-- 操作记录 -->
+            <section class="tos-card">
+                <div class="tos-card__header">
+                    <div>
+                        <h2 class="tos-card__title"><i class="fas fa-history" style="margin-right:8px;color:var(--tos-primary);"></i>操作记录</h2>
+                        <p class="tos-card__desc">最近的充值、配置变更记录。</p>
+                    </div>
+                    <button class="tos-btn" onclick="exportLogCSV()"><i class="fas fa-download" style="margin-right:4px;"></i> 导出 CSV</button>
+                </div>
+                <div class="tos-table-wrap">
+                    <table class="tos-table" id="logTable">
+                        <thead><tr><th>时间</th><th>服务商</th><th>类型</th><th>操作</th><th>金额</th><th>操作后余额</th><th>备注</th></tr></thead>
+                        <tbody id="logTbody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<!-- 新增/编辑弹窗 -->
+<div class="tos-modal-overlay" id="editModal">
+    <div class="tos-modal">
+        <div class="tos-modal__header">
+            <span class="tos-modal__title" id="editModalTitle">新增服务商</span>
+            <button class="tos-modal__close" onclick="closeEditModal()">&times;</button>
+        </div>
+        <div class="tos-modal__body">
+            <div class="form-group"><label>服务商名称 <span style="color:var(--tos-error);">*</span></label><input type="text" id="eName" placeholder="例：Pyvio、Stripe" /></div>
+            <div class="form-group"><label>标识码 <span style="color:var(--tos-error);">*</span></label><input type="text" id="eCode" placeholder="英文代码 (pyvio / stripe)" /></div>
+            <div class="form-group"><label>服务类型 <span style="color:var(--tos-error);">*</span></label>
+                <select id="eType"><option value="collect">收款服务商</option><option value="pay">付款服务商</option></select>
+            </div>
+            <div class="form-group"><label>账户余额 (CNY)</label><input type="number" id="eBalance" min="0" step="0.01" placeholder="0.00" /></div>
+            <div class="form-group"><label>API Key</label><input type="text" id="eApiKey" placeholder="服务商提供的 API Key" /></div>
+            <div class="form-group"><label>商户号</label><input type="text" id="eMerchantId" placeholder="服务商分配的商户号" /></div>
+            <div class="form-group"><label>启用状态</label>
+                <select id="eStatus"><option value="active">启用</option><option value="disabled">禁用</option></select>
+            </div>
+        </div>
+        <div class="tos-modal__footer">
+            <button class="tos-btn" onclick="closeEditModal()">取消</button>
+            <button class="tos-btn tos-btn--primary" onclick="saveProvider()">保存</button>
+        </div>
+    </div>
+</div>
+
+<!-- 充值弹窗 -->
+<div class="tos-modal-overlay" id="rechargeModal">
+    <div class="tos-modal">
+        <div class="tos-modal__header">
+            <span class="tos-modal__title">服务商充值</span>
+            <button class="tos-modal__close" onclick="closeRechargeModal()">&times;</button>
+        </div>
+        <div class="tos-modal__body">
+            <div class="form-group"><label>服务商</label><select id="rProvider"></select></div>
+            <div class="form-group"><label>充值金额 (CNY) <span style="color:var(--tos-error);">*</span></label><input type="number" id="rAmount" min="0.01" step="0.01" placeholder="请输入金额" /></div>
+            <div class="form-group"><label>备注</label><input type="text" id="rMemo" placeholder="充值说明" /></div>
+        </div>
+        <div class="tos-modal__footer">
+            <button class="tos-btn" onclick="closeRechargeModal()">取消</button>
+            <button class="tos-btn tos-btn--primary" onclick="executeRecharge()">确认充值</button>
+        </div>
+    </div>
+</div>
+
+<script>
+var providers = [
+    { id: 1, name: 'Pyvio', code: 'pyvio', type: 'collect', balance: 156800.00, status: 'active', apiKey: '****a1b2', merchantId: 'PYV-20240001', createdAt: '2025-03-10' },
+    { id: 2, name: 'Stripe', code: 'stripe', type: 'collect', balance: 284500.00, status: 'active', apiKey: '****c3d4', merchantId: 'STP-20240002', createdAt: '2025-01-15' },
+    { id: 3, name: 'Adyen', code: 'adyen', type: 'collect', balance: 92300.00, status: 'disabled', apiKey: '****e5f6', merchantId: 'ADY-20240003', createdAt: '2025-05-20' },
+    { id: 4, name: 'Payoneer', code: 'payoneer', type: 'pay', balance: 432000.00, status: 'active', apiKey: '****g7h8', merchantId: 'PAY-20240004', createdAt: '2024-11-01' },
+    { id: 5, name: 'Wise', code: 'wise', type: 'pay', balance: 218600.00, status: 'active', apiKey: '****i9j0', merchantId: 'WIS-20240005', createdAt: '2025-02-28' },
+    { id: 6, name: 'PingPong', code: 'pingpong', type: 'pay', balance: 167200.00, status: 'disabled', apiKey: '****k1l2', merchantId: 'PP-20240006', createdAt: '2025-04-15' }
+];
+var logs = [
+    { time: '2026-07-23 14:30', providerName: 'Pyvio', type: '收款', action: '充值', amount: 50000, newBalance: 156800, memo: '季度运营资金补充' },
+    { time: '2026-07-22 10:15', providerName: 'Payoneer', type: '付款', action: '充值', amount: 100000, newBalance: 432000, memo: '提现储备金' },
+    { time: '2026-07-20 09:00', providerName: 'Stripe', type: '收款', action: '配置变更', amount: 0, newBalance: 284500, memo: '更新 API Key' },
+    { time: '2026-07-18 16:45', providerName: 'Adyen', type: '收款', action: '禁用', amount: 0, newBalance: 92300, memo: '暂停使用' },
+    { time: '2026-07-15 11:20', providerName: 'Wise', type: '付款', action: '充值', amount: 50000, newBalance: 218600, memo: '提现通道补充' }
+];
+var editId = null;
+
+function formatCNY(v) { return '¥' + Number(v).toLocaleString('zh-CN', { minimumFractionDigits: 2 }); }
+
+function renderProviders() {
+    var collectHtml = '', payHtml = '';
+    providers.forEach(function(p) {
+        var card = '<div class="provider-card' + (p.status === 'disabled' ? ' provider-card--disabled' : '') + '">' +
+            '<div class="provider-card__header"><span class="provider-card__name">' + p.name + '</span>' +
+            (p.status === 'active' ? '<span class="tos-tag tos-tag--success">启用</span>' : '<span class="tos-tag tos-tag--default">禁用</span>') +
+            '</div>' +
+            '<div class="provider-card__code">' + p.code + ' · 商户号: ' + p.merchantId + '</div>' +
+            '<div class="provider-card__balance ' + (p.type === 'collect' ? 'provider-card__balance--collect' : 'provider-card__balance--pay') + '">' + formatCNY(p.balance) + '</div>' +
+            '<div class="provider-card__meta">API Key: ' + p.apiKey + ' · 创建于 ' + p.createdAt + '</div>' +
+            '<div class="provider-card__actions">' +
+            '<button class="tos-btn tos-btn--sm" onclick="rechargeProvider(' + p.id + ')">充值</button>' +
+            '<button class="tos-btn tos-btn--sm" onclick="editProvider(' + p.id + ')">编辑</button>' +
+            '<button class="tos-btn tos-btn--sm" onclick="toggleProvider(' + p.id + ')" style="color:' + (p.status === 'active' ? 'var(--tos-error)' : 'var(--tos-success)') + ';">' + (p.status === 'active' ? '禁用' : '启用') + '</button>' +
+            '</div></div>';
+        if (p.type === 'collect') collectHtml += card; else payHtml += card;
+    });
+    document.getElementById('collectProviders').innerHTML = collectHtml || '<div style="grid-column:1/-1;text-align:center;color:var(--tos-text-muted);padding:20px;">暂无收款服务商</div>';
+    document.getElementById('payProviders').innerHTML = payHtml || '<div style="grid-column:1/-1;text-align:center;color:var(--tos-text-muted);padding:20px;">暂无付款服务商</div>';
+}
+
+function renderLogs() {
+    var html = '';
+    logs.forEach(function(l) {
+        html += '<tr><td style="font-size:12px;">' + l.time + '</td><td>' + l.providerName + '</td><td><span class="tos-tag ' + (l.type === '收款' ? 'tos-tag--success' : 'tos-tag--error') + '">' + l.type + '</span></td><td>' + l.action + '</td><td class="' + (l.type === '收款' ? 'amount-in' : 'amount-out') + '">' + (l.amount > 0 ? formatCNY(l.amount) : '—') + '</td><td>' + formatCNY(l.newBalance) + '</td><td style="font-size:12px;color:var(--tos-text-muted);">' + l.memo + '</td></tr>';
+    });
+    document.getElementById('logTbody').innerHTML = html || '<tr><td colspan="7" style="text-align:center;color:var(--tos-text-muted);">暂无记录</td></tr>';
+}
+
+function addProvider() {
+    editId = null;
+    document.getElementById('editModalTitle').textContent = '新增服务商';
+    ['eName','eCode','eBalance','eApiKey','eMerchantId'].forEach(function(id) { document.getElementById(id).value = ''; });
+    document.getElementById('eType').value = 'collect';
+    document.getElementById('eStatus').value = 'active';
+    document.getElementById('editModal').classList.add('tos-modal-overlay--show');
+    document.body.style.overflow = 'hidden';
+}
+
+function editProvider(id) {
+    var p = providers.find(function(x) { return x.id === id; });
+    if (!p) return;
+    editId = id;
+    document.getElementById('editModalTitle').textContent = '编辑服务商';
+    document.getElementById('eName').value = p.name;
+    document.getElementById('eCode').value = p.code;
+    document.getElementById('eType').value = p.type;
+    document.getElementById('eBalance').value = p.balance;
+    document.getElementById('eApiKey').value = p.apiKey;
+    document.getElementById('eMerchantId').value = p.merchantId;
+    document.getElementById('eStatus').value = p.status;
+    document.getElementById('editModal').classList.add('tos-modal-overlay--show');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').classList.remove('tos-modal-overlay--show');
+    document.body.style.overflow = '';
+}
+
+function saveProvider() {
+    var name = document.getElementById('eName').value.trim();
+    var code = document.getElementById('eCode').value.trim();
+    if (!name || !code) { alert('请填写服务商名称和标识码'); return; }
+    var data = {
+        name: name, code: code,
+        type: document.getElementById('eType').value,
+        balance: parseFloat(document.getElementById('eBalance').value) || 0,
+        apiKey: document.getElementById('eApiKey').value || '****',
+        merchantId: document.getElementById('eMerchantId').value || '—',
+        status: document.getElementById('eStatus').value,
+        createdAt: new Date().toISOString().slice(0, 10)
+    };
+    if (editId) {
+        var p = providers.find(function(x) { return x.id === editId; });
+        if (p) Object.assign(p, data);
+    } else {
+        data.id = Date.now();
+        providers.push(data);
+    }
+    closeEditModal();
+    renderProviders();
+}
+
+function toggleProvider(id) {
+    var p = providers.find(function(x) { return x.id === id; });
+    if (!p) return;
+    p.status = p.status === 'active' ? 'disabled' : 'active';
+    logs.unshift({ time: new Date().toLocaleString('zh-CN'), providerName: p.name, type: p.type === 'collect' ? '收款' : '付款', action: p.status === 'active' ? '启用' : '禁用', amount: 0, newBalance: p.balance, memo: '状态变更' });
+    renderProviders();
+    renderLogs();
+}
+
+function rechargeProvider(id) {
+    document.getElementById('rProvider').innerHTML = '<option value="' + id + '">' + (providers.find(function(x) { return x.id === id; }) || {}).name + '</option>';
+    document.getElementById('rAmount').value = '';
+    document.getElementById('rMemo').value = '';
+    document.getElementById('rechargeModal').classList.add('tos-modal-overlay--show');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeRechargeModal() {
+    document.getElementById('rechargeModal').classList.remove('tos-modal-overlay--show');
+    document.body.style.overflow = '';
+}
+
+function executeRecharge() {
+    var id = parseInt(document.getElementById('rProvider').value);
+    var amt = parseFloat(document.getElementById('rAmount').value);
+    var memo = document.getElementById('rMemo').value;
+    if (!amt || amt <= 0) { alert('请输入有效金额'); return; }
+    var p = providers.find(function(x) { return x.id === id; });
+    if (!p) return;
+    p.balance += amt;
+    logs.unshift({ time: new Date().toLocaleString('zh-CN'), providerName: p.name, type: p.type === 'collect' ? '收款' : '付款', action: '充值', amount: amt, newBalance: p.balance, memo: memo || '手动充值' });
+    closeRechargeModal();
+    renderProviders();
+    renderLogs();
+}
+
+function exportLogCSV() {
+    var rows = [['时间','服务商','类型','操作','金额','操作后余额','备注']];
+    logs.forEach(function(l) { rows.push([l.time, l.providerName, l.type, l.action, l.amount, l.newBalance, l.memo]); });
+    var csv = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g,'""') + '"'; }).join(','); }).join('\n');
+    var b = new Blob(['﻿' + csv], {type: 'text/csv;charset=utf-8;'});
+    var a = document.createElement('a'); a.href = URL.createObjectURL(b);
+    a.download = '服务商操作记录_' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click(); URL.revokeObjectURL(a.href);
+}
+
+renderProviders();
+renderLogs();
+</script>
+</body>
+</html>
