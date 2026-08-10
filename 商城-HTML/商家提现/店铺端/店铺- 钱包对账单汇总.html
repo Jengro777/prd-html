@@ -247,6 +247,91 @@
             font-size: 0.7rem;
             color: #4a5b7a;
         }
+        /* ===== 支出资金组成（展开查看）===== */
+        .compose-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+            color: #1e3a5f;
+            font-size: 0.68rem;
+            padding: 0.2rem 0.6rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+        }
+        .compose-toggle:hover {
+            border-color: #42b7ae;
+            color: #42b7ae;
+            background: #e6f7f6;
+        }
+        .compose-toggle .arrow {
+            display: inline-block;
+            transition: transform 0.15s ease;
+            font-size: 0.62rem;
+        }
+        .compose-toggle.open .arrow {
+            transform: rotate(180deg);
+        }
+        .compose-panel {
+            background: #fbfcfe;
+            border-top: 1px dashed #dde4ee;
+        }
+        .compose-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7rem;
+        }
+        .compose-table th {
+            background: #f3f6fb;
+            color: #334155;
+            padding: 0.45rem 0.8rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid #e5eaf2;
+            white-space: nowrap;
+        }
+        .compose-table td {
+            padding: 0.45rem 0.8rem;
+            border-bottom: 1px solid #f0f4fa;
+            color: #334155;
+            white-space: nowrap;
+        }
+        .compose-table tfoot td {
+            background: #fefce8;
+            font-weight: 700;
+            border-bottom: 0;
+        }
+        .compose-table .mono {
+            font-family: monospace;
+            font-weight: 600;
+        }
+        .compose-tag {
+            display: inline-block;
+            padding: 0.1rem 0.45rem;
+            border-radius: 4px;
+            font-size: 0.62rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .compose-tag--first {
+            background: #e6f7f6;
+            color: #0e7490;
+        }
+        .compose-tag--split {
+            background: #fff7e6;
+            color: #b45309;
+        }
+        .compose-tag--exhaust {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+        .compose-amount-used {
+            color: #b91c1c;
+            font-weight: 600;
+        }
         .total-row {
             background: #fefce8;
             font-weight: 700;
@@ -757,7 +842,7 @@
                 亚马逊卖家钱包 · 综合对账单
                 <span class="header-badge">时间筛选 + 业务类型筛选 + 导出 CSV</span>
             </h1>
-            <p>每笔资金变动分配唯一钱包对账单号，余额连续自洽、自动校验</p>
+            <p>每笔资金变动分配唯一钱包对账单号，余额连续自洽；每笔支出可展开查看资金组成，追溯由哪些收入构成</p>
         </div>
 
         <!-- 余额汇总卡片（全局全量数据展示，不受筛选影响） -->
@@ -775,7 +860,7 @@
             <div class="balance-item">
                 <div class="balance-label">全量支出总额</div>
                 <div class="balance-number warning" id="totalExpenseAll">- $6,810.00</div>
-                <div>提现 + 广告费 + 服务费</div>
+                <div>提现 + 广告费 + 服务费 · 支出可溯源到收入</div>
             </div>
             <div class="balance-item">
                 <div class="balance-label">期末余额</div>
@@ -819,6 +904,7 @@
                         <th>业务日期</th>
                         <th>收入金额 (+) </th>
                         <th>支出金额 (-) </th>
+                        <th>支出资金组成</th>
                         <th>交易后余额(全局)</th>
                     </tr>
                 </thead>
@@ -833,9 +919,11 @@
             <div style="display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between;">
                 <div><strong>自洽校验</strong><br>期初 + 全量收入 − 全量支出 = 期末余额，每笔流水余额连续递推</div>
                 <div><strong>钱包对账单号原则</strong><br>全局唯一 WBI-YYYYMMDD-NNN，提现拆分对应多个子单号</div>
+                <div><strong>支出资金组成</strong><br>每笔支出展开可见资金来源构成：支出金额 = 各收入来源占用金额之和；同一结算单可被多笔支出部分占用（二次/多次拆分），参考 STL-20260315-001 二次拆分示例</div>
             </div>
             <div style="margin-top: 12px; border-top: 1px solid var(--tos-border-soft); padding-top: 8px;">
                 <strong>费用调增 / 赔偿款说明</strong>：平台多扣费用返还、FBA 库存赔偿等正向入账，不包含买家订单退款。
+                <span style="margin-left: 12px;"><strong>占用规则</strong>：费用支出按收入入账先后优先占用（FIFO），提现按申请指定的结算单占用。</span>
             </div>
         </div>
     </div>
@@ -846,13 +934,24 @@
     const OPENING_BALANCE = 12430.50;
     const rawTransactions = [
         { id: "WBI-20260302-001", type: "settlement", typeLabel: "结算入账", typeIcon: "📦", refRaw: "STL-20260228-101 (周期:02/15-02/28)", date: "2026-03-02", income: 3250.00, expense: 0 },
-        { id: "WBI-20260305-002", type: "adfee", typeLabel: "广告费", typeIcon: "📢", refRaw: "AD-ORDER-45892 SP广告活动", date: "2026-03-05", income: 0, expense: 890.00 },
-        { id: "WBI-20260310-003", type: "servicefee", typeLabel: "技术服务费", typeIcon: "⚙️", refRaw: "FEE-202603-专业计划 (月度订阅+推荐费)", date: "2026-03-10", income: 0, expense: 139.99 },
-        { id: "WBI-20260315-004", type: "settlement", typeLabel: "结算入账", typeIcon: "📦", refRaw: "STL-20260312-205 (周期:03/01-03/12)", date: "2026-03-15", income: 5000.00, expense: 0 },
-        { id: "WBI-20260320-005", type: "withdrawal", typeLabel: "提现", typeIcon: "🏦", refRaw: "提现主单:WD-20260320-001 / 关联结算单:STL-20260312-205(部分)", date: "2026-03-20", income: 0, expense: 2500.00 },
-        { id: "WBI-20260325-006", type: "withdrawal", typeLabel: "提现", typeIcon: "🏦", refRaw: "提现主单:WD-20260325-002 / 关联结算单:STL-20260228-101+STL-20260312-205(剩余)", date: "2026-03-25", income: 0, expense: 3200.00 },
+        { id: "WBI-20260305-002", type: "adfee", typeLabel: "广告费", typeIcon: "📢", refRaw: "AD-ORDER-45892 SP广告活动", date: "2026-03-05", income: 0, expense: 890.00, composition: [
+            { incomeId: "STL-20260228-101", period: "02/15-02/28", incomeDate: "2026-03-02", incomeAmount: 3250.00, used: 890.00, remainingAfter: 2360.00, usedNo: 1, voucher: "" }
+        ] },
+        { id: "WBI-20260310-003", type: "servicefee", typeLabel: "技术服务费", typeIcon: "⚙️", refRaw: "FEE-202603-专业计划 (月度订阅+推荐费)", date: "2026-03-10", income: 0, expense: 139.99, composition: [
+            { incomeId: "STL-20260228-101", period: "02/15-02/28", incomeDate: "2026-03-02", incomeAmount: 3250.00, used: 139.99, remainingAfter: 2220.01, usedNo: 2, voucher: "" }
+        ] },
+        { id: "WBI-20260315-004", type: "settlement", typeLabel: "结算入账", typeIcon: "📦", refRaw: "STL-20260315-001 (周期:03/01-03/14)", date: "2026-03-15", income: 5000.00, expense: 0 },
+        { id: "WBI-20260320-005", type: "withdrawal", typeLabel: "提现", typeIcon: "🏦", refRaw: "提现主单:WD-20260320-001 / 占用结算单:STL-20260315-001(部分)", date: "2026-03-20", income: 0, expense: 2500.00, composition: [
+            { incomeId: "STL-20260315-001", period: "03/01-03/14", incomeDate: "2026-03-15", incomeAmount: 5000.00, used: 2500.00, remainingAfter: 2500.00, usedNo: 1, voucher: "WALLET-BILL-20260320-001-01" }
+        ] },
+        { id: "WBI-20260325-006", type: "withdrawal", typeLabel: "提现", typeIcon: "🏦", refRaw: "提现主单:WD-20260325-002 / 占用结算单:STL-20260228-101(剩余)+STL-20260315-001(二次拆分)", date: "2026-03-25", income: 0, expense: 3200.00, composition: [
+            { incomeId: "STL-20260228-101", period: "02/15-02/28", incomeDate: "2026-03-02", incomeAmount: 3250.00, used: 2220.01, remainingAfter: 0.00, usedNo: 3, voucher: "WALLET-BILL-20260325-002-01" },
+            { incomeId: "STL-20260315-001", period: "03/01-03/14", incomeDate: "2026-03-15", incomeAmount: 5000.00, used: 979.99, remainingAfter: 1520.01, usedNo: 2, voucher: "WALLET-BILL-20260325-002-02" }
+        ] },
         { id: "WBI-20260328-007", type: "adjustment", typeLabel: "费用调增/赔偿款", typeIcon: "💰", refRaw: "ADJ-20260328-仓储费多扣返还 (平台调账/FBA赔偿)", date: "2026-03-28", income: 270.00, expense: 0 },
-        { id: "WBI-20260330-008", type: "servicefee", typeLabel: "月度仓储费", typeIcon: "📦", refRaw: "FBA-STORAGE-MAR 长期仓储费", date: "2026-03-30", income: 0, expense: 80.01 }
+        { id: "WBI-20260330-008", type: "servicefee", typeLabel: "月度仓储费", typeIcon: "📦", refRaw: "FBA-STORAGE-MAR 长期仓储费", date: "2026-03-30", income: 0, expense: 80.01, composition: [
+            { incomeId: "STL-20260315-001", period: "03/01-03/14", incomeDate: "2026-03-15", incomeAmount: 5000.00, used: 80.01, remainingAfter: 1440.00, usedNo: 3, voucher: "" }
+        ] }
     ];
 
     // 计算每笔交易后的全局余额（连续递推）
@@ -911,7 +1010,7 @@
         const summaryBar = document.getElementById("summaryBar");
         if (!tbody) return;
         if (filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" class="empty-message">当前时间/业务类型下无流水记录</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" class="empty-message">当前时间/业务类型下无流水记录</td></tr>`;
             tfoot.innerHTML = '';
             if (summaryBar) summaryBar.innerHTML = '';
             return;
@@ -928,15 +1027,66 @@
             const typeDisplay = `${tx.typeLabel}`;
             const incomeHtml = tx.income > 0 ? `<span class="amount-in">$${tx.income.toFixed(2)}</span>` : "—";
             const expenseHtml = tx.expense > 0 ? `<span class="amount-out">$${tx.expense.toFixed(2)}</span>` : "—";
+            // 支出资金组成：支出流水可展开查看由哪些收入构成
+            let composeCell = "—";
+            let composePanel = "";
+            if (tx.expense > 0 && tx.composition && tx.composition.length) {
+                const srcRows = tx.composition.map(c => {
+                    const usedNoLabel = c.usedNo === 1
+                        ? `<span class="compose-tag compose-tag--first">首次占用</span>`
+                        : `<span class="compose-tag compose-tag--split">${c.usedNo}次拆分</span>`;
+                    const remainingLabel = c.remainingAfter <= 0.001
+                        ? `<span class="compose-tag compose-tag--exhaust">已占用完毕</span>`
+                        : `$${c.remainingAfter.toFixed(2)}`;
+                    return `<tr>
+                        <td><span class="mono">${c.incomeId}</span></td>
+                        <td>${c.incomeDate}</td>
+                        <td>${c.period}</td>
+                        <td>$${c.incomeAmount.toFixed(2)}</td>
+                        <td><span class="compose-amount-used">- $${c.used.toFixed(2)}</span></td>
+                        <td>${remainingLabel}</td>
+                        <td>${usedNoLabel}</td>
+                        <td>${c.voucher ? `<span class="mono" style="color:#b45309;">${c.voucher}</span>` : "—"}</td>
+                    </tr>`;
+                }).join("");
+                composeCell = `<button class="compose-toggle" onclick="toggleCompose('${tx.id}')"><i class="fas fa-layer-group"></i> 查看组成 <span class="arrow">▾</span></button>`;
+                composePanel = `<tr id="compose-${tx.id}" class="compose-panel" style="display:none;"><td colspan="8">
+                    <div style="padding:0.6rem 1rem;">
+                        <div style="font-size:0.7rem; font-weight:600; color:#334155; margin-bottom:0.4rem;">
+                            支出资金组成 · ${tx.composition.length} 笔收入来源，支出合计 $${tx.expense.toFixed(2)} 由以下收入构成
+                        </div>
+                        <table class="compose-table">
+                            <thead><tr>
+                                <th>资金来源<br>(收入对账单号)</th>
+                                <th>入账日期</th>
+                                <th>结算周期</th>
+                                <th>收入入账金额</th>
+                                <th>本次支出占用</th>
+                                <th>占用后剩余</th>
+                                <th>占用标记</th>
+                                <th>占用凭证<br>(提现子单号)</th>
+                            </tr></thead>
+                            <tbody>${srcRows}</tbody>
+                            <tfoot><tr>
+                                <td colspan="4" style="text-align:right;">支出合计核对 ✔</td>
+                                <td><span class="compose-amount-used">- $${tx.expense.toFixed(2)}</span></td>
+                                <td colspan="3">与支出金额一致，占用来源可逐笔追溯</td>
+                            </tr></tfoot>
+                        </table>
+                    </div>
+                </td></tr>`;
+            }
+            const walletSubMark = tx.type === "withdrawal" ? "<br><span style='font-size:0.65rem;'>(提现子凭证)</span>" : "";
             rows += `<tr>
-                <td><span class="wallet-bill-id">${tx.id}</span>${tx.id.includes("005") ? "<br><span style='font-size:0.65rem;'>(提现子凭证)</span>" : ""}</td>
+                <td><span class="wallet-bill-id">${tx.id}</span>${walletSubMark}</td>
                 <td><span class="badge-type ${typeClass}">${typeDisplay}</span></td>
                 <td><span class="ref-business-id">${tx.refRaw}</span></td>
                 <td>${tx.date}</td>
                 <td>${incomeHtml}</td>
                 <td>${expenseHtml}</td>
+                <td>${composeCell}</td>
                 <td>$${tx.balanceAfter.toFixed(2)}</td>
-            </tr>`;
+            </tr>${composePanel}`;
         }
         tbody.innerHTML = rows;
 
@@ -946,7 +1096,7 @@
             sumExpense += tx.expense;
         }
         const footerHtml = `<tr class="total-row">
-            <td colspan="4" style="text-align: right; font-weight: 700;">筛选结果汇总 (${filtered.length}笔)</td>
+            <td colspan="5" style="text-align: right; font-weight: 700;">筛选结果汇总 (${filtered.length}笔)</td>
             <td style="font-weight: 700; color:#52c41a;">$${sumIncome.toFixed(2)}</td>
             <td style="font-weight: 700; color:#f5222d;">$${sumExpense.toFixed(2)}</td>
             <td style="font-weight: 700; background:#fafafa;">—</td>
@@ -965,9 +1115,16 @@
             alert("没有符合条件的数据可导出");
             return;
         }
-        const headers = ["钱包对账单号", "业务类型", "业务单号/凭证", "业务日期", "收入金额(USD)", "支出金额(USD)", "交易后余额(USD)"];
+        const headers = ["钱包对账单号", "业务类型", "业务单号/凭证", "业务日期", "收入金额(USD)", "支出金额(USD)", "支出资金组成", "交易后余额(USD)"];
         const rows = filtered.map(tx => {
             let typeDisplay = `${tx.typeLabel}`;
+            let composeSummary = "—";
+            if (tx.expense > 0 && tx.composition && tx.composition.length) {
+                composeSummary = tx.composition.map(c => {
+                    const mark = c.usedNo > 1 ? `(${c.usedNo}次拆分)` : "";
+                    return `${c.incomeId}:${c.used.toFixed(2)}${mark}`;
+                }).join("; ");
+            }
             return [
                 tx.id,
                 typeDisplay,
@@ -975,6 +1132,7 @@
                 tx.date,
                 tx.income > 0 ? tx.income.toFixed(2) : "0.00",
                 tx.expense > 0 ? tx.expense.toFixed(2) : "0.00",
+                composeSummary.replace(/,/g, ";"),
                 tx.balanceAfter.toFixed(2)
             ];
         });
@@ -988,6 +1146,16 @@
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
+    }
+
+    // 展开/收起支出资金组成
+    function toggleCompose(id) {
+        const panel = document.getElementById("compose-" + id);
+        if (!panel) return;
+        const isHidden = panel.style.display === "none" || !panel.style.display;
+        panel.style.display = isHidden ? "table-row" : "none";
+        const btn = panel.previousElementSibling ? panel.previousElementSibling.querySelector(".compose-toggle") : null;
+        if (btn) btn.classList.toggle("open", isHidden);
     }
 
     function resetDateRange() {

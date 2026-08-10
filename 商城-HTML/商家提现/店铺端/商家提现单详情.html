@@ -647,7 +647,7 @@
                     <td>2026/03/01 - 2026/03/14</td>
                     <td class="amount-positive">$5,000.00</td>
                     <td class="amount-negative">$4,000.00</td>
-                    <td>$0.00</td>
+                    <td>$1,000.00</td>
                 </tr>
                 <tr>
                     <td><span class="badge-wallet-bill">WALLET-BILL-20260401-001-02</span></td>
@@ -657,12 +657,12 @@
                     <td class="amount-negative">$1,000.00</td>
                     <td>$2,000.00</td>
                 </tr>
-                 <!-- 补充一个典型场景：同一个结算单被多次提现的示例（仅作示意，增强对账理解） 
-                      实际数据里如果同一个结算单分两次提现，这里体现合理性 -->
+                 <!-- 补充一个典型场景：STL-20260315-001 被二次提现占用的示例（仅作示意，增强对账理解）
+                      第一次占用 $4,000（上方 WALLET-BILL-20260401-001-01），剩余 $1,000 由后续提现主单二次拆分 -->
                  <tr>
-                    <td><span class="badge-wallet-bill">WALLET-BILL-20260401-001-03</span></td>
+                    <td><span class="badge-wallet-bill">WALLET-BILL-20260405-001-01</span></td>
                     <td><span class="badge-settlement">STL-20260315-001</span> 
-                        <span style="background:#f5f5f5; color:#666; padding:1px 6px; border-radius:4px; font-size:12px; margin-left:4px;">二次拆分</span>
+                        <span style="background:#fff7e6; color:#d48806; padding:1px 6px; border-radius:4px; font-size:12px; margin-left:4px;">二次拆分 · 场景示例</span>
                      </td>
                     <td>2026/03/01 - 2026/03/14</td>
                     <td class="amount-positive">$5,000.00</td>
@@ -670,11 +670,11 @@
                     <td><span style="color:#d48806;">$0.00 (已全部提完)</span></td>
                  </tr>
             </tbody>
-            <!-- 汇总行：总提现金额=三个子单金额之和，完全匹配提现主单 -->
+            <!-- 汇总行：总提现金额=01+02 两个子单金额之和，完全匹配提现主单；03 为二次拆分场景示例，不计入本单 -->
             <tr class="total-row">
                 <td colspan="4" style="text-align: right; font-weight: 600;">提现主单总金额核对 ✔</td>
                 <td class="amount-negative" style="font-weight: 700;">$5,000.00</td>
-                <td style="font-size:0.7rem;">汇总三个子单</td>
+                <td style="font-size:0.7rem;">汇总 01+02（03 为二次拆分场景示例）</td>
             </tr>
         </table>
 
@@ -692,7 +692,8 @@
                 </div>
             </div>
             <div class="reconcile-note">
-                对账场景：支付商发起提现 $5,000 后生成三笔钱包对账单号，分别对应三笔结算单资金划扣，按 <span class="code">WALLET-BILL-xxxx</span> 逐笔核对流水与结算单净收入。
+                对账场景：支付商发起提现 $5,000 后生成两笔钱包对账单号，分别对应 STL-20260315-001 与 STL-20260330-002 两笔结算单资金划扣，按 <span class="code">WALLET-BILL-xxxx</span> 逐笔核对流水与结算单净收入。
+                <br>二次拆分：STL-20260315-001 剩余 $1,000 在后续提现主单中被再次占用，生成新的钱包对账单号 WALLET-BILL-20260405-001-01，同一结算单可被多次部分提现。
             </div>
         </div>
     </div>
