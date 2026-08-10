@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>收款账户管理 · Pyvio 银行卡 | 店铺端</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --tos-primary: #42b7ae;
+            --tos-primary-hover: #339b94;
+            --tos-primary-bg: #e6f7f6;
+            --tos-bg: #f5f7fa;
+            --tos-card: #fff;
+            --tos-border: #e5e7eb;
+            --tos-border-soft: #f0f2f5;
+            --tos-text: #333;
+            --tos-text-secondary: #666;
+            --tos-text-muted: #999;
+            --tos-success: #52c41a;
+            --tos-warning: #faad14;
+            --tos-error: #f5222d;
+            --tos-radius-card: 12px;
+            --tos-radius-control: 8px;
+            --tos-radius-tag: 4px;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: var(--tos-bg);
+            color: var(--tos-text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            padding: 2rem 12px 2rem 212px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== 左侧导航 · 店铺端 ===== */
+        .sidebar {
+            width: 200px;
+            background: #fff;
+            border-right: 1px solid var(--tos-border-soft);
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+        .sidebar__end-select {
+            width: calc(100% - 24px);
+            height: 32px;
+            margin: 8px 12px 0;
+            padding: 0 26px 0 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 13px;
+            color: #333;
+            outline: none;
+            cursor: pointer;
+            font-family: inherit;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%2710%27><path d=%27M2 4l3 3 3-3%27 fill=%27none%27 stroke=%27%23999%27 stroke-width=%271.5%27 stroke-linecap=%27round%27/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+        }
+        .sidebar__end-select:focus {
+            border-color: var(--tos-primary);
+            box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.16);
+        }
+        .sidebar__head {
+            padding: 20px 16px 16px;
+            border-bottom: 1px solid var(--tos-border-soft);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar__logo {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: var(--tos-primary);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+        .sidebar__title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1f2937;
+            white-space: nowrap;
+        }
+        .sidebar__nav {
+            flex: 1;
+            padding: 8px 0;
+            overflow-y: auto;
+        }
+        .sidebar__group-title {
+            padding: 12px 14px 4px;
+            font-size: 10px;
+            color: var(--tos-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        .sidebar__item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            font-size: 13px;
+            color: var(--tos-text-secondary);
+            cursor: pointer;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all 0.12s;
+        }
+        .sidebar__item:hover {
+            background: #f5f5f5;
+            color: var(--tos-text);
+        }
+        .sidebar__item--active {
+            color: var(--tos-primary);
+            font-weight: 600;
+            background: var(--tos-primary-bg);
+            border-left-color: var(--tos-primary);
+        }
+        .sidebar__item i {
+            width: 16px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        /* ===== 页面布局 ===== */
+        .container {
+            max-width: 1920px;
+            margin: 0 auto;
+        }
+        .main-card {
+            background: var(--tos-card);
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+            overflow: hidden;
+        }
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 20px;
+            border-bottom: 1px solid var(--tos-border-soft);
+        }
+        .card-header h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .card-header p {
+            margin: 4px 0 0;
+            font-size: 13px;
+            color: var(--tos-text-muted);
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            padding: 20px 20px 0;
+        }
+        .stat-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 16px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            background: var(--tos-card);
+        }
+        .stat-info h4 {
+            margin: 0;
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--tos-text-muted);
+        }
+        .stat-number {
+            margin-top: 4px;
+            font-size: 22px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .stat-number--ellipsis {
+            max-width: 220px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 16px;
+            line-height: 1.4;
+            padding-top: 6px;
+        }
+        .stat-icon {
+            font-size: 18px;
+            color: var(--tos-primary);
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 20px;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 300px;
+            height: 34px;
+            padding: 0 12px;
+            border: 1px solid var(--tos-border);
+            border-radius: var(--tos-radius-control);
+            background: var(--tos-card);
+        }
+        .search-box i {
+            color: var(--tos-text-muted);
+            font-size: 13px;
+        }
+        .search-box input {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 13px;
+            color: var(--tos-text);
+            background: transparent;
+            font-family: inherit;
+        }
+        .toolbar-hint {
+            font-size: 13px;
+            color: var(--tos-text-muted);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border-top: 1px solid var(--tos-border-soft);
+        }
+        .data-table {
+            width: 100%;
+            min-width: 880px;
+            border-collapse: collapse;
+        }
+        .data-table th {
+            padding: 12px 16px;
+            background: #fafafa;
+            border-bottom: 1px solid var(--tos-border-soft);
+            color: var(--tos-text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            text-align: left;
+        }
+        .data-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 14px;
+            color: var(--tos-text);
+            vertical-align: middle;
+        }
+        .data-table tr:hover td {
+            background: #fafafa;
+        }
+        .data-table .text-right {
+            text-align: right;
+        }
+        .empty-row {
+            padding: 48px 20px;
+            text-align: center;
+            color: var(--tos-text-muted);
+            font-size: 14px;
+        }
+        .account-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .sub-text {
+            margin-top: 2px;
+            font-size: 12px;
+            color: var(--tos-text-muted);
+        }
+        .card-mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 13px;
+            color: var(--tos-text-secondary);
+        }
+        .tos-tag {
+            display: inline-flex;
+            align-items: center;
+            height: 22px;
+            padding: 0 8px;
+            border-radius: var(--tos-radius-tag);
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .tos-tag--primary {
+            background: var(--tos-primary-bg);
+            color: var(--tos-primary);
+        }
+        .tos-tag--success {
+            background: #f0faf0;
+            color: var(--tos-success);
+        }
+        .tos-tag--default {
+            background: #f5f5f5;
+            color: var(--tos-text-secondary);
+        }
+        .tos-tag--warning {
+            background: #fff7e6;
+            color: #d48806;
+        }
+        .tos-tag--error {
+            background: #fff1f0;
+            color: var(--tos-error);
+        }
+        .alert-primary {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            margin-bottom: 16px;
+            border: 1px solid #b5e5e0;
+            border-radius: var(--tos-radius-control);
+            background: var(--tos-primary-bg);
+            color: #2b6f68;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .alert-primary a {
+            margin-left: auto;
+            color: var(--tos-primary);
+            font-weight: 500;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .alert-primary a:hover {
+            color: var(--tos-primary-hover);
+            text-decoration: underline;
+        }
+        .actions-cell {
+            display: flex;
+            justify-content: flex-end;
+            gap: 4px;
+        }
+        .btn-link {
+            border: none;
+            background: none;
+            color: var(--tos-primary);
+            font-size: 13px;
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 6px;
+            font-family: inherit;
+        }
+        .btn-link:hover {
+            background: var(--tos-primary-bg);
+        }
+        .btn-link.danger {
+            color: var(--tos-error);
+        }
+        .btn-link.danger:hover {
+            background: #fff1f0;
+        }
+        .btn-link:disabled {
+            color: #bfbfbf;
+            cursor: not-allowed;
+            background: none;
+        }
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 20px;
+            border-top: 1px solid var(--tos-border-soft);
+            font-size: 13px;
+            color: var(--tos-text-muted);
+        }
+
+        .btn-primary,
+        .btn-secondary,
+        .btn-danger {
+            height: 34px;
+            padding: 0 16px;
+            border: 1px solid transparent;
+            border-radius: var(--tos-radius-control);
+            font-size: 13px;
+            font-weight: 500;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: var(--tos-primary);
+            border-color: var(--tos-primary);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--tos-primary-hover);
+            border-color: var(--tos-primary-hover);
+        }
+        .btn-secondary {
+            background: var(--tos-card);
+            border-color: var(--tos-border);
+            color: var(--tos-text-secondary);
+        }
+        .btn-secondary:hover {
+            background: #fafafa;
+            border-color: #d1d5db;
+        }
+        .btn-danger {
+            background: #fff1f0;
+            border-color: #ffccc7;
+            color: var(--tos-error);
+        }
+        .btn-danger:hover {
+            background: #ffe0dd;
+        }
+
+        /* ===== 弹窗 ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-container {
+            width: 560px;
+            max-width: 92vw;
+            max-height: 88vh;
+            overflow-y: auto;
+            background: var(--tos-card);
+            border-radius: var(--tos-radius-card);
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--tos-border-soft);
+        }
+        .modal-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .modal-close {
+            border: none;
+            background: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--tos-text-muted);
+            line-height: 1;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--tos-text);
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            height: 34px;
+            padding: 0 12px;
+            border: 1px solid var(--tos-border);
+            border-radius: var(--tos-radius-control);
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--tos-text);
+            background: var(--tos-card);
+            outline: none;
+        }
+        .form-group textarea {
+            height: auto;
+            padding: 8px 12px;
+            resize: vertical;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--tos-primary);
+            box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.16);
+        }
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .required {
+            color: var(--tos-error);
+        }
+        .helper-text {
+            margin-top: 4px;
+            font-size: 12px;
+            color: var(--tos-text-muted);
+        }
+        .switch {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .switch input {
+            position: absolute;
+            width: 0;
+            height: 0;
+            opacity: 0;
+        }
+        .switch span {
+            position: relative;
+            width: 40px;
+            height: 22px;
+            border-radius: 11px;
+            background: #d9d9d9;
+            transition: background 0.15s;
+        }
+        .switch span::after {
+            content: "";
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #fff;
+            transition: left 0.15s;
+        }
+        .switch input:checked + span {
+            background: var(--tos-primary);
+        }
+        .switch input:checked + span::after {
+            left: 20px;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        .confirm-card {
+            width: 400px;
+            max-width: 90vw;
+            padding: 20px;
+            background: var(--tos-card);
+            border-radius: var(--tos-radius-card);
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+        }
+        .confirm-card h4 {
+            margin: 0 0 8px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .confirm-card p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--tos-text-secondary);
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000;
+            padding: 10px 20px;
+            border-radius: var(--tos-radius-control);
+            background: var(--tos-success);
+            color: #fff;
+            font-size: 14px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 960px) {
+            .stats-row {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @media (max-width: 680px) {
+            body {
+                padding: 1rem;
+            }
+            .sidebar {
+                display: none;
+            }
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+            .card-header {
+                flex-direction: column;
+            }
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-box {
+                width: 100%;
+            }
+            .form-row-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar" id="sidebar">
+        <select class="sidebar__end-select" onchange="if(this.value)location.href=this.value"><option value="" selected>店铺端</option><option value="../平台端/运营-钱包对账汇总.html">平台端</option></select>
+        <div class="sidebar__head"><div class="sidebar__logo"><i class="fas fa-store"></i></div><span class="sidebar__title">商家中心</span></div>
+        <nav class="sidebar__nav">
+            <div class="sidebar__group-title">提现管理</div>
+            <a class="sidebar__item" href="商家提现单详情.html"><i class="fas fa-receipt"></i> 提现单详情</a>
+            <a class="sidebar__item" href="店铺- 钱包对账单汇总.html"><i class="fas fa-file-invoice-dollar"></i> 钱包对账单</a>
+            <a class="sidebar__item sidebar__item--active" href="店铺- 收款账户管理.html"><i class="fas fa-credit-card"></i> 收款账户</a>
+        </nav>
+    </aside>
+
+    <div class="container">
+        <div class="main-card">
+            <div class="card-header">
+                <div>
+                    <h1>收款账户管理</h1>
+                    <p>维护提现到账账户，支持银行卡与 Pyvio 移动钱包（Pyvio 需先注册商户账户）</p>
+                </div>
+                <button class="btn-primary" id="addAccountBtn"><i class="fas fa-plus"></i> 添加收款账户</button>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-info"><h4>账户总数</h4><div class="stat-number" id="statTotal">0</div></div>
+                    <i class="fas fa-credit-card stat-icon"></i>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info"><h4>启用中</h4><div class="stat-number" id="statEnabled">0</div></div>
+                    <i class="fas fa-check-circle stat-icon"></i>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info"><h4>默认收款账户</h4><div class="stat-number stat-number--ellipsis" id="statDefault">—</div></div>
+                    <i class="fas fa-star stat-icon"></i>
+                </div>
+            </div>
+
+            <div class="toolbar">
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="搜索账户名称 / 银行 / 卡号"></div>
+                <span class="toolbar-hint" id="listHint"></span>
+            </div>
+
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>账户名称</th>
+                            <th>账户类型</th>
+                            <th>收款账号</th>
+                            <th>币种</th>
+                            <th>默认账户</th>
+                            <th>状态</th>
+                            <th class="text-right">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                <span>数据保存在本地浏览器，仅用于原型演示</span>
+                <span id="footerCount"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加 / 编辑收款账户 -->
+    <div id="accountModal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modalTitle">添加收款账户</h3>
+                <button class="modal-close" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>账户名称 <span class="required">*</span></label>
+                    <input type="text" id="formName" placeholder="例如：云裳科技-美元收款卡" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>账户类型 <span class="required">*</span></label>
+                    <select id="formType">
+                        <option value="bank">银行卡</option>
+                        <option value="pyvio">Pyvio 移动钱包</option>
+                    </select>
+                    <div class="helper-text">Pyvio 为移动钱包类型，添加前需先在 Pyvio 平台注册</div>
+                </div>
+                <div id="bankFields" class="form-row-2">
+                    <div class="form-group">
+                        <label>开户银行</label>
+                        <input type="text" id="formBank" placeholder="例如：中国银行" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label>银行卡号 <span class="required">*</span></label>
+                        <input type="text" id="formCardNo" placeholder="请输入银行卡号" autocomplete="off">
+                    </div>
+                </div>
+                <div id="walletFields" style="display:none;">
+                    <div class="alert-primary">
+                        <i class="fas fa-external-link-alt"></i>
+                        <span>添加 Pyvio 移动钱包前，需先在 Pyvio 平台注册商户账户</span>
+                        <a href="https://business.pyvio.com/" target="_blank" rel="noopener">前往 Pyvio 注册</a>
+                    </div>
+                    <div class="form-group">
+                        <label>Pyvio 钱包账号 <span class="required">*</span></label>
+                        <input type="text" id="formWalletNo" placeholder="例如：手机号或邮箱" autocomplete="off">
+                        <div class="helper-text">注册时使用的账号，提现到账将打入该 Pyvio 移动钱包</div>
+                    </div>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label>Pyvio 单元 ID</label>
+                            <input type="text" id="formUnitId" placeholder="注册后由 Pyvio 返回（unit_id）" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label>客户 ID</label>
+                            <input type="text" id="formClientId" placeholder="注册后由 Pyvio 返回（client_id）" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Pyvio 注册状态</label>
+                        <select id="formRegStatus">
+                            <option value="pending">待审核</option>
+                            <option value="active">已激活</option>
+                            <option value="frozen">已冻结</option>
+                            <option value="returned">已退回</option>
+                        </select>
+                        <div class="helper-text">注册后由 Pyvio 审核并回传状态</div>
+                    </div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label>币种</label>
+                        <select id="formCurrency">
+                            <option value="USD">USD 美元</option>
+                            <option value="CNY">CNY 人民币</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>设为默认账户</label>
+                        <label class="switch">
+                            <input type="checkbox" id="formDefault">
+                            <span></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>备注</label>
+                    <textarea id="formRemark" rows="2" placeholder="选填，例如：提现默认到账账户"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="cancelModalBtn">取消</button>
+                    <button class="btn-primary" id="saveBtn">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除确认 -->
+    <div id="confirmModal" class="modal-overlay">
+        <div class="confirm-card">
+            <h4>删除收款账户</h4>
+            <p id="confirmText">确认删除该收款账户？</p>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelConfirmBtn">取消</button>
+                <button class="btn-danger" id="confirmDeleteBtn">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const STORAGE_KEY = "shop_payout_accounts_v3";
+        const TYPE_BANK = "银行卡";
+        const TYPE_PYVIO = "Pyvio 移动钱包";
+        const REG_STATUS = {
+            pending: { label: "待审核", cls: "tos-tag--warning" },
+            active: { label: "已激活", cls: "tos-tag--success" },
+            frozen: { label: "已冻结", cls: "tos-tag--error" },
+            returned: { label: "已退回", cls: "tos-tag--error" }
+        };
+
+        let accounts = [
+            { id: 1, name: "云裳科技-美元收款卡", type: "bank", typeLabel: TYPE_BANK, bank: "中国银行", cardNo: "6217001200128899", currency: "USD", isDefault: true, status: "enabled", remark: "提现默认到账账户" },
+            { id: 2, name: "云裳科技-Pyvio 钱包", type: "pyvio", typeLabel: TYPE_PYVIO, walletNo: "pay@yunshang.com", unitId: "UT1675766643661405569", clientId: "CT1633650493875645185", regStatus: "active", currency: "USD", isDefault: false, status: "enabled", remark: "" },
+            { id: 3, name: "旧版-人民币收款卡", type: "bank", typeLabel: TYPE_BANK, bank: "中国工商银行", cardNo: "62220212001107", currency: "CNY", isDefault: false, status: "disabled", remark: "已停用，历史到账记录保留" }
+        ];
+
+        let editingId = null;
+        let pendingDeleteId = null;
+
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed) && parsed.length) accounts = parsed;
+            } catch (e) { /* 忽略损坏数据，使用演示数据 */ }
+        }
+
+        function persist() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
+        }
+
+        function esc(str) {
+            if (str === undefined || str === null) return "";
+            return String(str).replace(/[&<>]/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m]);
+        }
+
+        function maskCard(no) {
+            const digits = String(no || "").replace(/\D/g, "");
+            if (digits.length > 8) return digits.slice(0, 4) + " **** **** " + digits.slice(-4);
+            return digits || "—";
+        }
+
+        function getDefaultAccount() {
+            return accounts.find((a) => a.isDefault) || null;
+        }
+
+        function render() {
+            const kw = document.getElementById("searchInput").value.trim().toLowerCase();
+            const list = accounts.filter((a) => {
+                if (!kw) return true;
+                return (
+                    (a.name || "").toLowerCase().includes(kw) ||
+                    (a.bank || "").toLowerCase().includes(kw) ||
+                    String(a.cardNo || "").includes(kw)
+                );
+            });
+
+            document.getElementById("statTotal").textContent = accounts.length;
+            document.getElementById("statEnabled").textContent = accounts.filter((a) => a.status === "enabled").length;
+            const def = getDefaultAccount();
+            document.getElementById("statDefault").textContent = def ? def.name : "—";
+            document.getElementById("listHint").textContent = "共 " + list.length + " 个账户";
+            document.getElementById("footerCount").textContent = "共 " + accounts.length + " 个收款账户";
+
+            const tbody = document.getElementById("tableBody");
+            if (!list.length) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-row">暂无收款账户，点击右上角添加</td></tr>';
+                return;
+            }
+
+            let rows = "";
+            list.forEach((a) => {
+                const defaultTag = a.isDefault
+                    ? '<span class="tos-tag tos-tag--primary">默认</span>'
+                    : '<span style="color:#bfbfbf;">—</span>';
+                const statusTag = a.status === "enabled"
+                    ? '<span class="tos-tag tos-tag--success">启用</span>'
+                    : '<span class="tos-tag tos-tag--default">停用</span>';
+
+                let actions = "";
+                if (a.type === "pyvio") {
+                    actions += '<a class="btn-link" href="https://business.pyvio.com/" target="_blank" rel="noopener">Pyvio 注册</a>';
+                }
+                actions += '<button class="btn-link" data-action="edit" data-id="' + a.id + '">编辑</button>';
+                if (!a.isDefault) {
+                    actions += '<button class="btn-link" data-action="default" data-id="' + a.id + '"' + (a.status === "disabled" ? " disabled" : "") + '>设为默认</button>';
+                }
+                actions += '<button class="btn-link" data-action="toggle" data-id="' + a.id + '">' + (a.status === "enabled" ? "停用" : "启用") + "</button>";
+                actions += '<button class="btn-link danger" data-action="delete" data-id="' + a.id + '">删除</button>';
+
+                const regTag = a.type === "pyvio" && REG_STATUS[a.regStatus]
+                    ? '<span class="tos-tag ' + REG_STATUS[a.regStatus].cls + '">' + REG_STATUS[a.regStatus].label + "</span>"
+                    : "";
+                const accountInfo = a.type === "pyvio"
+                    ? '<div>Pyvio 移动钱包</div><div class="card-mono">' + esc(a.walletNo || "—") + "</div>" +
+                      (a.unitId ? '<div class="card-mono" style="margin-top:2px;">' + esc(a.unitId) + "</div>" : "") +
+                      '<div style="margin-top:6px;">' + regTag + "</div>"
+                    : '<div>' + esc(a.bank || "—") + '</div><div class="card-mono">' + esc(maskCard(a.cardNo)) + "</div>";
+                const typeTagClass = a.type === "pyvio" ? "tos-tag--primary" : "tos-tag--default";
+
+                rows += "<tr>" +
+                    "<td><div class=\"account-name\">" + esc(a.name) + "</div><div class=\"sub-text\">" + esc(a.remark || "—") + "</div></td>" +
+                    '<td><span class="tos-tag ' + typeTagClass + '">' + esc(a.typeLabel || TYPE_BANK) + "</span></td>" +
+                    "<td>" + accountInfo + "</td>" +
+                    "<td><span class=\"tos-tag tos-tag--default\">" + esc(a.currency) + "</span></td>" +
+                    "<td>" + defaultTag + "</td>" +
+                    "<td>" + statusTag + "</td>" +
+                    "<td class=\"text-right\"><div class=\"actions-cell\">" + actions + "</div></td>" +
+                    "</tr>";
+            });
+            tbody.innerHTML = rows;
+        }
+
+        function openModal(account) {
+            editingId = account ? account.id : null;
+            document.getElementById("modalTitle").textContent = account ? "编辑收款账户" : "添加收款账户";
+            document.getElementById("formName").value = account ? account.name : "";
+            document.getElementById("formType").value = account ? account.type : "bank";
+            document.getElementById("formBank").value = account ? (account.bank || "") : "";
+            document.getElementById("formCardNo").value = account ? account.cardNo : "";
+            document.getElementById("formWalletNo").value = account ? (account.walletNo || "") : "";
+            document.getElementById("formUnitId").value = account ? (account.unitId || "") : "";
+            document.getElementById("formClientId").value = account ? (account.clientId || "") : "";
+            document.getElementById("formRegStatus").value = account ? (account.regStatus || "pending") : "pending";
+            document.getElementById("formCurrency").value = account ? account.currency : "USD";
+            document.getElementById("formDefault").checked = account ? !!account.isDefault : accounts.length === 0;
+            document.getElementById("formRemark").value = account ? (account.remark || "") : "";
+            syncTypeFields();
+            document.getElementById("accountModal").classList.add("active");
+        }
+
+        function syncTypeFields() {
+            const isPyvio = document.getElementById("formType").value === "pyvio";
+            document.getElementById("bankFields").style.display = isPyvio ? "none" : "";
+            document.getElementById("walletFields").style.display = isPyvio ? "" : "none";
+        }
+
+        function closeModal() {
+            document.getElementById("accountModal").classList.remove("active");
+            editingId = null;
+        }
+
+        function saveAccount() {
+            const name = document.getElementById("formName").value.trim();
+            const type = document.getElementById("formType").value;
+            const bank = document.getElementById("formBank").value.trim();
+            const cardNo = document.getElementById("formCardNo").value.trim();
+            const walletNo = document.getElementById("formWalletNo").value.trim();
+            const unitId = document.getElementById("formUnitId").value.trim();
+            const clientId = document.getElementById("formClientId").value.trim();
+            const regStatus = document.getElementById("formRegStatus").value;
+            const currency = document.getElementById("formCurrency").value;
+            const isDefault = document.getElementById("formDefault").checked;
+            const remark = document.getElementById("formRemark").value.trim();
+
+            if (!name) { alert("请填写账户名称"); return; }
+            const digits = cardNo.replace(/\D/g, "");
+            if (type === "bank" && digits.length < 8) { alert("请输入有效的银行卡号"); return; }
+            if (type === "pyvio" && !walletNo) { alert("请输入 Pyvio 钱包账号"); return; }
+
+            if (isDefault) {
+                accounts.forEach((a) => { a.isDefault = false; });
+            }
+
+            if (editingId === null) {
+                accounts.push({
+                    id: Date.now(),
+                    name: name,
+                    type: type,
+                    typeLabel: type === "pyvio" ? TYPE_PYVIO : TYPE_BANK,
+                    bank: type === "bank" ? bank : "",
+                    cardNo: type === "bank" ? digits : "",
+                    walletNo: type === "pyvio" ? walletNo : "",
+                    unitId: type === "pyvio" ? unitId : "",
+                    clientId: type === "pyvio" ? clientId : "",
+                    regStatus: type === "pyvio" ? regStatus : "",
+                    currency: currency,
+                    isDefault: isDefault,
+                    status: "enabled",
+                    remark: remark
+                });
+            } else {
+                const target = accounts.find((a) => a.id === editingId);
+                if (target) {
+                    target.name = name;
+                    target.type = type;
+                    target.typeLabel = type === "pyvio" ? TYPE_PYVIO : TYPE_BANK;
+                    target.bank = type === "bank" ? bank : "";
+                    target.cardNo = type === "bank" ? digits : "";
+                    target.walletNo = type === "pyvio" ? walletNo : "";
+                    target.unitId = type === "pyvio" ? unitId : "";
+                    target.clientId = type === "pyvio" ? clientId : "";
+                    target.regStatus = type === "pyvio" ? regStatus : "";
+                    target.currency = currency;
+                    target.isDefault = isDefault;
+                    target.remark = remark;
+                }
+            }
+
+            persist();
+            closeModal();
+            render();
+            showToast("收款账户已保存");
+        }
+
+        function toggleStatus(id) {
+            const target = accounts.find((a) => a.id === id);
+            if (!target) return;
+            if (target.status === "enabled" && target.isDefault) {
+                alert("默认收款账户不能停用，请先设置其他账户为默认");
+                return;
+            }
+            target.status = target.status === "enabled" ? "disabled" : "enabled";
+            persist();
+            render();
+        }
+
+        function setDefault(id) {
+            accounts.forEach((a) => { a.isDefault = a.id === id; });
+            persist();
+            render();
+            const def = getDefaultAccount();
+            showToast("默认收款账户已切换为「" + (def ? def.name : "") + "」");
+        }
+
+        function requestDelete(id) {
+            const target = accounts.find((a) => a.id === id);
+            if (!target) return;
+            if (target.isDefault) {
+                alert("默认收款账户不能删除，请先设置其他账户为默认");
+                return;
+            }
+            pendingDeleteId = id;
+            document.getElementById("confirmText").textContent = "确认删除「" + target.name + "」？删除后该账户将不再用于提现到账。";
+            document.getElementById("confirmModal").classList.add("active");
+        }
+
+        function doDelete() {
+            if (pendingDeleteId === null) return;
+            accounts = accounts.filter((a) => a.id !== pendingDeleteId);
+            pendingDeleteId = null;
+            persist();
+            document.getElementById("confirmModal").classList.remove("active");
+            render();
+            showToast("收款账户已删除");
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            toast.textContent = msg;
+            toast.classList.add("show");
+            clearTimeout(showToast._t);
+            showToast._t = setTimeout(() => toast.classList.remove("show"), 1800);
+        }
+
+        document.getElementById("addAccountBtn").addEventListener("click", () => openModal(null));
+        document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+        document.getElementById("cancelModalBtn").addEventListener("click", closeModal);
+        document.getElementById("saveBtn").addEventListener("click", saveAccount);
+        document.getElementById("accountModal").addEventListener("click", (e) => {
+            if (e.target === e.currentTarget) closeModal();
+        });
+        document.getElementById("cancelConfirmBtn").addEventListener("click", () => {
+            pendingDeleteId = null;
+            document.getElementById("confirmModal").classList.remove("active");
+        });
+        document.getElementById("confirmDeleteBtn").addEventListener("click", doDelete);
+        document.getElementById("confirmModal").addEventListener("click", (e) => {
+            if (e.target === e.currentTarget) {
+                pendingDeleteId = null;
+                document.getElementById("confirmModal").classList.remove("active");
+            }
+        });
+        document.getElementById("searchInput").addEventListener("input", render);
+        document.getElementById("formType").addEventListener("change", syncTypeFields);
+
+        document.getElementById("tableBody").addEventListener("click", (e) => {
+            const btn = e.target.closest(".btn-link");
+            if (!btn || !btn.hasAttribute("data-action")) return;
+            const id = Number(btn.getAttribute("data-id"));
+            const action = btn.getAttribute("data-action");
+            if (action === "edit") {
+                const target = accounts.find((a) => a.id === id);
+                if (target) openModal(target);
+            } else if (action === "default") {
+                setDefault(id);
+            } else if (action === "toggle") {
+                toggleStatus(id);
+            } else if (action === "delete") {
+                requestDelete(id);
+            }
+        });
+
+        render();
+    </script>
+</body>
+</html>

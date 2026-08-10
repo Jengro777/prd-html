@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>支付服务商管理中心 | 配置 · 充值 · 记录</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f0f5fe 0%, #e9eff8 100%);
+            font-family: 'Inter', 'Nunito', sans-serif;
+            min-height: 100vh;
+            padding: 2rem;
+            color: #1a2634;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* 头部 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+
+        .logo-area h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1E3C72, #2A5298);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .logo-area p {
+            font-size: 0.8rem;
+            color: #5b6e8c;
+            margin-top: 0.25rem;
+        }
+
+        /* 卡片通用样式 */
+        .card {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03), 0 0 0 1px #eef2f8;
+            overflow: hidden;
+            margin-bottom: 1.8rem;
+        }
+
+        .card-header {
+            padding: 1.2rem 1.8rem;
+            border-bottom: 1px solid #edf2f7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .card-header h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e2f41;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 1.5rem 1.8rem;
+        }
+
+        /* 按钮 */
+        .btn {
+            padding: 0.6rem 1.3rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(105deg, #1a4d6b, #0f3b53);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(105deg, #0f3b53, #0c2f44);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(26, 77, 107, 0.25);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #2c5a7a;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e6edf6;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #cbd5e1;
+            color: #2c5a7a;
+        }
+
+        .btn-outline:hover {
+            background: #eef2ff;
+            border-color: #7c8ea0;
+        }
+
+        .btn-danger {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .btn-danger:hover {
+            background: #fecaca;
+        }
+
+        .btn-success {
+            background: #e0f2e9;
+            color: #0f6e3f;
+            border: 1px solid #bbf0d0;
+        }
+        .btn-success:hover {
+            background: #c6e9d7;
+        }
+
+        /* 服务商列表网格 */
+        .providers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .provider-item {
+            background: #fafcff;
+            border-radius: 20px;
+            border: 1px solid #eef2f8;
+            padding: 1.2rem;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .provider-item.disabled-provider {
+            background: #f9fafc;
+            border-color: #e4e9f0;
+            opacity: 0.85;
+        }
+        .provider-item.disabled-provider .provider-name,
+        .provider-item.disabled-provider .provider-balance {
+            opacity: 0.7;
+        }
+
+        .provider-item:hover {
+            border-color: #cbdde9;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.03);
+        }
+
+        .provider-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .provider-code {
+            font-size: 0.7rem;
+            background: #eef2ff;
+            padding: 0.2rem 0.6rem;
+            border-radius: 30px;
+            color: #2c5a7a;
+        }
+
+        .provider-balance {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #1e3c72;
+            margin: 0.75rem 0;
+        }
+
+        .provider-meta {
+            font-size: 0.75rem;
+            color: #7f8fa4;
+            margin-bottom: 0.75rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .config-badge {
+            background: #f1f5f9;
+            padding: 0.3rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-family: monospace;
+            color: #4a627a;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .provider-actions {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.2rem 0.7rem;
+            border-radius: 30px;
+            margin-left: 0.5rem;
+        }
+        .status-active {
+            background: #dcfce7;
+            color: #15803d;
+        }
+        .status-disabled {
+            background: #ffe4e2;
+            color: #b91c1c;
+        }
+
+        /* 表格样式 (充值记录) */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .record-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .record-table th, .record-table td {
+            padding: 0.9rem 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .record-table th {
+            background: #fafcff;
+            color: #5b6e8c;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .record-table td {
+            font-size: 0.85rem;
+        }
+
+        .amount-positive {
+            color: #0f7b3a;
+            font-weight: 700;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #9aafc7;
+        }
+
+        /* 模态框 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 32px;
+            width: 90%;
+            max-width: 560px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid #e9edf2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+
+        .modal-header h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.6rem;
+            cursor: pointer;
+            color: #8ba0b5;
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: #2c5a7a;
+        }
+
+        .form-group label .required {
+            color: #e53e3e;
+            margin-left: 2px;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border-radius: 40px;
+            border: 1px solid #cbd5e1;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+
+        .form-group textarea {
+            border-radius: 20px;
+            resize: vertical;
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #2a6f97;
+            box-shadow: 0 0 0 2px rgba(42, 111, 151, 0.2);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+        }
+
+        .helper-text {
+            font-size: 0.7rem;
+            color: #8ba0b5;
+            margin-top: 0.3rem;
+        }
+
+        /* 小徽章 */
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .badge-info {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .secret-mask {
+            font-family: monospace;
+            font-size: 0.75rem;
+            background: #f1f5f9;
+            padding: 0.2rem 0.5rem;
+            border-radius: 8px;
+            display: inline-block;
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        hr {
+            margin: 1rem 0;
+            border: none;
+            border-top: 1px solid #eef2f8;
+        }
+
+        @media (max-width: 700px) {
+            body { padding: 1rem; }
+            .providers-grid { grid-template-columns: 1fr; }
+            .card-header { flex-direction: column; align-items: stretch; }
+        }
+
+        /* ===== 左侧导航 · 平台端 ===== */
+        :root {
+            --tos-primary: #42b7ae;
+            --tos-primary-hover: #339b94;
+            --tos-primary-bg: #e6f7f6;
+            --tos-text: #333;
+            --tos-text-secondary: #666;
+            --tos-text-muted: #999;
+            --tos-border: #e5e7eb;
+            --tos-border-soft: #f0f2f5;
+            --sidebar-width: 220px;
+        }
+        .tos-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 900;
+            width: var(--sidebar-width);
+            background: #fff;
+            border-right: 1px solid var(--tos-border-soft);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .sidebar__end-select {
+            width: calc(100% - 24px);
+            height: 32px;
+            margin: 8px 12px 0;
+            padding: 0 26px 0 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 13px;
+            color: #333;
+            outline: none;
+            cursor: pointer;
+            font-family: inherit;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%2710%27><path d=%27M2 4l3 3 3-3%27 fill=%27none%27 stroke=%27%23999%27 stroke-width=%271.5%27 stroke-linecap=%27round%27/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+        }
+        .sidebar__end-select:focus {
+            border-color: var(--tos-primary);
+            box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.16);
+        }
+        .tos-sidebar__logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--tos-border-soft);
+        }
+        .tos-sidebar__logo-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--tos-primary);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .tos-sidebar__logo-text {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2937;
+            white-space: nowrap;
+        }
+        .tos-sidebar__nav {
+            flex: 1;
+            padding: 12px 0;
+        }
+        .tos-sidebar__group {
+            padding: 0 12px;
+            margin-bottom: 4px;
+        }
+        .tos-sidebar__group-title {
+            padding: 8px 8px 4px;
+            font-size: 11px;
+            color: var(--tos-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        .tos-sidebar__item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--tos-text-secondary);
+            transition: all 0.15s;
+            text-decoration: none;
+            margin-bottom: 2px;
+        }
+        .tos-sidebar__item:hover {
+            background: #f5f5f5;
+            color: var(--tos-text);
+        }
+        .tos-sidebar__item--active {
+            background: var(--tos-primary-bg);
+            color: var(--tos-primary);
+            font-weight: 600;
+        }
+        .tos-sidebar__item i {
+            width: 18px;
+            text-align: center;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+        body {
+            padding-left: 240px;
+        }
+        @media (max-width: 680px) {
+            .tos-sidebar {
+                display: none;
+            }
+            body {
+                padding-left: 1rem;
+            }
+        }
+    </style>
+    <style>
+        /* ===== TOS 规范样式覆盖 ===== */
+        :root {
+            --tos-primary: #42b7ae;
+            --tos-primary-hover: #339b94;
+            --tos-primary-bg: #e6f7f6;
+            --tos-bg: #f5f7fa;
+            --tos-card: #fff;
+            --tos-border: #e5e7eb;
+            --tos-border-soft: #f0f2f5;
+            --tos-text: #333;
+            --tos-text-secondary: #666;
+            --tos-text-muted: #999;
+            --tos-success: #52c41a;
+            --tos-warning: #faad14;
+            --tos-error: #f5222d;
+            --tos-radius-card: 12px;
+            --tos-radius-control: 8px;
+            --tos-radius-tag: 4px;
+        }
+        body {
+            background: var(--tos-bg);
+            color: var(--tos-text);
+            padding: 2rem 12px 2rem 232px;
+        }
+        .container {
+            max-width: 1920px;
+        }
+        .header {
+            margin-bottom: 20px;
+        }
+        .logo-area h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            background: none;
+            -webkit-text-fill-color: initial;
+        }
+        .logo-area p {
+            font-size: 13px;
+            color: var(--tos-text-muted);
+            margin-top: 4px;
+        }
+        .card {
+            background: var(--tos-card);
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            box-shadow: none;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--tos-border-soft);
+        }
+        .card-header h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--tos-text);
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .btn {
+            height: 34px;
+            padding: 0 16px;
+            border: 1px solid var(--tos-border);
+            border-radius: var(--tos-radius-control);
+            background: var(--tos-card);
+            color: var(--tos-text-secondary);
+            font-weight: 500;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .btn:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        .btn-primary {
+            background: var(--tos-primary);
+            border-color: var(--tos-primary);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--tos-primary-hover);
+            border-color: var(--tos-primary-hover);
+        }
+        .btn-secondary {
+            background: var(--tos-card);
+            border-color: var(--tos-border);
+            color: var(--tos-text-secondary);
+        }
+        .btn-secondary:hover {
+            background: #fafafa;
+        }
+        .btn-outline {
+            background: var(--tos-card);
+            border-color: var(--tos-border);
+            color: var(--tos-text-secondary);
+        }
+        .btn-outline:hover {
+            background: var(--tos-card);
+            border-color: var(--tos-primary);
+            color: var(--tos-primary);
+        }
+        .btn-danger {
+            background: #fff1f0;
+            border-color: #ffccc7;
+            color: var(--tos-error);
+        }
+        .btn-danger:hover {
+            background: #ffe0dd;
+        }
+        .btn-success {
+            background: #f0faf0;
+            border-color: #b7eb8f;
+            color: var(--tos-success);
+        }
+        .btn-success:hover {
+            background: #e2f7e2;
+        }
+        .providers-grid {
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 16px;
+        }
+        .provider-item {
+            background: var(--tos-card);
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            padding: 16px;
+            transition: border-color 0.15s;
+        }
+        .provider-item:hover {
+            border-color: var(--tos-primary);
+            box-shadow: none;
+        }
+        .provider-item.disabled-provider {
+            background: #fafafa;
+            opacity: 1;
+        }
+        .provider-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .provider-code {
+            font-size: 12px;
+            background: #f5f5f5;
+            color: var(--tos-text-secondary);
+            border-radius: var(--tos-radius-tag);
+            padding: 2px 8px;
+            font-family: inherit;
+        }
+        .provider-balance {
+            font-size: 22px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 8px 0;
+        }
+        .provider-meta {
+            font-size: 12px;
+            color: var(--tos-text-muted);
+        }
+        .config-badge {
+            background: #f5f5f5;
+            color: var(--tos-text-secondary);
+            border-radius: var(--tos-radius-tag);
+            padding: 2px 8px;
+            font-size: 12px;
+            font-family: inherit;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 22px;
+            padding: 0 8px;
+            border-radius: var(--tos-radius-tag);
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-active {
+            background: #f0faf0;
+            color: var(--tos-success);
+        }
+        .status-disabled {
+            background: #fff1f0;
+            color: var(--tos-error);
+        }
+        .record-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .record-table th {
+            padding: 10px 16px;
+            background: #fafafa;
+            border-bottom: 1px solid var(--tos-border-soft);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--tos-text-secondary);
+            text-align: left;
+        }
+        .record-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 13px;
+            color: var(--tos-text);
+        }
+        .amount-positive {
+            color: var(--tos-success);
+            font-weight: 600;
+        }
+        .badge,
+        .badge-info {
+            background: #f5f5f5;
+            color: var(--tos-text-secondary);
+            border-radius: var(--tos-radius-tag);
+            padding: 2px 8px;
+            font-size: 12px;
+        }
+        .modal-overlay {
+            backdrop-filter: blur(2px);
+        }
+        .modal-container {
+            background: var(--tos-card);
+            border-radius: var(--tos-radius-card);
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+        }
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--tos-border-soft);
+        }
+        .modal-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .modal-close {
+            border: none;
+            background: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--tos-text-muted);
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--tos-text);
+            margin-bottom: 6px;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            height: 34px;
+            padding: 0 12px;
+            border: 1px solid var(--tos-border);
+            border-radius: var(--tos-radius-control);
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--tos-text);
+            background: var(--tos-card);
+            outline: none;
+        }
+        .form-group textarea {
+            height: auto;
+            padding: 8px 12px;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--tos-primary);
+            box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.16);
+        }
+        .required {
+            color: var(--tos-error);
+        }
+        .helper-text {
+            font-size: 12px;
+            color: var(--tos-text-muted);
+            margin-top: 4px;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid var(--tos-border-soft);
+        }
+        .empty-state {
+            color: var(--tos-text-muted);
+        }
+        @media (max-width: 768px) {
+            .providers-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 680px) {
+            body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="tos-sidebar">
+        <select class="sidebar__end-select" onchange="if(this.value)location.href=this.value"><option value="../店铺端/店铺- 钱包对账单汇总.html">店铺端</option><option value="" selected>平台端</option></select>
+        <div class="tos-sidebar__logo">
+            <div class="tos-sidebar__logo-icon"><i class="fas fa-layer-group"></i></div>
+            <span class="tos-sidebar__logo-text">TOS 运营中心</span>
+        </div>
+        <nav class="tos-sidebar__nav">
+            <div class="tos-sidebar__group">
+                <div class="tos-sidebar__group-title">商家钱包</div>
+                <a class="tos-sidebar__item" href="运营-钱包对账汇总.html"><i class="fas fa-file-invoice-dollar"></i> <span>钱包对账</span></a>
+                <a class="tos-sidebar__item" href="运营- 批量付款.html"><i class="fas fa-money-bill-transfer"></i> <span>批量付款</span></a>
+                <a class="tos-sidebar__item tos-sidebar__item--active" href="运营- 虚拟账户余额管理.html"><i class="fas fa-wallet"></i> <span>虚拟账户</span></a>
+            </div>
+        </nav>
+    </aside>
+<div class="container">
+    <div class="header">
+        <div class="logo-area">
+            <h1><i class="fas fa-handshake"></i> 支付服务商管理中心</h1>
+            <p>服务商配置 · API密钥管理 · 账户充值 · 启用/禁用状态管理</p>
+        </div>
+    </div>
+
+    <!-- 服务商列表卡片 -->
+    <div class="card">
+        <div class="card-header">
+            <h2><i class="fas fa-building-columns"></i> 支付服务商列表</h2>
+            <div class="btn btn-secondary" id="refreshListBtn" style="padding:0.4rem 1rem;">
+                <i class="fas fa-sync-alt"></i> 刷新
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="providersListContainer" class="providers-grid">
+                <div class="empty-state" style="grid-column:1/-1;">加载中...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 充值记录卡片 -->
+    <div class="card">
+        <div class="card-header">
+            <h2><i class="fas fa-coins"></i> 充值记录</h2>
+            <button class="btn btn-outline" id="exportRechargeBtn">
+                <i class="fas fa-download"></i> 导出 CSV
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="table-wrapper">
+                <table class="record-table" id="rechargeRecordsTable">
+                    <thead>
+                        <tr><th>时间</th><th>服务商</th><th>充值金额 (USD)</th><th>操作后余额</th><th>备注</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rechargeRecordsTbody">
+                        <tr><td colspan="5" class="empty-state">暂无充值记录</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 编辑服务商模态框 (包含密钥配置及启用状态) -->
+<div id="editProviderModal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3><i class="fas fa-key"></i> 编辑服务商配置</h3>
+            <button class="modal-close" id="closeEditModalBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>服务商名称 <span class="required">*</span></label>
+                <input type="text" id="editProviderName" placeholder="例如：Pyvio、Stripe Connect" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label>服务商标识码 <span class="required">*</span></label>
+                <input type="text" id="editProviderCode" placeholder="英文代码 (pyvio / stripe)" autocomplete="off">
+                <div class="helper-text">用于区分图标和内部识别</div>
+            </div>
+            <div class="form-group">
+                <label>启用状态</label>
+                <select id="editProviderStatus">
+                    <option value="active">启用 (Active)</option>
+                    <option value="disabled">禁用 (Disabled)</option>
+                </select>
+                <div class="helper-text">禁用后该服务商无法进行充值操作，且配置不可用于调用（仅管理展示）</div>
+            </div>
+            <hr>
+            <div style="margin: 0.5rem 0 0.8rem 0;">
+                <span style="font-size:13px; font-weight:600; color:#666;"><i class="fas fa-shield-alt"></i> API 密钥配置</span>
+            </div>
+            
+            <div class="form-group">
+                <label>API Key / Client ID</label>
+                <input type="text" id="editApiKey" placeholder="请输入 API Key 或 Client ID" autocomplete="off">
+                <div class="helper-text">用于接口调用的身份标识</div>
+            </div>
+            <div class="form-group">
+                <label>API Secret / Secret Key</label>
+                <input type="password" id="editApiSecret" placeholder="请输入 Secret Key" autocomplete="off">
+                <div class="helper-text">密钥信息，加密存储</div>
+            </div>
+            <div class="form-group">
+                <label>Token / Webhook Secret</label>
+                <input type="password" id="editToken" placeholder="Webhook Secret 或 Access Token" autocomplete="off">
+                <div class="helper-text">可选，用于回调验证</div>
+            </div>
+            <div class="form-group">
+                <label>商户号 / Merchant ID</label>
+                <input type="text" id="editMerchantId" placeholder="服务商分配的商户编号" autocomplete="off">
+                <div class="helper-text">部分支付渠道需要的商户标识</div>
+            </div>
+            <div class="form-group">
+                <label>其他配置 (JSON格式)</label>
+                <textarea id="editExtraConfig" rows="3" placeholder='{"api_version": "2023-01", "endpoint": "https://api.example.com"}' style="font-family: monospace;"></textarea>
+                <div class="helper-text">扩展配置项，使用 JSON 格式</div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelEditBtn">取消</button>
+                <button class="btn-primary" id="saveEditBtn">保存配置</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 充值模态框 (仅支持启用的服务商) -->
+<div id="rechargeModal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3><i class="fas fa-money-bill-wave"></i> 充值到服务商</h3>
+            <button class="modal-close" id="closeRechargeModalBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>选择服务商</label>
+                <select id="rechargeProviderSelect"></select>
+                <div class="helper-text">禁用的服务商不可充值</div>
+            </div>
+            <div class="form-group">
+                <label>充值金额 (USD) *</label>
+                <input type="number" id="rechargeAmount" step="0.01" min="0.01" placeholder="请输入正数金额">
+            </div>
+            <div class="form-group">
+                <label>备注 (可选)</label>
+                <input type="text" id="rechargeMemo" placeholder="例如：平台充值、备用金补充">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelRechargeModalBtn">取消</button>
+                <button class="btn-primary" id="confirmRechargeBtn">确认充值</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== 数据模型（增加 enabled 字段，默认启用）====================
+    let providers = [];
+    let rechargeHistory = [];
+
+    const STORAGE_PROVIDERS = 'payment_provider_config_full_v3';
+    const STORAGE_RECHARGE = 'payment_provider_recharge_full_v2';
+
+    const formatUSD = (amount) => `$${amount.toFixed(2)}`;
+
+    function persistData() {
+        localStorage.setItem(STORAGE_PROVIDERS, JSON.stringify(providers));
+        localStorage.setItem(STORAGE_RECHARGE, JSON.stringify(rechargeHistory));
+    }
+
+    // 初始化默认数据 (三个服务商，均启用)
+    function initData() {
+        const storedProviders = localStorage.getItem(STORAGE_PROVIDERS);
+        if (storedProviders) {
+            try { providers = JSON.parse(storedProviders); } catch(e) { providers = []; }
+        }
+        if (!providers || providers.length === 0) {
+            providers = [
+                { 
+                    id: "prov_pyvio", name: "Pyvio", code: "pyvio", balance: 15800.00, enabled: true,
+                    apiKey: "pyvio_live_7f8d3e2a1b4c", apiSecret: "sk_live_9x8y7z6w5v4u", 
+                    token: "whsec_pyvio_abc123", merchantId: "PYV_MER_001",
+                    extraConfig: '{"endpoint":"https://api.pyvio.com/v2"}', createdAt: "2025-01-10"
+                },
+                { 
+                    id: "prov_stripe", name: "Stripe Connect", code: "stripe", balance: 9500.00, enabled: true,
+                    apiKey: "pk_live_4f3e2d1c0b9a", apiSecret: "sk_live_8a7b6c5d4e3f",
+                    token: "we_1N9K2L3M4N5O6P", merchantId: "acct_123456789",
+                    extraConfig: '{"api_version":"2025-02-01"}', createdAt: "2025-01-15"
+                },
+                { 
+                    id: "prov_paypal", name: "PayPal", code: "paypal", balance: 6200.00, enabled: true,
+                    apiKey: "AVz2X9mQ7pL4kH3j", apiSecret: "EL5nR8tY2uI6oP1q",
+                    token: "Bearer A21AAK9f8d7s6d5f", merchantId: "PP_MER_98765",
+                    extraConfig: '{"mode":"live","partner_id":"PAYPAL_PARTNER"}', createdAt: "2025-02-01"
+                }
+            ];
+        } else {
+            // 兼容旧数据，确保每个provider都有enabled字段
+            providers.forEach(p => { if (p.enabled === undefined) p.enabled = true; });
+        }
+
+        const storedRecharge = localStorage.getItem(STORAGE_RECHARGE);
+        if (storedRecharge) {
+            try { rechargeHistory = JSON.parse(storedRecharge); } catch(e) { rechargeHistory = []; }
+        }
+        if (rechargeHistory.length === 0 && providers.length) {
+            const sampleDate = new Date();
+            sampleDate.setDate(sampleDate.getDate() - 2);
+            rechargeHistory.push({
+                id: "rc_1",
+                timestamp: sampleDate.toLocaleString(),
+                providerId: providers[0].id,
+                providerName: providers[0].name,
+                amount: 2000,
+                newBalance: providers[0].balance,
+                memo: "初始充值"
+            });
+            const sampleDate2 = new Date();
+            sampleDate2.setDate(sampleDate2.getDate() - 1);
+            rechargeHistory.push({
+                id: "rc_2",
+                timestamp: sampleDate2.toLocaleString(),
+                providerId: providers[1].id,
+                providerName: providers[1].name,
+                amount: 1500,
+                newBalance: providers[1].balance,
+                memo: "平台调拨"
+            });
+            persistData();
+        }
+    }
+
+    function maskSecret(str) {
+        if (!str) return '未配置';
+        if (str.length <= 8) return '••••';
+        return str.substring(0, 4) + '••••' + str.substring(str.length - 4);
+    }
+
+    // 渲染服务商列表 (显示启用/禁用状态及切换按钮)
+    function renderProvidersList() {
+        const container = document.getElementById('providersListContainer');
+        if (!providers.length) {
+            container.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-info-circle"></i> 暂无服务商</div>';
+            return;
+        }
+        let html = '';
+        providers.forEach(provider => {
+            let iconClass = 'fa-building';
+            if (provider.code === 'pyvio') iconClass = 'fa-building';
+            else if (provider.code === 'stripe') iconClass = 'fa-bolt';
+            else if (provider.code === 'paypal') iconClass = 'fa-paypal';
+            else iconClass = 'fa-credit-card';
+
+            const isDisabled = provider.enabled === false;
+            const statusClass = isDisabled ? 'disabled-provider' : '';
+            const statusBadge = isDisabled 
+                ? '<span class="status-badge status-disabled"><i class="fas fa-ban"></i> 已禁用</span>' 
+                : '<span class="status-badge status-active"><i class="fas fa-check-circle"></i> 启用中</span>';
+            
+            // 展示部分密钥配置状态
+            const hasApiKey = provider.apiKey ? '已配置' : '未配置';
+            
+            html += `
+                <div class="provider-item ${statusClass}" data-id="${provider.id}">
+                    <div class="provider-name">
+                        <i class="fas ${iconClass}" style="color:#2a6f97;"></i> ${escapeHtml(provider.name)}
+                        <span class="provider-code">${escapeHtml(provider.code)}</span>
+                        ${statusBadge}
+                    </div>
+                    <div class="provider-meta">
+                        <span><i class="far fa-calendar-alt"></i> 创建于 ${provider.createdAt || '—'}</span>
+                        <span class="config-badge"><i class="fas fa-key"></i> API Key: ${maskSecret(provider.apiKey)}</span>
+                    </div>
+                    <div class="provider-balance">${formatUSD(provider.balance)}</div>
+                    <div class="provider-actions">
+                        <button class="btn ${isDisabled ? 'btn-secondary' : 'btn-secondary'} recharge-action" data-id="${provider.id}" data-name="${escapeHtml(provider.name)}" style="padding:0.4rem 1rem;" ${isDisabled ? 'disabled' : ''}>
+                            <i class="fas fa-coins"></i> 充值
+                        </button>
+                        <button class="btn btn-primary edit-provider" data-id="${provider.id}" style="padding:0.4rem 1rem;">
+                            <i class="fas fa-edit"></i> 编辑配置
+                        </button>
+                        <button class="btn ${isDisabled ? 'btn-success' : 'btn-danger'} toggle-status-btn" data-id="${provider.id}" style="padding:0.4rem 1rem;">
+                            <i class="fas ${isDisabled ? 'fa-play' : 'fa-pause'}"></i> ${isDisabled ? '启用' : '禁用'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+
+        // 充值按钮事件 (禁用的服务商按钮disabled，无法点击)
+        document.querySelectorAll('.recharge-action').forEach(btn => {
+            if (!btn.hasAttribute('disabled')) {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = btn.getAttribute('data-id');
+                    const name = btn.getAttribute('data-name');
+                    openRechargeModal(id, name);
+                });
+            }
+        });
+        // 编辑服务商配置
+        document.querySelectorAll('.edit-provider').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = btn.getAttribute('data-id');
+                const provider = providers.find(p => p.id === id);
+                if (provider) openEditProviderModal(provider);
+            });
+        });
+        // 启用/禁用切换按钮
+        document.querySelectorAll('.toggle-status-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = btn.getAttribute('data-id');
+                toggleProviderStatus(id);
+            });
+        });
+    }
+
+    // 切换服务商启用/禁用状态
+    function toggleProviderStatus(providerId) {
+        const provider = providers.find(p => p.id === providerId);
+        if (!provider) return;
+        const newStatus = !(provider.enabled === true);
+        provider.enabled = newStatus;
+        persistData();
+        renderProvidersList();
+        // 如果禁用，同时刷新充值下拉列表，确保充值窗口里无法选择禁用项
+        // 更新全局UI提示
+        const toastMsg = newStatus ? `已启用服务商「${provider.name}」` : `已禁用服务商「${provider.name}」，充值功能不可用`;
+        alert(toastMsg);
+    }
+
+    function renderRechargeHistory() {
+        const tbody = document.getElementById('rechargeRecordsTbody');
+        if (!rechargeHistory.length) {
+            tbody.innerHTML = '<tr><td colspan="5" class="empty-state">暂无充值记录，请为服务商充值</td></tr>';
+            return;
+        }
+        let rows = '';
+        [...rechargeHistory].reverse().forEach(record => {
+            rows += `
+                <tr>
+                    <td>${escapeHtml(record.timestamp)}</td>
+                    <td><span class="badge badge-info">${escapeHtml(record.providerName)}</span></td>
+                    <td class="amount-positive">+ ${formatUSD(record.amount)}</td>
+                    <td>${formatUSD(record.newBalance)}</td>
+                    <td>${escapeHtml(record.memo || '—')}</td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = rows;
+    }
+
+    // 充值逻辑: 仅当服务商enabled为true时允许
+    function rechargeProvider(providerId, amount, memo) {
+        const provider = providers.find(p => p.id === providerId);
+        if (!provider) { alert('服务商不存在'); return false; }
+        if (provider.enabled !== true) { alert('服务商当前处于禁用状态，无法充值，请先启用服务商'); return false; }
+        if (amount <= 0 || isNaN(amount)) { alert('请输入大于0的金额'); return false; }
+        const newBalance = provider.balance + amount;
+        provider.balance = newBalance;
+        const rechargeRecord = {
+            id: 'recharge_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+            timestamp: new Date().toLocaleString(),
+            providerId: provider.id,
+            providerName: provider.name,
+            amount: amount,
+            newBalance: newBalance,
+            memo: memo ? memo.trim() : ''
+        };
+        rechargeHistory.push(rechargeRecord);
+        persistData();
+        renderProvidersList();
+        renderRechargeHistory();
+        return true;
+    }
+
+    let currentEditingProviderId = null;
+    function openEditProviderModal(provider) {
+        currentEditingProviderId = provider.id;
+        document.getElementById('editProviderName').value = provider.name || '';
+        document.getElementById('editProviderCode').value = provider.code || '';
+        document.getElementById('editProviderStatus').value = (provider.enabled === false) ? 'disabled' : 'active';
+        document.getElementById('editApiKey').value = provider.apiKey || '';
+        document.getElementById('editApiSecret').value = provider.apiSecret || '';
+        document.getElementById('editToken').value = provider.token || '';
+        document.getElementById('editMerchantId').value = provider.merchantId || '';
+        
+        let extraJsonStr = '';
+        if (provider.extraConfig) {
+            try {
+                const parsed = typeof provider.extraConfig === 'string' ? JSON.parse(provider.extraConfig) : provider.extraConfig;
+                extraJsonStr = JSON.stringify(parsed, null, 2);
+            } catch(e) { extraJsonStr = provider.extraConfig; }
+        }
+        document.getElementById('editExtraConfig').value = extraJsonStr;
+        document.getElementById('editProviderModal').classList.add('active');
+    }
+
+    function saveProviderConfig() {
+        const provider = providers.find(p => p.id === currentEditingProviderId);
+        if (!provider) { alert('服务商不存在'); return false; }
+        
+        const newName = document.getElementById('editProviderName').value.trim();
+        const newCode = document.getElementById('editProviderCode').value.trim();
+        if (!newName || !newCode) {
+            alert('服务商名称和标识码不能为空');
+            return false;
+        }
+        
+        provider.name = newName;
+        provider.code = newCode;
+        const statusVal = document.getElementById('editProviderStatus').value;
+        provider.enabled = (statusVal === 'active');
+        provider.apiKey = document.getElementById('editApiKey').value.trim() || '';
+        provider.apiSecret = document.getElementById('editApiSecret').value.trim() || '';
+        provider.token = document.getElementById('editToken').value.trim() || '';
+        provider.merchantId = document.getElementById('editMerchantId').value.trim() || '';
+        
+        const extraConfigRaw = document.getElementById('editExtraConfig').value.trim();
+        if (extraConfigRaw) {
+            try {
+                JSON.parse(extraConfigRaw);
+                provider.extraConfig = extraConfigRaw;
+            } catch(e) {
+                alert('其他配置不是有效的JSON格式，已保存为文本');
+                provider.extraConfig = extraConfigRaw;
+            }
+        } else {
+            provider.extraConfig = '';
+        }
+        
+        persistData();
+        renderProvidersList();
+        closeEditModal();
+        alert('服务商配置已更新');
+        return true;
+    }
+
+    function closeEditModal() {
+        document.getElementById('editProviderModal').classList.remove('active');
+        currentEditingProviderId = null;
+    }
+
+    // 充值模态框，只显示启用状态的服务商
+    function openRechargeModal(providerId, providerName) {
+        const activeProviders = providers.filter(p => p.enabled === true);
+        if (activeProviders.length === 0) {
+            alert('当前没有启用的服务商，无法充值，请在编辑中启用服务商');
+            return;
+        }
+        selectedRechargeProviderId = providerId;
+        const selectEl = document.getElementById('rechargeProviderSelect');
+        selectEl.innerHTML = '';
+        activeProviders.forEach(p => {
+            const option = document.createElement('option');
+            option.value = p.id;
+            option.textContent = `${p.name} (余额: ${formatUSD(p.balance)})`;
+            if (p.id === providerId) option.selected = true;
+            selectEl.appendChild(option);
+        });
+        document.getElementById('rechargeAmount').value = '';
+        document.getElementById('rechargeMemo').value = '';
+        document.getElementById('rechargeModal').classList.add('active');
+    }
+
+    function closeRechargeModal() {
+        document.getElementById('rechargeModal').classList.remove('active');
+        selectedRechargeProviderId = null;
+    }
+
+    function executeRecharge() {
+        const selectEl = document.getElementById('rechargeProviderSelect');
+        const providerId = selectEl.value;
+        if (!providerId) { alert('请选择服务商'); return; }
+        const selectedProvider = providers.find(p => p.id === providerId);
+        if (!selectedProvider || selectedProvider.enabled !== true) {
+            alert('所选服务商不可用，请刷新后重试');
+            closeRechargeModal();
+            return;
+        }
+        const amount = parseFloat(document.getElementById('rechargeAmount').value);
+        if (isNaN(amount) || amount <= 0) { alert('请输入有效的正数金额'); return; }
+        const memo = document.getElementById('rechargeMemo').value;
+        const success = rechargeProvider(providerId, amount, memo);
+        if (success) {
+            closeRechargeModal();
+        }
+    }
+
+    function exportRechargeCSV() {
+        if (!rechargeHistory.length) { alert('暂无充值记录可导出'); return; }
+        const headers = ['时间', '服务商', '充值金额(USD)', '操作后余额(USD)', '备注'];
+        const rows = rechargeHistory.map(r => [
+            r.timestamp,
+            r.providerName,
+            r.amount.toFixed(2),
+            r.newBalance.toFixed(2),
+            r.memo || ''
+        ]);
+        const csvContent = [headers, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+        const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.setAttribute('download', `recharge_history_${new Date().toISOString().slice(0,19)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function refreshAllUI() {
+        renderProvidersList();
+        renderRechargeHistory();
+    }
+
+    function bindEvents() {
+        document.getElementById('refreshListBtn').addEventListener('click', () => refreshAllUI());
+        document.getElementById('exportRechargeBtn').addEventListener('click', exportRechargeCSV);
+        
+        document.getElementById('closeEditModalBtn').addEventListener('click', closeEditModal);
+        document.getElementById('cancelEditBtn').addEventListener('click', closeEditModal);
+        document.getElementById('saveEditBtn').addEventListener('click', saveProviderConfig);
+        document.getElementById('editProviderModal').addEventListener('click', (e) => { if (e.target === document.getElementById('editProviderModal')) closeEditModal(); });
+        
+        document.getElementById('closeRechargeModalBtn').addEventListener('click', closeRechargeModal);
+        document.getElementById('cancelRechargeModalBtn').addEventListener('click', closeRechargeModal);
+        document.getElementById('confirmRechargeBtn').addEventListener('click', executeRecharge);
+        document.getElementById('rechargeModal').addEventListener('click', (e) => { if (e.target === document.getElementById('rechargeModal')) closeRechargeModal(); });
+    }
+
+    function init() {
+        initData();
+        bindEvents();
+        refreshAllUI();
+    }
+    init();
+</script>
+</body>
+</html>

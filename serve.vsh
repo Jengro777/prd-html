@@ -163,7 +163,7 @@ pub fn (app &App) serve(mut ctx Context, path string) veb.Result {
 fn main() {
 	mut app := &App{}
 	veb.run_at[App, Context](mut app,
-		host: '192.168.1.168'
+		host: '192.168.1.7'
 		port: 8080
 		family: .ip
 		// show_startup_message: true

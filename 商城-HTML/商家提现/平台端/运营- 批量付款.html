@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>多支付服务商 | 子商户批量付款系统（手续费）</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f0f5fe 0%, #e9eff8 100%);
+            font-family: 'Inter', 'Nunito', sans-serif;
+            min-height: 100vh;
+            padding: 1.5rem;
+            color: #1a2634;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .logo-area h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1E3C72, #2A5298);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .logo-area p {
+            font-size: 0.75rem;
+            color: #5b6e8c;
+            margin-top: 0.2rem;
+        }
+
+        .provider-section {
+            background: white;
+            border-radius: 28px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03), 0 0 0 1px #eef2f8;
+        }
+
+        .provider-tabs {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .provider-tab {
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f1f5f9;
+            color: #4a627a;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .provider-tab.active {
+            background: linear-gradient(105deg, #1a4d6b, #0f3b53);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 10px rgba(26, 77, 107, 0.25);
+        }
+
+        .provider-tab:hover:not(.active) {
+            background: #e6edf6;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #cbd5e1;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: #2c5a7a;
+        }
+
+        .btn-outline:hover {
+            background: #eef2ff;
+            border-color: #7c8ea0;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1rem 1.2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03), 0 0 0 1px #eef2f8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-info h4 {
+            font-size: 0.7rem;
+            color: #7f8fa4;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-number {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #1e2f41;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            color: #2a6f97;
+            opacity: 0.6;
+        }
+
+        .balance-card {
+            background: linear-gradient(125deg, #0b2b44 0%, #0f2f4a 100%);
+            border-radius: 28px;
+            padding: 1.2rem 1.8rem;
+            margin-bottom: 1.5rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .balance-info h3 {
+            font-size: 0.8rem;
+            opacity: 0.75;
+            margin-bottom: 0.3rem;
+        }
+
+        .balance-amount {
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .toolbar {
+            background: white;
+            border-radius: 20px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03), 0 0 0 1px #eef2f8;
+        }
+
+        .batch-actions {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(105deg, #1a4d6b, #0f3b53);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(105deg, #0f3b53, #0c2f44);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #2c5a7a;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e6edf6;
+        }
+
+        .btn-warning {
+            background: #f97316;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #ea580c;
+        }
+
+        .select-all {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: #4a627a;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f8fafc;
+            border-radius: 40px;
+            padding: 0.4rem 1rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .search-box i {
+            color: #8ba0b5;
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            padding: 0.4rem 0.6rem;
+            outline: none;
+            width: 200px;
+        }
+
+        .merchant-table-container {
+            background: white;
+            border-radius: 28px;
+            overflow-x: auto;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03), 0 0 0 1px #eef2f8;
+            margin-bottom: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        th, td {
+            padding: 1rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        th {
+            background: #fafcff;
+            color: #5b6e8c;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        td {
+            font-size: 0.85rem;
+        }
+
+        .checkbox-col {
+            width: 40px;
+            text-align: center;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.2rem 0.7rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .status-approved {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .pay-amount-display {
+            font-weight: 700;
+            color: #2c5a7a;
+            background: #f0f9ff;
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        .fee-display {
+            font-weight: 600;
+            color: #b45309;
+            background: #fff7ed;
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .merchant-name {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .withdrawal-badge {
+            background: #eef2ff;
+            color: #1e4a76;
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            font-family: monospace;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #cbdff2;
+            cursor: default;
+        }
+        .empty-withdrawal {
+            color: #94a3b8;
+            font-size: 0.7rem;
+            font-style: italic;
+        }
+
+        .batch-payment-bar {
+            background: #fefce8;
+            border-radius: 20px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border: 1px solid #fde68a;
+        }
+
+        .total-amount {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #b45309;
+        }
+        .fee-total {
+            font-weight: 700;
+            color: #9a3412;
+            background: #ffedd5;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            margin-left: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-detail {
+            background: #eef2ff;
+            border: none;
+            border-radius: 30px;
+            padding: 0.3rem 0.9rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #1e4a76;
+            transition: 0.2s;
+        }
+        .btn-detail:hover {
+            background: #dfe8fa;
+            transform: scale(0.96);
+        }
+
+        /* 批量打回弹窗优化样式 */
+        .prompt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+        .prompt-overlay.active { visibility: visible; opacity: 1; }
+        .prompt-card {
+            background: white;
+            border-radius: 32px;
+            width: 440px;
+            max-width: 90%;
+            padding: 1.8rem;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.25);
+        }
+        .prompt-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #c2410c;
+        }
+        .prompt-card textarea {
+            width: 100%;
+            padding: 0.9rem;
+            border-radius: 20px;
+            border: 1px solid #cbd5e1;
+            font-family: inherit;
+            margin: 1rem 0;
+            resize: vertical;
+        }
+        .prompt-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 0.5rem;
+        }
+
+        /* 批量付款弹窗（已移除提现单号，只保留备注） */
+        .payment-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1200;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+        .payment-modal.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .payment-card {
+            background: white;
+            border-radius: 32px;
+            width: 480px;
+            max-width: 92%;
+            padding: 1.8rem;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.3);
+        }
+        .payment-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            font-size: 0.85rem;
+        }
+        .input-group textarea {
+            width: 100%;
+            padding: 0.7rem;
+            border-radius: 20px;
+            border: 1px solid #cbd5e1;
+            font-family: inherit;
+            font-size: 0.9rem;
+            resize: vertical;
+        }
+        .payment-summary {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 0.8rem;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+        }
+
+        /* 商户详情弹窗 */
+        .detail-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(3px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1300;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .detail-modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .detail-card {
+            background: white;
+            border-radius: 28px;
+            width: 500px;
+            max-width: 90%;
+            padding: 1.5rem;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.25);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-container {
+            background: white;
+            border-radius: 32px;
+            width: 95%;
+            max-width: 1400px;
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+        .modal-header {
+            padding: 1.2rem 1.8rem;
+            border-bottom: 1px solid #e9edf2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-body {
+            padding: 1.2rem 1.8rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .history-table-modal {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .history-table-modal th, .history-table-modal td {
+            padding: 0.9rem 0.8rem;
+            border-bottom: 1px solid #edf2f7;
+            text-align: left;
+        }
+        .amount-negative { color: #c2410c; font-weight: 700; }
+        .reason-tag { background: #f1f3f5; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.7rem; display: inline-block; }
+        @media (max-width: 900px) {
+            body { padding: 1rem; }
+        }
+
+        /* ===== 左侧导航 · 平台端 ===== */
+        :root {
+            --tos-primary: #42b7ae;
+            --tos-primary-hover: #339b94;
+            --tos-primary-bg: #e6f7f6;
+            --tos-text: #333;
+            --tos-text-secondary: #666;
+            --tos-text-muted: #999;
+            --tos-border: #e5e7eb;
+            --tos-border-soft: #f0f2f5;
+            --sidebar-width: 220px;
+        }
+        .tos-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 900;
+            width: var(--sidebar-width);
+            background: #fff;
+            border-right: 1px solid var(--tos-border-soft);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .sidebar__end-select {
+            width: calc(100% - 24px);
+            height: 32px;
+            margin: 8px 12px 0;
+            padding: 0 26px 0 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 13px;
+            color: #333;
+            outline: none;
+            cursor: pointer;
+            font-family: inherit;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%2710%27><path d=%27M2 4l3 3 3-3%27 fill=%27none%27 stroke=%27%23999%27 stroke-width=%271.5%27 stroke-linecap=%27round%27/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+        }
+        .sidebar__end-select:focus {
+            border-color: var(--tos-primary);
+            box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.16);
+        }
+        .tos-sidebar__logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--tos-border-soft);
+        }
+        .tos-sidebar__logo-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--tos-primary);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .tos-sidebar__logo-text {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2937;
+            white-space: nowrap;
+        }
+        .tos-sidebar__nav {
+            flex: 1;
+            padding: 12px 0;
+        }
+        .tos-sidebar__group {
+            padding: 0 12px;
+            margin-bottom: 4px;
+        }
+        .tos-sidebar__group-title {
+            padding: 8px 8px 4px;
+            font-size: 11px;
+            color: var(--tos-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        .tos-sidebar__item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--tos-text-secondary);
+            transition: all 0.15s;
+            text-decoration: none;
+            margin-bottom: 2px;
+        }
+        .tos-sidebar__item:hover {
+            background: #f5f5f5;
+            color: var(--tos-text);
+        }
+        .tos-sidebar__item--active {
+            background: var(--tos-primary-bg);
+            color: var(--tos-primary);
+            font-weight: 600;
+        }
+        .tos-sidebar__item i {
+            width: 18px;
+            text-align: center;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+        body {
+            padding-left: 240px;
+        }
+        @media (max-width: 680px) {
+            .tos-sidebar {
+                display: none;
+            }
+            body {
+                padding-left: 1rem;
+            }
+        }
+    </style>
+    <style>
+        /* ===== TOS 规范样式覆盖 ===== */
+        :root {
+            --tos-primary: #42b7ae;
+            --tos-primary-hover: #339b94;
+            --tos-primary-bg: #e6f7f6;
+            --tos-bg: #f5f7fa;
+            --tos-card: #fff;
+            --tos-border: #e5e7eb;
+            --tos-border-soft: #f0f2f5;
+            --tos-text: #333;
+            --tos-text-secondary: #666;
+            --tos-text-muted: #999;
+            --tos-success: #52c41a;
+            --tos-warning: #faad14;
+            --tos-error: #f5222d;
+            --tos-radius-card: 12px;
+            --tos-radius-control: 8px;
+            --tos-radius-tag: 4px;
+        }
+        body {
+            background: var(--tos-bg);
+            color: var(--tos-text);
+            padding: 1.5rem 12px 1.5rem 232px;
+        }
+        .container {
+            max-width: 1920px;
+        }
+        .header {
+            margin-bottom: 20px;
+        }
+        .logo-area h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            background: none;
+            -webkit-text-fill-color: initial;
+        }
+        .logo-area p {
+            font-size: 13px;
+            color: var(--tos-text-muted);
+            margin-top: 4px;
+        }
+        .provider-section {
+            background: var(--tos-card);
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            box-shadow: none;
+        }
+        .provider-tabs {
+            gap: 8px;
+        }
+        .provider-tab {
+            height: 34px;
+            padding: 0 16px;
+            border-radius: var(--tos-radius-control);
+            font-weight: 500;
+            font-size: 13px;
+            background: #f5f5f5;
+            color: var(--tos-text-secondary);
+            border: 1px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .provider-tab.active {
+            background: var(--tos-primary);
+            color: #fff;
+            border-color: var(--tos-primary);
+            box-shadow: none;
+        }
+        .provider-tab:hover:not(.active) {
+            background: #ececec;
+        }
+        .btn-outline {
+            height: 34px;
+            padding: 0 16px;
+            border: 1px solid var(--tos-border);
+            border-radius: var(--tos-radius-control);
+            background: var(--tos-card);
+            color: var(--tos-text-secondary);
+            font-weight: 500;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-outline:hover {
+            background: var(--tos-card);
+            border-color: var(--tos-primary);
+            color: var(--tos-primary);
+        }
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: var(--tos-card);
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            padding: 16px;
+            box-shadow: none;
+        }
+        .stat-info h4 {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--tos-text-muted);
+            text-transform: none;
+            letter-spacing: 0;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .stat-icon {
+            font-size: 20px;
+            color: var(--tos-primary);
+            opacity: 1;
+        }
+        .balance-card {
+            background: var(--tos-card);
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            padding: 20px;
+            margin-bottom: 20px;
+            color: var(--tos-text);
+            box-shadow: none;
+        }
+        .balance-info h3 {
+            font-size: 13px;
+            color: var(--tos-text-secondary);
+            opacity: 1;
+            margin-bottom: 6px;
+        }
+        .balance-amount {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .toolbar {
+            background: var(--tos-card);
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            box-shadow: none;
+        }
+        .btn {
+            height: 34px;
+            padding: 0 16px;
+            border: 1px solid var(--tos-border);
+            border-radius: var(--tos-radius-control);
+            background: var(--tos-card);
+            color: var(--tos-text-secondary);
+            font-weight: 500;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn:hover {
+            transform: none;
+        }
+        .btn-primary {
+            background: var(--tos-primary);
+            border-color: var(--tos-primary);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--tos-primary-hover);
+            border-color: var(--tos-primary-hover);
+        }
+        .btn-secondary {
+            background: var(--tos-card);
+            border-color: var(--tos-border);
+            color: var(--tos-text-secondary);
+        }
+        .btn-secondary:hover {
+            background: #fafafa;
+            border-color: #d1d5db;
+        }
+        .btn-warning {
+            background: #fff7e6;
+            border-color: #ffe58f;
+            color: #d48806;
+        }
+        .btn-warning:hover {
+            background: #fff1cc;
+        }
+        .btn-sm {
+            height: 30px;
+            padding: 0 12px;
+            font-size: 12px;
+        }
+        .search-box {
+            background: var(--tos-card);
+            border: 1px solid var(--tos-border);
+            border-radius: var(--tos-radius-control);
+            padding: 0 12px;
+            height: 34px;
+        }
+        .search-box i {
+            color: var(--tos-text-muted);
+        }
+        .search-box input {
+            font-size: 13px;
+            color: var(--tos-text);
+        }
+        .merchant-table-container {
+            background: var(--tos-card);
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            overflow-x: auto;
+            box-shadow: none;
+            margin-bottom: 20px;
+        }
+        table {
+            min-width: 1040px;
+        }
+        th {
+            padding: 10px 16px;
+            background: #fafafa;
+            color: var(--tos-text-secondary);
+            font-weight: 500;
+            font-size: 12px;
+            border-bottom: 1px solid var(--tos-border-soft);
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 13px;
+            color: var(--tos-text);
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 22px;
+            padding: 0 8px;
+            border-radius: var(--tos-radius-tag);
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-approved {
+            background: #f0faf0;
+            color: var(--tos-success);
+        }
+        .pay-amount-display {
+            display: inline-block;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--tos-text);
+            background: #fafafa;
+            border-radius: var(--tos-radius-control);
+            padding: 2px 8px;
+        }
+        .fee-display {
+            display: inline-block;
+            font-weight: 500;
+            font-size: 12px;
+            color: var(--tos-text-muted);
+            background: #f5f5f5;
+            border-radius: var(--tos-radius-control);
+            padding: 2px 8px;
+        }
+        .merchant-name {
+            font-weight: 600;
+        }
+        .withdrawal-badge {
+            background: #f5f5f5;
+            color: var(--tos-text-secondary);
+            border: none;
+            border-radius: var(--tos-radius-tag);
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: 500;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .empty-withdrawal {
+            color: var(--tos-text-muted);
+            font-size: 12px;
+            font-style: normal;
+        }
+        .batch-payment-bar {
+            background: var(--tos-card);
+            border: 1px solid var(--tos-primary);
+            border-radius: var(--tos-radius-card);
+            padding: 12px 16px;
+            margin-bottom: 20px;
+        }
+        .total-amount {
+            font-weight: 600;
+            font-size: 18px;
+            color: #1f2937;
+        }
+        .fee-total {
+            font-weight: 500;
+            font-size: 12px;
+            color: var(--tos-text-secondary);
+            background: #f5f5f5;
+            border-radius: var(--tos-radius-tag);
+            padding: 2px 8px;
+            margin-left: 8px;
+        }
+        .btn-detail {
+            background: transparent;
+            border: none;
+            border-radius: var(--tos-radius-control);
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--tos-primary);
+        }
+        .btn-detail:hover {
+            background: var(--tos-primary-bg);
+            transform: none;
+        }
+        .prompt-overlay,
+        .payment-modal,
+        .detail-modal-overlay,
+        .modal-overlay {
+            backdrop-filter: blur(2px);
+        }
+        .prompt-card,
+        .payment-card,
+        .detail-card,
+        .modal-container {
+            background: var(--tos-card);
+            border-radius: var(--tos-radius-card);
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+        }
+        .prompt-card h4,
+        .payment-card h3,
+        .detail-card h4,
+        .modal-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .prompt-card textarea,
+        .input-group textarea {
+            border: 1px solid var(--tos-border);
+            border-radius: var(--tos-radius-control);
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--tos-text);
+            padding: 8px 12px;
+        }
+        .prompt-card textarea:focus,
+        .input-group textarea:focus {
+            border-color: var(--tos-primary);
+            box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.16);
+            outline: none;
+        }
+        .input-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--tos-text);
+        }
+        .payment-summary {
+            background: #fafafa;
+            border-radius: var(--tos-radius-control);
+            padding: 12px 16px;
+            font-size: 13px;
+        }
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--tos-border-soft);
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .modal-close {
+            border: none;
+            background: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--tos-text-muted);
+        }
+        .history-table-modal th {
+            padding: 10px 12px;
+            background: #fafafa;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--tos-text-secondary);
+            border-bottom: 1px solid var(--tos-border-soft);
+        }
+        .history-table-modal td {
+            padding: 10px 12px;
+            font-size: 13px;
+            border-bottom: 1px solid #f5f5f5;
+            color: var(--tos-text);
+        }
+        .amount-negative {
+            color: var(--tos-error);
+            font-weight: 600;
+        }
+        .reason-tag {
+            background: #f5f5f5;
+            border-radius: var(--tos-radius-tag);
+            padding: 2px 8px;
+            font-size: 12px;
+        }
+        .empty-state {
+            color: var(--tos-text-muted);
+        }
+        .select-all {
+            color: var(--tos-text-secondary);
+        }
+        @media (max-width: 900px) {
+            .stats-row {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @media (max-width: 640px) {
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 680px) {
+            body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="tos-sidebar">
+        <select class="sidebar__end-select" onchange="if(this.value)location.href=this.value"><option value="../店铺端/店铺- 钱包对账单汇总.html">店铺端</option><option value="" selected>平台端</option></select>
+        <div class="tos-sidebar__logo">
+            <div class="tos-sidebar__logo-icon"><i class="fas fa-layer-group"></i></div>
+            <span class="tos-sidebar__logo-text">TOS 运营中心</span>
+        </div>
+        <nav class="tos-sidebar__nav">
+            <div class="tos-sidebar__group">
+                <div class="tos-sidebar__group-title">商家钱包</div>
+                <a class="tos-sidebar__item" href="运营-钱包对账汇总.html"><i class="fas fa-file-invoice-dollar"></i> <span>钱包对账</span></a>
+                <a class="tos-sidebar__item tos-sidebar__item--active" href="运营- 批量付款.html"><i class="fas fa-money-bill-transfer"></i> <span>批量付款</span></a>
+                <a class="tos-sidebar__item" href="运营- 虚拟账户余额管理.html"><i class="fas fa-wallet"></i> <span>虚拟账户</span></a>
+            </div>
+        </nav>
+    </aside>
+<div class="container">
+    <div class="header"><div class="logo-area"><h1><i class="fas fa-building-columns"></i> 多支付服务商 · 批量付款系统</h1><p>手续费0.5% | 批量付款至子商户 | 灵活备注</p></div></div>
+
+    <div class="provider-section"><div class="provider-tabs" id="providerTabs"></div><button class="btn-outline" id="viewHistoryBtn"><i class="fas fa-history"></i> 查看付款记录</button></div>
+
+    <div class="stats-row"><div class="stat-card"><div class="stat-info"><h4>审核通过商户</h4><div class="stat-number" id="approvedCount">0</div></div><i class="fas fa-user-check stat-icon"></i></div>
+    <div class="stat-card"><div class="stat-info"><h4>待付款总额(含手续费)</h4><div class="stat-number" id="totalPendingAmount">$0</div></div><i class="fas fa-clock stat-icon"></i></div>
+    <div class="stat-card"><div class="stat-info"><h4>今日已付</h4><div class="stat-number" id="todayPaidAmount">$0</div></div><i class="fas fa-check-double stat-icon"></i></div></div>
+
+    <div class="balance-card"><div class="balance-info"><h3 id="currentProviderLabel"><i class="fas fa-wallet"></i> 账户余额</h3><div class="balance-amount" id="currentBalance">$0.00</div></div><div class="currency-badge" style="background:#e6f7f6; color:#42b7ae; padding:4px 12px; border-radius:8px; font-size:12px;"><i class="fas fa-globe"></i> 可用资金池</div></div>
+
+    <div class="toolbar"><div class="batch-actions"><div class="select-all"><input type="checkbox" id="selectAllCheckbox"><label for="selectAllCheckbox">全选</label></div>
+    <button class="btn btn-primary" id="batchPayoutBtn"><i class="fas fa-money-bill-wave"></i> 批量付款</button>
+    <button class="btn btn-secondary" id="clearSelectionBtn"><i class="fas fa-times"></i> 清空选择</button>
+    <button class="btn btn-warning" id="batchRejectBtn"><i class="fas fa-undo-alt"></i> 批量打回重申</button>
+    <button class="btn btn-secondary" id="exportAllHistoryBtn"><i class="fas fa-download"></i> 导出全部记录</button></div>
+    <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="搜索商户名称/ID..."></div></div>
+
+    <div class="merchant-table-container">
+        <table>
+            <thead><tr><th class="checkbox-col"></th><th>商户信息</th><th>商户ID</th><th>审核状态</th><th>付款金额</th><th>手续费(0.5%)</th><th>提现单号</th><th>收款账户</th><th>操作</th></tr>
+            </thead>
+            <tbody id="merchantTableBody"><tr><td colspan="9" class="empty-state">加载中...</td></tr></tbody>
+        </table>
+    </div>
+
+    <div id="batchSummaryBar" style="display: none;" class="batch-payment-bar"><div><i class="fas fa-layer-group"></i> 已选择 <strong id="selectedCount">0</strong> 个商户</div><div>合计付款金额: <span id="selectedTotalAmount" class="total-amount">$0.00</span> <span id="selectedTotalFeeSpan" class="fee-total">手续费: $0.00</span></div><button class="btn btn-primary" id="confirmBatchBtn"><i class="fas fa-check-circle"></i> 确认批量付款</button></div>
+</div>
+
+<!-- 批量付款弹窗（无提现单号，仅备注） -->
+<div id="paymentModal" class="payment-modal"><div class="payment-card"><h3><i class="fas fa-credit-card"></i> 批量付款确认</h3><p style="margin-bottom:16px; font-size:13px; color:#666;">请确认付款信息，可填写备注</p>
+<div class="payment-summary" id="paymentSummaryPreview"><span>加载中...</span></div>
+<div class="input-group"><label><i class="fas fa-pen-alt"></i> 付款备注 (可选)</label><textarea id="paymentRemark" rows="3" placeholder="请输入内部备注、支付说明或批次信息..."></textarea><div class="example-hint" style="font-size:12px; color:#999;">备注将保存在历史记录中，便于后续对账</div></div>
+<div class="prompt-actions" style="display:flex; justify-content:flex-end; gap:12px; margin-top:8px;"><button class="btn-secondary" id="cancelPaymentBtn">取消</button><button class="btn-primary" id="confirmPaymentBtn">确认付款</button></div></div></div>
+
+<!-- 商户详情弹窗 -->
+<div id="merchantDetailModal" class="detail-modal-overlay"><div class="detail-card"><h4><i class="fas fa-store"></i> 商户详细信息</h4><div id="merchantDetailContent" style="margin: 1rem 0; line-height:1.7;"></div><div style="text-align:right;"><button class="btn-secondary btn-sm" id="closeMerchantDetailBtn">关闭</button></div></div></div>
+
+<!-- 付款记录模态框 -->
+<div id="historyModal" class="modal-overlay"><div class="modal-container"><div class="modal-header"><h3><i class="fas fa-receipt"></i> 完整付款记录 (含手续费/备注)</h3><button class="modal-close" id="closeModalBtn">&times;</button></div><div class="modal-body"><div class="history-toolbar" style="margin-bottom:1rem;"><button class="btn btn-secondary" id="modalExportBtn"><i class="fas fa-file-csv"></i> 导出记录 (CSV)</button></div><div class="history-table-wrapper"><table class="history-table-modal"><thead><tr><th>时间</th><th>服务商</th><th>商户数量</th><th>总金额(本金)</th><th>总手续费</th><th>付款备注</th><th>付款明细</th><th>批次号</th></tr></thead><tbody id="modalHistoryTbody"><tr><td colspan="8" class="empty-state">暂无付款记录</td></tr></tbody></table></div></div></div></div>
+
+<!-- 批量打回重申弹窗 -->
+<div id="reasonPrompt" class="prompt-overlay"><div class="prompt-card"><h4><i class="fas fa-undo-alt"></i> 批量打回重申</h4><p style="font-size:13px; color:#666;">打回后商户将从列表中移除，并记录打回原因。</p><textarea id="rejectReasonInput" rows="3" placeholder="请输入打回原因（必填）..."></textarea><div class="prompt-actions"><button class="btn-secondary" id="cancelRejectBtn">取消</button><button class="btn-warning" id="confirmRejectBtn">确认打回</button></div></div></div>
+
+<script>
+    const FEE_RATE = 0.005;
+    const calculateFee = (amount) => amount * FEE_RATE;
+    const formatUSD = (amount) => `$${amount.toFixed(2)}`;
+
+    let providers = [];
+    let currentProviderId = null;
+    let paymentHistory = [];
+    let selectedPayments = new Map(); // key: merchant.id
+    let searchKeyword = '';
+    let pendingRejectCallback = null;
+    let pendingPaymentCallback = null; // 用于付款弹窗
+
+    const STORAGE_PROVIDERS = 'multi_provider_batch_v7_no_withdrawal';
+    const STORAGE_HISTORY = 'multi_provider_batch_history_v7_no_withdrawal';
+    const STORAGE_CURRENT_PROVIDER = 'multi_provider_batch_current_v7';
+
+    function getCurrentProvider() { return providers.find(p => p.id === currentProviderId) || null; }
+    function persistData() { localStorage.setItem(STORAGE_PROVIDERS, JSON.stringify(providers)); localStorage.setItem(STORAGE_HISTORY, JSON.stringify(paymentHistory)); if (currentProviderId) localStorage.setItem(STORAGE_CURRENT_PROVIDER, currentProviderId); }
+
+    function loadData() {
+        const storedProviders = localStorage.getItem(STORAGE_PROVIDERS);
+        if (storedProviders) { try { providers = JSON.parse(storedProviders); } catch(e) {} }
+        if (!providers || providers.length === 0) {
+            providers = [
+                { id: "prov_pyvio", name: "Pyvio", code: "pyvio", currency: "USD", balance: 15800.00, 
+                  subMerchants: [ { id: "MCH_001", name: "杭州云裳科技有限公司", email: "yunshang@example.com", bankAccount: "6217****8899", payAmount: 850.00, status: "approved", withdrawalNo: "WD-20241001-001" },
+                                  { id: "MCH_002", name: "深圳智创供应链有限公司", email: "szsupply@example.com", bankAccount: "4000****1234", payAmount: 620.00, status: "approved", withdrawalNo: "WD-20241003-005" },
+                                  { id: "MCH_003", name: "义乌跨境优选贸易商行", email: "yw@cross.com", bankAccount: "6230****5678", payAmount: 1200.00, status: "approved", withdrawalNo: "" } ] },
+                { id: "prov_stripe", name: "Stripe Connect", code: "stripe", currency: "USD", balance: 9500.00,
+                  subMerchants: [ { id: "STR_001", name: "Designify Studio", email: "design@stripe.com", bankAccount: "****1234", payAmount: 450.00, status: "approved", withdrawalNo: "WD-STR-20241015" },
+                                  { id: "STR_002", name: "CodeCraft Agency", email: "code@stripe.com", bankAccount: "****5678", payAmount: 780.00, status: "approved", withdrawalNo: "" } ] },
+                { id: "prov_paypal", name: "PayPal", code: "paypal", currency: "USD", balance: 6200.00,
+                  subMerchants: [ { id: "PP_001", name: "Global Crafts", email: "crafts@paypal.com", bankAccount: "paypal@crafts.com", payAmount: 340.00, status: "approved", withdrawalNo: "WD-PAYPAL-882" } ] }
+            ];
+        }
+        const storedHistory = localStorage.getItem(STORAGE_HISTORY);
+        if (storedHistory) { try { paymentHistory = JSON.parse(storedHistory); } catch(e) { paymentHistory = []; } }
+        currentProviderId = localStorage.getItem(STORAGE_CURRENT_PROVIDER);
+        if (!currentProviderId && providers.length) currentProviderId = providers[0].id;
+        updateStatsAndUI(); renderProviderTabs(); updateBalanceUI(); renderMerchantTable();
+    }
+
+    function updateStatsAndUI() {
+        const provider = getCurrentProvider();
+        if (provider) {
+            document.getElementById('approvedCount').innerText = provider.subMerchants?.length || 0;
+            const totalPendingPrincipal = provider.subMerchants?.reduce((sum, m) => sum + (m.payAmount || 0), 0) || 0;
+            const totalPendingWithFee = totalPendingPrincipal + totalPendingPrincipal * FEE_RATE;
+            document.getElementById('totalPendingAmount').innerText = formatUSD(totalPendingWithFee);
+        } else { document.getElementById('approvedCount').innerText = '0'; document.getElementById('totalPendingAmount').innerText = '$0'; }
+        const today = new Date().toDateString(); 
+        const todayTotal = paymentHistory.filter(p => new Date(p.timestamp).toDateString() === today).reduce((sum, p) => sum + p.totalAmountWithFee, 0);
+        document.getElementById('todayPaidAmount').innerText = formatUSD(todayTotal);
+    }
+    function updateBalanceUI() { const provider = getCurrentProvider(); if (provider) { document.getElementById('currentProviderLabel').innerHTML = `<i class="fas fa-wallet"></i> ${provider.name} 账户余额`; document.getElementById('currentBalance').innerText = formatUSD(provider.balance); } else document.getElementById('currentBalance').innerText = '0.00'; }
+    function renderProviderTabs() { const container = document.getElementById('providerTabs'); if (!container) return; let html = ''; providers.forEach(p => { const isActive = currentProviderId === p.id; html += `<div class="provider-tab ${isActive ? 'active' : ''}" data-id="${p.id}"><i class="fas ${p.code === 'pyvio' ? 'fa-building' : (p.code === 'stripe' ? 'fa-bolt' : 'fa-paypal')}"></i> ${p.name} <span style="font-size:0.7rem;">${formatUSD(p.balance)}</span></div>`; }); container.innerHTML = html; document.querySelectorAll('.provider-tab').forEach(tab => { tab.addEventListener('click', () => switchProvider(tab.getAttribute('data-id'))); }); }
+    function switchProvider(providerId) { currentProviderId = providerId; selectedPayments.clear(); persistData(); updateBalanceUI(); updateStatsAndUI(); renderMerchantTable(); renderProviderTabs(); updateBatchSummary(); }
+
+    function showMerchantDetail(merchant) {
+        const detailDiv = document.getElementById('merchantDetailContent');
+        const fee = calculateFee(merchant.payAmount);
+        detailDiv.innerHTML = `<p><strong>商户名称：</strong> ${escapeHtml(merchant.name)}</p><p><strong>商户ID：</strong> ${merchant.id}</p><p><strong>电子邮箱：</strong> ${escapeHtml(merchant.email)}</p><p><strong>收款账户：</strong> ${escapeHtml(merchant.bankAccount)}</p><p><strong>审核状态：</strong> <span class="status-badge status-approved">已审核</span></p><p><strong>应付金额：</strong> ${formatUSD(merchant.payAmount)}</p><p><strong>预估手续费(0.5%)：</strong> ${formatUSD(fee)}</p><p><strong>提现单号：</strong> ${merchant.withdrawalNo ? `<span class="withdrawal-badge">${escapeHtml(merchant.withdrawalNo)}</span>` : '<span class="empty-withdrawal">未填写</span>'}</p>`;
+        document.getElementById('merchantDetailModal').classList.add('active');
+    }
+
+    function renderMerchantTable() {
+        const provider = getCurrentProvider(); if (!provider || !provider.subMerchants?.length) { document.getElementById('merchantTableBody').innerHTML = '<tr><td colspan="9" class="empty-state">暂无审核通过的商户</td></tr>'; return; }
+        let filtered = provider.subMerchants.filter(m => m.name.toLowerCase().includes(searchKeyword.toLowerCase()) || m.id.toLowerCase().includes(searchKeyword.toLowerCase()));
+        if (!filtered.length) { document.getElementById('merchantTableBody').innerHTML = '<tr><td colspan="9" class="empty-state">未找到匹配商户</td></tr>'; return; }
+        let html = ''; filtered.forEach(merchant => { 
+            const amount = merchant.payAmount || 0;
+            const fee = calculateFee(amount);
+            const isChecked = selectedPayments.has(merchant.id);
+            html += `<tr data-id="${merchant.id}"><td class="checkbox-col"><input type="checkbox" class="merchant-checkbox" data-id="${merchant.id}" ${isChecked ? 'checked' : ''}></td><td><div class="merchant-name"><i class="fas fa-store"></i> ${escapeHtml(merchant.name)}</div><div style="font-size:0.7rem;">${escapeHtml(merchant.email)}</div></td><td>${merchant.id}</td><td><span class="status-badge status-approved"><i class="fas fa-check-circle"></i> 已审核</span></td><td><span class="pay-amount-display">${formatUSD(amount)}</span></td><td><span class="fee-display">${formatUSD(fee)}</span></td><td>${merchant.withdrawalNo ? `<span class="withdrawal-badge"><i class="fas fa-qrcode"></i> ${escapeHtml(merchant.withdrawalNo)}</span>` : '<span class="empty-withdrawal">未填写</span>'}</td><td style="font-size:0.75rem;">${escapeHtml(merchant.bankAccount)}</td><td><button class="btn-detail" data-merchant-id="${merchant.id}"><i class="fas fa-eye"></i> 详情</button></td></tr>`;
+        });
+        document.getElementById('merchantTableBody').innerHTML = html;
+        document.querySelectorAll('.merchant-checkbox').forEach(cb => { cb.addEventListener('change', (e) => { const id = cb.getAttribute('data-id'); const merchant = provider.subMerchants.find(m => m.id === id); if (merchant) { if (cb.checked) selectedPayments.set(id, { amount: merchant.payAmount, fee: calculateFee(merchant.payAmount) }); else selectedPayments.delete(id); } updateBatchSummary(); updateSelectAllState(); }); });
+        document.querySelectorAll('.btn-detail').forEach(btn => { btn.addEventListener('click', (e) => { const id = btn.getAttribute('data-merchant-id'); const merchant = provider.subMerchants.find(m => m.id === id); if(merchant) showMerchantDetail(merchant); }); });
+        updateSelectAllState();
+    }
+
+    function updateBatchSummary() { let totalPrincipal = 0, totalFee = 0, count = 0; for (let [, obj] of selectedPayments) { totalPrincipal += obj.amount; totalFee += obj.fee; count++; } if (count > 0) { document.getElementById('batchSummaryBar').style.display = 'flex'; document.getElementById('selectedCount').innerText = count; document.getElementById('selectedTotalAmount').innerText = formatUSD(totalPrincipal); document.getElementById('selectedTotalFeeSpan').innerHTML = `手续费: ${formatUSD(totalFee)} (合计: ${formatUSD(totalPrincipal+totalFee)})`; } else document.getElementById('batchSummaryBar').style.display = 'none'; }
+    function selectAll() { const provider = getCurrentProvider(); if (!provider) return; provider.subMerchants.forEach(merchant => { if (merchant.payAmount > 0) selectedPayments.set(merchant.id, { amount: merchant.payAmount, fee: calculateFee(merchant.payAmount) }); }); document.querySelectorAll('.merchant-checkbox').forEach(cb => cb.checked = true); updateBatchSummary(); updateSelectAllState(); }
+    function clearSelection() { selectedPayments.clear(); document.querySelectorAll('.merchant-checkbox').forEach(cb => cb.checked = false); updateBatchSummary(); if(document.getElementById('selectAllCheckbox')) document.getElementById('selectAllCheckbox').checked = false; }
+    function updateSelectAllState() { const checkboxes = document.querySelectorAll('.merchant-checkbox'); const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length; const selectAllCheck = document.getElementById('selectAllCheckbox'); if(selectAllCheck) { selectAllCheck.checked = checkboxes.length > 0 && checkedCount === checkboxes.length; selectAllCheck.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length; } }
+
+    // 打开付款弹窗（无提现单号）
+    function openPaymentModal() {
+        const provider = getCurrentProvider();
+        if (!provider) { alert('请选择支付服务商'); return; }
+        if (selectedPayments.size === 0) { alert('请至少选择一个商户'); return; }
+        let totalPrincipal = 0, totalFee = 0, count = 0;
+        for (let [, obj] of selectedPayments) { totalPrincipal += obj.amount; totalFee += obj.fee; count++; }
+        const totalWithFee = totalPrincipal + totalFee;
+        if (provider.balance < totalWithFee) { alert(`${provider.name} 账户余额不足！需支付总额(含手续费): ${formatUSD(totalWithFee)}，当前余额: ${formatUSD(provider.balance)}`); return; }
+        const previewHtml = `<div><strong>商户数量：</strong> ${count} 家</div><div><strong>付款本金总额：</strong> ${formatUSD(totalPrincipal)}</div><div><strong>手续费总额(0.5%)：</strong> ${formatUSD(totalFee)}</div><div><strong>实扣总额：</strong> ${formatUSD(totalWithFee)}</div><div><strong>服务商账户余额：</strong> ${formatUSD(provider.balance)} → 付款后 ${formatUSD(provider.balance - totalWithFee)}</div>`;
+        document.getElementById('paymentSummaryPreview').innerHTML = previewHtml;
+        document.getElementById('paymentRemark').value = '';
+        document.getElementById('paymentModal').classList.add('active');
+    }
+    function closePaymentModal() { document.getElementById('paymentModal').classList.remove('active'); }
+
+    function executeBatchPayment(remark) {
+        const provider = getCurrentProvider();
+        if (!provider) return false;
+        let totalPrincipal = 0, totalFee = 0, paymentDetails = [];
+        for (let [id, { amount, fee }] of selectedPayments.entries()) {
+            const merchant = provider.subMerchants.find(m => m.id === id);
+            if (merchant) { totalPrincipal += amount; totalFee += fee; paymentDetails.push({ merchant, amount, fee }); }
+        }
+        const totalWithFee = totalPrincipal + totalFee;
+        if (provider.balance < totalWithFee) { alert(`${provider.name} 账户余额不足！`); return false; }
+        provider.balance -= totalWithFee;
+        const batchRecord = {
+            id: 'BATCH_' + Date.now(),
+            timestamp: new Date().toLocaleString(),
+            providerId: provider.id,
+            providerName: provider.name,
+            merchantCount: paymentDetails.length,
+            totalAmount: totalPrincipal,
+            totalFee: totalFee,
+            totalAmountWithFee: totalWithFee,
+            withdrawalNo: '无', // 保留字段但不再展示强制要求
+            withdrawalRemark: remark || '',
+            details: paymentDetails.map(p => ({ name: p.merchant.name, amount: p.amount, fee: p.fee, id: p.merchant.id })),
+            remark: `批量付款 | 备注:${remark || '无'} | 手续费总计:${formatUSD(totalFee)}`
+        };
+        paymentHistory.unshift(batchRecord);
+        clearSelection();
+        persistData();
+        updateStatsAndUI();
+        updateBalanceUI();
+        renderProviderTabs();
+        renderMerchantTable();
+        alert(`✅ 批量付款成功！已支付 ${paymentDetails.length} 个商户，总本金 ${formatUSD(totalPrincipal)}，手续费 ${formatUSD(totalFee)}，实扣总额 ${formatUSD(totalWithFee)}\n备注: ${remark || '无'}`);
+        return true;
+    }
+
+    function requestBatchReject() { if (selectedPayments.size === 0) { alert('请先选择需要打回的商户'); return; } document.getElementById('rejectReasonInput').value = ''; document.getElementById('reasonPrompt').classList.add('active'); pendingRejectCallback = () => { const reason = document.getElementById('rejectReasonInput').value.trim(); if (!reason) { alert('请输入打回原因'); return false; } const provider = getCurrentProvider(); if (!provider) return false; const toRejectIds = Array.from(selectedPayments.keys()); const rejectedMerchants = provider.subMerchants.filter(m => toRejectIds.includes(m.id)); const rejectRecord = { id: 'REJECT_' + Date.now(), timestamp: new Date().toLocaleString(), providerId: provider.id, providerName: provider.name, merchantCount: rejectedMerchants.length, totalAmount: 0, totalFee: 0, totalAmountWithFee: 0, withdrawalNo: '无', withdrawalRemark: `打回原因:${reason}`, details: rejectedMerchants.map(m => ({ name: m.name, amount: m.payAmount, fee: calculateFee(m.payAmount), id: m.id })), remark: `批量打回重申，原因：${reason}` }; paymentHistory.unshift(rejectRecord); provider.subMerchants = provider.subMerchants.filter(m => !toRejectIds.includes(m.id)); clearSelection(); persistData(); updateStatsAndUI(); renderMerchantTable(); alert(`✅ 已打回重申 ${toRejectIds.length} 个商户，原因：${reason}`); return true; }; }
+    function closeReasonPrompt() { document.getElementById('reasonPrompt').classList.remove('active'); pendingRejectCallback = null; }
+
+    function renderHistoryModal() { const tbody = document.getElementById('modalHistoryTbody'); if (!paymentHistory.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">暂无付款记录</td></tr>'; return; } let rows = ''; for (let record of paymentHistory) { let remarkDisplay = record.remark || record.withdrawalRemark || '无'; let detailsShort = record.details?.slice(0,2).map(d => `${d.name}:本金${formatUSD(d.amount)}/手续费${formatUSD(d.fee||0)}`).join('; ') || ''; if (record.details?.length > 2) detailsShort += ` 等${record.details.length}家`; rows += `<tr><td>${record.timestamp}</td><td><span class="status-badge" style="background:#f5f5f5;">${escapeHtml(record.providerName)}</span></td><td>${record.merchantCount}</td><td class="amount-negative">${formatUSD(record.totalAmount)}</td><td class="amount-negative">${formatUSD(record.totalFee || 0)}</td><td><span class="reason-tag"><i class="fas fa-comment"></i> ${escapeHtml(remarkDisplay)}</span></td><td style="font-size:0.75rem;">${escapeHtml(detailsShort)}</td><td>${record.id}</td></tr>`; } tbody.innerHTML = rows; }
+    function showHistoryModal() { renderHistoryModal(); document.getElementById('historyModal').classList.add('active'); }
+    function closeModal() { document.getElementById('historyModal').classList.remove('active'); }
+    function exportFullHistory() { if (!paymentHistory.length) { alert('暂无付款记录可导出'); return; } let csvRows = [['时间', '服务商', '商户数量', '总本金(USD)', '总手续费(USD)', '付款备注', '付款明细', '批次号']]; for (let record of paymentHistory) { let detailsText = record.details?.map(d => `${d.name}(${d.amount.toFixed(2)}USD+手续费${(d.fee||0).toFixed(2)}USD)`).join('; ') || ''; let remarkStr = record.remark || ''; csvRows.push([record.timestamp, record.providerName, record.merchantCount, record.totalAmount.toFixed(2), (record.totalFee || 0).toFixed(2), remarkStr, detailsText, record.id]); } const csvContent = csvRows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n'); const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement('a'); const url = URL.createObjectURL(blob); link.href = url; link.setAttribute('download', `payment_history_${new Date().toISOString().slice(0,19)}.csv`); document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url); }
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' })[m]); }
+
+    // 事件绑定
+    document.getElementById('batchPayoutBtn').addEventListener('click', () => { if (selectedPayments.size === 0 && getCurrentProvider()?.subMerchants?.length) selectAll(); openPaymentModal(); });
+    document.getElementById('confirmBatchBtn').addEventListener('click', openPaymentModal);
+    document.getElementById('clearSelectionBtn').addEventListener('click', clearSelection);
+    document.getElementById('selectAllCheckbox')?.addEventListener('change', (e) => e.target.checked ? selectAll() : clearSelection());
+    document.getElementById('searchInput').addEventListener('input', (e) => { searchKeyword = e.target.value; renderMerchantTable(); });
+    document.getElementById('exportAllHistoryBtn').addEventListener('click', exportFullHistory);
+    document.getElementById('viewHistoryBtn').addEventListener('click', showHistoryModal);
+    document.getElementById('batchRejectBtn').addEventListener('click', requestBatchReject);
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    document.getElementById('historyModal').addEventListener('click', (e) => { if(e.target === document.getElementById('historyModal')) closeModal(); });
+    document.getElementById('cancelRejectBtn').addEventListener('click', closeReasonPrompt);
+    document.getElementById('confirmRejectBtn').addEventListener('click', () => { if(pendingRejectCallback) { const ok = pendingRejectCallback(); if(ok) closeReasonPrompt(); } else closeReasonPrompt(); });
+    document.getElementById('modalExportBtn')?.addEventListener('click', exportFullHistory);
+    document.getElementById('cancelPaymentBtn').addEventListener('click', closePaymentModal);
+    document.getElementById('confirmPaymentBtn').addEventListener('click', () => { const remark = document.getElementById('paymentRemark').value; executeBatchPayment(remark); closePaymentModal(); });
+    document.getElementById('closeMerchantDetailBtn').addEventListener('click', () => document.getElementById('merchantDetailModal').classList.remove('active'));
+    document.getElementById('merchantDetailModal').addEventListener('click', (e) => { if(e.target === document.getElementById('merchantDetailModal')) document.getElementById('merchantDetailModal').classList.remove('active'); });
+    loadData();
+</script>
+</body>
+</html>
