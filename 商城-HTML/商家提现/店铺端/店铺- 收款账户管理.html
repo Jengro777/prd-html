@@ -451,9 +451,9 @@
             display: flex;
         }
         .modal-container {
-            width: 560px;
-            max-width: 92vw;
-            max-height: 88vh;
+            width: 960px;
+            max-width: 96vw;
+            max-height: 90vh;
             overflow-y: auto;
             background: var(--tos-card);
             border-radius: var(--tos-radius-card);
@@ -530,6 +530,156 @@
             margin-top: 4px;
             font-size: 12px;
             color: var(--tos-text-muted);
+        }
+        .api-key {
+            margin-left: 6px;
+            padding: 1px 6px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: 4px;
+            background: #fafafa;
+            color: var(--tos-text-muted);
+            font-size: 11px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            vertical-align: 1px;
+            white-space: nowrap;
+        }
+        .reg-group {
+            margin-bottom: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--tos-border-soft);
+        }
+        .reg-group__title {
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .form-group input[readonly] {
+            background: #fafafa;
+            color: var(--tos-text-secondary);
+        }
+        .industry-group {
+            padding: 12px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-control);
+            background: #fbfcfd;
+        }
+        .industry-group + .industry-group {
+            margin-top: 12px;
+        }
+        .industry-group__title {
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--tos-text-secondary);
+        }
+        .industry-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .industry-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            border: 1px solid var(--tos-border);
+            border-radius: var(--tos-radius-control);
+            background: #fff;
+            font-size: 12px;
+            color: var(--tos-text-secondary);
+            cursor: pointer;
+            user-select: none;
+            transition: border-color 0.12s, background 0.12s, color 0.12s;
+        }
+        .industry-chip:hover {
+            border-color: var(--tos-primary);
+            color: var(--tos-primary);
+        }
+        .industry-chip input {
+            display: none;
+        }
+        .industry-chip:has(input:checked) {
+            border-color: var(--tos-primary);
+            background: var(--tos-primary-bg);
+            color: var(--tos-primary);
+            font-weight: 500;
+        }
+        .upload-item {
+            position: relative;
+        }
+        .upload-dash {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            padding: 10px 34px 10px 12px;
+            border: 1px dashed #d9dee8;
+            border-radius: var(--tos-radius-control);
+            background: #fbfcfd;
+            color: var(--tos-text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: border-color 0.12s, background 0.12s;
+        }
+        .upload-dash:hover {
+            border-color: var(--tos-primary);
+            background: rgba(66, 183, 174, 0.06);
+        }
+        .upload-dash.has-file {
+            border-style: solid;
+            border-color: var(--tos-primary);
+            background: var(--tos-primary-bg);
+        }
+        .upload-dash__input {
+            display: none;
+        }
+        .upload-dash__label {
+            font-weight: 500;
+            color: var(--tos-text);
+        }
+        .upload-dash__hint {
+            margin-left: auto;
+            color: var(--tos-text-muted);
+            font-size: 11px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 60%;
+        }
+        .upload-dash.has-file .upload-dash__hint {
+            color: var(--tos-primary);
+        }
+        .upload-remove {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border: none;
+            border-radius: 50%;
+            background: #fff;
+            color: var(--tos-text-muted);
+            font-size: 14px;
+            line-height: 1;
+            cursor: pointer;
+        }
+        .upload-item.has-file:hover .upload-remove {
+            display: flex;
+        }
+        .upload-remove:hover {
+            color: var(--tos-error);
+            background: #fff1f0;
+        }
+        .ubo-box {
+            padding: 12px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-control);
+            background: #fbfcfd;
         }
         .switch {
             position: relative;
@@ -661,7 +811,7 @@
             <div class="card-header">
                 <div>
                     <h1>收款账户管理</h1>
-                    <p>维护提现到账账户，支持银行卡与 Pyvio 移动钱包（Pyvio 需先注册商户账户）</p>
+                    <p>维护提现到账账户，支持银行卡与 Pyvio 移动钱包（Pyvio 商户账户由平台调用 Create User API 创建）</p>
                 </div>
                 <button class="btn-primary" id="addAccountBtn"><i class="fas fa-plus"></i> 添加收款账户</button>
             </div>
@@ -682,7 +832,7 @@
             </div>
 
             <div class="toolbar">
-                <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="搜索账户名称 / 银行 / 卡号"></div>
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="搜索账户 / 银行 / 卡号"></div>
                 <span class="toolbar-hint" id="listHint"></span>
             </div>
 
@@ -690,9 +840,8 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>账户名称</th>
-                            <th>账户类型</th>
                             <th>收款账号</th>
+                            <th>账户类型</th>
                             <th>币种</th>
                             <th>默认账户</th>
                             <th>状态</th>
@@ -718,16 +867,12 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>账户名称 <span class="required">*</span></label>
-                    <input type="text" id="formName" placeholder="例如：云裳科技-美元收款卡" autocomplete="off">
-                </div>
-                <div class="form-group">
                     <label>账户类型 <span class="required">*</span></label>
                     <select id="formType">
-                        <option value="bank">银行卡</option>
                         <option value="pyvio">Pyvio 移动钱包</option>
+                        <option value="bank">银行卡</option>
                     </select>
-                    <div class="helper-text">Pyvio 为移动钱包类型，添加前需先在 Pyvio 平台注册</div>
+                    <div class="helper-text">Pyvio 为移动钱包类型，选择后填写商户注册信息，由平台提交 Pyvio 审核</div>
                 </div>
                 <div id="bankFields" class="form-row-2">
                     <div class="form-group">
@@ -741,34 +886,313 @@
                 </div>
                 <div id="walletFields" style="display:none;">
                     <div class="alert-primary">
-                        <i class="fas fa-external-link-alt"></i>
-                        <span>添加 Pyvio 移动钱包前，需先在 Pyvio 平台注册商户账户</span>
-                        <a href="https://business.pyvio.com/" target="_blank" rel="noopener">前往 Pyvio 注册</a>
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Pyvio 商户账户由平台调用 Create User 接口（POST /user/api/v2/user/register）创建，提交后由 Pyvio 审核</span>
                     </div>
-                    <div class="form-group">
-                        <label>Pyvio 钱包账号 <span class="required">*</span></label>
-                        <input type="text" id="formWalletNo" placeholder="例如：手机号或邮箱" autocomplete="off">
-                        <div class="helper-text">注册时使用的账号，提现到账将打入该 Pyvio 移动钱包</div>
-                    </div>
-                    <div class="form-row-2">
+
+                    <div class="reg-group">
+                        <div class="reg-group__title">基础信息<span class="api-key">请求体</span></div>
                         <div class="form-group">
-                            <label>Pyvio 单元 ID</label>
-                            <input type="text" id="formUnitId" placeholder="注册后由 Pyvio 返回（unit_id）" autocomplete="off">
+                            <label>平台用户 ID <span class="required">*</span><span class="api-key">partner_user_id</span></label>
+                            <input type="text" id="formPartnerUserId" readonly placeholder="保存时自动生成，如 PV+时间戳" autocomplete="off">
+                            <div class="helper-text">每次注册请求的唯一标识，由平台自动生成，无需填写</div>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label>商户类型 <span class="required">*</span><span class="api-key">merchant_type</span></label>
+                                <select id="formMerchantType">
+                                    <option value="B2C">B2C 消费者</option>
+                                    <option value="B2B">B2B 企业客户</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>KYC 类型 <span class="required">*</span><span class="api-key">kyc_type</span></label>
+                                <select id="formKycType">
+                                    <option value="china-individual">中国个人（china-individual）</option>
+                                    <option value="china-enterprise-self-employed">中国个体户（china-enterprise-self-employed）</option>
+                                    <option value="china-enterprise-limited">中国有限责任公司（china-enterprise-limited）</option>
+                                    <option value="china-enterprise-investment">中国投资类公司（china-enterprise-investment）</option>
+                                    <option value="hk-enterprise">香港企业（hk-enterprise）</option>
+                                    <option value="foreign-enterprise">境外企业（foreign-enterprise）</option>
+                                </select>
+                                <div class="helper-text">B2B 不支持「中国个人」，切换商户类型后自动过滤</div>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label>客户 ID</label>
-                            <input type="text" id="formClientId" placeholder="注册后由 Pyvio 返回（client_id）" autocomplete="off">
+                            <label>行业分类 <span class="required">*</span><span class="api-key">industry[]</span></label>
+                            <div id="formIndustry" class="industry-group">
+                                <div class="industry-group__title">实物商品（Tangible Goods）</div>
+                                <div class="industry-chips">
+                                    <label class="industry-chip"><input type="checkbox" value="Automotive"><span>汽车</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Baby"><span>母婴</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Beauty and personal care"><span>美妆个护</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Computers"><span>电脑</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Crafts"><span>手工艺品</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Electronics"><span>电子产品</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Fashion Clothing and Accessories"><span>时尚服饰配饰</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Health and Household"><span>健康与家居</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Home and Kitchen"><span>家居厨房</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Industrial and Scientific"><span>工业与科研</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Luggage"><span>箱包</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Movies Television"><span>影视</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Pet supplies"><span>宠物用品</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Sports and Outdoors"><span>运动户外</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Tools Home Improvement"><span>工具家装</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Toys and Games"><span>玩具游戏</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Food"><span>食品</span></label>
+                                </div>
+                            </div>
+                            <div class="industry-group">
+                                <div class="industry-group__title">数字商品与服务（Intangible Goods &amp; Service）</div>
+                                <div class="industry-chips">
+                                    <label class="industry-chip"><input type="checkbox" value="Accounting, Human Resources &amp; Legal"><span>会计、人力资源与法律</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Advertising services, advertising publishers, advertising channels and exhibitions"><span>广告服务、广告商与展览</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Art Design Architecture and Media"><span>艺术设计建筑与媒体</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Data Entry &amp; Admin"><span>数据录入与行政管理</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Digital Goods: Computer software, mobile applications producer developers or selling (Excludes Games)"><span>数字商品：软件与移动应用（不含游戏）</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Digital goods: online games"><span>数字商品：在线游戏</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Engineering &amp; Science"><span>工程与科学</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="File sharing / storage services (cyber-lockers)"><span>文件共享/存储服务</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Freight, Shipping &amp; Transportation"><span>货运、航运与运输</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Lodging, hotels, motels resort and accommodation services"><span>住宿与酒店服务</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Media and Internet Video Service"><span>媒体与互联网视频</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Online Education"><span>在线教育</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Passenger railways, limousines, taxicabs, motor freight carriers"><span>客运铁路、专车、出租车与货运承运</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Photographic studios and portraits"><span>摄影工作室与肖像</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Telecommunications"><span>电信</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Translation &amp; Languages"><span>翻译与语言</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Travel agency, ticketing services, and tour operators"><span>旅行社、票务与旅游运营</span></label>
+                                    <label class="industry-chip"><input type="checkbox" value="Websites, IT &amp; Software"><span>网站、IT 与软件</span></label>
+                                </div>
+                            </div>
+                            <div class="helper-text">点击标签即可多选 / 取消，对应 API 的 industry 数组</div>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label>邮箱<span class="api-key">email</span></label>
+                                <input type="text" id="formEmail" placeholder="选填" autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label>手机号<span class="api-key">phone</span></label>
+                                <input type="text" id="formPhone" placeholder="选填" autocomplete="off">
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Pyvio 注册状态</label>
-                        <select id="formRegStatus">
-                            <option value="pending">待审核</option>
-                            <option value="active">已激活</option>
-                            <option value="frozen">已冻结</option>
-                            <option value="returned">已退回</option>
-                        </select>
-                        <div class="helper-text">注册后由 Pyvio 审核并回传状态</div>
+
+                    <div class="reg-group">
+                        <div class="reg-group__title">KYC 资料<span class="api-key">individual_info / company_info</span></div>
+                        <div id="individualFields">
+                            <div class="form-group">
+                                <label>个人证件附件 <span class="required">*</span><span class="api-key">individual_info.attachments[]</span></label>
+                                <div class="upload-item">
+                                    <label class="upload-dash">
+                                        <input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf" data-file-type="PRC_ID_Emblem">
+                                        <span class="upload-dash__label">PRC_ID_Emblem · 身份证国徽面</span>
+                                        <span class="upload-dash__hint">点击上传 · JPG/PNG ≤10MB</span>
+                                    </label>
+                                    <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                                </div>
+                                <div class="upload-item">
+                                    <label class="upload-dash">
+                                        <input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf" data-file-type="PRC_ID_Portrait">
+                                        <span class="upload-dash__label">PRC_ID_Portrait · 身份证人像面</span>
+                                        <span class="upload-dash__hint">点击上传 · JPG/PNG ≤10MB</span>
+                                    </label>
+                                    <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                                </div>
+                                <div class="upload-item">
+                                    <label class="upload-dash">
+                                        <input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf" data-file-type="ID_Hand">
+                                        <span class="upload-dash__label">ID_Hand · 手持证件照</span>
+                                        <span class="upload-dash__hint">点击上传 · JPG/PNG ≤10MB</span>
+                                    </label>
+                                    <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="companyFields" style="display:none;">
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label>公司类型<span class="api-key">company_info.company_type</span></label>
+                                    <select id="formCompanyType">
+                                        <option value="Corporation">股份有限公司</option>
+                                        <option value="Limited Liability">有限责任公司</option>
+                                        <option value="Sole Proprietorship">个体经营</option>
+                                        <option value="Partnership">合伙企业</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>是否上市<span class="api-key">listed</span></label>
+                                    <select id="formListed">
+                                        <option value="0">否</option>
+                                        <option value="1">是</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>是否国有<span class="api-key">state_owned_enterprised</span></label>
+                                    <select id="formStateOwned">
+                                        <option value="0">否</option>
+                                        <option value="1">是</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>是否外资<span class="api-key">foreign_owned_enterprised</span></label>
+                                    <select id="formForeignOwned">
+                                        <option value="0">否</option>
+                                        <option value="1">是</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>企业证件附件 <span class="required">*</span><span class="api-key">company_info.attachments[]</span></label>
+                                <div class="upload-item">
+                                    <label class="upload-dash">
+                                        <input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf,.xls,.xlsx,.doc,.docx,.zip,.rar" data-file-type="BI">
+                                        <span class="upload-dash__label">BI · 营业执照</span>
+                                        <span class="upload-dash__hint">点击上传 · JPG/PNG/PDF ≤10MB</span>
+                                    </label>
+                                    <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                                </div>
+                                <div class="upload-item">
+                                    <label class="upload-dash">
+                                        <input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf,.xls,.xlsx,.doc,.docx,.zip,.rar" data-file-type="BAP">
+                                        <span class="upload-dash__label">BAP · 银行账户证明</span>
+                                        <span class="upload-dash__hint">点击上传 · JPG/PNG/PDF ≤10MB</span>
+                                    </label>
+                                    <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                                </div>
+                                <div class="upload-item">
+                                    <label class="upload-dash">
+                                        <input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf,.xls,.xlsx,.doc,.docx,.zip,.rar" data-file-type="SSC">
+                                        <span class="upload-dash__label">SSC · 股东名册 / 公司章程</span>
+                                        <span class="upload-dash__hint">点击上传 · JPG/PNG/PDF ≤10MB</span>
+                                    </label>
+                                    <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                                </div>
+                                <div class="upload-item">
+                                    <label class="upload-dash">
+                                        <input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf,.xls,.xlsx,.doc,.docx,.zip,.rar" data-file-type="Other">
+                                        <span class="upload-dash__label">Other · 其他补充材料</span>
+                                        <span class="upload-dash__hint">点击上传 · ≤10MB</span>
+                                    </label>
+                                    <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>经营地址<span class="api-key">company_info.operation_address</span></label>
+                                <div class="form-row-2">
+                                    <div class="form-group">
+                                        <input type="text" id="formOpCountry" placeholder="国家，如 CN" autocomplete="off">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" id="formOpState" placeholder="省份，如 浙江省" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-row-2">
+                                    <div class="form-group">
+                                        <input type="text" id="formOpCity" placeholder="城市，如 杭州市" autocomplete="off">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" id="formOpPostcode" placeholder="邮编，如 311200" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" id="formOpLine1" placeholder="详细地址，如 湖滨街道24号" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>法人证件<span class="api-key">company_info.legal_info.attachments[]</span></label>
+                                <div class="upload-item">
+                                    <label class="upload-dash">
+                                        <input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf" data-file-type="PRC_ID_Emblem">
+                                        <span class="upload-dash__label">PRC_ID_Emblem · 身份证国徽面</span>
+                                        <span class="upload-dash__hint">中国法人 · 点击上传</span>
+                                    </label>
+                                    <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                                </div>
+                                <div class="upload-item">
+                                    <label class="upload-dash">
+                                        <input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf" data-file-type="PRC_ID_Portrait">
+                                        <span class="upload-dash__label">PRC_ID_Portrait · 身份证人像面</span>
+                                        <span class="upload-dash__hint">中国法人 · 点击上传</span>
+                                    </label>
+                                    <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                                </div>
+                                <div class="upload-item">
+                                    <label class="upload-dash">
+                                        <input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf" data-file-type="PP">
+                                        <span class="upload-dash__label">PP · 护照</span>
+                                        <span class="upload-dash__hint">港澳台 / 境外法人 · 点击上传</span>
+                                    </label>
+                                    <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>实际受益人（UBO）<span class="api-key">company_info.ubo_list[]</span></label>
+                                <div class="ubo-box">
+                                    <div class="form-row-2">
+                                        <div class="form-group">
+                                            <input type="text" id="formUboName" placeholder="姓名，如 张三" autocomplete="off">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" id="formUboNameEn" placeholder="英文名，如 San Zhang" autocomplete="off">
+                                        </div>
+                                    </div>
+                                    <div class="form-row-2">
+                                        <div class="form-group">
+                                            <input type="text" id="formUboIdNo" placeholder="证件号" autocomplete="off">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" id="formUboBirth" placeholder="出生日期 YYYYMMDD" autocomplete="off">
+                                        </div>
+                                    </div>
+                                    <div class="form-row-2">
+                                        <div class="form-group">
+                                            <input type="text" id="formUboIssue" placeholder="签发日期 YYYYMMDD" autocomplete="off">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" id="formUboExpire" placeholder="有效期至 YYYYMMDD" autocomplete="off">
+                                        </div>
+                                    </div>
+                                    <div class="upload-item">
+                                        <label class="upload-dash">
+                                            <input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf" data-file-type="PP">
+                                            <span class="upload-dash__label">PP · 受益人证件附件</span>
+                                            <span class="upload-dash__hint">点击上传 · JPG/PNG/PDF ≤10MB</span>
+                                        </label>
+                                        <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" id="formUboAddress" placeholder="受益人居住地址，如 123 Main Street, Los Angeles" autocomplete="off">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="reg-group">
+                        <div class="reg-group__title">Pyvio 注册结果<span class="api-key">响应数据</span></div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label>单元 ID<span class="api-key">unit_id</span></label>
+                                <input type="text" id="formUnitId" readonly placeholder="注册后由 Pyvio 返回" autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label>客户 ID<span class="api-key">client_id</span></label>
+                                <input type="text" id="formClientId" readonly placeholder="注册后由 Pyvio 返回" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>注册状态<span class="api-key">status</span></label>
+                            <select id="formRegStatus">
+                                <option value="pending">Pending · 待审核</option>
+                                <option value="active">Active · 已激活</option>
+                                <option value="suspend">Suspend · 已冻结</option>
+                                <option value="deact">Deact · 已注销</option>
+                                <option value="returned">Returned · 已退回</option>
+                            </select>
+                            <div class="helper-text">状态由 Pyvio 审核后通过接口 / Webhook 回传</div>
+                        </div>
                     </div>
                 </div>
                 <div class="form-row-2">
@@ -814,20 +1238,21 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        const STORAGE_KEY = "shop_payout_accounts_v3";
+        const STORAGE_KEY = "shop_payout_accounts_v4";
         const TYPE_BANK = "银行卡";
         const TYPE_PYVIO = "Pyvio 移动钱包";
         const REG_STATUS = {
-            pending: { label: "待审核", cls: "tos-tag--warning" },
-            active: { label: "已激活", cls: "tos-tag--success" },
-            frozen: { label: "已冻结", cls: "tos-tag--error" },
-            returned: { label: "已退回", cls: "tos-tag--error" }
+            pending: { label: "Pending 待审核", cls: "tos-tag--warning" },
+            active: { label: "Active 已激活", cls: "tos-tag--success" },
+            suspend: { label: "Suspend 已冻结", cls: "tos-tag--error" },
+            deact: { label: "Deact 已注销", cls: "tos-tag--default" },
+            returned: { label: "Returned 已退回", cls: "tos-tag--error" }
         };
 
         let accounts = [
-            { id: 1, name: "云裳科技-美元收款卡", type: "bank", typeLabel: TYPE_BANK, bank: "中国银行", cardNo: "6217001200128899", currency: "USD", isDefault: true, status: "enabled", remark: "提现默认到账账户" },
-            { id: 2, name: "云裳科技-Pyvio 钱包", type: "pyvio", typeLabel: TYPE_PYVIO, walletNo: "pay@yunshang.com", unitId: "UT1675766643661405569", clientId: "CT1633650493875645185", regStatus: "active", currency: "USD", isDefault: false, status: "enabled", remark: "" },
-            { id: 3, name: "旧版-人民币收款卡", type: "bank", typeLabel: TYPE_BANK, bank: "中国工商银行", cardNo: "62220212001107", currency: "CNY", isDefault: false, status: "disabled", remark: "已停用，历史到账记录保留" }
+            { id: 1, type: "bank", typeLabel: TYPE_BANK, bank: "中国银行", cardNo: "6217001200128899", currency: "USD", isDefault: true, status: "enabled", remark: "提现默认到账账户" },
+            { id: 2, type: "pyvio", typeLabel: TYPE_PYVIO, partnerUserId: "PV16887897986562", merchantType: "B2C", kycType: "china-individual", industry: ["Electronics", "Computers"], email: "pay@yunshang.com", phone: "18700000000", unitId: "UT1675766643661405569", clientId: "CT1633650493875645185", regStatus: "active", currency: "USD", isDefault: false, status: "enabled", remark: "" },
+            { id: 3, type: "bank", typeLabel: TYPE_BANK, bank: "中国工商银行", cardNo: "62220212001107", currency: "CNY", isDefault: false, status: "disabled", remark: "已停用，历史到账记录保留" }
         ];
 
         let editingId = null;
@@ -856,6 +1281,15 @@
             return digits || "—";
         }
 
+        function accountLabel(a) {
+            if (!a) return "—";
+            if (a.type === "pyvio") {
+                return "Pyvio · " + (a.email || a.partnerUserId || a.unitId || "移动钱包");
+            }
+            const tail = String(a.cardNo || "").replace(/\D/g, "").slice(-4);
+            return (a.bank || "银行卡") + " · 尾号" + (tail || "—");
+        }
+
         function getDefaultAccount() {
             return accounts.find((a) => a.isDefault) || null;
         }
@@ -865,22 +1299,24 @@
             const list = accounts.filter((a) => {
                 if (!kw) return true;
                 return (
-                    (a.name || "").toLowerCase().includes(kw) ||
+                    accountLabel(a).toLowerCase().includes(kw) ||
                     (a.bank || "").toLowerCase().includes(kw) ||
-                    String(a.cardNo || "").includes(kw)
+                    String(a.cardNo || "").includes(kw) ||
+                    (a.partnerUserId || "").toLowerCase().includes(kw) ||
+                    (a.email || "").toLowerCase().includes(kw)
                 );
             });
 
             document.getElementById("statTotal").textContent = accounts.length;
             document.getElementById("statEnabled").textContent = accounts.filter((a) => a.status === "enabled").length;
             const def = getDefaultAccount();
-            document.getElementById("statDefault").textContent = def ? def.name : "—";
+            document.getElementById("statDefault").textContent = accountLabel(def);
             document.getElementById("listHint").textContent = "共 " + list.length + " 个账户";
             document.getElementById("footerCount").textContent = "共 " + accounts.length + " 个收款账户";
 
             const tbody = document.getElementById("tableBody");
             if (!list.length) {
-                tbody.innerHTML = '<tr><td colspan="7" class="empty-row">暂无收款账户，点击右上角添加</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-row">暂无收款账户，点击右上角添加</td></tr>';
                 return;
             }
 
@@ -895,7 +1331,7 @@
 
                 let actions = "";
                 if (a.type === "pyvio") {
-                    actions += '<a class="btn-link" href="https://business.pyvio.com/" target="_blank" rel="noopener">Pyvio 注册</a>';
+                    actions += '<a class="btn-link" href="https://business.pyvio.com/" target="_blank" rel="noopener">Pyvio 登录</a>';
                 }
                 actions += '<button class="btn-link" data-action="edit" data-id="' + a.id + '">编辑</button>';
                 if (!a.isDefault) {
@@ -907,17 +1343,18 @@
                 const regTag = a.type === "pyvio" && REG_STATUS[a.regStatus]
                     ? '<span class="tos-tag ' + REG_STATUS[a.regStatus].cls + '">' + REG_STATUS[a.regStatus].label + "</span>"
                     : "";
+                const remarkLine = a.remark ? '<div class="sub-text" style="margin-top:4px;">' + esc(a.remark) + "</div>" : "";
                 const accountInfo = a.type === "pyvio"
-                    ? '<div>Pyvio 移动钱包</div><div class="card-mono">' + esc(a.walletNo || "—") + "</div>" +
+                    ? '<div>Pyvio 移动钱包</div><div class="card-mono">' + esc(a.partnerUserId || a.email || "—") + "</div>" +
                       (a.unitId ? '<div class="card-mono" style="margin-top:2px;">' + esc(a.unitId) + "</div>" : "") +
-                      '<div style="margin-top:6px;">' + regTag + "</div>"
-                    : '<div>' + esc(a.bank || "—") + '</div><div class="card-mono">' + esc(maskCard(a.cardNo)) + "</div>";
+                      (a.industry && a.industry.length ? '<div class="sub-text" style="margin-top:2px;">' + esc(a.industry.slice(0, 2).join(" / ")) + (a.industry.length > 2 ? " 等" : "") + "</div>" : "") +
+                      '<div style="margin-top:6px;">' + regTag + "</div>" + remarkLine
+                    : '<div>' + esc(a.bank || "—") + '</div><div class="card-mono">' + esc(maskCard(a.cardNo)) + "</div>" + remarkLine;
                 const typeTagClass = a.type === "pyvio" ? "tos-tag--primary" : "tos-tag--default";
 
                 rows += "<tr>" +
-                    "<td><div class=\"account-name\">" + esc(a.name) + "</div><div class=\"sub-text\">" + esc(a.remark || "—") + "</div></td>" +
-                    '<td><span class="tos-tag ' + typeTagClass + '">' + esc(a.typeLabel || TYPE_BANK) + "</span></td>" +
                     "<td>" + accountInfo + "</td>" +
+                    '<td><span class="tos-tag ' + typeTagClass + '">' + esc(a.typeLabel || TYPE_BANK) + "</span></td>" +
                     "<td><span class=\"tos-tag tos-tag--default\">" + esc(a.currency) + "</span></td>" +
                     "<td>" + defaultTag + "</td>" +
                     "<td>" + statusTag + "</td>" +
@@ -930,17 +1367,41 @@
         function openModal(account) {
             editingId = account ? account.id : null;
             document.getElementById("modalTitle").textContent = account ? "编辑收款账户" : "添加收款账户";
-            document.getElementById("formName").value = account ? account.name : "";
-            document.getElementById("formType").value = account ? account.type : "bank";
+            document.getElementById("formType").value = account ? account.type : "pyvio";
             document.getElementById("formBank").value = account ? (account.bank || "") : "";
             document.getElementById("formCardNo").value = account ? account.cardNo : "";
-            document.getElementById("formWalletNo").value = account ? (account.walletNo || "") : "";
+            document.getElementById("formPartnerUserId").value = account ? (account.partnerUserId || "") : "";
+            document.getElementById("formMerchantType").value = account ? (account.merchantType || "B2C") : "B2C";
+            syncKycOptions();
+            document.getElementById("formKycType").value = account ? (account.kycType || "china-individual") : "china-individual";
+            setMultiSelect("formIndustry", account ? (account.industry || []) : []);
+            document.getElementById("formEmail").value = account ? (account.email || "") : "";
+            document.getElementById("formPhone").value = account ? (account.phone || "") : "";
+            document.getElementById("formCompanyType").value = account ? (account.companyType || "Corporation") : "Corporation";
+            document.getElementById("formListed").value = account ? (account.listed || "0") : "0";
+            document.getElementById("formStateOwned").value = account ? (account.stateOwned || "0") : "0";
+            document.getElementById("formForeignOwned").value = account ? (account.foreignOwned || "0") : "0";
+            const op = account && account.opAddress ? account.opAddress : {};
+            document.getElementById("formOpCountry").value = op.country || "";
+            document.getElementById("formOpState").value = op.state || "";
+            document.getElementById("formOpCity").value = op.city || "";
+            document.getElementById("formOpPostcode").value = op.postcode || "";
+            document.getElementById("formOpLine1").value = op.line1 || "";
+            const ubo = account && account.ubo ? account.ubo : {};
+            document.getElementById("formUboName").value = ubo.name || "";
+            document.getElementById("formUboNameEn").value = ubo.nameEn || "";
+            document.getElementById("formUboIdNo").value = ubo.idNo || "";
+            document.getElementById("formUboBirth").value = ubo.birth || "";
+            document.getElementById("formUboIssue").value = ubo.issue || "";
+            document.getElementById("formUboExpire").value = ubo.expire || "";
+            document.getElementById("formUboAddress").value = ubo.address || "";
             document.getElementById("formUnitId").value = account ? (account.unitId || "") : "";
             document.getElementById("formClientId").value = account ? (account.clientId || "") : "";
             document.getElementById("formRegStatus").value = account ? (account.regStatus || "pending") : "pending";
             document.getElementById("formCurrency").value = account ? account.currency : "USD";
             document.getElementById("formDefault").checked = account ? !!account.isDefault : accounts.length === 0;
             document.getElementById("formRemark").value = account ? (account.remark || "") : "";
+            syncKycFields();
             syncTypeFields();
             document.getElementById("accountModal").classList.add("active");
         }
@@ -951,65 +1412,153 @@
             document.getElementById("walletFields").style.display = isPyvio ? "" : "none";
         }
 
+        function syncKycOptions() {
+            const mt = document.getElementById("formMerchantType").value;
+            const sel = document.getElementById("formKycType");
+            const current = sel.value;
+            Array.from(sel.options).forEach((opt) => {
+                opt.disabled = mt === "B2B" && opt.value === "china-individual";
+            });
+            if (mt === "B2B" && current === "china-individual") {
+                sel.value = "china-enterprise-limited";
+                syncKycFields();
+            }
+        }
+
+        function syncKycFields() {
+            const kyc = document.getElementById("formKycType").value;
+            const isEnterprise = kyc !== "china-individual";
+            document.getElementById("individualFields").style.display = isEnterprise ? "none" : "";
+            document.getElementById("companyFields").style.display = isEnterprise ? "" : "none";
+        }
+
+        function setMultiSelect(id, values) {
+            const sel = document.getElementById(id);
+            sel.querySelectorAll('input[type="checkbox"]').forEach((box) => {
+                box.checked = values.indexOf(box.value) !== -1;
+            });
+        }
+
+        function bindUploads() {
+            document.querySelectorAll(".upload-item").forEach((item) => {
+                const input = item.querySelector(".upload-dash__input");
+                const hint = item.querySelector(".upload-dash__hint");
+                const dash = item.querySelector(".upload-dash");
+                const remove = item.querySelector(".upload-remove");
+                if (!input || !hint || !dash || !remove) return;
+                const defaultHint = hint.textContent;
+
+                input.addEventListener("change", () => {
+                    const file = input.files && input.files[0];
+                    if (!file) return;
+                    if (file.size > 10 * 1024 * 1024) {
+                        alert("文件大小不能超过 10MB，请重新选择");
+                        input.value = "";
+                        return;
+                    }
+                    dash.classList.add("has-file");
+                    item.classList.add("has-file");
+                    hint.textContent = "已选择：" + file.name;
+                });
+
+                remove.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    input.value = "";
+                    dash.classList.remove("has-file");
+                    item.classList.remove("has-file");
+                    hint.textContent = defaultHint;
+                });
+            });
+        }
+
         function closeModal() {
             document.getElementById("accountModal").classList.remove("active");
             editingId = null;
         }
 
         function saveAccount() {
-            const name = document.getElementById("formName").value.trim();
             const type = document.getElementById("formType").value;
             const bank = document.getElementById("formBank").value.trim();
             const cardNo = document.getElementById("formCardNo").value.trim();
-            const walletNo = document.getElementById("formWalletNo").value.trim();
-            const unitId = document.getElementById("formUnitId").value.trim();
-            const clientId = document.getElementById("formClientId").value.trim();
+            const partnerUserId = document.getElementById("formPartnerUserId").value.trim() || ("PV" + Date.now());
+            const merchantType = document.getElementById("formMerchantType").value;
+            const kycType = document.getElementById("formKycType").value;
+            const industry = Array.from(document.querySelectorAll('#formIndustry input[type="checkbox"]:checked')).map((o) => o.value);
+            const email = document.getElementById("formEmail").value.trim();
+            const phone = document.getElementById("formPhone").value.trim();
+            const companyType = document.getElementById("formCompanyType").value;
+            const listed = document.getElementById("formListed").value;
+            const stateOwned = document.getElementById("formStateOwned").value;
+            const foreignOwned = document.getElementById("formForeignOwned").value;
+            const opAddress = {
+                country: document.getElementById("formOpCountry").value.trim(),
+                state: document.getElementById("formOpState").value.trim(),
+                city: document.getElementById("formOpCity").value.trim(),
+                postcode: document.getElementById("formOpPostcode").value.trim(),
+                line1: document.getElementById("formOpLine1").value.trim()
+            };
+            const ubo = {
+                name: document.getElementById("formUboName").value.trim(),
+                nameEn: document.getElementById("formUboNameEn").value.trim(),
+                idNo: document.getElementById("formUboIdNo").value.trim(),
+                birth: document.getElementById("formUboBirth").value.trim(),
+                issue: document.getElementById("formUboIssue").value.trim(),
+                expire: document.getElementById("formUboExpire").value.trim(),
+                address: document.getElementById("formUboAddress").value.trim()
+            };
+            const unitId = document.getElementById("formUnitId").value.trim() || ("UT" + Date.now());
+            const clientId = document.getElementById("formClientId").value.trim() || ("CT" + Date.now());
             const regStatus = document.getElementById("formRegStatus").value;
             const currency = document.getElementById("formCurrency").value;
             const isDefault = document.getElementById("formDefault").checked;
             const remark = document.getElementById("formRemark").value.trim();
 
-            if (!name) { alert("请填写账户名称"); return; }
             const digits = cardNo.replace(/\D/g, "");
             if (type === "bank" && digits.length < 8) { alert("请输入有效的银行卡号"); return; }
-            if (type === "pyvio" && !walletNo) { alert("请输入 Pyvio 钱包账号"); return; }
+            if (type === "pyvio") {
+                if (!industry.length) { alert("请至少选择一个行业分类"); return; }
+            }
 
             if (isDefault) {
                 accounts.forEach((a) => { a.isDefault = false; });
             }
 
+            const isEnterprise = type === "pyvio" && kycType !== "china-individual";
+            const editingTarget = editingId === null ? null : accounts.find((a) => a.id === editingId);
+            const base = {
+                id: editingId === null ? Date.now() : editingId,
+                type: type,
+                typeLabel: type === "pyvio" ? TYPE_PYVIO : TYPE_BANK,
+                bank: type === "bank" ? bank : "",
+                cardNo: type === "bank" ? digits : "",
+                partnerUserId: type === "pyvio" ? partnerUserId : "",
+                merchantType: type === "pyvio" ? merchantType : "",
+                kycType: type === "pyvio" ? kycType : "",
+                industry: type === "pyvio" ? industry : [],
+                email: type === "pyvio" ? email : "",
+                phone: type === "pyvio" ? phone : "",
+                companyType: isEnterprise ? companyType : "",
+                listed: isEnterprise ? listed : "0",
+                stateOwned: isEnterprise ? stateOwned : "0",
+                foreignOwned: isEnterprise ? foreignOwned : "0",
+                opAddress: isEnterprise ? opAddress : null,
+                ubo: isEnterprise ? ubo : null,
+                unitId: type === "pyvio" ? unitId : "",
+                clientId: type === "pyvio" ? clientId : "",
+                regStatus: type === "pyvio" ? regStatus : "",
+                currency: currency,
+                isDefault: isDefault,
+                status: editingTarget ? editingTarget.status : "enabled",
+                remark: remark
+            };
+
             if (editingId === null) {
-                accounts.push({
-                    id: Date.now(),
-                    name: name,
-                    type: type,
-                    typeLabel: type === "pyvio" ? TYPE_PYVIO : TYPE_BANK,
-                    bank: type === "bank" ? bank : "",
-                    cardNo: type === "bank" ? digits : "",
-                    walletNo: type === "pyvio" ? walletNo : "",
-                    unitId: type === "pyvio" ? unitId : "",
-                    clientId: type === "pyvio" ? clientId : "",
-                    regStatus: type === "pyvio" ? regStatus : "",
-                    currency: currency,
-                    isDefault: isDefault,
-                    status: "enabled",
-                    remark: remark
-                });
+                accounts.push(base);
             } else {
-                const target = accounts.find((a) => a.id === editingId);
+                const target = editingTarget;
                 if (target) {
-                    target.name = name;
-                    target.type = type;
-                    target.typeLabel = type === "pyvio" ? TYPE_PYVIO : TYPE_BANK;
-                    target.bank = type === "bank" ? bank : "";
-                    target.cardNo = type === "bank" ? digits : "";
-                    target.walletNo = type === "pyvio" ? walletNo : "";
-                    target.unitId = type === "pyvio" ? unitId : "";
-                    target.clientId = type === "pyvio" ? clientId : "";
-                    target.regStatus = type === "pyvio" ? regStatus : "";
-                    target.currency = currency;
-                    target.isDefault = isDefault;
-                    target.remark = remark;
+                    Object.assign(target, base);
                 }
             }
 
@@ -1036,7 +1585,7 @@
             persist();
             render();
             const def = getDefaultAccount();
-            showToast("默认收款账户已切换为「" + (def ? def.name : "") + "」");
+            showToast("默认收款账户已切换为「" + accountLabel(def) + "」");
         }
 
         function requestDelete(id) {
@@ -1047,7 +1596,7 @@
                 return;
             }
             pendingDeleteId = id;
-            document.getElementById("confirmText").textContent = "确认删除「" + target.name + "」？删除后该账户将不再用于提现到账。";
+            document.getElementById("confirmText").textContent = "确认删除「" + accountLabel(target) + "」？删除后该账户将不再用于提现到账。";
             document.getElementById("confirmModal").classList.add("active");
         }
 
@@ -1089,6 +1638,9 @@
         });
         document.getElementById("searchInput").addEventListener("input", render);
         document.getElementById("formType").addEventListener("change", syncTypeFields);
+        document.getElementById("formMerchantType").addEventListener("change", syncKycOptions);
+        document.getElementById("formKycType").addEventListener("change", syncKycFields);
+        bindUploads();
 
         document.getElementById("tableBody").addEventListener("click", (e) => {
             const btn = e.target.closest(".btn-link");
