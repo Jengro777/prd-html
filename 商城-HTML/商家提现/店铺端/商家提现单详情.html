@@ -633,18 +633,18 @@
             <thead>
                 <tr>
                     <th>钱包对账单号<br><span style="font-weight:normal; font-size:0.7rem;">(提现子单号 / 对账凭证ID)</span></th>
-                    <th>关联结算单号<br>(Settlement ID)</th>
-                    <th>结算周期</th>
-                    <th>结算单净收入<br>(原始金额)</th>
-                    <th>本次提现子单金额<br>(钱包划出)</th>
-                    <th>结算单剩余金额<br>(提现后钱包余额)</th>
+                    <th>关联收入单号<br>(Income ID)</th>
+                    <th>原单据入账时间</th>
+                    <th>原单据净收入<br>(原始金额)</th>
+                    <th>本单拆分子金额<br>(钱包划出)</th>
+                    <th>原单据剩余金额<br>(提现后钱包余额)</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td><span class="badge-wallet-bill">WALLET-BILL-20260401-001-01</span></td>
                     <td><span class="badge-settlement">STL-20260315-001</span></td>
-                    <td>2026/03/01 - 2026/03/14</td>
+                    <td>2026-03-15</td>
                     <td class="amount-positive">$5,000.00</td>
                     <td class="amount-negative">$4,000.00</td>
                     <td>$1,000.00</td>
@@ -652,7 +652,7 @@
                 <tr>
                     <td><span class="badge-wallet-bill">WALLET-BILL-20260401-001-02</span></td>
                     <td><span class="badge-settlement">STL-20260330-002</span></td>
-                    <td>2026/03/15 - 2026/03/28</td>
+                    <td>2026-03-30</td>
                     <td class="amount-positive">$3,000.00</td>
                     <td class="amount-negative">$1,000.00</td>
                     <td>$2,000.00</td>
@@ -664,7 +664,7 @@
                     <td><span class="badge-settlement">STL-20260315-001</span> 
                         <span style="background:#fff7e6; color:#d48806; padding:1px 6px; border-radius:4px; font-size:12px; margin-left:4px;">二次拆分 · 场景示例</span>
                      </td>
-                    <td>2026/03/01 - 2026/03/14</td>
+                    <td>2026-03-15</td>
                     <td class="amount-positive">$5,000.00</td>
                     <td class="amount-negative">$1,000.00</td>
                     <td><span style="color:#d48806;">$0.00 (已全部提完)</span></td>
