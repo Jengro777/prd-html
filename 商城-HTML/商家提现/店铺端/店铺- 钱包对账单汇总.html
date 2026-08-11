@@ -1086,9 +1086,8 @@
                     </div>
                 </td></tr>`;
             }
-            const walletSubMark = tx.type === "withdrawal" ? "<br><span style='font-size:0.65rem;'>(提现子凭证)</span>" : "";
             rows += `<tr>
-                <td><span class="wallet-bill-id">${tx.id}</span>${walletSubMark}</td>
+                <td><span class="wallet-bill-id">${tx.id}</span></td>
                 <td><span class="badge-type ${typeClass}">${typeDisplay}</span></td>
                 <td><span class="ref-business-id">${tx.refRaw}</span></td>
                 <td>${tx.date}</td>
