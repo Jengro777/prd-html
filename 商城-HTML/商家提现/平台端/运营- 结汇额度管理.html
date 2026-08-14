@@ -1,0 +1,1841 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>结汇额度管理 · 平台端</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --tos-primary: #42b7ae;
+            --tos-primary-hover: #339b94;
+            --tos-primary-bg: #e6f7f6;
+            --tos-bg: #f5f7fa;
+            --tos-card: #fff;
+            --tos-border: #e5e7eb;
+            --tos-border-soft: #f0f2f5;
+            --tos-text: #333;
+            --tos-text-secondary: #666;
+            --tos-text-muted: #999;
+            --tos-success: #52c41a;
+            --tos-warning: #faad14;
+            --tos-error: #f5222d;
+            --tos-radius-card: 12px;
+            --tos-radius-control: 8px;
+            --tos-radius-tag: 4px;
+            --sidebar-width: 220px;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: var(--tos-bg);
+            color: var(--tos-text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            padding: 2rem 12px 2rem calc(var(--sidebar-width) + 20px);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== 左侧导航 · 平台端 ===== */
+        .tos-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 900;
+            width: var(--sidebar-width);
+            background: #fff;
+            border-right: 1px solid var(--tos-border-soft);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .sidebar__end-select {
+            width: calc(100% - 24px);
+            height: 32px;
+            margin: 8px 12px 0;
+            padding: 0 26px 0 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 13px;
+            color: #333;
+            outline: none;
+            cursor: pointer;
+            font-family: inherit;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%2710%27><path d=%27M2 4l3 3 3-3%27 fill=%27none%27 stroke=%27%23999%27 stroke-width=%271.5%27 stroke-linecap=%27round%27/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+        }
+        .sidebar__end-select:focus {
+            border-color: var(--tos-primary);
+            box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.16);
+        }
+        .tos-sidebar__logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--tos-border-soft);
+        }
+        .tos-sidebar__logo-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--tos-primary);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .tos-sidebar__logo-text {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2937;
+            white-space: nowrap;
+        }
+        .tos-sidebar__nav {
+            flex: 1;
+            padding: 12px 0;
+        }
+        .tos-sidebar__group {
+            padding: 0 12px;
+            margin-bottom: 4px;
+        }
+        .tos-sidebar__group-title {
+            padding: 8px 8px 4px;
+            font-size: 11px;
+            color: var(--tos-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        .tos-sidebar__item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--tos-text-secondary);
+            transition: all 0.15s;
+            text-decoration: none;
+            margin-bottom: 2px;
+        }
+        .tos-sidebar__item:hover {
+            background: #f5f5f5;
+            color: var(--tos-text);
+        }
+        .tos-sidebar__item--active {
+            background: var(--tos-primary-bg);
+            color: var(--tos-primary);
+            font-weight: 600;
+        }
+        .tos-sidebar__item i {
+            width: 18px;
+            text-align: center;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        /* ===== 通用工具类 ===== */
+        .flex {
+            display: flex;
+        }
+        .items-center {
+            align-items: center;
+        }
+        .justify-end {
+            justify-content: flex-end;
+        }
+        .gap-8 {
+            gap: 8px;
+        }
+        .mr-1 {
+            margin-right: 4px;
+        }
+        .ml-3 {
+            margin-left: 12px;
+        }
+        .mt-3 {
+            margin-top: 12px;
+        }
+        .mt-4 {
+            margin-top: 16px;
+        }
+        .mt-5 {
+            margin-top: 20px;
+        }
+        .w-full {
+            width: 100%;
+        }
+        .text-right {
+            text-align: right;
+        }
+
+        /* ===== 页面布局 ===== */
+        .container {
+            max-width: 1920px;
+            margin: 0 auto;
+        }
+        .main-card {
+            background: var(--tos-card);
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+            overflow: hidden;
+        }
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 20px;
+            border-bottom: 1px solid var(--tos-border-soft);
+        }
+        .card-header h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .card-header p {
+            margin: 4px 0 0;
+            font-size: 13px;
+            color: var(--tos-text-muted);
+            max-width: 920px;
+            line-height: 1.6;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            padding: 20px 20px 0;
+        }
+        .stat-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 16px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            background: var(--tos-card);
+        }
+        .stat-info h4 {
+            margin: 0;
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--tos-text-muted);
+        }
+        .stat-number {
+            margin-top: 4px;
+            font-size: 22px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .stat-number--warning {
+            color: #d48806;
+        }
+        .stat-icon {
+            font-size: 18px;
+            color: var(--tos-primary);
+        }
+
+        .section-block {
+            padding: 20px;
+            border-top: 1px solid var(--tos-border-soft);
+        }
+        .section-title-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .section-title-row h2 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--tos-text);
+        }
+        .section-title-row p {
+            margin: 4px 0 0;
+            font-size: 12px;
+            color: var(--tos-text-muted);
+        }
+
+        .alert-primary {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 10px 12px;
+            margin-bottom: 16px;
+            border: 1px solid #b5e5e0;
+            border-radius: var(--tos-radius-control);
+            background: var(--tos-primary-bg);
+            color: #2b6f68;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+        .alert-primary i {
+            margin-top: 3px;
+        }
+        .alert-warning {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 10px 12px;
+            margin-bottom: 16px;
+            border: 1px solid #ffe3a3;
+            border-radius: var(--tos-radius-control);
+            background: #fff7e6;
+            color: #b45309;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+        .alert-warning i {
+            margin-top: 3px;
+        }
+        .alert-error {
+            display: none;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 10px 12px;
+            margin-bottom: 16px;
+            border: 1px solid #ffc9c6;
+            border-radius: var(--tos-radius-control);
+            background: #fff1f0;
+            color: #c0392b;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+        .alert-error i {
+            margin-top: 3px;
+        }
+
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 0 0 16px;
+        }
+        .filter-bar .form-select {
+            width: 200px;
+        }
+        .filter-bar .filter-search {
+            width: 260px;
+        }
+        .filter-bar__spacer {
+            flex: 1;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th {
+            padding: 12px 16px;
+            background: #fafafa;
+            border-bottom: 1px solid var(--tos-border-soft);
+            color: var(--tos-text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            text-align: left;
+            white-space: nowrap;
+        }
+        .data-table td {
+            padding: 13px 16px;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 14px;
+            color: var(--tos-text);
+            vertical-align: middle;
+        }
+        .data-table tbody tr:hover td {
+            background: #fafafa;
+        }
+        .data-table tbody tr:last-child td {
+            border-bottom: 0;
+        }
+        .data-table tbody tr.row-matched td {
+            background: var(--tos-primary-bg);
+        }
+        .data-table tbody tr.row-matched:hover td {
+            background: #dcefec;
+        }
+        .table-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 20px;
+            border-top: 1px solid var(--tos-border-soft);
+            font-size: 13px;
+            color: var(--tos-text-muted);
+        }
+        .empty-row {
+            padding: 48px 20px;
+            text-align: center;
+            color: var(--tos-text-muted);
+            font-size: 14px;
+        }
+
+        .tos-tag {
+            display: inline-flex;
+            align-items: center;
+            height: 22px;
+            padding: 0 8px;
+            border-radius: var(--tos-radius-tag);
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .tos-tag--primary {
+            background: var(--tos-primary-bg);
+            color: var(--tos-primary);
+        }
+        .tos-tag--success {
+            background: #f0faf0;
+            color: var(--tos-success);
+        }
+        .tos-tag--default {
+            background: #f5f5f5;
+            color: var(--tos-text-secondary);
+        }
+        .tos-tag--warning {
+            background: #fff7e6;
+            color: #d48806;
+        }
+        .tos-tag--error {
+            background: #fff1f0;
+            color: var(--tos-error);
+        }
+
+        .link-primary {
+            color: var(--tos-primary);
+            font-size: 13px;
+            text-decoration: none;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: inherit;
+            padding: 0;
+        }
+        .link-primary:hover {
+            color: var(--tos-primary-hover);
+            text-decoration: underline;
+        }
+        .link-danger {
+            color: var(--tos-error);
+            font-size: 13px;
+            text-decoration: none;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: inherit;
+            padding: 0;
+        }
+        .link-danger:hover {
+            text-decoration: underline;
+        }
+        .actions-cell {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .cell-mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 13px;
+            color: var(--tos-text-secondary);
+        }
+        .cell-main {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .sub-text {
+            margin-top: 2px;
+            font-size: 12px;
+            color: var(--tos-text-muted);
+        }
+        .amount-negative {
+            color: var(--tos-error);
+            font-weight: 600;
+        }
+        .amount-positive {
+            color: var(--tos-success);
+            font-weight: 600;
+        }
+
+        .quota-progress {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .quota-progress__bar {
+            position: relative;
+            width: 86px;
+            height: 6px;
+            border-radius: 3px;
+            background: #f0f2f5;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .quota-progress__fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            border-radius: 3px;
+            background: var(--tos-primary);
+        }
+        .quota-progress__fill--warning {
+            background: var(--tos-warning);
+        }
+        .quota-progress__fill--error {
+            background: var(--tos-error);
+        }
+        .quota-progress__num {
+            font-size: 13px;
+            color: var(--tos-text-secondary);
+            white-space: nowrap;
+        }
+
+        .cell-error {
+            margin-top: 4px;
+            color: var(--tos-error);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            min-height: 34px;
+            border: 1px solid var(--tos-border);
+            border-radius: var(--tos-radius-control);
+            background: #fff;
+            color: var(--tos-text);
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            padding: 4px 11px;
+        }
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: var(--tos-primary);
+            box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.16);
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: var(--tos-text-secondary);
+        }
+        .form-group .required {
+            color: var(--tos-error);
+        }
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px 20px;
+        }
+        .quota-match-cta {
+            display: flex;
+            align-items: flex-end;
+        }
+        .quota-match-cta .btn-primary {
+            width: 100%;
+        }
+
+        .btn-primary,
+        .btn-secondary,
+        .btn-danger {
+            height: 34px;
+            padding: 0 16px;
+            border: 1px solid transparent;
+            border-radius: var(--tos-radius-control);
+            font-size: 13px;
+            font-weight: 500;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: var(--tos-primary);
+            border-color: var(--tos-primary);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--tos-primary-hover);
+            border-color: var(--tos-primary-hover);
+        }
+        .btn-secondary {
+            background: var(--tos-card);
+            border-color: var(--tos-border);
+            color: var(--tos-text-secondary);
+        }
+        .btn-secondary:hover {
+            background: #fafafa;
+            border-color: #d1d5db;
+        }
+        .btn-danger {
+            background: var(--tos-card);
+            border-color: var(--tos-border);
+            color: var(--tos-error);
+        }
+
+        /* ===== 弹窗 ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            z-index: 1000;
+            padding: 40px 16px;
+            overflow-y: auto;
+        }
+        .modal-overlay--open {
+            display: flex;
+        }
+        .modal-container {
+            width: 960px;
+            max-width: 100%;
+            background: #fff;
+            border-radius: var(--tos-radius-card);
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--tos-border-soft);
+        }
+        .modal-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--tos-text);
+        }
+        .modal-close {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: none;
+            font-size: 20px;
+            color: var(--tos-text-muted);
+            cursor: pointer;
+            border-radius: 6px;
+        }
+        .modal-close:hover {
+            background: #f5f5f5;
+            color: var(--tos-text);
+        }
+        .modal-body {
+            padding: 20px;
+            max-height: calc(100vh - 140px);
+            overflow-y: auto;
+        }
+        .modal-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 14px 20px;
+            border-top: 1px solid var(--tos-border-soft);
+        }
+
+        .modal-hint {
+            padding: 10px 12px;
+            margin-bottom: 16px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-control);
+            background: #fafafa;
+            color: var(--tos-text-secondary);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+        .modal-hint i {
+            margin-right: 6px;
+            color: var(--tos-primary);
+        }
+        .order-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .order-toolbar__note {
+            margin-left: auto;
+            font-size: 12px;
+            color: var(--tos-text-muted);
+        }
+
+        /* ===== 抽屉 ===== */
+        .drawer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            display: none;
+            z-index: 1000;
+        }
+        .drawer-overlay--open {
+            display: block;
+        }
+        .drawer-container {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 780px;
+            max-width: 96vw;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            z-index: 1001;
+            transform: translateX(100%);
+            transition: transform 0.2s;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+        }
+        .drawer-overlay--open .drawer-container {
+            transform: translateX(0);
+        }
+        .drawer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--tos-border-soft);
+        }
+        .drawer-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .drawer-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .drawer-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 14px 20px;
+            border-top: 1px solid var(--tos-border-soft);
+        }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px 24px;
+            margin-bottom: 20px;
+        }
+        .detail-item__label {
+            font-size: 12px;
+            color: var(--tos-text-muted);
+        }
+        .detail-item__value {
+            margin-top: 4px;
+            font-size: 14px;
+            color: var(--tos-text);
+        }
+        .drawer-section-title {
+            margin: 0 0 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--tos-border-soft);
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--tos-text);
+        }
+        .timeline {
+            position: relative;
+            padding-left: 26px;
+        }
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 5px;
+            top: 8px;
+            bottom: 8px;
+            width: 2px;
+            background: var(--tos-border-soft);
+        }
+        .timeline-item {
+            position: relative;
+            padding: 0 0 20px;
+        }
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: -24px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #d9dee8;
+        }
+        .timeline-item--done::before {
+            background: var(--tos-primary);
+        }
+        .timeline-item__text {
+            font-size: 14px;
+            color: var(--tos-text);
+        }
+        .timeline-item__time {
+            margin-top: 2px;
+            font-size: 12px;
+            color: var(--tos-text-muted);
+        }
+
+        .toast {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1200;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: var(--tos-radius-control);
+            border: 1px solid var(--tos-border);
+            background: #fff;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+            font-size: 13px;
+            color: var(--tos-text);
+        }
+        .toast--show {
+            display: flex;
+        }
+        .toast--success {
+            border-color: #b7eb8f;
+            background: #f6ffed;
+            color: #389e0d;
+        }
+        .toast--error {
+            border-color: #ffc9c6;
+            background: #fff1f0;
+            color: #c0392b;
+        }
+
+        @media (max-width: 1280px) {
+            .stats-row {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @media (max-width: 960px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            .card-header {
+                display: block;
+            }
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 680px) {
+            body {
+                padding: 0 0 2rem;
+            }
+            .tos-sidebar {
+                display: none;
+            }
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+            .filter-bar .filter-search,
+            .filter-bar .form-select {
+                width: 100%;
+            }
+            .section-block {
+                padding: 16px;
+            }
+            .card-header,
+            .stats-row {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="tos-sidebar">
+        <select class="sidebar__end-select" onchange="if(this.value)location.href=this.value"><option value="../店铺端/店铺- 结汇额度管理.html">店铺端</option><option value="" selected>平台端</option></select>
+        <div class="tos-sidebar__logo">
+            <div class="tos-sidebar__logo-icon"><i class="fas fa-layer-group"></i></div>
+            <span class="tos-sidebar__logo-text">TOS 运营中心</span>
+        </div>
+        <nav class="tos-sidebar__nav">
+            <div class="tos-sidebar__group">
+                <div class="tos-sidebar__group-title">商家钱包</div>
+                <a class="tos-sidebar__item" href="运营-钱包对账汇总.html"><i class="fas fa-file-invoice-dollar"></i> <span>钱包对账</span></a>
+                <a class="tos-sidebar__item" href="运营- 批量付款.html"><i class="fas fa-money-bill-transfer"></i> <span>批量付款</span></a>
+                <a class="tos-sidebar__item" href="运营- 虚拟账户余额管理.html"><i class="fas fa-wallet"></i> <span>虚拟账户</span></a>
+                <a class="tos-sidebar__item tos-sidebar__item--active" href="运营- 结汇额度管理.html"><i class="fas fa-coins"></i> <span>结汇额度</span></a>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="container">
+        <div class="main-card">
+            <div class="card-header">
+                <div>
+                    <h1>结汇额度管理</h1>
+                    <p>按店铺维度管理各支付厂商核定的结汇额度；店铺输入金额按 FIFO 匹配订单推送后，由支付商确认额度，同一笔订单资料全平台唯一。</p>
+                </div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h4>接入支付厂商</h4>
+                        <div class="stat-number">4 家</div>
+                    </div>
+                    <i class="fas fa-building-columns stat-icon"></i>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h4>可用结汇额度</h4>
+                        <div class="stat-number" id="statAvailable">¥1,748,000.00</div>
+                    </div>
+                    <i class="fas fa-coins stat-icon"></i>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h4>已用结汇额度</h4>
+                        <div class="stat-number">¥2,302,000.00</div>
+                    </div>
+                    <i class="fas fa-chart-pie stat-icon"></i>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h4>待确认额度</h4>
+                        <div class="stat-number stat-number--warning" id="statPending">¥180,000.00</div>
+                    </div>
+                    <i class="fas fa-hourglass-half stat-icon"></i>
+                </div>
+            </div>
+
+            <!-- 店铺额度列表 -->
+            <div class="section-block">
+                <div class="section-title-row">
+                    <div>
+                        <h2>店铺额度列表</h2>
+                        <p>按「店铺 × 支付厂商」展示结汇额度；调整额度、推送记录、使用明细与店铺端一致</p>
+                    </div>
+                </div>
+
+                <div class="alert-primary">
+                    <i class="fas fa-circle-info"></i>
+                    <span>系统按 order_id 全平台去重：订单被任一支付厂商推送后即全局锁定，其他厂商无法再次推送；提现时系统按订单类型组合扣减对应支付厂商的结汇额度。</span>
+                </div>
+
+                <div class="filter-bar">
+                    <input type="text" class="form-input filter-search" id="storeKeyword" placeholder="搜索店铺名称" />
+                    <select class="form-select" id="storeVendor">
+                        <option value="">全部支付厂商</option>
+                        <option value="pyvio">Pyvio 结汇</option>
+                        <option value="xt">XT 结汇</option>
+                        <option value="sandpay">杉德支付</option>
+                        <option value="payoneer">Payoneer 派安盈</option>
+                    </select>
+                    <button class="btn-secondary" onclick="resetStoreFilter()">重置</button>
+                    <button class="btn-primary" onclick="filterStores()">查询</button>
+                    <div class="filter-bar__spacer"></div>
+                    <span class="sub-text" id="storeCount">共 6 条</span>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="data-table" style="min-width: 1240px;">
+                        <thead>
+                            <tr>
+                                <th>店铺</th>
+                                <th>支付厂商</th>
+                                <th class="text-right">总额度</th>
+                                <th class="text-right">已用额度</th>
+                                <th class="text-right">可用额度</th>
+                                <th class="text-right">待确认额度</th>
+                                <th>使用率</th>
+                                <th>状态</th>
+                                <th class="text-right">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="storeTbody">
+                            <tr data-search="深圳市xx科技 amazon 美国站" data-vendor="pyvio">
+                                <td><span class="cell-main">深圳市XX科技 · Amazon 美国站</span></td>
+                                <td>Pyvio 结汇</td>
+                                <td class="text-right cell-mono">¥900,000.00</td>
+                                <td class="text-right cell-mono">¥520,000.00</td>
+                                <td class="text-right cell-mono">¥380,000.00</td>
+                                <td class="text-right cell-mono amount-positive">¥60,000.00</td>
+                                <td><div class="quota-progress"><div class="quota-progress__bar"><div class="quota-progress__fill" style="width:58%"></div></div><span class="quota-progress__num">57.8%</span></div></td>
+                                <td><span class="tos-tag tos-tag--success">正常</span></td>
+                                <td class="text-right"><div class="actions-cell"><button class="link-primary" onclick="openQuotaModal('pyvio')">调整额度</button><button class="link-primary" onclick="openPushModal('pyvio')">推送记录</button><button class="link-primary" onclick="openUsageModal('pyvio')">使用明细</button></div></td>
+                            </tr>
+                            <tr data-search="深圳市xx科技 amazon 美国站" data-vendor="xt">
+                                <td><span class="cell-main">深圳市XX科技 · Amazon 美国站</span></td>
+                                <td>XT 结汇</td>
+                                <td class="text-right cell-mono">¥1,000,000.00</td>
+                                <td class="text-right cell-mono">¥760,000.00</td>
+                                <td class="text-right cell-mono">¥240,000.00</td>
+                                <td class="text-right cell-mono">¥0.00</td>
+                                <td><div class="quota-progress"><div class="quota-progress__bar"><div class="quota-progress__fill" style="width:76%"></div></div><span class="quota-progress__num">76.0%</span></div></td>
+                                <td><span class="tos-tag tos-tag--success">正常</span></td>
+                                <td class="text-right"><div class="actions-cell"><button class="link-primary" onclick="openQuotaModal('xt')">调整额度</button><button class="link-primary" onclick="openPushModal('xt')">推送记录</button><button class="link-primary" onclick="openUsageModal('xt')">使用明细</button></div></td>
+                            </tr>
+                            <tr data-search="广州市xx贸易 lazada 泰国站" data-vendor="pyvio">
+                                <td><span class="cell-main">广州市XX贸易 · Lazada 泰国站</span></td>
+                                <td>Pyvio 结汇</td>
+                                <td class="text-right cell-mono">¥700,000.00</td>
+                                <td class="text-right cell-mono">¥350,000.00</td>
+                                <td class="text-right cell-mono">¥350,000.00</td>
+                                <td class="text-right cell-mono amount-positive">¥120,000.00</td>
+                                <td><div class="quota-progress"><div class="quota-progress__bar"><div class="quota-progress__fill" style="width:50%"></div></div><span class="quota-progress__num">50.0%</span></div></td>
+                                <td><span class="tos-tag tos-tag--success">正常</span></td>
+                                <td class="text-right"><div class="actions-cell"><button class="link-primary" onclick="openQuotaModal('pyvio')">调整额度</button><button class="link-primary" onclick="openPushModal('pyvio')">推送记录</button><button class="link-primary" onclick="openUsageModal('pyvio')">使用明细</button></div></td>
+                            </tr>
+                            <tr data-search="广州市xx贸易 lazada 泰国站" data-vendor="sandpay">
+                                <td><span class="cell-main">广州市XX贸易 · Lazada 泰国站</span></td>
+                                <td>杉德支付</td>
+                                <td class="text-right cell-mono">¥400,000.00</td>
+                                <td class="text-right cell-mono">¥80,000.00</td>
+                                <td class="text-right cell-mono">¥320,000.00</td>
+                                <td class="text-right cell-mono">¥0.00</td>
+                                <td><div class="quota-progress"><div class="quota-progress__bar"><div class="quota-progress__fill" style="width:20%"></div></div><span class="quota-progress__num">20.0%</span></div></td>
+                                <td><span class="tos-tag tos-tag--success">正常</span></td>
+                                <td class="text-right"><div class="actions-cell"><button class="link-primary" onclick="openQuotaModal('sandpay')">调整额度</button><button class="link-primary" onclick="openPushModal('sandpay')">推送记录</button><button class="link-primary" onclick="openUsageModal('sandpay')">使用明细</button></div></td>
+                            </tr>
+                            <tr data-search="深圳市yy电商 shopify 独立站" data-vendor="xt">
+                                <td><span class="cell-main">深圳市YY电商 · Shopify 独立站</span></td>
+                                <td>XT 结汇</td>
+                                <td class="text-right cell-mono">¥800,000.00</td>
+                                <td class="text-right cell-mono">¥560,000.00</td>
+                                <td class="text-right cell-mono">¥240,000.00</td>
+                                <td class="text-right cell-mono">¥0.00</td>
+                                <td><div class="quota-progress"><div class="quota-progress__bar"><div class="quota-progress__fill" style="width:70%"></div></div><span class="quota-progress__num">70.0%</span></div></td>
+                                <td><span class="tos-tag tos-tag--success">正常</span></td>
+                                <td class="text-right"><div class="actions-cell"><button class="link-primary" onclick="openQuotaModal('xt')">调整额度</button><button class="link-primary" onclick="openPushModal('xt')">推送记录</button><button class="link-primary" onclick="openUsageModal('xt')">使用明细</button></div></td>
+                            </tr>
+                            <tr data-search="深圳市yy电商 shopify 独立站" data-vendor="payoneer">
+                                <td><span class="cell-main">深圳市YY电商 · Shopify 独立站</span></td>
+                                <td>Payoneer 派安盈</td>
+                                <td class="text-right cell-mono">¥250,000.00</td>
+                                <td class="text-right cell-mono">¥32,000.00</td>
+                                <td class="text-right cell-mono">¥218,000.00</td>
+                                <td class="text-right cell-mono">¥0.00</td>
+                                <td><div class="quota-progress"><div class="quota-progress__bar"><div class="quota-progress__fill" style="width:13%"></div></div><span class="quota-progress__num">12.8%</span></div></td>
+                                <td><span class="tos-tag tos-tag--success">正常</span></td>
+                                <td class="text-right"><div class="actions-cell"><button class="link-primary" onclick="openQuotaModal('payoneer')">调整额度</button><button class="link-primary" onclick="openPushModal('payoneer')">推送记录</button><button class="link-primary" onclick="openUsageModal('payoneer')">使用明细</button></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <span>数据保存在本地浏览器，仅用于原型演示</span>
+                    <span id="storeCount2">共 6 条</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 调整额度 -->
+    <div class="modal-overlay" id="quotaModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>调整额度</h3>
+                <button class="modal-close" onclick="closeQuotaModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label>支付厂商 <span class="required">*</span></label>
+                        <select class="form-select" id="quotaVendor" onchange="onQuotaVendorChange()">
+                            <option value="">请选择支付厂商</option>
+                            <option value="pyvio">Pyvio 结汇</option>
+                            <option value="xt">XT 结汇</option>
+                            <option value="sandpay">杉德支付</option>
+                            <option value="payoneer">Payoneer 派安盈</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>推送额度（CNY）<span class="required">*</span></label>
+                        <input type="number" class="form-input" id="quotaAmount" min="0" placeholder="例如：500000" oninput="clearQuotaMatch()" />
+                    </div>
+                    <div class="form-group quota-match-cta">
+                        <button class="btn-primary" onclick="matchQuota()"><i class="fas fa-arrows-split-up-and-left mr-1"></i>匹配订单</button>
+                    </div>
+                </div>
+
+                <div class="alert-primary">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>系统按 <span class="cell-mono">order_id</span> 全平台去重：订单被任一支付厂商推送后即锁定，其他厂商无法再次推送。输入推送额度后，系统按订单时间先进先出（FIFO）整单匹配，推送刚好等于或超过输入额度的整笔订单。</span>
+                </div>
+
+                <div class="order-toolbar">
+                    <button class="btn-secondary btn-sm" onclick="resetQuotaForm()">重置</button>
+                    <span class="order-toolbar__note">按订单时间先进先出（FIFO）整单匹配，推送刚好等于或超过输入额度的整笔订单</span>
+                    <div class="filter-bar__spacer"></div>
+                    <button class="btn-primary" onclick="pushQuota()"><i class="fas fa-paper-plane mr-1"></i>推送订单</button>
+                </div>
+
+                <div class="modal-hint" id="quotaMatchResult" style="display:none;">
+                    <i class="fas fa-circle-check"></i>
+                    <span id="quotaMatchResultText"></span>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="data-table" style="min-width: 920px;">
+                        <thead>
+                            <tr>
+                                <th>订单号 <span class="cell-mono">order_id</span></th>
+                                <th class="text-right">订单金额 (USD)</th>
+                                <th class="text-right">结汇额度 (CNY)</th>
+                                <th>订单时间</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody id="quotaOrdersTbody"></tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <span>系统已归集各支付厂商的结汇订单，默认不展示，匹配后显示结果</span>
+                    <span id="quotaOrdersCount">共 0 笔</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeQuotaModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 推送记录 -->
+    <div class="modal-overlay" id="pushModal">
+        <div class="modal-container" style="width: 1180px;">
+            <div class="modal-header">
+                <h3 id="pushModalTitle">推送记录</h3>
+                <button class="modal-close" onclick="closePushModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="filter-bar">
+                    <input type="text" class="form-input filter-search" id="batchKeyword" placeholder="搜索推送单号" />
+                    <select class="form-select" id="batchVendor">
+                        <option value="">全部支付厂商</option>
+                        <option value="pyvio">Pyvio 结汇</option>
+                        <option value="xt">XT 结汇</option>
+                        <option value="sandpay">杉德支付</option>
+                        <option value="payoneer">Payoneer 派安盈</option>
+                    </select>
+                    <select class="form-select" id="batchStatus">
+                        <option value="">全部状态</option>
+                        <option value="pending">待确认</option>
+                        <option value="approved">已通过</option>
+                        <option value="rejected">已驳回</option>
+                        <option value="revoked">已撤销</option>
+                    </select>
+                    <button class="btn-secondary" onclick="resetBatchFilter()">重置</button>
+                    <button class="btn-primary" onclick="filterBatches()">查询</button>
+                    <div class="filter-bar__spacer"></div>
+                    <span class="sub-text" id="batchCount">共 5 条推送</span>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="data-table" style="min-width: 1060px;">
+                        <thead>
+                            <tr>
+                                <th>推送单号</th>
+                                <th>支付厂商</th>
+                                <th class="text-right">预计额度</th>
+                                <th>订单笔数</th>
+                                <th>状态</th>
+                                <th>提交时间</th>
+                                <th class="text-right">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="batchTbody"></tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <span>推送的结汇订单经支付商确认后额度生效</span>
+                    <span id="batchCount2">共 5 条推送</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" onclick="closePushModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 使用明细 -->
+    <div class="modal-overlay" id="usageModal">
+        <div class="modal-container" style="width: 1180px;">
+            <div class="modal-header">
+                <h3 id="usageModalTitle">额度使用明细</h3>
+                <button class="modal-close" onclick="closeUsageModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="filter-bar">
+                    <input type="text" class="form-input filter-search" id="usageKeyword" placeholder="搜索提现单号 / 来源订单号" />
+                    <select class="form-select" id="usageVendor">
+                        <option value="">全部支付厂商</option>
+                        <option value="pyvio">Pyvio 结汇</option>
+                        <option value="xt">XT 结汇</option>
+                        <option value="sandpay">杉德支付</option>
+                        <option value="payoneer">Payoneer 派安盈</option>
+                    </select>
+                    <button class="btn-secondary" onclick="resetUsageFilter()">重置</button>
+                    <button class="btn-primary" onclick="filterUsage()">查询</button>
+                    <div class="filter-bar__spacer"></div>
+                    <button class="btn-secondary" onclick="showToast('原型演示：明细 CSV 导出功能待接入','info')"><i class="fas fa-download mr-1"></i>导出明细</button>
+                </div>
+
+                <div class="alert-warning">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <span>系统按订单类型分别核定与扣减额度：不同订单类型不可混合用于同一笔提现（如 Ads ¥10 + Software ¥10 时，单笔最多只能提 ¥10），同类型下的一笔提现可由多笔订单组成。</span>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="data-table" style="min-width: 1120px;">
+                        <thead>
+                            <tr>
+                                <th>时间</th>
+                                <th>关联提现单号</th>
+                                <th>来源订单号</th>
+                                <th>支付厂商</th>
+                                <th>变动类型</th>
+                                <th class="text-right">额度金额 (CNY)</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usageTbody"></tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <span>数据保存在本地浏览器，仅用于原型演示</span>
+                    <span id="usageCount">共 9 条</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" onclick="closeUsageModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 推送详情 -->
+    <div class="drawer-overlay" id="drawerOverlay">
+        <div class="drawer-container">
+            <div class="drawer-header">
+                <h3>推送详情</h3>
+                <button class="modal-close" onclick="closePushDetail()">&times;</button>
+            </div>
+            <div class="drawer-body">
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-item__label">推送单号</div>
+                        <div class="detail-item__value cell-mono" id="dBatchNo">—</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-item__label">推送状态</div>
+                        <div class="detail-item__value" id="dStatus">—</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-item__label">支付厂商</div>
+                        <div class="detail-item__value" id="dVendor">—</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-item__label">推送人</div>
+                        <div class="detail-item__value" id="dPusher">—</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-item__label">预计结汇额度</div>
+                        <div class="detail-item__value amount-positive" id="dSettleTotal">—</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-item__label">提交时间</div>
+                        <div class="detail-item__value" id="dSubmitTime">—</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-item__label">确认时间</div>
+                        <div class="detail-item__value" id="dAuditTime">—</div>
+                    </div>
+                </div>
+
+                <div class="alert-error" id="dRejectAlert">
+                    <i class="fas fa-circle-exclamation"></i>
+                    <span id="dRejectReason"></span>
+                </div>
+
+                <h3 class="drawer-section-title">订单解析明细</h3>
+                <div class="table-wrap">
+                    <table class="data-table" style="min-width: 800px;">
+                        <thead>
+                            <tr>
+                                <th>订单号 order_id</th>
+                                <th>结算单号</th>
+                                <th>订单结算金额</th>
+                                <th>解析结果</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dOrdersTbody"></tbody>
+                    </table>
+                </div>
+
+                <h3 class="drawer-section-title mt-5">确认进度</h3>
+                <div class="timeline" id="dTimeline"></div>
+            </div>
+            <div class="drawer-footer">
+                <button class="btn-primary" onclick="closePushDetail()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        var VENDOR_NAMES = { pyvio: "Pyvio 结汇", xt: "XT 结汇", sandpay: "杉德支付", payoneer: "Payoneer 派安盈" };
+
+        var statAvailable = 1748000;
+        var statPending = 180000;
+        var quotaMatch = [];
+
+        var VENDOR_QUOTA = {
+            pyvio: { available: 730000 },
+            xt: { available: 480000 },
+            sandpay: { available: 320000 },
+            payoneer: { available: 218000 },
+        };
+
+        var quotaOrders = [
+            { id: "PO-20260715-001", vendorKey: "pyvio", usd: 8800, cny: 63000, time: "2026-07-15 09:12", status: "ready" },
+            { id: "PO-20260718-002", vendorKey: "pyvio", usd: 12600, cny: 91000, time: "2026-07-18 14:30", status: "ready" },
+            { id: "PO-20260721-003", vendorKey: "pyvio", usd: 15200, cny: 109000, time: "2026-07-21 10:05", status: "ready" },
+            { id: "PO-20260725-004", vendorKey: "pyvio", usd: 9800, cny: 70000, time: "2026-07-25 16:40", status: "ready" },
+            { id: "PO-20260728-005", vendorKey: "pyvio", usd: 17500, cny: 126000, time: "2026-07-28 11:22", status: "reviewing" },
+            { id: "PO-20260802-006", vendorKey: "pyvio", usd: 11000, cny: 79000, time: "2026-08-02 09:18", status: "reviewing" },
+            { id: "PO-20260805-007", vendorKey: "pyvio", usd: 14500, cny: 104000, time: "2026-08-05 15:55", status: "pushed" },
+            { id: "PO-20260808-008", vendorKey: "pyvio", usd: 9000, cny: 65000, time: "2026-08-08 10:33", status: "pushed" },
+            { id: "PO-xt-20260710-001", vendorKey: "xt", usd: 15500, cny: 112000, time: "2026-07-10 09:40", status: "ready" },
+            { id: "PO-xt-20260716-002", vendorKey: "xt", usd: 13200, cny: 95000, time: "2026-07-16 13:26", status: "ready" },
+            { id: "PO-xt-20260722-003", vendorKey: "xt", usd: 18600, cny: 134000, time: "2026-07-22 11:08", status: "ready" },
+            { id: "PO-xt-20260729-004", vendorKey: "xt", usd: 10800, cny: 78000, time: "2026-07-29 15:47", status: "reviewing" },
+            { id: "PO-xt-20260803-005", vendorKey: "xt", usd: 14100, cny: 101000, time: "2026-08-03 10:12", status: "pushed" },
+            { id: "PO-xt-20260809-006", vendorKey: "xt", usd: 9300, cny: 67000, time: "2026-08-09 09:03", status: "pushed" },
+            { id: "PO-sd-20260712-001", vendorKey: "sandpay", usd: 10500, cny: 75000, time: "2026-07-12 10:30", status: "ready" },
+            { id: "PO-sd-20260719-002", vendorKey: "sandpay", usd: 12800, cny: 92000, time: "2026-07-19 14:22", status: "ready" },
+            { id: "PO-sd-20260726-003", vendorKey: "sandpay", usd: 8600, cny: 62000, time: "2026-07-26 16:05", status: "ready" },
+            { id: "PO-sd-20260801-004", vendorKey: "sandpay", usd: 9900, cny: 71000, time: "2026-08-01 09:48", status: "reviewing" },
+            { id: "PO-sd-20260806-005", vendorKey: "sandpay", usd: 11300, cny: 81000, time: "2026-08-06 11:36", status: "pushed" },
+            { id: "PO-pa-20260714-001", vendorKey: "payoneer", usd: 7600, cny: 55000, time: "2026-07-14 10:12", status: "ready" },
+            { id: "PO-pa-20260723-002", vendorKey: "payoneer", usd: 8900, cny: 64000, time: "2026-07-23 15:28", status: "ready" },
+            { id: "PO-pa-20260730-003", vendorKey: "payoneer", usd: 9800, cny: 70000, time: "2026-07-30 09:55", status: "ready" },
+            { id: "PO-pa-20260804-004", vendorKey: "payoneer", usd: 7200, cny: 52000, time: "2026-08-04 14:19", status: "reviewing" },
+            { id: "PO-pa-20260807-005", vendorKey: "payoneer", usd: 8500, cny: 61000, time: "2026-08-07 10:41", status: "pushed" },
+        ];
+
+        var usageRecords = [
+            { id: 1, time: "2026-08-14 10:32", withdrawNo: "TX20260814001", orderNos: ["SO-admob-20260812-0087", "SO-admob-20260811-0063"], vendorKey: "pyvio", changeType: "deduct", amount: 196000, status: "done" },
+            { id: 2, time: "2026-08-14 09:15", withdrawNo: "TX20260814002", orderNos: ["SO18060100179"], vendorKey: "xt", changeType: "deduct", amount: 224000, status: "done" },
+            { id: 3, time: "2026-08-13 16:40", withdrawNo: "TX20260813015", orderNos: ["SO1806010093", "SO1806010094"], vendorKey: "xt", changeType: "deduct", amount: 576000, status: "done" },
+            { id: 4, time: "2026-08-13 11:20", withdrawNo: "TX20260813006", orderNos: ["GPA.3352-0994-2926-46007"], vendorKey: "payoneer", changeType: "refund", amount: 32000, status: "done" },
+            { id: 5, time: "2026-08-12 15:05", withdrawNo: "TX20260812021", orderNos: ["SO-b2b-20260807-0028"], vendorKey: "xt", changeType: "deduct", amount: 120000, status: "done" },
+            { id: 6, time: "2026-08-12 10:18", withdrawNo: "TX20260812009", orderNos: ["SO-admob-20260806-0019"], vendorKey: "pyvio", changeType: "deduct", amount: 40000, status: "done" },
+            { id: 7, time: "2026-08-11 14:46", withdrawNo: "TX20260811033", orderNos: ["SO1806010046"], vendorKey: "payoneer", changeType: "deduct", amount: 80000, status: "done" },
+            { id: 8, time: "2026-08-11 09:02", withdrawNo: "TX20260811005", orderNos: ["GPA.4521-8832-1177-33991"], vendorKey: "pyvio", changeType: "deduct", amount: 189000, status: "processing" },
+            { id: 9, time: "2026-08-10 16:30", withdrawNo: "TX20260810018", orderNos: ["SO1806010031"], vendorKey: "xt", changeType: "adjust", amount: 5000, status: "done" },
+        ];
+
+        var batchData = {
+            P20260814001: {
+                id: "P20260814001", vendorKey: "pyvio", platform: "App Store", pusher: "店铺管理员 王五",
+                settleTotal: 180000, status: "pending", submitTime: "2026-08-14 11:05", auditTime: null, rejectReason: "",
+                orders: [
+                    { orderId: "GPA.3352-0994-2926-46018", settlementNo: "JS-20260814-001", settleAmount: 60000 },
+                    { orderId: "GPA.3352-0994-2926-46019", settlementNo: "JS-20260814-002", settleAmount: 70000 },
+                    { orderId: "GPA.3352-0994-2926-46020", settlementNo: "JS-20260814-003", settleAmount: 50000 },
+                ],
+            },
+            P20260813002: {
+                id: "P20260813002", vendorKey: "xt", platform: "Lazada", pusher: "店铺管理员 李四",
+                settleTotal: 500000, status: "approved", submitTime: "2026-08-13 15:20", auditTime: "2026-08-14 09:30", rejectReason: "",
+                orders: [
+                    { orderId: "SO1806010096", settlementNo: "JS-20260813-001", settleAmount: 120000 },
+                    { orderId: "SO1806010097", settlementNo: "JS-20260813-002", settleAmount: 160000 },
+                    { orderId: "SO1806010098", settlementNo: "JS-20260813-003", settleAmount: 100000 },
+                    { orderId: "SO1806010099", settlementNo: "JS-20260813-004", settleAmount: 80000 },
+                    { orderId: "SO1806010100", settlementNo: "JS-20260813-005", settleAmount: 40000 },
+                ],
+            },
+            P20260812003: {
+                id: "P20260812003", vendorKey: "payoneer", platform: "Amazon", pusher: "店铺管理员 赵六",
+                settleTotal: 0, status: "rejected", submitTime: "2026-08-12 09:40", auditTime: "2026-08-13 10:15",
+                rejectReason: "2 笔订单解析失败：order_time 日期格式错误、order_amount 金额格式错误。",
+                orders: [
+                    { orderId: "SO1806010101", settlementNo: "JS-20260812-001", settleAmount: 0, field: "order_time", description: "The order time must be in valid date format" },
+                    { orderId: "SO1806010102", settlementNo: "JS-20260812-002", settleAmount: 0, field: "order_amount", description: "Amount format error" },
+                    { orderId: "SO1806010103", settlementNo: "JS-20260812-003", settleAmount: 0, field: "order_time", description: "The order time must be in valid date format" },
+                    { orderId: "SO1806010104", settlementNo: "JS-20260812-004", settleAmount: 0 },
+                ],
+            },
+            P20260811004: {
+                id: "P20260811004", vendorKey: "pyvio", platform: "Google Admob", pusher: "店铺管理员 王五",
+                settleTotal: 150000, status: "approved", submitTime: "2026-08-11 14:05", auditTime: "2026-08-12 11:00", rejectReason: "",
+                orders: [
+                    { orderId: "admob20190593949393", settlementNo: "JS-20260811-001", settleAmount: 80000 },
+                    { orderId: "admob20190593949404", settlementNo: "JS-20260811-002", settleAmount: 70000 },
+                ],
+            },
+            P20260810005: {
+                id: "P20260810005", vendorKey: "xt", platform: "Lazada", pusher: "运营专员 陈七",
+                settleTotal: 100000, status: "revoked", submitTime: "2026-08-10 10:30", auditTime: null, rejectReason: "",
+                orders: [
+                    { orderId: "SO-b2b-20260809-0021", settlementNo: "JS-20260810-001", settleAmount: 60000 },
+                    { orderId: "SO-b2b-20260809-0022", settlementNo: "JS-20260810-002", settleAmount: 40000 },
+                ],
+            },
+        };
+
+        function $(id) { return document.getElementById(id); }
+        function fmtCny(n) {
+            return "¥" + Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+        function fmtUsd(n) {
+            return "$" + Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+        function escapeHtml(s) {
+            return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+
+        var toastTimer = null;
+        function showToast(text, type) {
+            var t = $("toast");
+            t.className = "toast toast--show" + (type ? " toast--" + type : "");
+            t.innerHTML = text;
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(function () { t.className = "toast"; }, 2600);
+        }
+
+        /* ===== 店铺筛选 ===== */
+        function filterStores() {
+            var kw = $("storeKeyword").value.trim().toLowerCase();
+            var vendor = $("storeVendor").value;
+            var rows = $("storeTbody").querySelectorAll("tr");
+            var count = 0;
+            rows.forEach(function (row) {
+                var matchKw = !kw || row.getAttribute("data-search").indexOf(kw) >= 0;
+                var matchVendor = !vendor || row.getAttribute("data-vendor") === vendor;
+                var show = matchKw && matchVendor;
+                row.style.display = show ? "" : "none";
+                if (show) count++;
+            });
+            $("storeCount").textContent = "共 " + count + " 条";
+            $("storeCount2").textContent = "共 " + count + " 条";
+        }
+        function resetStoreFilter() {
+            $("storeKeyword").value = "";
+            $("storeVendor").value = "";
+            filterStores();
+        }
+
+        /* ===== 调整额度弹窗 ===== */
+        function openQuotaModal(vendorKey) {
+            resetQuotaForm();
+            if (vendorKey) $("quotaVendor").value = vendorKey;
+            renderQuotaOrders();
+            $("quotaModal").classList.add("modal-overlay--open");
+        }
+        function closeQuotaModal() {
+            $("quotaModal").classList.remove("modal-overlay--open");
+        }
+        function resetQuotaForm() {
+            $("quotaVendor").value = "";
+            $("quotaAmount").value = "";
+            quotaMatch = [];
+            $("quotaMatchResult").style.display = "none";
+            renderQuotaOrders();
+        }
+        function onQuotaVendorChange() {
+            quotaMatch = [];
+            $("quotaMatchResult").style.display = "none";
+            renderQuotaOrders();
+        }
+
+        function vendorOrders(vendorKey) {
+            return quotaOrders.filter(function (o) { return o.vendorKey === vendorKey; });
+        }
+        function quotaStatusTag(status) {
+            if (status === "ready") return { label: "可推送", cls: "tos-tag--primary" };
+            if (status === "reviewing") return { label: "审核中", cls: "tos-tag--warning" };
+            return { label: "已推送", cls: "tos-tag--success" };
+        }
+
+        function renderQuotaOrders() {
+            var vendor = $("quotaVendor").value;
+            var tbody = $("quotaOrdersTbody");
+            if (!vendor) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-row">请选择支付厂商后查看匹配订单</td></tr>';
+                $("quotaOrdersCount").textContent = "共 0 笔";
+                return;
+            }
+            var list = quotaMatch.map(function (id) {
+                return quotaOrders.find(function (o) { return o.id === id; });
+            }).filter(function (o) { return o && o.status === "ready"; });
+            list.sort(function (a, b) { return a.time.localeCompare(b.time); });
+            tbody.innerHTML = "";
+            if (!list.length) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-row">请先输入推送额度并点击「匹配订单」查看匹配结果</td></tr>';
+                $("quotaOrdersCount").textContent = "共 0 笔";
+                return;
+            }
+            list.forEach(function (o) {
+                var tag = quotaStatusTag(o.status);
+                var tr = document.createElement("tr");
+                tr.className = "row-matched";
+                tr.innerHTML =
+                    '<td><span class="cell-mono">' + escapeHtml(o.id) + '</span></td>' +
+                    '<td class="text-right cell-mono">' + fmtUsd(o.usd) + '</td>' +
+                    '<td class="text-right cell-mono">' + fmtCny(o.cny) + '</td>' +
+                    '<td>' + o.time + '</td>' +
+                    '<td><span class="tos-tag ' + tag.cls + '">' + tag.label + '</span> <span class="tos-tag tos-tag--primary">已匹配</span></td>';
+                tbody.appendChild(tr);
+            });
+            $("quotaOrdersCount").textContent = "共 " + list.length + " 笔";
+        }
+
+        function clearQuotaMatch() {
+            quotaMatch = [];
+            $("quotaMatchResult").style.display = "none";
+            renderQuotaOrders();
+        }
+        function matchQuota() {
+            var vendor = $("quotaVendor").value;
+            var amount = Number($("quotaAmount").value);
+            if (!vendor) return showToast("请选择支付厂商", "error");
+            if (!amount || amount <= 0) return showToast("请输入推送额度", "error");
+
+            var ready = vendorOrders(vendor)
+                .filter(function (o) { return o.status === "ready"; })
+                .sort(function (a, b) { return a.time.localeCompare(b.time); });
+            if (!ready.length) {
+                quotaMatch = [];
+                $("quotaMatchResult").style.display = "none";
+                return showToast("该支付厂商暂无匹配订单", "error");
+            }
+            var ids = [];
+            var sum = 0;
+            for (var i = 0; i < ready.length; i++) {
+                ids.push(ready[i].id);
+                sum += ready[i].cny;
+                if (sum >= amount) break;
+            }
+            quotaMatch = ids;
+            var text = "已按 FIFO 整单匹配 " + ids.length + " 笔订单，合计 " + fmtCny(sum);
+            text += sum < amount ? "，可推送订单不足，实际金额低于输入额度" : "，刚好等于或超过输入额度";
+            text += "；确认后点击「推送订单」";
+            $("quotaMatchResultText").textContent = text;
+            $("quotaMatchResult").style.display = "flex";
+            renderQuotaOrders();
+            showToast("已按 FIFO 匹配 " + ids.length + " 笔订单（" + fmtCny(sum) + "）", "success");
+        }
+
+        function refreshStats() {
+            $("statAvailable").textContent = fmtCny(statAvailable);
+            $("statPending").textContent = fmtCny(statPending);
+        }
+        function pushQuota() {
+            var vendor = $("quotaVendor").value;
+            if (!vendor) return showToast("请选择支付厂商", "error");
+            if (!quotaMatch.length) return showToast("请先点击「匹配订单」，确认匹配结果后再推送", "error");
+
+            var matched = quotaMatch.map(function (id) {
+                return quotaOrders.find(function (o) { return o.id === id; });
+            }).filter(function (o) { return o && o.status === "ready"; });
+            if (!matched.length) return showToast("匹配结果已失效，请重新匹配", "error");
+            var sum = matched.reduce(function (s, o) { return s + o.cny; }, 0);
+
+            matched.forEach(function (o) { o.status = "reviewing"; });
+            statPending += sum;
+            refreshStats();
+            quotaMatch = [];
+            $("quotaMatchResult").style.display = "none";
+            renderQuotaOrders();
+            $("quotaAmount").value = "";
+            showToast("已推送 " + matched.length + " 笔订单（" + fmtCny(sum) + "），待支付商确认", "success");
+
+            var recId = "P20260814" + String(Object.keys(batchData).length + 1).padStart(3, "0");
+            var rec = {
+                id: recId, vendorKey: vendor, platform: "—", pusher: "平台运营（当前账号）",
+                settleTotal: sum, status: "pending", submitTime: "2026-08-14 11:05", auditTime: null,
+                rejectReason: "", fileId: "", fileName: "FIFO 自动匹配",
+                orders: matched.map(function (o, i) {
+                    return { orderId: o.id, settlementNo: "JS-20260814-" + String(i + 1).padStart(3, "0"), settleAmount: o.cny };
+                }),
+            };
+            batchData[recId] = rec;
+            prependBatchRow(rec);
+
+            var pushedIds = matched.map(function (o) { return o.id; });
+            setTimeout(function () {
+                var acc = 0;
+                pushedIds.forEach(function (id) {
+                    var o = quotaOrders.find(function (x) { return x.id === id; });
+                    if (o && o.status === "reviewing") {
+                        o.status = "pushed";
+                        acc += o.cny;
+                    }
+                });
+                if (acc > 0) {
+                    VENDOR_QUOTA[vendor].available += acc;
+                    statAvailable += acc;
+                    statPending -= acc;
+                    refreshStats();
+                    renderQuotaOrders();
+                    if (batchData[recId] && batchData[recId].status === "pending") {
+                        batchData[recId].status = "approved";
+                        batchData[recId].auditTime = "2026-08-14 11:20";
+                        var row = $("batch-" + recId);
+                        if (row) {
+                            row.setAttribute("data-status", "approved");
+                            row.innerHTML = batchRowHtml(batchData[recId]);
+                        }
+                        filterBatches();
+                    }
+                    showToast(pushedIds.length + " 笔订单已推送生效（+" + fmtCny(acc) + "）", "success");
+                }
+            }, 3000);
+        }
+
+        /* ===== 推送记录弹窗 ===== */
+        function openPushModal(vendorKey) {
+            $("batchVendor").value = vendorKey || "";
+            $("batchKeyword").value = "";
+            $("batchStatus").value = "";
+            var title = "推送记录";
+            if (vendorKey) title = "推送记录 · " + VENDOR_NAMES[vendorKey];
+            $("pushModalTitle").textContent = title;
+            filterBatches();
+            $("pushModal").classList.add("modal-overlay--open");
+        }
+        function closePushModal() {
+            $("pushModal").classList.remove("modal-overlay--open");
+        }
+        function filterBatches() {
+            var kw = $("batchKeyword").value.trim().toLowerCase();
+            var vendor = $("batchVendor").value;
+            var status = $("batchStatus").value;
+            var rows = $("batchTbody").querySelectorAll("tr");
+            var count = 0;
+            rows.forEach(function (row) {
+                var matchKw = !kw || row.getAttribute("data-search").indexOf(kw) >= 0;
+                var matchVendor = !vendor || row.getAttribute("data-vendor") === vendor;
+                var matchStatus = !status || row.getAttribute("data-status") === status;
+                var show = matchKw && matchVendor && matchStatus;
+                row.style.display = show ? "" : "none";
+                if (show) count++;
+            });
+            $("batchCount").textContent = "共 " + count + " 条推送";
+            $("batchCount2").textContent = "共 " + count + " 条推送";
+        }
+        function resetBatchFilter() {
+            $("batchKeyword").value = "";
+            $("batchVendor").value = "";
+            $("batchStatus").value = "";
+            filterBatches();
+        }
+        function batchRowHtml(b) {
+            var statusMap = {
+                pending: { label: "待确认", cls: "tos-tag--warning" },
+                approved: { label: "已通过", cls: "tos-tag--success" },
+                rejected: { label: "已驳回", cls: "tos-tag--error" },
+                revoked: { label: "已撤销", cls: "tos-tag--default" },
+            };
+            var s = statusMap[b.status];
+            var actions = '<button class="link-primary" onclick="openPushDetail(\'' + b.id + '\')">详情</button>';
+            if (b.status === "rejected") actions += '<button class="link-primary" onclick="openQuotaModal(\'' + b.vendorKey + '\')">重新推送</button>';
+            if (b.status === "pending") actions += '<button class="link-danger" onclick="revokeBatch(\'' + b.id + '\')">撤销</button>';
+            return '<tr data-search="' + b.id.toLowerCase() + '" data-vendor="' + b.vendorKey + '" data-status="' + b.status + '" id="batch-' + b.id + '">' +
+                '<td><span class="cell-mono cell-main">' + b.id + '</span></td>' +
+                '<td>' + VENDOR_NAMES[b.vendorKey] + '</td>' +
+                '<td class="text-right cell-mono amount-positive">+' + fmtCny(b.settleTotal) + '</td>' +
+                '<td>' + b.orders.length + ' 笔</td>' +
+                '<td><span class="tos-tag ' + s.cls + '">' + s.label + '</span></td>' +
+                '<td>' + b.submitTime + '</td>' +
+                '<td class="text-right"><div class="actions-cell">' + actions + '</div></td></tr>';
+        }
+        function prependBatchRow(b) {
+            var tbody = $("batchTbody");
+            tbody.insertAdjacentHTML("afterbegin", batchRowHtml(b));
+            filterBatches();
+        }
+        function revokeBatch(id) {
+            var b = batchData[id];
+            if (!b || b.status !== "pending") return;
+            if (!confirm("确认撤销推送 " + id + " ？")) return;
+            b.status = "revoked";
+            b.auditTime = "2026-08-14 11:20";
+            var row = $("batch-" + id);
+            if (row) {
+                row.setAttribute("data-status", "revoked");
+                row.innerHTML = batchRowHtml(b);
+            }
+            showToast("推送 " + id + " 已撤销", "info");
+            filterBatches();
+        }
+
+        /* ===== 使用明细弹窗 ===== */
+        function openUsageModal(vendorKey) {
+            $("usageVendor").value = vendorKey || "";
+            $("usageKeyword").value = "";
+            var title = "额度使用明细";
+            if (vendorKey) title = "额度使用明细 · " + VENDOR_NAMES[vendorKey];
+            $("usageModalTitle").textContent = title;
+            filterUsage();
+            $("usageModal").classList.add("modal-overlay--open");
+        }
+        function closeUsageModal() {
+            $("usageModal").classList.remove("modal-overlay--open");
+        }
+        function renderUsageRows(rows) {
+            var tbody = $("usageTbody");
+            tbody.innerHTML = "";
+            rows.forEach(function (r) {
+                var tr = document.createElement("tr");
+                tr.innerHTML =
+                    '<td>' + r.time + '</td>' +
+                    '<td><span class="cell-mono">' + r.withdrawNo + '</span></td>' +
+                    '<td><div class="cell-mono">' + r.orderNos[0] + '</div>' + (r.orderNos.length > 1 ? '<div class="sub-text">共 ' + r.orderNos.length + ' 笔订单组成</div>' : '') + '</td>' +
+                    '<td>' + VENDOR_NAMES[r.vendorKey] + '</td>' +
+                    '<td><span class="tos-tag ' + (r.changeType === "refund" ? "tos-tag--success" : r.changeType === "adjust" ? "tos-tag--primary" : "tos-tag--default") + '">' + (r.changeType === "refund" ? "回补" : r.changeType === "adjust" ? "调整" : "扣减") + '</span></td>' +
+                    '<td class="text-right cell-mono ' + (r.changeType === "deduct" ? "amount-negative" : "amount-positive") + '">' + (r.changeType === "deduct" ? "-" : "+") + fmtCny(Math.abs(r.amount)) + '</td>' +
+                    '<td><span class="tos-tag ' + (r.status === "done" ? "tos-tag--success" : "tos-tag--warning") + '">' + (r.status === "done" ? "已生效" : "处理中") + '</span></td>';
+                tbody.appendChild(tr);
+            });
+        }
+        function filterUsage() {
+            var kw = $("usageKeyword").value.trim().toLowerCase();
+            var vendor = $("usageVendor").value;
+            var rows = usageRecords.filter(function (r) {
+                var matchKw = !kw || r.withdrawNo.toLowerCase().indexOf(kw) >= 0 || r.orderNos.some(function (o) { return o.toLowerCase().indexOf(kw) >= 0; });
+                var matchVendor = !vendor || r.vendorKey === vendor;
+                return matchKw && matchVendor;
+            });
+            renderUsageRows(rows);
+            $("usageCount").textContent = "共 " + rows.length + " 条";
+        }
+        function resetUsageFilter() {
+            $("usageKeyword").value = "";
+            $("usageVendor").value = "";
+            filterUsage();
+        }
+
+        /* ===== 推送详情 ===== */
+        function openPushDetail(id) {
+            var b = batchData[id];
+            if (!b) return;
+            $("dBatchNo").textContent = b.id;
+            var statusMap = {
+                pending: '<span class="tos-tag tos-tag--warning">待确认</span>',
+                approved: '<span class="tos-tag tos-tag--success">已通过</span>',
+                rejected: '<span class="tos-tag tos-tag--error">已驳回</span>',
+                revoked: '<span class="tos-tag tos-tag--default">已撤销</span>',
+            };
+            $("dStatus").innerHTML = statusMap[b.status];
+            $("dVendor").textContent = VENDOR_NAMES[b.vendorKey];
+            $("dPusher").textContent = b.pusher || "—";
+            $("dSettleTotal").textContent = fmtCny(b.settleTotal);
+            $("dSubmitTime").textContent = b.submitTime;
+            $("dAuditTime").textContent = b.auditTime || "—";
+            $("dRejectAlert").style.display = b.status === "rejected" ? "flex" : "none";
+            $("dRejectReason").textContent = b.rejectReason || "推送失败，请核对后重新推送。";
+            renderDetailOrders(b);
+            renderTimeline(b);
+            $("drawerOverlay").classList.add("drawer-overlay--open");
+        }
+        function closePushDetail() {
+            $("drawerOverlay").classList.remove("drawer-overlay--open");
+        }
+        function renderDetailOrders(b) {
+            var tbody = $("dOrdersTbody");
+            tbody.innerHTML = "";
+            b.orders.forEach(function (o) {
+                var tr = document.createElement("tr");
+                var failureCell = o.field
+                    ? '<div class="cell-mono">' + escapeHtml(o.field) + '</div><div class="cell-error">' + escapeHtml(o.description) + '</div>'
+                    : '<span class="tos-tag tos-tag--success"><i class="fas fa-circle-check mr-1"></i>解析通过</span><div class="sub-text">唯一性校验通过</div>';
+                tr.innerHTML =
+                    '<td><span class="cell-mono">' + escapeHtml(o.orderId) + '</span></td>' +
+                    '<td><span class="cell-mono">' + escapeHtml(o.settlementNo || "—") + '</span></td>' +
+                    '<td><span class="cell-mono">' + fmtCny(o.settleAmount) + '</span></td>' +
+                    '<td>' + failureCell + '</td>';
+                tbody.appendChild(tr);
+            });
+        }
+        function renderTimeline(b) {
+            var box = $("dTimeline");
+            var nodes = [];
+            if (b.status === "pending") {
+                nodes = [
+                    { text: "推送提交，系统完成订单解析与唯一性校验", time: b.submitTime, done: true },
+                    { text: "支付商确认额度", time: "待支付商确认", done: false },
+                    { text: "额度生效，可用于提现", time: "—", done: false },
+                ];
+            } else if (b.status === "approved") {
+                nodes = [
+                    { text: "推送提交，系统完成订单解析与唯一性校验", time: b.submitTime, done: true },
+                    { text: "支付商确认额度", time: b.auditTime, done: true },
+                    { text: "额度已生效，可立即用于提现", time: b.auditTime, done: true },
+                ];
+            } else if (b.status === "rejected") {
+                nodes = [
+                    { text: "推送提交，系统完成订单解析与唯一性校验", time: b.submitTime, done: true },
+                    { text: "支付商驳回（订单解析失败）", time: b.auditTime, done: true },
+                    { text: "额度未生效，请核对后重新推送", time: "—", done: false },
+                ];
+            } else {
+                nodes = [
+                    { text: "推送提交，系统完成订单解析与唯一性校验", time: b.submitTime, done: true },
+                    { text: "推送已撤销，额度未生效", time: "—", done: true },
+                ];
+            }
+            box.innerHTML = nodes.map(function (n) {
+                return '<div class="timeline-item' + (n.done ? " timeline-item--done" : "") + '">' +
+                    '<div class="timeline-item__text">' + n.text + '</div>' +
+                    '<div class="timeline-item__time">' + n.time + '</div></div>';
+            }).join("");
+        }
+
+        renderUsageRows(usageRecords);
+        Object.keys(batchData).slice().reverse().forEach(function (id) { prependBatchRow(batchData[id]); });
+    </script>
+</body>
+</html>
