@@ -1509,10 +1509,10 @@
                         <thead>
                             <tr>
                                 <th>订单号 <span class="api-key">order_id</span></th>
-                                <th class="text-right">订单金额 (USD)</th>
-                                <th class="text-right">结汇额度 (CNY)</th>
-                                <th>订单时间</th>
-                                <th>状态</th>
+                                <th class="text-right">订单结算金额</th>
+                                <th>订单创建时间</th>
+                                <th>会员id <span class="api-key">member_id</span></th>
+                                <th>店铺id <span class="api-key">shop_id</span></th>
                             </tr>
                         </thead>
                         <tbody id="quotaOrdersTbody"></tbody>
@@ -1682,30 +1682,30 @@
         };
 
         var quotaOrders = [
-            { id: "PO-20260715-001", vendorKey: "pyvio", usd: 8800, cny: 63000, time: "2026-07-15 09:12", status: "ready" },
-            { id: "PO-20260718-002", vendorKey: "pyvio", usd: 12600, cny: 91000, time: "2026-07-18 14:30", status: "ready" },
-            { id: "PO-20260721-003", vendorKey: "pyvio", usd: 15200, cny: 109000, time: "2026-07-21 10:05", status: "ready" },
-            { id: "PO-20260725-004", vendorKey: "pyvio", usd: 9800, cny: 70000, time: "2026-07-25 16:40", status: "ready" },
-            { id: "PO-20260728-005", vendorKey: "pyvio", usd: 17500, cny: 126000, time: "2026-07-28 11:22", status: "reviewing" },
-            { id: "PO-20260802-006", vendorKey: "pyvio", usd: 11000, cny: 79000, time: "2026-08-02 09:18", status: "reviewing" },
-            { id: "PO-20260805-007", vendorKey: "pyvio", usd: 14500, cny: 104000, time: "2026-08-05 15:55", status: "pushed" },
-            { id: "PO-20260808-008", vendorKey: "pyvio", usd: 9000, cny: 65000, time: "2026-08-08 10:33", status: "pushed" },
-            { id: "PO-xt-20260710-001", vendorKey: "xt", usd: 15500, cny: 112000, time: "2026-07-10 09:40", status: "ready" },
-            { id: "PO-xt-20260716-002", vendorKey: "xt", usd: 13200, cny: 95000, time: "2026-07-16 13:26", status: "ready" },
-            { id: "PO-xt-20260722-003", vendorKey: "xt", usd: 18600, cny: 134000, time: "2026-07-22 11:08", status: "ready" },
-            { id: "PO-xt-20260729-004", vendorKey: "xt", usd: 10800, cny: 78000, time: "2026-07-29 15:47", status: "reviewing" },
-            { id: "PO-xt-20260803-005", vendorKey: "xt", usd: 14100, cny: 101000, time: "2026-08-03 10:12", status: "pushed" },
-            { id: "PO-xt-20260809-006", vendorKey: "xt", usd: 9300, cny: 67000, time: "2026-08-09 09:03", status: "pushed" },
-            { id: "PO-sd-20260712-001", vendorKey: "sandpay", usd: 10500, cny: 75000, time: "2026-07-12 10:30", status: "ready" },
-            { id: "PO-sd-20260719-002", vendorKey: "sandpay", usd: 12800, cny: 92000, time: "2026-07-19 14:22", status: "ready" },
-            { id: "PO-sd-20260726-003", vendorKey: "sandpay", usd: 8600, cny: 62000, time: "2026-07-26 16:05", status: "ready" },
-            { id: "PO-sd-20260801-004", vendorKey: "sandpay", usd: 9900, cny: 71000, time: "2026-08-01 09:48", status: "reviewing" },
-            { id: "PO-sd-20260806-005", vendorKey: "sandpay", usd: 11300, cny: 81000, time: "2026-08-06 11:36", status: "pushed" },
-            { id: "PO-pa-20260714-001", vendorKey: "payoneer", usd: 7600, cny: 55000, time: "2026-07-14 10:12", status: "ready" },
-            { id: "PO-pa-20260723-002", vendorKey: "payoneer", usd: 8900, cny: 64000, time: "2026-07-23 15:28", status: "ready" },
-            { id: "PO-pa-20260730-003", vendorKey: "payoneer", usd: 9800, cny: 70000, time: "2026-07-30 09:55", status: "ready" },
-            { id: "PO-pa-20260804-004", vendorKey: "payoneer", usd: 7200, cny: 52000, time: "2026-08-04 14:19", status: "reviewing" },
-            { id: "PO-pa-20260807-005", vendorKey: "payoneer", usd: 8500, cny: 61000, time: "2026-08-07 10:41", status: "pushed" },
+            { id: "PO-20260715-001", vendorKey: "pyvio", usd: 8800, cny: 63000, time: "2026-07-15 09:12", status: "ready", memberId: "1083684999745503232", shopId: "10001" },
+            { id: "PO-20260718-002", vendorKey: "pyvio", usd: 12600, cny: 91000, time: "2026-07-18 14:30", status: "ready", memberId: "1083684999745503233", shopId: "10001" },
+            { id: "PO-20260721-003", vendorKey: "pyvio", usd: 15200, cny: 109000, time: "2026-07-21 10:05", status: "ready", memberId: "1083684999745503234", shopId: "10001" },
+            { id: "PO-20260725-004", vendorKey: "pyvio", usd: 9800, cny: 70000, time: "2026-07-25 16:40", status: "ready", memberId: "1083684999745503235", shopId: "10001" },
+            { id: "PO-20260728-005", vendorKey: "pyvio", usd: 17500, cny: 126000, time: "2026-07-28 11:22", status: "reviewing", memberId: "1083684999745503236", shopId: "10002" },
+            { id: "PO-20260802-006", vendorKey: "pyvio", usd: 11000, cny: 79000, time: "2026-08-02 09:18", status: "reviewing", memberId: "1083684999745503237", shopId: "10002" },
+            { id: "PO-20260805-007", vendorKey: "pyvio", usd: 14500, cny: 104000, time: "2026-08-05 15:55", status: "pushed", memberId: "1083684999745503238", shopId: "10002" },
+            { id: "PO-20260808-008", vendorKey: "pyvio", usd: 9000, cny: 65000, time: "2026-08-08 10:33", status: "pushed", memberId: "1083684999745503239", shopId: "10002" },
+            { id: "PO-xt-20260710-001", vendorKey: "xt", usd: 15500, cny: 112000, time: "2026-07-10 09:40", status: "ready", memberId: "1083684999745503240", shopId: "10001" },
+            { id: "PO-xt-20260716-002", vendorKey: "xt", usd: 13200, cny: 95000, time: "2026-07-16 13:26", status: "ready", memberId: "1083684999745503241", shopId: "10001" },
+            { id: "PO-xt-20260722-003", vendorKey: "xt", usd: 18600, cny: 134000, time: "2026-07-22 11:08", status: "ready", memberId: "1083684999745503242", shopId: "10001" },
+            { id: "PO-xt-20260729-004", vendorKey: "xt", usd: 10800, cny: 78000, time: "2026-07-29 15:47", status: "reviewing", memberId: "1083684999745503243", shopId: "10003" },
+            { id: "PO-xt-20260803-005", vendorKey: "xt", usd: 14100, cny: 101000, time: "2026-08-03 10:12", status: "pushed", memberId: "1083684999745503244", shopId: "10003" },
+            { id: "PO-xt-20260809-006", vendorKey: "xt", usd: 9300, cny: 67000, time: "2026-08-09 09:03", status: "pushed", memberId: "1083684999745503245", shopId: "10003" },
+            { id: "PO-sd-20260712-001", vendorKey: "sandpay", usd: 10500, cny: 75000, time: "2026-07-12 10:30", status: "ready", memberId: "1083684999745503246", shopId: "10002" },
+            { id: "PO-sd-20260719-002", vendorKey: "sandpay", usd: 12800, cny: 92000, time: "2026-07-19 14:22", status: "ready", memberId: "1083684999745503247", shopId: "10002" },
+            { id: "PO-sd-20260726-003", vendorKey: "sandpay", usd: 8600, cny: 62000, time: "2026-07-26 16:05", status: "ready", memberId: "1083684999745503248", shopId: "10002" },
+            { id: "PO-sd-20260801-004", vendorKey: "sandpay", usd: 9900, cny: 71000, time: "2026-08-01 09:48", status: "reviewing", memberId: "1083684999745503249", shopId: "10002" },
+            { id: "PO-sd-20260806-005", vendorKey: "sandpay", usd: 11300, cny: 81000, time: "2026-08-06 11:36", status: "pushed", memberId: "1083684999745503250", shopId: "10002" },
+            { id: "PO-pa-20260714-001", vendorKey: "payoneer", usd: 7600, cny: 55000, time: "2026-07-14 10:12", status: "ready", memberId: "1083684999745503251", shopId: "10003" },
+            { id: "PO-pa-20260723-002", vendorKey: "payoneer", usd: 8900, cny: 64000, time: "2026-07-23 15:28", status: "ready", memberId: "1083684999745503252", shopId: "10003" },
+            { id: "PO-pa-20260730-003", vendorKey: "payoneer", usd: 9800, cny: 70000, time: "2026-07-30 09:55", status: "ready", memberId: "1083684999745503253", shopId: "10003" },
+            { id: "PO-pa-20260804-004", vendorKey: "payoneer", usd: 7200, cny: 52000, time: "2026-08-04 14:19", status: "reviewing", memberId: "1083684999745503254", shopId: "10003" },
+            { id: "PO-pa-20260807-005", vendorKey: "payoneer", usd: 8500, cny: 61000, time: "2026-08-07 10:41", status: "pushed", memberId: "1083684999745503255", shopId: "10003" },
         ];
 
         var currentBatchId = null;
@@ -1831,12 +1831,6 @@
             return quotaOrders.filter(function (o) { return o.vendorKey === vendorKey; });
         }
 
-        function quotaStatusTag(status) {
-            if (status === "ready") return { label: "可推送", cls: "tos-tag--primary" };
-            if (status === "reviewing") return { label: "审核中", cls: "tos-tag--warning" };
-            return { label: "已推送", cls: "tos-tag--success" };
-        }
-
         function renderQuotaOrders() {
             var vendor = $("quotaVendor").value;
             var tbody = $("quotaOrdersTbody");
@@ -1856,17 +1850,14 @@
                 return;
             }
             list.forEach(function (o) {
-                var tag = quotaStatusTag(o.status);
-                var isMatched = quotaMatch.indexOf(o.id) >= 0;
                 var tr = document.createElement("tr");
-                if (isMatched) tr.className = "row-matched";
-                var matchedBadge = isMatched ? ' <span class="tos-tag tos-tag--primary">已匹配</span>' : "";
+                tr.className = "row-matched";
                 tr.innerHTML =
                     '<td><span class="cell-mono">' + escapeHtml(o.id) + '</span></td>' +
-                    '<td class="text-right cell-mono">' + fmtUsd(o.usd) + '</td>' +
                     '<td class="text-right cell-mono">' + fmtCny(o.cny) + '</td>' +
                     '<td>' + o.time + '</td>' +
-                    '<td><span class="tos-tag ' + tag.cls + '">' + tag.label + '</span>' + matchedBadge + '</td>';
+                    '<td class="cell-mono">' + escapeHtml(o.memberId) + '</td>' +
+                    '<td class="cell-mono">' + escapeHtml(o.shopId) + '</td>';
                 tbody.appendChild(tr);
             });
             $("quotaOrdersCount").textContent = "共 " + list.length + " 笔";
