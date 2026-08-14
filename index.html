@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRD-HTML 原型总览</title>
+<style>
+  :root {
+    --tos-primary: #42b7ae;
+    --tos-primary-hover: #339b94;
+    --tos-primary-bg: #e6f7f6;
+    --tos-bg: #f5f7fa;
+    --tos-text: #333;
+    --tos-text-secondary: #666;
+    --tos-text-muted: #999;
+    --tos-border: #e5e7eb;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--tos-bg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--tos-text);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  .header {
+    background: #fff;
+    border-bottom: 1px solid var(--tos-border);
+    padding: 40px 24px 32px;
+    text-align: center;
+  }
+  .header__logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--tos-primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 auto 16px;
+  }
+  .header h1 { font-size: 22px; font-weight: 700; }
+  .header p { margin-top: 8px; font-size: 13px; color: var(--tos-text-muted); }
+  .container { max-width: 960px; margin: 0 auto; padding: 24px 16px 48px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: #fff;
+    border: 1px solid #f0f2f5;
+    border-radius: 12px;
+    padding: 20px;
+    text-decoration: none;
+    color: var(--tos-text);
+    transition: all .15s;
+    display: block;
+  }
+  .card:hover {
+    border-color: var(--tos-primary);
+    box-shadow: 0 4px 16px rgba(66, 183, 174, .12);
+    transform: translateY(-2px);
+  }
+  .card__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--tos-primary-bg);
+    color: var(--tos-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
+  .card__title { font-size: 15px; font-weight: 600; }
+  .card__desc { margin-top: 6px; font-size: 13px; color: var(--tos-text-muted); line-height: 1.6; }
+  .card__count { margin-top: 12px; font-size: 12px; color: var(--tos-text-secondary); }
+  .footer { padding: 20px; text-align: center; font-size: 12px; color: var(--tos-text-muted); }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header__logo">T</div>
+  <h1>PRD-HTML 原型总览</h1>
+  <p>静态原型集合 · 选择模块进入</p>
+</div>
+<div class="container">
+  <div class="grid">
+    <a class="card" href="商城-HTML/">
+      <div class="card__icon">🛒</div>
+      <div class="card__title">商城-HTML</div>
+      <div class="card__desc">商城店铺相关原型：会员提现、结算单、FBT 多仓对接、KYC/KYB 验证等</div>
+      <div class="card__count">进入模块 →</div>
+    </a>
+    <a class="card" href="仓配-HTML/">
+      <div class="card__icon">📦</div>
+      <div class="card__title">仓配-HTML</div>
+      <div class="card__desc">仓配相关原型：基础规则、入库出库规则、库内操作、调度系统等</div>
+      <div class="card__count">进入模块 →</div>
+    </a>
+    <a class="card" href="Delivery-HTML/">
+      <div class="card__icon">🚚</div>
+      <div class="card__title">Delivery-HTML</div>
+      <div class="card__desc">快递派送相关原型：收件扫描、快递调度、网点地图、司骑端等</div>
+      <div class="card__count">进入模块 →</div>
+    </a>
+    <a class="card" href="API任务/">
+      <div class="card__icon">🔌</div>
+      <div class="card__title">API任务</div>
+      <div class="card__desc">API 任务相关原型：任务配置、任务执行、任务账号等</div>
+      <div class="card__count">进入模块 →</div>
+    </a>
+  </div>
+</div>
+<div class="footer">PRD-HTML · TOS 产品原型</div>
+</body>
+</html>
