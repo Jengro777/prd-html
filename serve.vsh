@@ -164,7 +164,7 @@ fn main() {
 	mut app := &App{}
 	veb.run_at[App, Context](mut app,
 		host: '192.168.1.7'
-		port: 8080
+		port: 7070
 		family: .ip
 		// show_startup_message: true
 	) or { panic(err) }

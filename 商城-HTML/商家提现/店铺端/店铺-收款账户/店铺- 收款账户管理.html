@@ -1,0 +1,3656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>收款账户管理 · 店铺端</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --tos-primary: #42b7ae;
+            --tos-primary-hover: #339b94;
+            --tos-primary-bg: #e6f7f6;
+            --tos-bg: #f5f7fa;
+            --tos-card: #fff;
+            --tos-border: #e5e7eb;
+            --tos-border-soft: #f0f2f5;
+            --tos-text: #333;
+            --tos-text-secondary: #666;
+            --tos-text-muted: #999;
+            --tos-success: #52c41a;
+            --tos-warning: #faad14;
+            --tos-error: #f5222d;
+            --tos-radius-card: 12px;
+            --tos-radius-control: 8px;
+            --tos-radius-tag: 4px;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: var(--tos-bg);
+            color: var(--tos-text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            padding: 2rem 12px 2rem 212px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== 左侧导航 · 店铺端 ===== */
+        .sidebar {
+            width: 200px;
+            background: #fff;
+            border-right: 1px solid var(--tos-border-soft);
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+        .sidebar__end-select {
+            width: calc(100% - 24px);
+            height: 32px;
+            margin: 8px 12px 0;
+            padding: 0 26px 0 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 13px;
+            color: #333;
+            outline: none;
+            cursor: pointer;
+            font-family: inherit;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%2710%27><path d=%27M2 4l3 3 3-3%27 fill=%27none%27 stroke=%27%23999%27 stroke-width=%271.5%27 stroke-linecap=%27round%27/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+        }
+        .sidebar__head {
+            padding: 20px 16px 16px;
+            border-bottom: 1px solid var(--tos-border-soft);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar__logo {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: var(--tos-primary);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+        .sidebar__title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1f2937;
+            white-space: nowrap;
+        }
+        .sidebar__nav {
+            flex: 1;
+            padding: 8px 0;
+            overflow-y: auto;
+        }
+        .sidebar__group-title {
+            padding: 12px 14px 4px;
+            font-size: 10px;
+            color: var(--tos-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        .sidebar__item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            font-size: 13px;
+            color: var(--tos-text-secondary);
+            cursor: pointer;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all 0.12s;
+        }
+        .sidebar__item:hover {
+            background: #f5f5f5;
+            color: var(--tos-text);
+        }
+        .sidebar__item--active {
+            color: var(--tos-primary);
+            font-weight: 600;
+            background: var(--tos-primary-bg);
+            border-left-color: var(--tos-primary);
+        }
+        .sidebar__item i {
+            width: 16px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        /* ===== 页面布局 ===== */
+        .container {
+            max-width: 1920px;
+            margin: 0 auto;
+        }
+        .main-card {
+            background: var(--tos-card);
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+            overflow: hidden;
+        }
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 20px;
+            border-bottom: 1px solid var(--tos-border-soft);
+        }
+        .card-header h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .card-header p {
+            margin: 4px 0 0;
+            font-size: 13px;
+            color: var(--tos-text-muted);
+            line-height: 1.6;
+        }
+        .component-links {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--tos-text-muted);
+        }
+        .component-links a {
+            color: var(--tos-primary);
+            text-decoration: none;
+            padding: 2px 8px;
+            border: 1px solid #b5e5e0;
+            border-radius: 6px;
+            background: var(--tos-primary-bg);
+            transition: background 0.12s, border-color 0.12s;
+        }
+        .component-links a:hover {
+            background: #d6f2f0;
+            border-color: var(--tos-primary);
+        }
+        .card-header__actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        /* ===== Tabs ===== */
+        .tabs {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0 20px;
+            border-bottom: 1px solid var(--tos-border-soft);
+            background: #fff;
+        }
+        .tab {
+            position: relative;
+            padding: 12px 16px;
+            border: none;
+            background: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--tos-text-secondary);
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .tab:hover {
+            color: var(--tos-primary);
+        }
+        .tab.active {
+            color: var(--tos-primary);
+            font-weight: 600;
+        }
+        .tab.active::after {
+            content: "";
+            position: absolute;
+            left: 16px;
+            right: 16px;
+            bottom: -1px;
+            height: 2px;
+            background: var(--tos-primary);
+        }
+        .tab-panel {
+            display: none;
+        }
+        .tab-panel.active {
+            display: block;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            padding: 20px 20px 0;
+        }
+        .stat-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 16px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            background: var(--tos-card);
+        }
+        .stat-info h4 {
+            margin: 0;
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--tos-text-muted);
+        }
+        .stat-number {
+            margin-top: 4px;
+            font-size: 22px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .stat-number--ellipsis {
+            max-width: 220px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 16px;
+            line-height: 1.4;
+            padding-top: 6px;
+        }
+        .stat-icon {
+            font-size: 18px;
+            color: var(--tos-primary);
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 20px;
+        }
+        .toolbar__left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 300px;
+            height: 34px;
+            padding: 0 12px;
+            border: 1px solid var(--tos-border);
+            border-radius: var(--tos-radius-control);
+            background: var(--tos-card);
+        }
+        .search-box i {
+            color: var(--tos-text-muted);
+            font-size: 13px;
+        }
+        .search-box input {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 13px;
+            color: var(--tos-text);
+            background: transparent;
+            font-family: inherit;
+        }
+        .toolbar-hint {
+            font-size: 13px;
+            color: var(--tos-text-muted);
+            white-space: nowrap;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border-top: 1px solid var(--tos-border-soft);
+        }
+        .data-table {
+            width: 100%;
+            min-width: 880px;
+            border-collapse: collapse;
+        }
+        .data-table th {
+            padding: 12px 16px;
+            background: #fafafa;
+            border-bottom: 1px solid var(--tos-border-soft);
+            color: var(--tos-text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            text-align: left;
+            white-space: nowrap;
+        }
+        .data-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 14px;
+            color: var(--tos-text);
+            vertical-align: middle;
+        }
+        .data-table tr:hover td {
+            background: #fafafa;
+        }
+        .data-table .text-right {
+            text-align: right;
+        }
+        .empty-row {
+            padding: 48px 20px;
+            text-align: center;
+            color: var(--tos-text-muted);
+            font-size: 14px;
+        }
+        .sub-text {
+            margin-top: 2px;
+            font-size: 12px;
+            color: var(--tos-text-muted);
+        }
+        .card-mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 13px;
+            color: var(--tos-text-secondary);
+        }
+        .tos-tag {
+            display: inline-flex;
+            align-items: center;
+            height: 22px;
+            padding: 0 8px;
+            border-radius: var(--tos-radius-tag);
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .tos-tag--primary {
+            background: var(--tos-primary-bg);
+            color: var(--tos-primary);
+        }
+        .tos-tag--success {
+            background: #f0faf0;
+            color: var(--tos-success);
+        }
+        .tos-tag--default {
+            background: #f5f5f5;
+            color: var(--tos-text-secondary);
+        }
+        .tos-tag--warning {
+            background: #fff7e6;
+            color: #d48806;
+        }
+        .tos-tag--error {
+            background: #fff1f0;
+            color: var(--tos-error);
+        }
+        .alert-primary {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 10px 12px;
+            margin-bottom: 16px;
+            border: 1px solid #b5e5e0;
+            border-radius: var(--tos-radius-control);
+            background: var(--tos-primary-bg);
+            color: #2b6f68;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .alert-primary i {
+            margin-top: 2px;
+        }
+        .btn-link {
+            border: none;
+            background: none;
+            color: var(--tos-primary);
+            font-size: 13px;
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 6px;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .btn-link:hover {
+            background: var(--tos-primary-bg);
+        }
+        .btn-link.danger {
+            color: var(--tos-error);
+        }
+        .btn-link.danger:hover {
+            background: #fff1f0;
+        }
+        .btn-link:disabled {
+            color: #bfbfbf;
+            cursor: not-allowed;
+            background: none;
+        }
+        .actions-cell {
+            display: flex;
+            justify-content: flex-end;
+            gap: 4px;
+        }
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 20px;
+            border-top: 1px solid var(--tos-border-soft);
+            font-size: 13px;
+            color: var(--tos-text-muted);
+        }
+
+        .btn-primary,
+        .btn-secondary,
+        .btn-danger {
+            height: 34px;
+            padding: 0 16px;
+            border: 1px solid transparent;
+            border-radius: var(--tos-radius-control);
+            font-size: 13px;
+            font-weight: 500;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: var(--tos-primary);
+            border-color: var(--tos-primary);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--tos-primary-hover);
+            border-color: var(--tos-primary-hover);
+        }
+        .btn-secondary {
+            background: var(--tos-card);
+            border-color: var(--tos-border);
+            color: var(--tos-text-secondary);
+        }
+        .btn-secondary:hover {
+            background: #fafafa;
+            border-color: #d1d5db;
+        }
+        .btn-danger {
+            background: #fff1f0;
+            border-color: #ffccc7;
+            color: var(--tos-error);
+        }
+        .btn-danger:hover {
+            background: #ffe0dd;
+        }
+
+        /* ===== Pyvio 商户分组卡片 ===== */
+        .pyvio-empty {
+            padding: 72px 20px;
+            text-align: center;
+            color: var(--tos-text-muted);
+        }
+        .pyvio-empty > i {
+            font-size: 34px;
+            color: #d9dee8;
+            margin-bottom: 12px;
+        }
+        .pyvio-empty__title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--tos-text);
+            margin-bottom: 6px;
+        }
+        .pyvio-empty__desc {
+            font-size: 13px;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        .pyvio-empty .btn-primary {
+            height: 36px;
+        }
+        .merchant-block {
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            margin: 0 20px 20px;
+            overflow: hidden;
+            background: #fff;
+        }
+        .merchant-block__head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px;
+            background: #fbfcfd;
+            border-bottom: 1px solid var(--tos-border-soft);
+            flex-wrap: wrap;
+        }
+        .merchant-block__info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .merchant-block__title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .merchant-block__meta {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--tos-text-muted);
+            flex-wrap: wrap;
+        }
+        .merchant-block__actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .merchant-block__table {
+            overflow-x: auto;
+        }
+        .merchant-block__table .data-table {
+            min-width: 720px;
+        }
+        .merchant-block__empty {
+            padding: 28px 16px;
+            text-align: center;
+            color: var(--tos-text-muted);
+            font-size: 13px;
+            background: #fbfcfd;
+        }
+
+        /* ===== 弹窗 ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-container {
+            width: 960px;
+            max-width: 96vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: var(--tos-card);
+            border-radius: var(--tos-radius-card);
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--tos-border-soft);
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 2;
+        }
+        .modal-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .modal-close {
+            border: none;
+            background: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--tos-text-muted);
+            line-height: 1;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--tos-text);
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            height: 34px;
+            padding: 0 12px;
+            border: 1px solid var(--tos-border);
+            border-radius: var(--tos-radius-control);
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--tos-text);
+            background: var(--tos-card);
+            outline: none;
+        }
+        .form-group textarea {
+            height: auto;
+            padding: 8px 12px;
+            resize: vertical;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--tos-primary);
+            box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.16);
+        }
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .form-row-4 {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+        }
+        .required {
+            color: var(--tos-error);
+        }
+        .helper-text {
+            margin-top: 4px;
+            font-size: 12px;
+            color: var(--tos-text-muted);
+            line-height: 1.5;
+        }
+        .result-list {
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-control);
+            overflow: hidden;
+        }
+        .result-list__row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--tos-border-soft);
+            background: #fff;
+        }
+        .result-list__row:last-child {
+            border-bottom: none;
+        }
+        .result-list__label {
+            width: 132px;
+            flex-shrink: 0;
+            font-size: 13px;
+            color: var(--tos-text-secondary);
+        }
+        .result-list__value {
+            flex: 1;
+            font-size: 13px;
+            color: var(--tos-text);
+            word-break: break-all;
+        }
+        .result-list__note {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--tos-text-muted);
+        }
+        .api-key {
+            margin-left: 6px;
+            padding: 1px 6px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: 4px;
+            background: #fafafa;
+            color: var(--tos-text-muted);
+            font-size: 11px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            vertical-align: 1px;
+            white-space: nowrap;
+        }
+        .form-group-title {
+            margin: 4px 0 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        /* ===== Pyvio 创建收款人 ===== */
+        .modal-container.payee-modal-container {
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .payee-create {
+            display: flex;
+            height: calc(90vh - 130px);
+            min-height: 0;
+        }
+        .payee-create__nav {
+            width: 150px;
+            flex-shrink: 0;
+            padding: 18px 0;
+            background: #fbfcfd;
+            border-right: 1px solid var(--tos-border-soft);
+            font-size: 14px;
+            color: var(--tos-text-secondary);
+        }
+        .payee-create__nav-item {
+            padding: 12px 18px;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            transition: all 0.12s;
+        }
+        .payee-create__nav-item:hover {
+            background: #f4fbfa;
+            color: var(--tos-primary);
+        }
+        .payee-create__nav-item.active {
+            color: var(--tos-primary);
+            font-weight: 600;
+            background: var(--tos-primary-bg);
+            border-left-color: var(--tos-primary);
+        }
+        .payee-create__main {
+            flex: 1;
+            min-width: 0;
+            padding: 24px 28px 8px;
+            overflow-y: auto;
+            position: relative;
+        }
+        .payee-sec {
+            margin-bottom: 28px;
+        }
+        .payee-sec__title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 14px;
+        }
+        .payee-sec__warn {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 10px 14px;
+            margin-bottom: 18px;
+            border: 1px solid #ffe1a8;
+            border-radius: 8px;
+            background: #fff7e6;
+            color: #8a6d3b;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        .payee-field {
+            margin-bottom: 6px;
+        }
+        .payee-field__label {
+            display: block;
+            margin: 16px 0 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--tos-text);
+        }
+        .payee-field__label .req {
+            color: var(--tos-error);
+            margin-left: 2px;
+        }
+        .payee-opt-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .payee-opt-grid--md {
+            grid-template-columns: 1fr 1fr;
+            max-width: 480px;
+        }
+        .payee-opt-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border: 1px solid var(--tos-border);
+            border-radius: 10px;
+            background: #fff;
+            cursor: pointer;
+            transition: border-color 0.12s, background 0.12s, box-shadow 0.12s;
+        }
+        .payee-opt-card:hover {
+            border-color: var(--tos-primary);
+        }
+        .payee-opt-card.is-selected {
+            border-color: var(--tos-primary);
+            background: var(--tos-primary-bg);
+            box-shadow: 0 0 0 1px var(--tos-primary) inset;
+        }
+        .payee-opt-card__icon {
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: #f0f2f5;
+            color: var(--tos-text-secondary);
+            font-size: 16px;
+        }
+        .payee-opt-card.is-selected .payee-opt-card__icon {
+            background: var(--tos-primary);
+            color: #fff;
+        }
+        .payee-opt-card__title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--tos-text);
+        }
+        .payee-opt-card__desc {
+            margin-top: 2px;
+            font-size: 12px;
+            color: var(--tos-text-muted);
+        }
+        .payee-opt-grid--md .payee-opt-card {
+            justify-content: center;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--tos-text);
+            text-align: center;
+        }
+        .payee-form {
+            max-width: 760px;
+        }
+        .payee-method-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px;
+            border: 1px solid var(--tos-border);
+            border-radius: 10px;
+            background: #fff;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+        .payee-method-card:hover {
+            border-color: var(--tos-primary);
+        }
+        .payee-method-card.is-selected {
+            border-color: var(--tos-primary);
+            background: var(--tos-primary-bg);
+        }
+        .payee-method-card__radio {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            margin-top: 2px;
+            border-radius: 50%;
+            border: 2px solid #c0c4cc;
+            position: relative;
+        }
+        .payee-method-card.is-selected .payee-method-card__radio {
+            border-color: var(--tos-primary);
+        }
+        .payee-method-card.is-selected .payee-method-card__radio::after {
+            content: "";
+            position: absolute;
+            inset: 2px;
+            border-radius: 50%;
+            background: var(--tos-primary);
+        }
+        .payee-method-card__title {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--tos-text);
+        }
+        .payee-method-card__desc {
+            margin-top: 4px;
+            font-size: 12px;
+            color: var(--tos-text-muted);
+            line-height: 1.7;
+            white-space: pre-line;
+        }
+        .reg-group {
+            margin-bottom: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--tos-border-soft);
+        }
+        .reg-group__title {
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .form-group input[readonly] {
+            background: #fafafa;
+            color: var(--tos-text-secondary);
+        }
+        .industry-group {
+            padding: 12px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-control);
+            background: #fbfcfd;
+        }
+        .industry-group + .industry-group {
+            margin-top: 12px;
+        }
+        .industry-group__title {
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--tos-text-secondary);
+        }
+        .industry-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .industry-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            border: 1px solid var(--tos-border);
+            border-radius: var(--tos-radius-control);
+            background: #fff;
+            font-size: 12px;
+            color: var(--tos-text-secondary);
+            cursor: pointer;
+            user-select: none;
+            transition: border-color 0.12s, background 0.12s, color 0.12s;
+        }
+        .industry-chip:hover {
+            border-color: var(--tos-primary);
+            color: var(--tos-primary);
+        }
+        .industry-chip input {
+            display: none;
+        }
+        .industry-chip:has(input:checked) {
+            border-color: var(--tos-primary);
+            background: var(--tos-primary-bg);
+            color: var(--tos-primary);
+            font-weight: 500;
+        }
+        .upload-item {
+            position: relative;
+        }
+        .upload-dash {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            padding: 10px 34px 10px 12px;
+            border: 1px dashed #d9dee8;
+            border-radius: var(--tos-radius-control);
+            background: #fbfcfd;
+            color: var(--tos-text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: border-color 0.12s, background 0.12s;
+        }
+        .upload-dash:hover {
+            border-color: var(--tos-primary);
+            background: rgba(66, 183, 174, 0.06);
+        }
+        .upload-dash.has-file {
+            border-style: solid;
+            border-color: var(--tos-primary);
+            background: var(--tos-primary-bg);
+        }
+        .upload-dash__input {
+            display: none;
+        }
+        .upload-dash__label {
+            font-weight: 500;
+            color: var(--tos-text);
+        }
+        .upload-dash__hint {
+            margin-left: auto;
+            color: var(--tos-text-muted);
+            font-size: 11px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 60%;
+        }
+        .upload-dash.has-file .upload-dash__hint {
+            color: var(--tos-primary);
+        }
+        .upload-remove {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border: none;
+            border-radius: 50%;
+            background: #fff;
+            color: var(--tos-text-muted);
+            font-size: 14px;
+            line-height: 1;
+            cursor: pointer;
+        }
+        .upload-item.has-file:hover .upload-remove {
+            display: flex;
+        }
+        .upload-remove:hover {
+            color: var(--tos-error);
+            background: #fff1f0;
+        }
+        .ubo-box {
+            padding: 12px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-control);
+            background: #fbfcfd;
+        }
+        .switch {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .switch input {
+            position: absolute;
+            width: 0;
+            height: 0;
+            opacity: 0;
+        }
+        .switch span {
+            position: relative;
+            width: 40px;
+            height: 22px;
+            border-radius: 11px;
+            background: #d9d9d9;
+            transition: background 0.15s;
+        }
+        .switch span::after {
+            content: "";
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #fff;
+            transition: left 0.15s;
+        }
+        .switch input:checked + span {
+            background: var(--tos-primary);
+        }
+        .switch input:checked + span::after {
+            left: 20px;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        .confirm-card {
+            width: 400px;
+            max-width: 90vw;
+            padding: 20px;
+            background: var(--tos-card);
+            border-radius: var(--tos-radius-card);
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+        }
+        .confirm-card h4 {
+            margin: 0 0 8px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .confirm-card p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--tos-text-secondary);
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000;
+            padding: 10px 20px;
+            border-radius: var(--tos-radius-control);
+            background: var(--tos-success);
+            color: #fff;
+            font-size: 14px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+
+        /* ===== 两步向导 ===== */
+        .stepper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 12px 16px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-control);
+            background: #fbfcfd;
+        }
+        .step-node {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--tos-text-muted);
+        }
+        .step-node .n {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .step-node.active {
+            color: var(--tos-text);
+            font-weight: 600;
+        }
+        .step-node.active .n {
+            background: var(--tos-primary);
+        }
+        .step-node.done {
+            color: var(--tos-primary);
+        }
+        .step-node.done .n {
+            background: var(--tos-success);
+        }
+        .step-arrow {
+            color: #d9dde4;
+        }
+        .merchant-picker-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            padding: 10px 12px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-control);
+            background: #fbfcfd;
+            font-size: 13px;
+            color: var(--tos-text-secondary);
+        }
+        .merchant-picker-bar select {
+            flex: 1;
+            height: 32px;
+            padding: 0 12px;
+            border: 1px solid var(--tos-border);
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            background: #fff;
+            color: var(--tos-text);
+            outline: none;
+        }
+        .info-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 24px;
+            margin-bottom: 16px;
+            padding: 10px 12px;
+            border: 1px solid #b5e5e0;
+            border-radius: var(--tos-radius-control);
+            background: var(--tos-primary-bg);
+            font-size: 12px;
+            color: #2b6f68;
+        }
+        .info-bar strong {
+            font-weight: 600;
+            color: #225d57;
+        }
+        .link-text {
+            color: var(--tos-primary);
+            background: none;
+            border: none;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: inherit;
+            text-decoration: none;
+        }
+        .link-text:hover {
+            color: var(--tos-primary-hover);
+            text-decoration: underline;
+        }
+        .empty-inline {
+            padding: 16px;
+            text-align: center;
+            color: var(--tos-text-muted);
+            font-size: 13px;
+            border: 1px dashed #d9dee8;
+            border-radius: var(--tos-radius-control);
+            background: #fbfcfd;
+            line-height: 1.8;
+        }
+        .flow-steps {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 16px;
+            font-size: 12px;
+            color: var(--tos-text-muted);
+        }
+        .flow-steps b {
+            font-weight: 600;
+            color: var(--tos-text-secondary);
+        }
+        .flow-steps .sep {
+            color: #d9dde4;
+        }
+
+        /* ===== 全球账户 banner & 筛选 ===== */
+        .global-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin: 20px 20px 0;
+            padding: 18px 20px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            background: linear-gradient(90deg, #fbfcfd 0%, #f4fbfa 100%);
+        }
+        .global-banner__left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            min-width: 0;
+        }
+        .global-banner__icon {
+            width: 52px;
+            height: 52px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: var(--tos-primary-bg);
+            color: var(--tos-primary);
+            font-size: 22px;
+        }
+        .global-banner__text {
+            font-size: 13px;
+            color: var(--tos-text-secondary);
+            line-height: 1.7;
+            color: #4a5a6a;
+        }
+        .filter-select {
+            height: 34px;
+            padding: 0 10px;
+            border: 1px solid var(--tos-border);
+            border-radius: var(--tos-radius-control);
+            font-size: 13px;
+            font-family: inherit;
+            background: #fff;
+            color: #666;
+            outline: none;
+        }
+        .filter-select:focus {
+            border-color: var(--tos-primary);
+            box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.16);
+        }
+        .flag {
+            margin-right: 6px;
+        }
+
+        /* ===== 申请全球账户 · 用途卡片 ===== */
+        .purpose-list {
+            display: grid;
+            gap: 12px;
+        }
+        .purpose-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border: 1px solid var(--tos-border);
+            border-radius: var(--tos-radius-control);
+            background: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--tos-text);
+            transition: border-color 0.12s, background 0.12s, color 0.12s;
+        }
+        .purpose-card:hover {
+            border-color: var(--tos-primary);
+        }
+        .purpose-card.active {
+            border-color: var(--tos-primary);
+            background: var(--tos-primary-bg);
+            color: var(--tos-primary);
+            font-weight: 500;
+        }
+        .purpose-card__icon {
+            width: 30px;
+            height: 30px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: #f0f2f5;
+            color: var(--tos-text-secondary);
+            font-size: 13px;
+        }
+        .purpose-card.active .purpose-card__icon {
+            background: var(--tos-primary);
+            color: #fff;
+        }
+        .purpose-card__desc {
+            margin-top: 2px;
+            font-size: 12px;
+            color: var(--tos-text-muted);
+        }
+        .purpose-card.active .purpose-card__desc {
+            color: var(--tos-primary);
+        }
+        .purpose-card__check {
+            margin-left: auto;
+            font-size: 15px;
+            color: var(--tos-primary);
+            opacity: 0;
+        }
+        .purpose-card.active .purpose-card__check {
+            opacity: 1;
+        }
+
+        /* 收款能力 */
+        .capability-box {
+            padding: 14px 16px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-control);
+            background: #fbfcfd;
+        }
+        .capability-box__title {
+            margin-bottom: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .capability-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--tos-text);
+            padding: 4px 0;
+        }
+        .capability-item i.cap-ok {
+            color: var(--tos-success);
+            font-size: 12px;
+        }
+        .capability-item .cap-code {
+            margin-left: auto;
+            color: var(--tos-text-muted);
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        }
+        .wizard-question {
+            font-size: 14px;
+            color: var(--tos-text);
+            margin-bottom: 14px;
+        }
+
+        /* 分页 */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 14px 20px;
+            font-size: 13px;
+            color: var(--tos-text-muted);
+        }
+        .pagination .page-btn {
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--tos-border);
+            background: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: var(--tos-text-secondary);
+        }
+        .pagination .page-btn.active {
+            background: var(--tos-primary);
+            border-color: var(--tos-primary);
+            color: #fff;
+        }
+        .pagination .page-size {
+            height: 28px;
+            padding: 0 8px;
+            border: 1px solid var(--tos-border);
+            border-radius: 6px;
+            font-size: 12px;
+            font-family: inherit;
+            color: var(--tos-text-secondary);
+            background: #fff;
+        }
+
+        /* ===== 商户范围切换 ===== */
+        /* ===== 全球账户详情弹窗 ===== */
+        .gd-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--tos-border-soft);
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 2;
+        }
+        .gd-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: none;
+            background: none;
+            color: var(--tos-text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            font-family: inherit;
+            padding: 4px 8px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+        .gd-back:hover {
+            background: #fafafa;
+            color: var(--tos-text);
+        }
+        .gd-head__flag {
+            font-size: 24px;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        .gd-head__info {
+            flex: 1;
+            min-width: 0;
+        }
+        .gd-title {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .gd-sub {
+            font-size: 12px;
+            color: var(--tos-text-muted);
+            margin-top: 2px;
+        }
+        .gd-head__actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .detail-card {
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        .detail-card__head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 16px 20px 12px;
+            flex-wrap: wrap;
+        }
+        .detail-card__head h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 40px;
+            padding: 6px 20px 16px;
+        }
+        .detail-field {
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .detail-field:nth-last-child(-n+2) {
+            border-bottom: none;
+        }
+        .detail-field__label {
+            font-size: 12px;
+            color: var(--tos-text-muted);
+            margin-bottom: 4px;
+        }
+        .detail-field__value {
+            font-size: 14px;
+            color: var(--tos-text);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            word-break: break-all;
+            line-height: 1.5;
+        }
+        .detail-field__value .fa-pen,
+        .detail-field__value .fa-copy {
+            color: var(--tos-primary);
+            font-size: 12px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .tx-filter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 20px 16px;
+            flex-wrap: wrap;
+        }
+        .tx-date {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 34px;
+            padding: 0 12px;
+            border: 1px solid var(--tos-border);
+            border-radius: var(--tos-radius-control);
+            font-size: 13px;
+            color: var(--tos-text-muted);
+            background: #fff;
+        }
+        .tx-date input {
+            border: none;
+            outline: none;
+            font-size: 13px;
+            color: var(--tos-text);
+            font-family: inherit;
+            width: 92px;
+        }
+        .tx-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--tos-text-muted);
+            font-size: 13px;
+        }
+        .tx-empty i {
+            font-size: 32px;
+            color: #d9dee8;
+            display: block;
+            margin: 0 auto 10px;
+        }
+        .gd-account-no {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-weight: 600;
+        }
+
+        @media (max-width: 960px) {
+            .stats-row {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .form-row-4 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @media (max-width: 680px) {
+            body {
+                padding: 1rem;
+            }
+            .sidebar {
+                display: none;
+            }
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+            .card-header {
+                flex-direction: column;
+            }
+            .card-header__actions {
+                width: 100%;
+            }
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .toolbar__left {
+                flex-wrap: wrap;
+            }
+            .search-box {
+                width: 100%;
+            }
+            .form-row-2,
+            .form-row-4 {
+                grid-template-columns: 1fr;
+            }
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            .stepper {
+                flex-wrap: wrap;
+            }
+            .merchant-block {
+                margin: 0 0 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <select class="sidebar__end-select" onchange="if(this.value)location.href=this.value"><option value="" selected>店铺端</option><option value="../../平台端/运营-钱包对账汇总.html">平台端</option></select>
+        <div class="sidebar__head"><div class="sidebar__logo"><i class="fas fa-store"></i></div><span class="sidebar__title">商家中心</span></div>
+        <nav class="sidebar__nav">
+            <div class="sidebar__group-title">提现管理</div>
+            <a class="sidebar__item" href="../商家提现单详情.html"><i class="fas fa-receipt"></i> 提现单详情</a>
+            <a class="sidebar__item" href="../店铺- 钱包对账单汇总.html"><i class="fas fa-file-invoice-dollar"></i> 钱包对账单</a>
+            <a class="sidebar__item sidebar__item--active" href="店铺- 收款账户管理.html"><i class="fas fa-credit-card"></i> 收款账户</a>
+            <a class="sidebar__item" href="../店铺- 结汇额度管理.html"><i class="fas fa-coins"></i> 结汇额度</a>
+        </nav>
+    </aside>
+
+    <div class="container">
+        <div class="main-card">
+            <div class="card-header">
+                <div>
+                    <h1>收款账户管理</h1>
+                    <p>维护平台收款与提现到账账户。银行卡直接录入；Pyvio 需先用 Create User 注册开户，审核通过后通过 Open Global Account 添加全球账户，同一商户可添加多个。</p>
+                    <div class="component-links">
+                        <span>组件文件：</span>
+                        <a href="店铺- 申请全球账户.html" target="_blank">申请全球账户</a>
+                        <a href="店铺- 注册Pyvio商户.html" target="_blank">注册 Pyvio 商户</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" data-tab="pyvio">Pyvio-va</button>
+                <button class="tab" data-tab="pyvio-bank">Pyvio-银行卡</button>
+                <button class="tab" data-tab="bank">银行卡</button>
+            </div>
+
+            <!-- ===== Pyvio Tab ===== -->
+            <div class="tab-panel active" id="panel-pyvio">
+                <div class="global-banner">
+                    <div class="global-banner__left">
+                        <div class="global-banner__icon"><i class="fas fa-landmark"></i></div>
+                        <div class="global-banner__text">为您提供全球本地银行的收款账户，支持多币种多平台收款，简化资金管理。支持注册多个商户，每个商户可开通多个全球收款账户。</div>
+                    </div>
+                    <button class="btn-primary" id="bannerRegisterBtn"><i class="fas fa-building"></i> 注册新商户</button>
+                </div>
+
+                <div class="toolbar">
+                    <div class="toolbar__left">
+                        <div class="search-box"><i class="fas fa-search"></i><input type="text" id="pyvioSearch" placeholder="账户名称 / 收款账号 / 账户昵称"></div>
+                        <select class="filter-select" id="pyvioCountryFilter"><option value="">全部国家/地区</option></select>
+                        <select class="filter-select" id="pyvioCurrencyFilter"><option value="">全部币种</option></select>
+                        <select class="filter-select" id="pyvioStatusFilter"><option value="">全部状态</option></select>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span class="toolbar-hint" id="pyvioListHint"></span>
+                        <button class="btn-secondary" id="pyvioOpenGlobalBtn"><i class="fas fa-plus"></i> 开通全球收款账户</button>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="data-table" style="min-width: 960px;">
+                        <thead>
+                            <tr>
+                                <th>币种</th>
+                                <th>所在国家/地区</th>
+                                <th>账户名称</th>
+                                <th>收款账号</th>
+                                <th>用途</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pyvioTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="pyvioPagination"></div>
+
+                <div class="card-footer">
+                    <span>由平台调用 Create User / Open Global Account，仅用于原型演示</span>
+                    <span id="pyvioFooterCount"></span>
+                </div>
+            </div>
+
+            <!-- ===== Pyvio-银行卡 Tab ===== -->
+            <div class="tab-panel" id="panel-pyvio-bank">
+                <div class="toolbar">
+                    <div class="toolbar__left">
+                        <div class="search-box"><i class="fas fa-search"></i><input type="text" id="pyvioBankSearch" placeholder="搜索账户名称 / 收款账号 / 邮箱"></div>
+                        <select class="filter-select" id="pyvioBankHolderFilter"><option value="">全部持有人</option><option value="Personal">个人</option><option value="Company">公司</option></select>
+                        <select class="filter-select" id="pyvioBankStatusFilter"><option value="">全部状态</option><option value="Pending">Pending 待审核</option><option value="Approved">Approved 已通过</option><option value="Declined">Declined 已拒绝</option></select>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span class="toolbar-hint" id="pyvioBankListHint"></span>
+                        <button class="btn-primary" id="pyvioBankAddBtn"><i class="fas fa-plus"></i> 添加收款账户</button>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="data-table" style="min-width: 1080px;">
+                        <thead>
+                            <tr>
+                                <th>账户名称</th>
+                                <th>收款账号</th>
+                                <th>类型</th>
+                                <th>结算方式</th>
+                                <th>币种</th>
+                                <th>持有人</th>
+                                <th>状态</th>
+                                <th class="text-right">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pyvioBankTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    <span>由平台调用 Create Payee / Update Payee，仅用于原型演示</span>
+                    <span id="pyvioBankFooterCount"></span>
+                </div>
+            </div>
+
+            <!-- ===== 银行卡 Tab ===== -->
+            <div class="tab-panel" id="panel-bank">
+                <div class="toolbar">
+                    <div class="toolbar__left">
+                        <div class="search-box"><i class="fas fa-search"></i><input type="text" id="bankSearch" placeholder="搜索银行 / 卡号"></div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span class="toolbar-hint" id="bankListHint"></span>
+                        <button class="btn-primary" id="bankAddBtn"><i class="fas fa-plus"></i> 添加银行卡</button>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>收款账号</th>
+                                <th>账户类型</th>
+                                <th>币种</th>
+                                <th>默认账户</th>
+                                <th>状态</th>
+                                <th class="text-right">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bankTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    <span>数据保存在本地浏览器，仅用于原型演示</span>
+                    <span id="bankFooterCount"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 添加/编辑银行卡 或 Pyvio 全球账户 ===== -->
+    <div id="accountModal" class="modal-overlay">
+        <div class="modal-container" style="width: 760px;">
+            <div class="modal-header">
+                <h3 id="accountModalTitle">添加银行卡</h3>
+                <button class="modal-close" id="closeAccountModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="bankFields">
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label>开户银行 <span class="required">*</span></label>
+                            <input type="text" id="formBank" placeholder="例如：中国银行" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label>银行卡号 <span class="required">*</span></label>
+                            <input type="text" id="formCardNo" placeholder="请输入银行卡号" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>币种 <span class="required">*</span></label>
+                        <select id="bankFormCurrency">
+                            <option value="USD">USD 美元</option>
+                            <option value="CNY">CNY 人民币</option>
+                            <option value="EUR">EUR 欧元</option>
+                            <option value="HKD">HKD 港币</option>
+                            <option value="SGD">SGD 新币</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>设为默认账户</label>
+                        <label class="switch">
+                            <input type="checkbox" id="formDefault">
+                            <span></span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>备注</label>
+                        <textarea id="formRemark" rows="2" placeholder="选填，例如：提现默认到账账户"></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn-secondary" id="cancelAccountModalBtn">取消</button>
+                        <button class="btn-primary" id="saveAccountBtn">保存</button>
+                    </div>
+                </div>
+
+                <div id="pyvioFields" style="display:none;">
+                    <div class="stepper">
+                        <div class="step-node active" id="gwStep1"><span class="n">1</span>申请用途</div>
+                        <span class="step-arrow"><i class="fas fa-chevron-right"></i></span>
+                        <div class="step-node" id="gwStep2"><span class="n">2</span>账户信息</div>
+                    </div>
+
+                    <div id="gwStep1Panel">
+                        <div class="wizard-question">您申请的收款账户将如何使用</div>
+                        <div class="purpose-list">
+                            <div class="purpose-card" data-biz="Collection">
+                                <div class="purpose-card__icon"><i class="fas fa-store"></i></div>
+                                <div><div>平台收款</div><div class="purpose-card__desc">用于电商平台回款</div></div>
+                                <i class="fas fa-check-circle purpose-card__check"></i>
+                            </div>
+                            <div class="purpose-card active" data-biz="B2B Collection">
+                                <div class="purpose-card__icon"><i class="fas fa-briefcase"></i></div>
+                                <div><div>B2B 收款（外贸收款）</div><div class="purpose-card__desc">用于一般贸易 / 服务贸易收款</div></div>
+                                <i class="fas fa-check-circle purpose-card__check"></i>
+                            </div>
+                            <div class="purpose-card" data-biz="Direct Payment">
+                                <div class="purpose-card__icon"><i class="fas fa-credit-card"></i></div>
+                                <div><div>直接付款</div><div class="purpose-card__desc">用于直接付款场景</div></div>
+                                <i class="fas fa-check-circle purpose-card__check"></i>
+                            </div>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn-primary" id="gwNextBtn">下一步</button>
+                        </div>
+                    </div>
+
+                    <div id="gwStep2Panel" style="display:none;">
+                        <div class="form-group">
+                            <label>您需要哪个国家的银行账户</label>
+                            <select id="formVaCountry"><option value="HK">香港（中国）</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>选择币种</label>
+                            <select id="formVaCurrency"><option value="HKD">HKD 港币</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>收款能力</label>
+                            <div class="capability-box" id="gwCapability"></div>
+                        </div>
+                        <div class="form-group" id="gwBizTypeGroup">
+                            <label>请选择业务类型</label>
+                            <select id="formAccountPurpose">
+                                <option value="">请选择</option>
+                                <option value="02">一般贸易收款</option>
+                                <option value="22">服务贸易（国际物流）</option>
+                                <option value="23">服务贸易（广告营销）</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>账户昵称</label>
+                            <input type="text" id="formAccountName" placeholder="请填写您的全球账户昵称" autocomplete="off">
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn-secondary" id="gwPrevBtn">上一步</button>
+                            <button class="btn-primary" id="gwSubmitBtn">提交</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 注册 / 编辑 Pyvio 商户 (Create User) ===== -->
+    <div id="merchantModal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="merchantModalTitle">注册 Pyvio 商户</h3>
+                <button class="modal-close" id="closeMerchantModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="alert-primary">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>提交后由平台调用 Create User 接口（POST /user/api/v2/user/register）注册开户，Pyyvio 审核通过后返回 unit_id，商户即开户成功。</span>
+                </div>
+
+                <div class="reg-group">
+                    <div class="reg-group__title">基础信息<span class="api-key">请求体</span></div>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label>平台用户 ID<span class="api-key">partner_user_id</span></label>
+                            <input type="text" id="m_formPartnerUserId" readonly placeholder="保存时自动生成，如 PV+时间戳" autocomplete="off">
+                            <div class="helper-text">每次注册请求的唯一标识，由平台自动生成</div>
+                        </div>
+                        <div class="form-group">
+                            <label>客户 ID<span class="api-key">client_id</span></label>
+                            <input type="text" id="m_formClientId" readonly placeholder="多个单元共用 KYC 时必填" autocomplete="off">
+                            <div class="helper-text">需要为同一 KYC 创建多个单元时必填</div>
+                        </div>
+                    </div>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label>商户类型 <span class="required">*</span><span class="api-key">merchant_type</span></label>
+                            <select id="m_formMerchantType">
+                                <option value="B2C">B2C 消费者</option>
+                                <option value="B2B">B2B 企业客户</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>KYC 类型 <span class="required">*</span><span class="api-key">kyc_type</span></label>
+                            <select id="m_formKycType">
+                                <option value="china-individual">中国个人（china-individual）</option>
+                                <option value="china-enterprise-self-employed">中国个体户（china-enterprise-self-employed）</option>
+                                <option value="china-enterprise-limited">中国有限责任公司（china-enterprise-limited）</option>
+                                <option value="china-enterprise-investment">中国投资类公司（china-enterprise-investment）</option>
+                                <option value="hk-enterprise">香港企业（hk-enterprise）</option>
+                                <option value="foreign-enterprise">境外企业（foreign-enterprise）</option>
+                                <option value="hk-individual">香港个人（hk-individual）</option>
+                                <option value="foreign-individual">境外个人（foreign-individual）</option>
+                            </select>
+                            <div class="helper-text">B2B 不支持「个人」类型，切换商户类型后自动过滤</div>
+                        </div>
+                    </div>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label>邮箱<span class="api-key">email</span></label>
+                            <input type="text" id="m_formEmail" placeholder="选填" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label>手机号<span class="api-key">phone</span></label>
+                            <input type="text" id="m_formPhone" placeholder="选填" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>行业分类 <span class="required">*</span><span class="api-key">industry[]</span></label>
+                        <div class="industry-group">
+                            <div class="industry-group__title">实物商品（Tangible Goods）</div>
+                            <div class="industry-chips">
+                                <label class="industry-chip"><input type="checkbox" value="Automotive"><span>汽车</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Baby"><span>母婴</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Beauty and personal care"><span>美妆个护</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Computers"><span>电脑</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Crafts"><span>手工艺品</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Electronics"><span>电子产品</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Fashion Clothing and Accessories"><span>时尚服饰配饰</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Health and Household"><span>健康与家居</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Home and Kitchen"><span>家居厨房</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Industrial and Scientific"><span>工业与科研</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Luggage"><span>箱包</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Movies Television"><span>影视</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Pet supplies"><span>宠物用品</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Sports and Outdoors"><span>运动户外</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Tools Home Improvement"><span>工具家装</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Toys and Games"><span>玩具游戏</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Food"><span>食品</span></label>
+                            </div>
+                        </div>
+                        <div class="industry-group">
+                            <div class="industry-group__title">数字商品与服务（Intangible Goods &amp; Service）</div>
+                            <div class="industry-chips">
+                                <label class="industry-chip"><input type="checkbox" value="Accounting, Human Resources &amp; Legal"><span>会计、人力资源与法律</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Advertising services, advertising publishers, advertising channels and exhibitions"><span>广告服务、广告商与展览</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Art Design Architecture and Media"><span>艺术设计建筑与媒体</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Data Entry &amp; Admin"><span>数据录入与行政管理</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Digital Goods: Computer software, mobile applications producer developers or selling (Excludes Games)"><span>数字商品：软件与移动应用（不含游戏）</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Digital goods: online games"><span>数字商品：在线游戏</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Engineering &amp; Science"><span>工程与科学</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="File sharing / storage services (cyber-lockers)"><span>文件共享/存储服务</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Freight, Shipping &amp; Transportation"><span>货运、航运与运输</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Lodging, hotels, motels resort and accommodation services"><span>住宿与酒店服务</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Media and Internet Video Service"><span>媒体与互联网视频</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Online Education"><span>在线教育</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Passenger railways, limousines, taxicabs, motor freight carriers"><span>客运铁路、专车、出租车与货运承运</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Photographic studios and portraits"><span>摄影工作室与肖像</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Telecommunications"><span>电信</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Translation &amp; Languages"><span>翻译与语言</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Travel agency, ticketing services, and tour operators"><span>旅行社、票务与旅游运营</span></label>
+                                <label class="industry-chip"><input type="checkbox" value="Websites, IT &amp; Software"><span>网站、IT 与软件</span></label>
+                            </div>
+                        </div>
+                        <div class="helper-text">点击标签即可多选 / 取消，对应 API 的 industry 数组</div>
+                    </div>
+                </div>
+
+                <!-- 个人 KYC -->
+                <div class="reg-group" id="m_individualFields">
+                    <div class="reg-group__title">个人 KYC 资料<span class="api-key">individual_info</span></div>
+                    <div class="form-row-2">
+                        <div class="form-group"><label>姓名<span class="api-key">name</span></label><input type="text" id="m_i_name" placeholder="姓名" autocomplete="off"></div>
+                        <div class="form-group"><label>英文名<span class="api-key">name_en</span></label><input type="text" id="m_i_nameEn" placeholder="英文名" autocomplete="off"></div>
+                    </div>
+                    <div class="form-row-4">
+                        <div class="form-group"><label>证件号<span class="api-key">id_number</span></label><input type="text" id="m_i_idNo" placeholder="身份证 / 护照号" autocomplete="off"></div>
+                        <div class="form-group"><label>出生日期<span class="api-key">date_of_birth</span></label><input type="text" id="m_i_birth" placeholder="YYYYMMDD" autocomplete="off"></div>
+                        <div class="form-group"><label>签发日期<span class="api-key">issue_date</span></label><input type="text" id="m_i_issue" placeholder="YYYYMMDD" autocomplete="off"></div>
+                        <div class="form-group"><label>有效期至<span class="api-key">expiration_date</span></label><input type="text" id="m_i_expire" placeholder="YYYYMMDD" autocomplete="off"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>证件居住地址<span class="api-key">residential_address</span></label>
+                        <div class="form-row-4">
+                            <div class="form-group"><input type="text" id="m_i_country" placeholder="国家，如 CN"></div>
+                            <div class="form-group"><input type="text" id="m_i_state" placeholder="省份，如 浙江省"></div>
+                            <div class="form-group"><input type="text" id="m_i_city" placeholder="城市，如 杭州市"></div>
+                            <div class="form-group"><input type="text" id="m_i_postcode" placeholder="邮编"></div>
+                        </div>
+                        <div class="form-group"><input type="text" id="m_i_line1" placeholder="详细地址，如 123 Main Street"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>个人证件附件 <span class="required">*</span><span class="api-key">individual_info.attachments[]</span></label>
+                        <div class="upload-item">
+                            <label class="upload-dash"><input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf" data-file-type="PRC_ID_Emblem"><span class="upload-dash__label">PRC_ID_Emblem · 身份证国徽面</span><span class="upload-dash__hint">点击上传 · JPG/PNG ≤10MB</span></label>
+                            <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                        </div>
+                        <div class="upload-item">
+                            <label class="upload-dash"><input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf" data-file-type="PRC_ID_Portrait"><span class="upload-dash__label">PRC_ID_Portrait · 身份证人像面</span><span class="upload-dash__hint">点击上传 · JPG/PNG ≤10MB</span></label>
+                            <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                        </div>
+                        <div class="upload-item">
+                            <label class="upload-dash"><input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf" data-file-type="ID_Hand"><span class="upload-dash__label">ID_Hand · 手持证件照</span><span class="upload-dash__hint">点击上传 · JPG/PNG ≤10MB</span></label>
+                            <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 企业 KYC -->
+                <div class="reg-group" id="m_companyFields" style="display:none;">
+                    <div class="reg-group__title">企业 KYC 资料<span class="api-key">company_info</span></div>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label>公司类型<span class="api-key">company_info.company_type</span></label>
+                            <select id="m_companyType">
+                                <option value="Corporation">Corporation · 股份有限公司</option>
+                                <option value="Limited Company">Limited Company · 有限责任公司</option>
+                                <option value="Partnership">Partnership · 合伙企业</option>
+                                <option value="IICH">IICH · 个体工商</option>
+                                <option value="Others">Others · 其他</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>公司名称<span class="api-key">company_name</span></label>
+                            <input type="text" id="m_companyName" placeholder="外国 / 香港企业必填" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label>英文公司名<span class="api-key">company_name_en</span></label>
+                            <input type="text" id="m_companyNameEn" placeholder="外国 / 香港企业必填" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label>注册号<span class="api-key">identify_no</span></label>
+                            <input type="text" id="m_identifyNo" placeholder="外国 / 香港企业必填" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-row-4">
+                        <div class="form-group">
+                            <label>上市<span class="api-key">listed</span></label>
+                            <select id="m_listed"><option value="0">否</option><option value="1">是</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>国有<span class="api-key">state_owned_enterprised</span></label>
+                            <select id="m_stateOwned"><option value="0">否</option><option value="1">是</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>外资<span class="api-key">foreign_owned_enterprised</span></label>
+                            <select id="m_foreignOwned"><option value="0">否</option><option value="1">是</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>成立日期<span class="api-key">establish_date</span></label>
+                            <input type="text" id="m_establishDate" placeholder="YYYYMMDD" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label>证照生效日<span class="api-key">commencement_date</span></label>
+                            <input type="text" id="m_commencementDate" placeholder="YYYYMMDD" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label>证照有效期至<span class="api-key">valid_period</span></label>
+                            <input type="text" id="m_validPeriod" placeholder="YYYYMMDD" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group" id="m_onlineStoreGroup">
+                        <label>网店链接<span class="api-key">online_store_url</span></label>
+                        <input type="text" id="m_onlineStoreUrl" placeholder="B2B 必填，如 https://shop.1688.com" autocomplete="off">
+                        <div class="helper-text">merchant_type 为 B2B 时必填，与 BUSINESS_DOCUMENT 二选一</div>
+                    </div>
+                    <div class="form-group">
+                        <label>企业证件附件 <span class="required">*</span><span class="api-key">company_info.attachments[]</span></label>
+                        <div class="upload-item">
+                            <label class="upload-dash"><input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf,.xls,.xlsx,.doc,.docx,.zip,.rar" data-file-type="BI"><span class="upload-dash__label">BI · 营业执照</span><span class="upload-dash__hint">点击上传 · ≤10MB</span></label>
+                            <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                        </div>
+                        <div class="upload-item">
+                            <label class="upload-dash"><input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf,.xls,.xlsx,.doc,.docx,.zip,.rar" data-file-type="BAP"><span class="upload-dash__label">BAP · 银行账户证明</span><span class="upload-dash__hint">点击上传 · ≤10MB</span></label>
+                            <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                        </div>
+                        <div class="upload-item">
+                            <label class="upload-dash"><input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf,.xls,.xlsx,.doc,.docx,.zip,.rar" data-file-type="SSC"><span class="upload-dash__label">SSC · 股东名册 / 公司章程</span><span class="upload-dash__hint">点击上传 · ≤10MB</span></label>
+                            <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                        </div>
+                        <div class="upload-item">
+                            <label class="upload-dash"><input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf,.xls,.xlsx,.doc,.docx,.zip,.rar" data-file-type="Other"><span class="upload-dash__label">Other · 其他补充材料</span><span class="upload-dash__hint">点击上传 · ≤10MB</span></label>
+                            <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>经营地址<span class="api-key">company_info.operation_address</span></label>
+                        <div class="form-row-4">
+                            <div class="form-group"><input type="text" id="m_op_country" placeholder="国家，如 CN"></div>
+                            <div class="form-group"><input type="text" id="m_op_state" placeholder="省份"></div>
+                            <div class="form-group"><input type="text" id="m_op_city" placeholder="城市"></div>
+                            <div class="form-group"><input type="text" id="m_op_postcode" placeholder="邮编"></div>
+                        </div>
+                        <div class="form-group"><input type="text" id="m_op_line1" placeholder="详细地址"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>法人证件<span class="api-key">company_info.legal_info.attachments[]</span></label>
+                        <div class="upload-item">
+                            <label class="upload-dash"><input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf" data-file-type="PRC_ID_Emblem"><span class="upload-dash__label">PRC_ID_Emblem · 身份证国徽面</span><span class="upload-dash__hint">中国法人</span></label>
+                            <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                        </div>
+                        <div class="upload-item">
+                            <label class="upload-dash"><input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf" data-file-type="PRC_ID_Portrait"><span class="upload-dash__label">PRC_ID_Portrait · 身份证人像面</span><span class="upload-dash__hint">中国法人</span></label>
+                            <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                        </div>
+                        <div class="upload-item">
+                            <label class="upload-dash"><input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf" data-file-type="PP"><span class="upload-dash__label">PP · 护照</span><span class="upload-dash__hint">港澳台 / 境外法人</span></label>
+                            <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>实际受益人（UBO）<span class="api-key">company_info.ubo_list[]</span></label>
+                        <div class="ubo-box">
+                            <div class="form-row-2">
+                                <div class="form-group"><input type="text" id="m_ubo_name" placeholder="姓名"></div>
+                                <div class="form-group"><input type="text" id="m_ubo_nameEn" placeholder="英文名"></div>
+                            </div>
+                            <div class="form-row-4">
+                                <div class="form-group"><input type="text" id="m_ubo_idNo" placeholder="证件号"></div>
+                                <div class="form-group"><input type="text" id="m_ubo_birth" placeholder="出生日期 YYYYMMDD"></div>
+                                <div class="form-group"><input type="text" id="m_ubo_issue" placeholder="签发日期"></div>
+                                <div class="form-group"><input type="text" id="m_ubo_expire" placeholder="有效期至"></div>
+                            </div>
+                            <div class="upload-item">
+                                <label class="upload-dash"><input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf" data-file-type="PP"><span class="upload-dash__label">PP · 受益人证件附件</span><span class="upload-dash__hint">点击上传 · ≤10MB</span></label>
+                                <button type="button" class="upload-remove" title="移除已上传文件">&times;</button>
+                            </div>
+                            <div class="form-group"><input type="text" id="m_ubo_address" placeholder="受益人居住地址"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reg-group">
+                    <div class="reg-group__title">创建结果<span class="api-key">响应数据</span></div>
+                    <input type="hidden" id="m_unitId">
+                    <input type="hidden" id="m_regStatus">
+                    <div class="result-list">
+                        <div class="result-list__row"><span class="result-list__label">平台用户 ID</span><span class="result-list__value card-mono" id="m_resultPartnerUserId">—</span></div>
+                        <div class="result-list__row"><span class="result-list__label">单元 ID</span><span class="result-list__value card-mono" id="m_resultUnitId">—</span></div>
+                        <div class="result-list__row"><span class="result-list__label">客户 ID</span><span class="result-list__value card-mono" id="m_resultClientId">—</span></div>
+                        <div class="result-list__row"><span class="result-list__label">注册状态</span><span class="result-list__value"><span class="tos-tag tos-tag--warning" id="m_resultStatusTag">Pending 待审核</span></span></div>
+                    </div>
+                    <div class="result-list__note">以上为创建 Pyvio 用户成功后返回的数据。</div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="cancelMerchantModalBtn">取消</button>
+                    <button class="btn-primary" id="saveMerchantBtn">保存商户</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 全球账户详情 / 编辑 ===== -->
+    <div id="globalDetailModal" class="modal-overlay">
+        <div class="modal-container" style="width: 960px;">
+            <div class="gd-header">
+                <button class="gd-back" id="gdBackBtn"><i class="fas fa-arrow-left"></i> 返回</button>
+                <span class="gd-head__flag" id="gdFlag">🇬🇭</span>
+                <div class="gd-head__info">
+                    <div class="gd-title" id="gdAccountNo">—</div>
+                    <div class="gd-sub" id="gdCurrencySub">账户</div>
+                </div>
+                <div class="gd-head__actions">
+                    <button class="btn-secondary" id="gdStatementBtn"><i class="fas fa-receipt"></i> VA 对账单</button>
+                    <button class="btn-secondary" id="gdDisableBtn">停用账户</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="detail-card">
+                    <div class="detail-card__head">
+                        <h3>账户详情</h3>
+                        <button class="btn-primary" id="gdDownloadBtn"><i class="fas fa-file-pdf"></i> 下载银行开户证明</button>
+                    </div>
+                    <div class="detail-grid" id="gdDetailGrid"></div>
+                </div>
+
+                <div class="detail-card">
+                    <div class="detail-card__head">
+                        <h3>交易</h3>
+                        <button class="btn-secondary"><i class="fas fa-download"></i> 下载</button>
+                    </div>
+                    <div class="tx-filter">
+                        <label class="tx-date"><i class="fas fa-calendar-alt"></i><input type="date" id="gdTxFrom" placeholder="开始日期"></label>
+                        <span style="color:var(--tos-text-muted);">至</span>
+                        <label class="tx-date"><input type="date" id="gdTxTo"></label>
+                        <select class="filter-select" id="gdTxStatus"><option value="">全部状态</option><option value="success">成功</option><option value="pending">处理中</option><option value="failed">失败</option></select>
+                    </div>
+                    <div class="tx-empty">
+                        <i class="fas fa-chart-line"></i>
+                        <div>暂无事件，试试将有</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除确认 -->
+    <div id="confirmModal" class="modal-overlay">
+        <div class="confirm-card">
+            <h4 id="confirmTitle">删除确认</h4>
+            <p id="confirmText">确认删除？</p>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelConfirmBtn">取消</button>
+                <button class="btn-danger" id="confirmDeleteBtn">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Pyvio 收款账户（Payee）创建 / 编辑 ===== -->
+    <div id="payeeModal" class="modal-overlay">
+        <div class="modal-container payee-modal-container" style="width: 1080px; max-width: 96vw;">
+            <div class="modal-header">
+                <h3 id="payeeModalTitle">创建收款人</h3>
+                <button class="modal-close" id="closePayeeModalBtn">&times;</button>
+            </div>
+            <div class="payee-create">
+                <aside class="payee-create__nav">
+                    <div class="payee-create__nav-item active" data-payee-sec="account">收款人账户</div>
+                    <div class="payee-create__nav-item" data-payee-sec="pay">付款方式</div>
+                    <div class="payee-create__nav-item" data-payee-sec="info">收款人信息</div>
+                </aside>
+                <div class="payee-create__main">
+                    <!-- 收款人账户 -->
+                    <section class="payee-sec" id="payeeSecAccount">
+                        <div class="payee-sec__title">收款人账户</div>
+                        <div class="payee-sec__warn"><i class="fas fa-exclamation-circle"></i> 为确保您的付款流程顺畅无碍，请务必仔细且准确地填写收款方信息，避免因信息错误而耽误您的付款进度。</div>
+                        <div class="payee-field">
+                            <span class="payee-field__label">收款人类型 <span class="req">*</span></span>
+                            <div class="payee-opt-grid">
+                                <div class="payee-opt-card is-selected" id="holderCompany" data-holder="Company">
+                                    <i class="fas fa-building payee-opt-card__icon"></i>
+                                    <div class="payee-opt-card__body"><div class="payee-opt-card__title">公司</div><div class="payee-opt-card__desc">支付给企业或公司账户</div></div>
+                                </div>
+                                <div class="payee-opt-card" id="holderPersonal" data-holder="Personal">
+                                    <i class="fas fa-user payee-opt-card__icon"></i>
+                                    <div class="payee-opt-card__body"><div class="payee-opt-card__title">个人</div><div class="payee-opt-card__desc">支付给个人账户</div></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="payee-field">
+                            <span class="payee-field__label">收款账户类型 <span class="req">*</span></span>
+                            <div class="payee-opt-grid">
+                                <div class="payee-opt-card" id="accWallet" data-acc="E-Wallet">
+                                    <i class="fas fa-wallet payee-opt-card__icon"></i>
+                                    <div class="payee-opt-card__body"><div class="payee-opt-card__title">电子钱包</div><div class="payee-opt-card__desc">支付到电子钱包账户</div></div>
+                                </div>
+                                <div class="payee-opt-card is-selected" id="accBank" data-acc="bank">
+                                    <i class="fas fa-credit-card payee-opt-card__icon"></i>
+                                    <div class="payee-opt-card__body"><div class="payee-opt-card__title">银行账号</div><div class="payee-opt-card__desc">支付到银行账户</div></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="payee-field">
+                            <span class="payee-field__label">该收款人是否是贵司的授权关联方 <span class="req">*</span></span>
+                            <div class="payee-opt-grid payee-opt-grid--md">
+                                <div class="payee-opt-card is-selected" id="authYes" data-auth="Y">是</div>
+                                <div class="payee-opt-card" id="authNo" data-auth="N">否</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 付款方式 -->
+                    <section class="payee-sec" id="payeeSecPay">
+                        <div class="payee-sec__title">付款方式</div>
+                        <div class="payee-form">
+                            <div class="form-group">
+                                <label>银行国家/地区（收款人银行所在国）<span class="required">*</span></label>
+                                <select id="p_formCountry" style="height:40px;"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>账户币种（收款人银行账户币种）<span class="required">*</span></label>
+                                <select id="p_formCurrency" style="height:40px;"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>付款方式 <span class="required">*</span></label>
+                                <div id="p_methodOptions"></div>
+                            </div>
+                            <input type="hidden" id="p_formPaymentMethod" value="Swift">
+                        </div>
+                    </section>
+
+                    <!-- 收款人信息 -->
+                    <section class="payee-sec" id="payeeSecInfo">
+                        <div class="payee-sec__title">收款人信息<span id="p_infoSub" style="margin-left:8px;font-size:14px;font-weight:400;color:var(--tos-text-muted);">（收款人银行账户信息）</span></div>
+                        <div class="payee-form">
+                            <div id="p_bankGroup">
+                                <div class="form-row-2">
+                                    <div class="form-group"><label>收款人昵称</label><input id="p_nickname" placeholder="选填"></div>
+                                    <div class="form-group"><label>银行账户名 <span class="required">*</span></label><input id="p_bankAccountName" placeholder="银行账户名"></div>
+                                </div>
+                                <div class="form-group"><label>企业注册编号 <span class="required">*</span></label><input id="p_companyRegNo" placeholder="企业注册编号"></div>
+                                <div class="form-group"><label>法人姓名 <span class="required">*</span></label><input id="p_legalName" placeholder="法人姓名"></div>
+                                <div class="form-group"><label>身份证号 <span class="required">*</span></label><input id="p_idNo" placeholder="身份证号"></div>
+                                <div class="form-group"><label>收款人银行账号 <span class="required">*</span></label><input id="p_bankAccountNo" placeholder="收款人银行账号"></div>
+                                <div class="form-group"><label>银行名称 <span class="required">*</span></label><input id="p_bankName" placeholder="请输入银行名称查询"></div>
+                                <div class="form-row-2">
+                                    <div class="form-group"><label>收款人所在省（州）</label><input id="p_payeeProvince" placeholder="选填"></div>
+                                    <div class="form-group"><label>收款人所在城市</label><input id="p_payeeCity" placeholder="选填"></div>
+                                </div>
+                                <div class="form-row-2">
+                                    <div class="form-group"><label>支行名称</label><input id="p_branchName" placeholder="选填"></div>
+                                    <div class="form-group"><label>支行代码（联行号） <span class="required">*</span></label><input id="p_branchCode" placeholder="支行代码"></div>
+                                </div>
+                                <div class="form-group"><label>备注</label><input id="p_remark" placeholder="选填"></div>
+                                <div class="form-group">
+                                    <label>请上传文件 <span class="required">*</span></label>
+                                    <div class="helper-text" style="margin:0 0 8px;">请提供证明您和收款人具体业务关系的商业关系材料；如您和收款人之间有盖章的合作协议等材料。</div>
+                                    <div class="upload-item">
+                                        <label class="upload-dash" id="payeeContactUpload"><input type="file" class="upload-dash__input" accept=".zip,.rar,.pdf,.jpg,.jpeg,.png,.bmp"><span class="upload-dash__label">上传文件</span><span class="upload-dash__hint">ZIP/RAR/PDF/JPG/PNG/BMP ≤20MB</span></label>
+                                        <button type="button" class="upload-remove" title="移除">&times;</button>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>支付密码 <span class="required">*</span></label>
+                                    <input id="p_payPwd" maxlength="6" inputmode="numeric" placeholder="请输入6位数字">
+                                    <div class="helper-text">您还未设置支付密码　<a href="#" class="link-text">前去设置</a></div>
+                                </div>
+                            </div>
+                            <div id="p_walletGroup" style="display:none;">
+                                <div class="form-row-2">
+                                    <div class="form-group"><label>钱包 Provider <span class="required">*</span></label><select id="p_walletProvider"></select></div>
+                                    <div class="form-group"><label>钱包账号 / 手机号 <span class="required">*</span></label><input id="p_walletAccountNo" placeholder="如 0917 000 0000"></div>
+                                </div>
+                                <div class="form-group"><label>账户名称</label><input id="p_walletAccountName" placeholder="account name"></div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelPayeeModalBtn">返回</button>
+                <button class="btn-primary" id="payeeSubmitBtn">创建</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Pyvio 收款账户详情 ===== -->
+    <div id="payeeDetailModal" class="modal-overlay">
+        <div class="modal-container" style="width: 900px;">
+            <div class="modal-header">
+                <h3>收款账户详情</h3>
+                <button class="modal-close" id="closePayeeDetailBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-card">
+                    <div class="detail-card__head"><h3>账户信息</h3></div>
+                    <div class="detail-grid" id="payeeDetailGrid"></div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-card__head"><h3>响应记录</h3></div>
+                    <div class="detail-grid" id="payeeDetailResponse"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const STORAGE_KEY = "shop_payout_data_v6";
+        const TYPE_BANK = "银行卡";
+        const TYPE_PYVIO = "全球账户";
+
+        const REG_STATUS = {
+            pending: { label: "Pending 待审核", cls: "tos-tag--warning" },
+            active: { label: "Active 已激活", cls: "tos-tag--success" },
+            suspend: { label: "Suspend 已冻结", cls: "tos-tag--error" },
+            deact: { label: "Deact 已注销", cls: "tos-tag--default" },
+            returned: { label: "Returned 已退回", cls: "tos-tag--error" }
+        };
+        const VA_STATUS = {
+            active: { label: "正常", cls: "tos-tag--success" },
+            pending: { label: "待审核", cls: "tos-tag--warning" },
+            failure: { label: "已失败", cls: "tos-tag--error" },
+            suspend: { label: "已冻结", cls: "tos-tag--error" }
+        };
+        const KYC_LABELS = {
+            "china-individual": "中国个人",
+            "china-enterprise-self-employed": "中国个体户",
+            "china-enterprise-limited": "中国有限责任公司",
+            "china-enterprise-investment": "中国投资类公司",
+            "hk-enterprise": "香港企业",
+            "foreign-enterprise": "境外企业",
+            "hk-individual": "香港个人",
+            "foreign-individual": "境外个人"
+        };
+        const COUNTRY_NAMES = { BR:"巴西", BH:"巴林", CA:"加拿大", CN:"中国", DE:"德国", DK:"丹麦", GB:"英国", GH:"加纳", HK:"香港（中国）", ID:"印度尼西亚", MX:"墨西哥", MY:"马来西亚", NG:"尼日利亚", PH:"菲律宾", SG:"新加坡", TH:"泰国", US:"美国", VN:"越南" };
+        const COUNTRY_FLAGS = { BR:"🇧🇷", BH:"🇧🇭", CA:"🇨🇦", CN:"🇨🇳", DE:"🇩🇪", DK:"🇩🇰", GB:"🇬🇧", GH:"🇬🇭", HK:"🇭🇰", ID:"🇮🇩", MX:"🇲🇽", MY:"🇲🇾", NG:"🇳🇬", PH:"🇵🇭", SG:"🇸🇬", TH:"🇹🇭", US:"🇺🇸", VN:"🇻🇳" };
+        const CURRENCY_FLAGS = { BRL:"🇧🇷", CAD:"🇨🇦", EUR:"🇪🇺", GBP:"🇬🇧", GHS:"🇬🇭", HKD:"🇭🇰", IDR:"🇮🇩", MXN:"🇲🇽", MYR:"🇲🇾", NGN:"🇳🇬", PHP:"🇵🇭", SGD:"🇸🇬", THB:"🇹🇭", USD:"🇺🇸", VND:"🇻🇳", CNY:"🇨🇳" };
+        const BIZ_LABELS = { "Collection": "平台收款", "B2B Collection": "B2B 收款", "Direct Payment": "直接付款" };
+        const PURPOSE_OPTIONS = [
+            { value: "Collection", label: "平台收款", desc: "用于电商平台回款", icon: "fa-store" },
+            { value: "B2B Collection", label: "B2B 收款（外贸收款）", desc: "用于一般贸易 / 服务贸易收款", icon: "fa-briefcase" },
+            { value: "Direct Payment", label: "直接付款", desc: "用于直接付款场景", icon: "fa-credit-card" }
+        ];
+        const VA_COUNTRIES = ["BR","BH","CA","CN","DE","DK","GB","GH","HK","ID","MX","MY","NG","PH","SG","TH","US","VN"];
+        const VA_CURRENCIES = ["BRL","CAD","EUR","GBP","GHS","HKD","IDR","MXN","MYR","NGN","PHP","SGD","THB","USD","VND"];
+        const VA_PLATFORMS = ["App Store","Facebook Audience Network","Google Admob","Google Adsense","Google Play","Jumia","Lazada","Shopee","Shopify","Shopyy","TikTok Shop","Tokopedia","Mercado Libre"];
+
+        let merchants = [
+            {
+                id: 1, partnerUserId: "PV16887897986562", clientId: "CT1633650493875645185",
+                email: "pay@yunshang.com", phone: "18700000000", merchantType: "B2C",
+                kycType: "china-individual", industry: ["Electronics", "Computers"],
+                unitId: "UT1675766643661405569", regStatus: "active", merchantName: "云尚科技",
+                createdAt: "2026-01-12 10:22"
+            },
+            {
+                id: 2, partnerUserId: "PV16887900123456", clientId: "CT1633650501234567",
+                email: "sales@huayunsupply.com", phone: "13800000001", merchantType: "B2B",
+                kycType: "china-enterprise-limited", industry: ["Home and Kitchen", "Food"],
+                unitId: "UT1675800000000001", regStatus: "pending", merchantName: "华云供应链",
+                createdAt: "2026-02-03 15:40"
+            }
+        ];
+
+        let accounts = [
+            { id: 1, kind: "bank", bank: "中国银行", cardNo: "6217001200128899", currency: "USD", isDefault: true, status: "enabled", remark: "提现默认到账账户" },
+            { id: 2, kind: "pyvio-va", merchantId: 1, accountName: "Tospino 加纳收款", gaId: "va1568177006448032256", partnerGaId: "p13451234123", accountNo: "7745439956449547", bizType: "Collection", country: "MY", currency: "MYR", platform: "Lazada", shopId: "1640612294964712448", multiCurrency: "N", vaStatus: "active", isDefault: false, status: "enabled", remark: "" },
+            { id: 3, kind: "bank", bank: "中国工商银行", cardNo: "62220212001107", currency: "CNY", isDefault: false, status: "disabled", remark: "已停用，历史到账记录保留" },
+            { id: 4, kind: "pyvio-va", merchantId: 1, accountName: "Shopee 新加坡收款", gaId: "va1568177006448032257", partnerGaId: "p13451234124", accountNo: "7745467692635136", bizType: "Collection", country: "SG", currency: "USD", platform: "Shopee", shopId: "1640612294964712449", multiCurrency: "Y", vaStatus: "active", isDefault: false, status: "enabled", remark: "Lazada 主账户备用" }
+        ];
+
+        const CURRENCIES = ["USD","CAD","EUR","JPY","GBP","AUD","CHF","HKD","CNH","CNY","VND","IDR","PHP","THB","MYR","KRW","SGD","TRY","INR","ARS","BRL","COP","MXN","NGN","KES","GHS","NZD","AED","EGP","MAD","RUB","SAR"];
+        const BANK_PAYMENT_METHODS = ["Local","Swift"];
+        const WALLET_PAYMENT_METHODS = ["P2A","BKash","PIX","PagBank","DANA","Doku","Linkaja","OVO","Touch'nGo","Coins","GCash","GrabPay","PayMaya","Easypaisa","JazzCash"];
+        const PAYEE_TYPE_LABELS = {
+            "BeneficiaryBankAccount": "提现到账银行卡",
+            "SupplierBankAccount": "供应商银行卡",
+            "E-Wallet": "电子钱包"
+        };
+        const PAYEE_TYPE_SHORT = {
+            "BeneficiaryBankAccount": "到账",
+            "SupplierBankAccount": "供应商",
+            "E-Wallet": "钱包"
+        };
+        const PAYEE_METHOD_LABELS = {
+            "Local": "本地转账 Local",
+            "Swift": "SWIFT 转账 Swift",
+            "P2A": "P2A","BKash":"bKash","PIX":"PIX","PagBank":"PagBank","DANA":"DANA","Doku":"Doku","Linkaja":"Linkaja","OVO":"OVO",
+            "Touch'nGo":"Touch'nGo","Coins":"Coins","GCash":"GCash","GrabPay":"GrabPay","PayMaya":"PayMaya","Easypaisa":"Easypaisa","JazzCash":"JazzCash"
+        };
+        const PAYEE_STATUS = {
+            "Pending": { label: "Pending 待审核", cls: "tos-tag--warning" },
+            "Approved": { label: "Approved 已通过", cls: "tos-tag--success" },
+            "Declined": { label: "Declined 已拒绝", cls: "tos-tag--error" }
+        };
+        let payees = [
+            {
+                id: 1, partner_payee_id: "179642688272916481", payee_id: "ba1734854632727430217", unit_id: "UT1675766643661405569",
+                payee_type: "SupplierBankAccount", payment_method: "Local", holder_type: "Personal", currency: "USD",
+                status: "Pending", created: 1702525978000, modified: 1702525978000,
+                contact_documents: "783aded6aa0848c39f37e50e2054b659", reference: "", remark: "US 供应商收款",
+                payee_info: { first_name: "first name", last_name: "last name", email: "person@example.com", phone: "5336968001", payee_country: "US", province: "California", city: "Los Angeles", post_code: "90001", street_address: "456 Main Street", company_name: "", company_no: "", register_date: "" },
+                bank_account_info: { account_no: "6877028001", account_country: "US", bank_name: "CITI BANK", bank_address: "11 PENNS WAY", account_name: "first name last name", bank_code: "023", branch_address: "5554 California Ave", branch_code: "1234", branch_name: "Oswell", swift_code: "CITIUS33", routing_type1: "Fedwire", routing_value1: "321171184", province: "California", city: "Bakersfield", iban: "", clabe: "" },
+                wallet_info: null
+            },
+            {
+                id: 2, partner_payee_id: "179642688272916482", payee_id: "ba1734854632727430218", unit_id: "UT1675766643661405569",
+                payee_type: "BeneficiaryBankAccount", payment_method: "Swift", holder_type: "Company", currency: "GBP",
+                status: "Approved", created: 1703128000000, modified: 1703128100000,
+                contact_documents: "", reference: "ac54e8f1a0f94c6da9a0e7b1c9d1e2f3", remark: "提现到账花旗伦敦",
+                payee_info: { first_name: "Jane", last_name: "Doe", email: "finance@tospino.com", phone: "+442071838750", payee_country: "GB", province: "London", city: "London", post_code: "EC2N 4AY", street_address: "25 Bank Street", company_name: "Tospino Ltd", company_no: "12345678", register_date: "20160427" },
+                bank_account_info: { account_no: "GB29NWBK60161331926819", account_country: "GB", bank_name: "NATWEST", bank_address: "250 Bishopsgate", account_name: "Tospino Ltd", bank_code: "601613", branch_address: "25 Bank Street", branch_code: "NWBK", branch_name: "Bank Street", swift_code: "NWBKGB2L", routing_type1: "SWIFT", routing_value1: "", province: "London", city: "London", iban: "GB29NWBK60161331926819", clabe: "" },
+                wallet_info: null
+            },
+            {
+                id: 3, partner_payee_id: "179642688272916483", payee_id: "ba1734854632727430219", unit_id: "UT1675766643661405569",
+                payee_type: "E-Wallet", payment_method: "GCash", holder_type: "Personal", currency: "PHP",
+                status: "Approved", created: 1704132000000, modified: 1704132100000,
+                contact_documents: "", reference: "", remark: "菲律宾本地钱包",
+                payee_info: { first_name: "Maria", last_name: "Santos", email: "maria@example.com", phone: "09171234567", payee_country: "PH", province: "Metro Manila", city: "Manila", post_code: "1000", street_address: "123 Rizal Ave", company_name: "", company_no: "", register_date: "" },
+                bank_account_info: null,
+                wallet_info: { wallet_provider: "GCash", wallet_account_no: "09171234567", account_name: "Maria Santos" }
+            }
+        ];
+
+        let activeTab = "pyvio";
+        let editingPayeeId = null;
+        let editingAccountId = null;
+        let editingMerchantId = null;
+        let pendingDelete = null;
+        let vaDraftMerchantId = null;
+        let accountModalMode = "bank";
+        let activeMerchantId = null;
+
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (parsed && Array.isArray(parsed.merchants) && parsed.merchants.length) merchants = parsed.merchants;
+                if (parsed && Array.isArray(parsed.accounts) && parsed.accounts.length) accounts = parsed.accounts;
+                if (parsed && Array.isArray(parsed.payees) && parsed.payees.length) payees = parsed.payees;
+            }
+        } catch (e) {}
+
+        function persist() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({ merchants, accounts, payees }));
+        }
+
+        function esc(str) {
+            if (str === undefined || str === null) return "";
+            return String(str).replace(/[&<>]/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m]);
+        }
+
+        function formatTime(val) {
+            if (!val && val !== 0) return "—";
+            let d;
+            if (typeof val === "number") d = new Date(val);
+            else d = new Date(String(val).replace(" ", "T"));
+            if (Number.isNaN(d.getTime())) return "—";
+            const pad = (n) => String(n).padStart(2, "0");
+            return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
+        }
+
+        function maskCard(no) {
+            const digits = String(no || "").replace(/\D/g, "");
+            if (digits.length > 8) return digits.slice(0, 4) + " **** **** " + digits.slice(-4);
+            return digits || "—";
+        }
+
+        function maskNo(no) {
+            const digits = String(no || "").replace(/\D/g, "");
+            if (digits.length > 8) return digits.slice(0, 4) + " **** " + digits.slice(-4);
+            return digits || "—";
+        }
+
+        function merchantLabel(m) {
+            if (!m) return "—";
+            return m.merchantName || m.email || m.partnerUserId || ("商户 " + m.id);
+        }
+
+        function accountLabel(a) {
+            if (!a) return "—";
+            if (a.kind === "pyvio-va") {
+                return "全球账户 · " + (a.accountNo ? maskNo(a.accountNo) : a.gaId || "全球账户");
+            }
+            const tail = String(a.cardNo || "").replace(/\D/g, "").slice(-4);
+            return (a.bank || "银行卡") + " · 尾号" + (tail || "—");
+        }
+
+        function getDefaultAccount() {
+            return accounts.find((a) => a.isDefault) || null;
+        }
+
+        function getMerchant(id) {
+            return merchants.find((m) => m.id === id) || null;
+        }
+
+        function switchTab(tab) {
+            activeTab = tab;
+            document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("active", t.dataset.tab === tab));
+            document.getElementById("panel-pyvio").classList.toggle("active", tab === "pyvio");
+            document.getElementById("panel-pyvio-bank").classList.toggle("active", tab === "pyvio-bank");
+            document.getElementById("panel-bank").classList.toggle("active", tab === "bank");
+            render();
+        }
+
+        function render() {
+            if (activeTab === "bank") renderBank();
+            else if (activeTab === "pyvio-bank") renderPyvioBank();
+            else renderPyvio();
+        }
+
+        function renderPyvioBank() {
+            const tbody = document.getElementById("pyvioBankTableBody");
+            const kw = (document.getElementById("pyvioBankSearch").value || "").trim().toLowerCase();
+            const holderFilter = document.getElementById("pyvioBankHolderFilter").value;
+            const statusFilter = document.getElementById("pyvioBankStatusFilter").value;
+
+            const lis = payees.filter((p) => {
+                if (holderFilter && p.holder_type !== holderFilter) return false;
+                if (statusFilter && p.status !== statusFilter) return false;
+                if (!kw) return true;
+                const hay = [
+                    payeeDisplayName(p), payeeAccountNoLabel(p), p.payee_id, p.partner_payee_id,
+                    p.payee_info && p.payee_info.email, PAYEE_TYPE_LABELS[p.payee_type]
+                ].filter(Boolean).join(" ").toLowerCase();
+                return hay.includes(kw);
+            });
+
+            document.getElementById("pyvioBankListHint").textContent = "共 " + lis.length + " 个收款账户";
+            document.getElementById("pyvioBankFooterCount").textContent = "共 " + payees.length + " 个收款账户";
+
+            if (!lis.length) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-row">暂无收款账户，点击右上角「添加收款账户」创建 Payee</td></tr>';
+                return;
+            }
+            let rows = "";
+            lis.forEach((p) => {
+                const st = PAYEE_STATUS[p.status] || PAYEE_STATUS.Pending;
+                rows += '<tr data-id="' + p.id + '">' +
+                    '<td><div class="account-name">' + esc(payeeDisplayName(p)) + '</div>' +
+                    (p.remark ? '<div class="sub-text">' + esc(p.remark) + "</div>" : "") + "</td>" +
+                    '<td><span class="card-mono">' + esc(payeeAccountNoLabel(p)) + "</span></td>" +
+                    "<td>" + esc(PAYEE_TYPE_SHORT[p.payee_type] || p.payee_type) + "</td>" +
+                    "<td>" + esc(payeeMethodLabel(p)) + "</td>" +
+                    "<td><span class=\"tos-tag tos-tag--default\">" + esc(p.currency) + "</span></td>" +
+                    "<td>" + (p.holder_type === "Company" ? "公司" : "个人") + "</td>" +
+                    '<td><span class="tos-tag ' + st.cls + '">' + st.label + "</span></td>" +
+                    '<td class="text-right"><div class="actions-cell">' +
+                    '<button class="btn-link" data-action="detail" data-id="' + p.id + '">详情</button>' +
+                    '<button class="btn-link" data-action="edit" data-id="' + p.id + '">编辑</button>' +
+                    '<button class="btn-link danger" data-action="delete" data-id="' + p.id + '">删除</button>' +
+                    "</div></td></tr>";
+            });
+            tbody.innerHTML = rows;
+        }
+
+        function payeeDisplayName(p) {
+            if (!p) return "—";
+            if (p.wallet_info && p.wallet_info.account_name) return p.wallet_info.account_name;
+            if (p.bank_account_info && p.bank_account_info.account_name) return p.bank_account_info.account_name;
+            const pi = p.payee_info || {};
+            return [pi.first_name, pi.last_name].filter(Boolean).join(" ") || pi.company_name || p.payee_id;
+        }
+        function payeeAccountNoLabel(p) {
+            if (!p) return "—";
+            const no = p.wallet_info ? p.wallet_info.wallet_account_no : (p.bank_account_info && p.bank_account_info.account_no);
+            const s = String(no || "").replace(/\s/g, "");
+            if (s.length > 8) return s.slice(0, 4) + " **** **** " + s.slice(-4);
+            return s || "—";
+        }
+        function payeeMethodLabel(p) {
+            return PAYEE_METHOD_LABELS[p.payment_method] || p.payment_method || "—";
+        }
+
+        let payeeHolder = "Company";
+        let payeeAcc = "bank";
+        let payeeAuth = "Y";
+        let payeePayMethod = "Swift";
+        let _payeeType = "BeneficiaryBankAccount";
+        const PAYEE_COUNTRIES = [["US","美国 United States"],["GB","英国 United Kingdom"],["CN","中国 China"],["GH","加纳 Ghana"],["HK","香港 Hong Kong"],["SG","新加坡 Singapore"],["MY","马来西亚 Malaysia"],["PH","菲律宾 Philippines"],["ID","印度尼西亚 Indonesia"],["TH","泰国 Thailand"],["VN","越南 Vietnam"],["BR","巴西 Brazil"],["MX","墨西哥 Mexico"],["NG","尼日利亚 Nigeria"],["DE","德国 Germany"],["CA","加拿大 Canada"],["AU","澳大利亚 Australia"],["JP","日本 Japan"]];
+
+        function fillPayeeSelects() {
+            document.getElementById("p_formCurrency").innerHTML = CURRENCIES.map((c) => '<option value="' + c + '">' + c + "</option>").join("");
+            document.getElementById("p_formCountry").innerHTML = PAYEE_COUNTRIES.map((x) => '<option value="' + x[0] + '">' + x[1] + "</option>").join("");
+        }
+        function applyPayeeCardState() {
+            document.getElementById("holderCompany").classList.toggle("is-selected", payeeHolder === "Company");
+            document.getElementById("holderPersonal").classList.toggle("is-selected", payeeHolder === "Personal");
+            document.getElementById("accWallet").classList.toggle("is-selected", payeeAcc === "E-Wallet");
+            document.getElementById("accBank").classList.toggle("is-selected", payeeAcc === "bank");
+            document.getElementById("authYes").classList.toggle("is-selected", payeeAuth === "Y");
+            document.getElementById("authNo").classList.toggle("is-selected", payeeAuth === "N");
+            const isWallet = payeeAcc === "E-Wallet";
+            document.getElementById("p_infoSub").textContent = isWallet ? "（电子钱包信息）" : "（收款人银行账户信息）";
+            document.getElementById("p_bankGroup").style.display = isWallet ? "none" : "";
+            document.getElementById("p_walletGroup").style.display = isWallet ? "" : "none";
+            renderPayeeMethods();
+        }
+        function renderPayeeMethods() {
+            const currency = document.getElementById("p_formCurrency").value || "USD";
+            const isWallet = payeeAcc === "E-Wallet";
+            let methods;
+            if (isWallet) {
+                methods = WALLET_PAYMENT_METHODS.map((m) => ({ value: m, title: PAYEE_METHOD_LABELS[m] || m, desc: "支付到电子钱包账户" }));
+            } else if (currency === "USD") {
+                methods = [
+                    { value: "Swift", title: "Swift", desc: "国际银行转账方式。需提供：• SWIFT 号  银行账号\n最低限额 1.00USD   最高无限额\n费用: 2.00$/USD/笔 (min.USD 50.00)  时效: 0-3工作日" },
+                    { value: "ACH", title: "ACH", desc: "目的地国家当地支付方式\n最低限额 50.00USD   最高限额 1,000,000.00USD\n费用: 1.00$/USD/笔 (min.USD 50.00)  时效: 0-1工作日" }
+                ];
+            } else if (currency === "CNY") {
+                methods = [
+                    { value: "Local", title: "Local", desc: "目的地国家当地支付方式\n最低限额: CNY   最高限额: CNY\n费用: 1.00$/USD/笔 (min.USD 50.00)  时效: 0-1工作日" }
+                ];
+            } else {
+                methods = BANK_PAYMENT_METHODS.map((m) => ({ value: m, title: PAYEE_METHOD_LABELS[m] || m, desc: "银行账户支付方式" }));
+            }
+            if (!methods.some((m) => m.value === payeePayMethod)) payeePayMethod = methods[0].value;
+            document.getElementById("p_formPaymentMethod").value = payeePayMethod;
+            document.getElementById("p_methodOptions").innerHTML = methods.map((m) =>
+                '<div class="payee-method-card' + (m.value === payeePayMethod ? " is-selected" : "") + '" data-method="' + m.value + '">' +
+                '<span class="payee-method-card__radio"></span>' +
+                '<div><div class="payee-method-card__title">' + m.title + '</div><div class="payee-method-card__desc">' + m.desc + "</div></div>" +
+                "</div>").join("");
+            if (isWallet) {
+                document.getElementById("p_walletProvider").innerHTML = WALLET_PAYMENT_METHODS.map((m) => '<option value="' + m + '">' + (PAYEE_METHOD_LABELS[m] || m) + "</option>").join("");
+                document.getElementById("p_walletProvider").value = payeePayMethod;
+            }
+        }
+
+        function payeeGoSection(sec) {
+            document.querySelectorAll(".payee-create__nav-item").forEach((i) => i.classList.toggle("active", i.dataset.payeeSec === sec));
+            const id = "payeeSec" + sec.charAt(0).toUpperCase() + sec.slice(1);
+            const el = document.getElementById(id);
+            const main = document.querySelector(".payee-create__main");
+            if (main && el) main.scrollTo({ top: el.offsetTop, behavior: "smooth" });
+        }
+
+        function collectPayeeForm() {
+            const v = (id) => document.getElementById(id).value;
+            const type = payeeAcc === "E-Wallet" ? "E-Wallet" : _payeeType;
+            const payee_info = {
+                nickname: v("p_nickname"),
+                company_no: v("p_companyRegNo"),
+                legal_name: v("p_legalName"),
+                id_no: v("p_idNo"),
+                province: v("p_payeeProvince"),
+                city: v("p_payeeCity"),
+                first_name: v("p_legalName"),
+                last_name: ""
+            };
+            const base = {
+                payee_type: type,
+                payment_method: payeePayMethod,
+                holder_type: payeeHolder,
+                currency: v("p_formCurrency"),
+                auth_related: payeeAuth,
+                remark: v("p_remark"),
+                payee_info,
+                bank_account_info: null,
+                wallet_info: null
+            };
+            if (type === "E-Wallet") {
+                base.wallet_info = { wallet_provider: v("p_walletProvider"), wallet_account_no: v("p_walletAccountNo"), account_name: v("p_walletAccountName") };
+            } else {
+                base.bank_account_info = {
+                    account_name: v("p_bankAccountName"),
+                    account_no: v("p_bankAccountNo"),
+                    bank_name: v("p_bankName"),
+                    branch_name: v("p_branchName"),
+                    branch_code: v("p_branchCode"),
+                    province: v("p_payeeProvince"),
+                    city: v("p_payeeCity"),
+                    remark: v("p_remark")
+                };
+            }
+            return base;
+        }
+
+        function openPayeeModal(payee) {
+            editingPayeeId = payee ? payee.id : null;
+            document.getElementById("payeeModalTitle").textContent = payee ? "编辑收款人" : "创建收款人";
+            fillPayeeSelects();
+            const data = payee || {};
+            _payeeType = data.payee_type || "BeneficiaryBankAccount";
+            payeeAcc = _payeeType === "E-Wallet" ? "E-Wallet" : "bank";
+            payeeHolder = data.holder_type || "Company";
+            payeeAuth = data.auth_related || "Y";
+            payeePayMethod = data.payment_method || (_payeeType === "E-Wallet" ? "GCash" : "Swift");
+            document.getElementById("p_formCurrency").value = data.currency || "USD";
+            const pi = data.payee_info || {};
+            document.getElementById("p_formCountry").value = (data.bank_account_info && data.bank_account_info.account_country) || pi.payee_country || (data.wallet_info && data.wallet_info.account_country) || "US";
+            document.getElementById("p_nickname").value = pi.nickname || "";
+            document.getElementById("p_companyRegNo").value = pi.company_no || pi.company_name || "";
+            document.getElementById("p_legalName").value = pi.legal_name || pi.first_name || "";
+            document.getElementById("p_idNo").value = pi.id_no || "";
+            document.getElementById("p_payeeProvince").value = pi.province || (data.bank_account_info && data.bank_account_info.province) || "";
+            document.getElementById("p_payeeCity").value = pi.city || (data.bank_account_info && data.bank_account_info.city) || "";
+            const bk = data.bank_account_info || {};
+            document.getElementById("p_bankAccountName").value = bk.account_name || "";
+            document.getElementById("p_bankAccountNo").value = bk.account_no || "";
+            document.getElementById("p_bankName").value = bk.bank_name || "";
+            document.getElementById("p_branchName").value = bk.branch_name || "";
+            document.getElementById("p_branchCode").value = bk.branch_code || "";
+            document.getElementById("p_remark").value = data.remark || bk.remark || "";
+            document.getElementById("p_payPwd").value = "";
+            const wl = data.wallet_info || {};
+            document.getElementById("p_walletProvider").value = wl.wallet_provider || payeePayMethod;
+            document.getElementById("p_walletAccountNo").value = wl.wallet_account_no || "";
+            document.getElementById("p_walletAccountName").value = wl.account_name || "";
+            applyPayeeCardState();
+            payeeGoSection("account");
+            const main = document.querySelector(".payee-create__main");
+            if (main) main.scrollTop = 0;
+            document.getElementById("payeeModal").classList.add("active");
+        }
+
+        function closePayeeModal() {
+            document.getElementById("payeeModal").classList.remove("active");
+        }
+
+        function savePayee() {
+            const v = (id) => document.getElementById(id).value;
+            if (!v("p_formCountry")) { showToast("请选择银行国家/地区"); return; }
+            if (!v("p_formCurrency")) { showToast("请选择账户币种"); return; }
+            if (!payeePayMethod) { showToast("请选择付款方式"); return; }
+            const payeeType = payeeAcc === "E-Wallet" ? "E-Wallet" : _payeeType;
+            if (payeeType === "E-Wallet") {
+                if (!v("p_walletAccountNo")) { showToast("请填写钱包账号 / 手机号"); return; }
+            } else {
+                if (!v("p_bankAccountName")) { showToast("请填写银行账户名"); return; }
+                if (!v("p_companyRegNo")) { showToast("请填写企业注册编号"); return; }
+                if (!v("p_legalName")) { showToast("请填写法人姓名"); return; }
+                if (!v("p_idNo")) { showToast("请填写身份证号"); return; }
+                if (!v("p_bankAccountNo")) { showToast("请填写收款人银行账号"); return; }
+                if (!v("p_bankName")) { showToast("请填写银行名称"); return; }
+                if (!v("p_branchCode")) { showToast("请填写支行代码（联行号）"); return; }
+                if (!document.getElementById("payeeContactUpload").classList.contains("has-file")) { showToast("请上传业务关系材料文件"); return; }
+                if (!/^\d{6}$/.test(v("p_payPwd"))) { showToast("支付密码请输入 6 位数字"); return; }
+            }
+            const formData = collectPayeeForm();
+            const now = Date.now();
+            if (editingPayeeId) {
+                const idx = payees.findIndex((p) => p.id === editingPayeeId);
+                if (idx > -1) payees[idx] = Object.assign({}, payees[idx], formData, { modified: now });
+                showToast("收款账户已更新");
+            } else {
+                payees.unshift(Object.assign({ id: Date.now(), partner_payee_id: String(Date.now()), payee_id: "ba" + Date.now(), unit_id: "UT1675766643661405569", status: "Pending", created: now, modified: now }, formData));
+                showToast("收款账户已创建（Payee 状态 Pending 待审核）");
+            }
+            closePayeeModal();
+            render();
+        }
+
+        function openPayeeDetail(id) {
+            const p = payees.find((x) => x.id === id);
+            if (!p) return;
+            const grid = document.getElementById("payeeDetailGrid");
+            const resp = document.getElementById("payeeDetailResponse");
+            const f = (label, val) => '<div class="detail-field"><div class="detail-field__label">' + label + '</div><div class="detail-field__value">' + (val || "—") + "</div></div>";
+            const pi = p.payee_info || {};
+            const bk = p.bank_account_info || {};
+            const wl = p.wallet_info || {};
+            let html = f("Payee ID", '<span class="card-mono">' + esc(p.payee_id || "") + "</span>") +
+                f("Partner Payee ID", '<span class="card-mono">' + esc(p.partner_payee_id || "") + "</span>") +
+                f("类型", PAYEE_TYPE_LABELS[p.payee_type] || p.payee_type) +
+                f("结算方式", payeeMethodLabel(p)) +
+                f("持有人", p.holder_type === "Company" ? "公司" : "个人") +
+                f("币种", p.currency) +
+                f("收款人", payeeDisplayName(p)) +
+                f("收款人昵称", pi.nickname) +
+                f("企业注册编号", pi.company_no) +
+                f("法人姓名", pi.legal_name || pi.first_name) +
+                f("身份证号", pi.id_no) +
+                f("联系人邮箱", pi.email) +
+                f("联系电话", pi.phone) +
+                f("国家/地区", pi.payee_country) +
+                f("省/州 / 城市", [pi.province, pi.city].filter(Boolean).join(" / ")) +
+                f("地址", [pi.street_address, pi.post_code].filter(Boolean).join(" "));
+            if (p.payee_type === "E-Wallet") {
+                html += f("钱包 Provider", wl.wallet_provider) +
+                    f("钱包账号", '<span class="card-mono">' + esc(wl.wallet_account_no || "") + "</span>") +
+                    f("钱包账户名", wl.account_name);
+            } else {
+                html += f("银行账号", '<span class="card-mono">' + esc(bk.account_no || "") + "</span>") +
+                    f("账户名", bk.account_name) +
+                    f("开户行", bk.bank_name) +
+                    f("支行", bk.branch_name) +
+                    f("支行代码（联行号）", bk.branch_code);
+            }
+            grid.innerHTML = html;
+            const st = PAYEE_STATUS[p.status] || PAYEE_STATUS.Pending;
+            resp.innerHTML =
+                f("状态", '<span class="tos-tag ' + st.cls + '">' + st.label + "</span>") +
+                f("创建时间", formatTime(p.created)) +
+                f("最近修改", formatTime(p.modified)) +
+                f("reference", p.reference || "—") +
+                f("contact_documents", p.contact_documents || "—") +
+                f("备注", p.remark);
+            document.getElementById("payeeDetailModal").classList.add("active");
+        }
+
+        function closePayeeDetail() {
+            document.getElementById("payeeDetailModal").classList.remove("active");
+        }
+
+        function renderPyvio() {
+            const kw = (document.getElementById("pyvioSearch").value || "").trim().toLowerCase();
+            const countryFilter = document.getElementById("pyvioCountryFilter").value;
+            const currencyFilter = document.getElementById("pyvioCurrencyFilter").value;
+            const statusFilter = document.getElementById("pyvioStatusFilter").value;
+
+            const lis = accounts.filter((a) => {
+                if (a.kind !== "pyvio-va") return false;
+                if (activeMerchantId && a.merchantId !== activeMerchantId) return false;
+                if (countryFilter && a.country !== countryFilter) return false;
+                if (currencyFilter && a.currency !== currencyFilter) return false;
+                if (statusFilter && a.vaStatus !== statusFilter) return false;
+                if (!kw) return true;
+                const m = getMerchant(a.merchantId);
+                const name = (a.accountName || merchantLabel(m) || "");
+                const hay = [name, a.accountNo, a.gaId, (m ? m.merchantName : ""), (m ? m.unitId : ""), COUNTRY_NAMES[a.country] || a.country, BIZ_LABELS[a.bizType] || a.bizType].join(" ").toLowerCase();
+                return hay.includes(kw);
+            });
+
+            document.getElementById("pyvioListHint").textContent = merchants.length ? ("共 " + lis.length + " 个全球账户") : "";
+            document.getElementById("pyvioFooterCount").textContent = merchants.length ? ("共 " + accounts.filter((a) => a.kind === "pyvio-va").length + " 个全球账户") : "";
+            document.getElementById("pyvioPagination").innerHTML = paginationHtml(lis.length);
+
+            const tbody = document.getElementById("pyvioTableBody");
+            if (!merchants.length) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-row">尚未注册 Pyvio 商户，请先「注册新商户」完成开户　<i class="fas fa-arrow-up"></i></td></tr>';
+                return;
+            }
+            if (!lis.length) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-row">暂无全球账户，点击右上角「开通全球收款账户」申请</td></tr>';
+                return;
+            }
+
+            let rows = "";
+            lis.forEach((a) => {
+                const m = getMerchant(a.merchantId);
+                const name = a.accountName || merchantLabel(m);
+                const company = m ? m.merchantName : "";
+                const vaTag = VA_STATUS[a.vaStatus]
+                    ? '<span class="tos-tag ' + VA_STATUS[a.vaStatus].cls + '"><i class="fas fa-check" style="margin-right:5px;font-size:10px;"></i>' + VA_STATUS[a.vaStatus].label + "</span>"
+                    : "";
+                rows += '<tr data-id="' + a.id + '" style="cursor:pointer;">' +
+                    "<td><span class=\"flag\">" + (CURRENCY_FLAGS[a.currency] || "") + "</span>" + esc(a.currency) + "</td>" +
+                    "<td><span class=\"flag\">" + (COUNTRY_FLAGS[a.country] || "") + "</span>" + esc(COUNTRY_NAMES[a.country] || a.country) + "</td>" +
+                    "<td><div class=\"account-name\">" + esc(name) + "</div>" +
+                    (company && company !== name ? '<div class="sub-text">' + esc(company) + "</div>" : (a.accountName && a.accountName !== name ? "" : "")) + "</td>" +
+                    '<td class="card-mono">' + esc(a.accountNo || "—") + "</td>" +
+                    "<td>" + esc(BIZ_LABELS[a.bizType] || a.bizType || "—") + "</td>" +
+                    "<td>" + vaTag + "</td>" +
+                    "</tr>";
+            });
+            tbody.innerHTML = rows;
+        }
+
+        function paginationHtml(total) {
+            if (!total) return "";
+            return "<span>Total " + total + "</span>" +
+                '<select class="page-size"><option>10/page</option><option>20/page</option></select>' +
+                '<button class="page-btn" disabled><i class="fas fa-chevron-left"></i></button>' +
+                '<button class="page-btn active">1</button>' +
+                '<button class="page-btn" disabled><i class="fas fa-chevron-right"></i></button>' +
+                "<span>Go to</span>" +
+                '<input style="width:38px;height:28px;border:1px solid var(--tos-border);border-radius:6px;text-align:center;font-size:12px;" value="1">';
+        }
+
+        function initPyvioFilters() {
+            document.getElementById("pyvioCountryFilter").innerHTML = '<option value="">全部国家/地区</option>' + VA_COUNTRIES.map((c) => '<option value="' + c + '">' + (COUNTRY_NAMES[c] || c) + "</option>").join("");
+            document.getElementById("pyvioCurrencyFilter").innerHTML = '<option value="">全部币种</option>' + VA_CURRENCIES.map((c) => '<option value="' + c + '">' + c + "</option>").join("");
+            document.getElementById("pyvioStatusFilter").innerHTML = '<option value="">全部状态</option>' + Object.keys(VA_STATUS).map((k) => '<option value="' + k + '">' + VA_STATUS[k].label + "</option>").join("");
+        }
+
+        function renderBank() {
+            const kw = (document.getElementById("bankSearch").value || "").trim().toLowerCase();
+            const list = accounts.filter((a) => {
+                if (a.kind !== "bank") return false;
+                if (!kw) return true;
+                return (
+                    String(a.bank || "").toLowerCase().includes(kw) ||
+                    String(a.cardNo || "").includes(kw) ||
+                    accountLabel(a).toLowerCase().includes(kw)
+                );
+            });
+
+            const bankAccounts = accounts.filter((a) => a.kind === "bank");
+            document.getElementById("bankListHint").textContent = "共 " + list.length + " 张银行卡";
+            document.getElementById("bankFooterCount").textContent = "共 " + bankAccounts.length + " 张银行卡";
+
+            const tbody = document.getElementById("bankTableBody");
+            if (!list.length) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-row">暂无银行卡，点击右上角添加</td></tr>';
+                return;
+            }
+            let rows = "";
+            list.forEach((a) => {
+                const defaultTag = a.isDefault ? '<span class="tos-tag tos-tag--primary">默认</span>' : '<span style="color:#bfbfbf;">—</span>';
+                const statusTag = a.status === "enabled" ? '<span class="tos-tag tos-tag--success">启用</span>' : '<span class="tos-tag tos-tag--default">停用</span>';
+                let acts = '<button class="btn-link" data-action="edit" data-id="' + a.id + '">编辑</button>';
+                if (!a.isDefault) acts += '<button class="btn-link" data-action="default" data-id="' + a.id + '"' + (a.status === "disabled" ? " disabled" : "") + '>设为默认</button>';
+                acts += '<button class="btn-link" data-action="toggle" data-id="' + a.id + '">' + (a.status === "enabled" ? "停用" : "启用") + "</button>";
+                acts += '<button class="btn-link danger" data-action="delete" data-id="' + a.id + '">删除</button>';
+                const remarkLine = a.remark ? '<div class="sub-text" style="margin-top:4px;">' + esc(a.remark) + "</div>" : "";
+                rows += "<tr>" +
+                    "<td><div>" + esc(a.bank || "—") + '</div><div class="card-mono">' + esc(maskCard(a.cardNo)) + "</div>" + remarkLine + "</td>" +
+                    '<td><span class="tos-tag tos-tag--default">' + TYPE_BANK + "</span></td>" +
+                    "<td><span class=\"tos-tag tos-tag--default\">" + esc(a.currency) + "</span></td>" +
+                    "<td>" + defaultTag + "</td>" +
+                    "<td>" + statusTag + "</td>" +
+                    '<td class="text-right"><div class="actions-cell">' + acts + "</div></td>" +
+                    "</tr>";
+            });
+            tbody.innerHTML = rows;
+        }
+
+        function fillSelect(sel, values, labelFn) {
+            sel.innerHTML = values.map((v) => {
+                const l = labelFn ? labelFn(v) : v;
+                return '<option value="' + esc(v) + '">' + esc(l) + "</option>";
+            }).join("");
+        }
+
+        function fillWizardSelects() {
+            fillSelect(document.getElementById("formVaCountry"), VA_COUNTRIES, (v) => v + " " + (COUNTRY_NAMES[v] || v));
+            fillSelect(document.getElementById("formVaCurrency"), VA_CURRENCIES, (v) => v + " " + ({USD:"美元",CNY:"人民币",EUR:"欧元",HKD:"港币",GBP:"英镑",SGD:"新币",PHP:"比索",THB:"泰铢",IDR:"印尼盾",MYR:"马币",VND:"越南盾",BRL:"雷亚尔",CAD:"加元",MXN:"比索",NGN:"奈拉",GHS:"塞地"}[v] || ""));
+        }
+
+        function updateCapability() {
+            const country = document.getElementById("formVaCountry").value;
+            const cur = document.getElementById("formVaCurrency").value;
+            const cn = COUNTRY_NAMES[country] || country;
+            document.getElementById("gwCapability").innerHTML =
+                '<div class="capability-box__title">收款能力</div>' +
+                '<div class="capability-item"><i class="fas fa-check cap-ok"></i><span>国际 SWIFT 转账</span><span class="cap-code">0-1</span></div>' +
+                (cur === "USD" ? '<div class="capability-item"><i class="fas fa-check cap-ok"></i><span>本地清算（ACH）</span><span class="cap-code">0-1</span></div>' : "") +
+                '<div class="capability-item"><i class="fas fa-check cap-ok"></i><span>' + esc(cn) + ' 本地银行账户</span><span class="cap-code">—</span></div>';
+        }
+
+        function openGlobalAccountWizard(merchantId) {
+            let m = getMerchant(merchantId);
+            if (!m && activeMerchantId) m = getMerchant(activeMerchantId);
+            if (!m) m = merchants.find((x) => x.regStatus === "active") || merchants[0];
+            if (!m) {
+                alert("请先注册 Pyvio 商户，开户后才能开通全球收款账户");
+                openNewMerchantStandalone();
+                return;
+            }
+            vaDraftMerchantId = m.id;
+            editingAccountId = null;
+            accountModalMode = "pyvio-va";
+            document.getElementById("accountModalTitle").textContent = "申请全球账户";
+            fillWizardSelects();
+            document.getElementById("formVaCountry").value = "HK";
+            document.getElementById("formVaCurrency").value = "HKD";
+            document.getElementById("formAccountPurpose").value = "";
+            document.getElementById("formAccountName").value = "";
+            setGwBizType("B2B Collection");
+            updateCapability();
+            document.getElementById("bankFields").style.display = "none";
+            document.getElementById("pyvioFields").style.display = "";
+            setGwStep(1);
+            document.getElementById("accountModal").classList.add("active");
+        }
+
+        function openBankModal(account) {
+            editingAccountId = account ? account.id : null;
+            accountModalMode = "bank";
+            document.getElementById("accountModalTitle").textContent = account ? "编辑银行卡" : "添加银行卡";
+            document.getElementById("formBank").value = account ? (account.bank || "") : "";
+            document.getElementById("formCardNo").value = account ? account.cardNo : "";
+            document.getElementById("bankFormCurrency").value = account && account.currency ? account.currency : "USD";
+            document.getElementById("formDefault").checked = account ? !!account.isDefault : accounts.length === 0;
+            document.getElementById("formRemark").value = account ? (account.remark || "") : "";
+            document.getElementById("bankFields").style.display = "";
+            document.getElementById("pyvioFields").style.display = "none";
+            document.getElementById("accountModal").classList.add("active");
+        }
+
+        function setGwStep(step) {
+            const n1 = document.getElementById("gwStep1");
+            const n2 = document.getElementById("gwStep2");
+            const p1 = document.getElementById("gwStep1Panel");
+            const p2 = document.getElementById("gwStep2Panel");
+            if (step === 1) {
+                n1.classList.add("active");
+                n1.classList.remove("done");
+                n2.classList.remove("active", "done");
+                p1.style.display = "";
+                p2.style.display = "none";
+            } else {
+                n1.classList.remove("active");
+                n1.classList.add("done");
+                n2.classList.add("active");
+                n2.classList.remove("done");
+                p1.style.display = "none";
+                p2.style.display = "";
+            }
+        }
+
+        function setGwBizType(biz) {
+            document.querySelectorAll("#gwStep1Panel .purpose-card").forEach((c) => c.classList.toggle("active", c.dataset.biz === biz));
+            document.getElementById("gwBizTypeGroup").style.display = biz === "B2B Collection" ? "" : "none";
+        }
+
+        function saveBank() {
+            const bank = document.getElementById("formBank").value.trim();
+            const cardNo = document.getElementById("formCardNo").value.trim();
+            const digits = cardNo.replace(/\D/g, "");
+            const isDefault = document.getElementById("formDefault").checked;
+            const remark = document.getElementById("formRemark").value.trim();
+            if (!bank) { alert("请输入开户银行"); return; }
+            if (digits.length < 8) { alert("请输入有效的银行卡号"); return; }
+            const currency = document.getElementById("bankFormCurrency").value;
+            if (isDefault) accounts.forEach((a) => { a.isDefault = false; });
+            const target = editingAccountId === null ? null : accounts.find((a) => a.id === editingAccountId);
+            if (editingAccountId === null) {
+                accounts.push({ id: Date.now(), kind: "bank", bank, cardNo: digits, currency, isDefault, status: "enabled", remark });
+            } else if (target) {
+                Object.assign(target, { bank, cardNo: digits, currency, isDefault, remark });
+            }
+            persist();
+            closeAccountModal();
+            render();
+            showToast("银行卡已保存");
+        }
+
+        function saveGlobalAccount() {
+            const activeCard = document.querySelector("#gwStep1Panel .purpose-card.active");
+            const bizType = activeCard ? activeCard.dataset.biz : "";
+            const country = document.getElementById("formVaCountry").value;
+            const currency = document.getElementById("formVaCurrency").value;
+            const accountPurpose = document.getElementById("formAccountPurpose").value;
+            const accountName = document.getElementById("formAccountName").value.trim();
+            const m = getMerchant(vaDraftMerchantId);
+            if (!bizType) { alert("请选择收款账户用途"); return; }
+            if (!m) { alert("请先注册 Pyvio 商户，开户后才能开通全球收款账户"); openNewMerchantStandalone(); return; }
+            if (bizType === "B2B Collection" && !accountPurpose) { alert("请选择业务类型"); return; }
+            const platform = bizType === "Collection" ? "Shopee" : "";
+            accounts.push({
+                id: Date.now(), kind: "pyvio-va", merchantId: m.id,
+                accountName: accountName || merchantLabel(m),
+                partnerGaId: "p" + Date.now(),
+                gaId: "va" + Date.now(),
+                accountNo: String(Math.floor(1e15 + Math.random() * 9e14)),
+                bizType, country, currency, platform, shopId: "", accountPurpose, multiCurrency: "N",
+                vaStatus: "active", isDefault: false, status: "enabled", remark: ""
+            });
+            persist();
+            closeAccountModal();
+            render();
+            showToast("全球账户已申请");
+        }
+
+        function closeAccountModal() {
+            document.getElementById("accountModal").classList.remove("active");
+            editingAccountId = null;
+            vaDraftMerchantId = null;
+        }
+
+        let detailAccountId = null;
+
+        function ensureBankInfo(a) {
+            if (a.bankInfo && a.bankInfo.bankName) return;
+            const banks = {
+                MY: { bankName: "Malayan Banking Berhad", branchAddress: "Kuala Lumpur", swiftCode: "MBBEMYKLXXX", bankAddress: "100 Jalan Tun Perak, 50050 Kuala Lumpur", accountType: "Saving" },
+                SG: { bankName: "DBS Bank", branchAddress: "Marina Bay", swiftCode: "DBSSSGSGXXX", bankAddress: "12 Marina Boulevard, Singapore", accountType: "Saving" },
+                HK: { bankName: "Bank of China (Hong Kong)", branchAddress: "Hong Kong", swiftCode: "BKCHHKHHXXX", bankAddress: "1 Garden Road, Hong Kong", accountType: "Saving" },
+                US: { bankName: "JPMorgan Chase", branchAddress: "New York", swiftCode: "CHASUS33XXX", bankAddress: "383 Madison Avenue, New York", accountType: "Checking" },
+                GB: { bankName: "HSBC UK", branchAddress: "London", swiftCode: "HBUKGB4BXXX", bankAddress: "8 Canada Square, London", accountType: "Current" },
+                GH: { bankName: "United Bank for Africa", branchAddress: "EAST LEGON 2", swiftCode: "STBGGHACXXX", bankAddress: "No. 382 Lagos Avenue St., East Legon - Residential Area", accountType: "Saving" },
+                CN: { bankName: "Bank of China", branchAddress: "Beijing", swiftCode: "BKCHCNBJXXX", bankAddress: "1 Fuxingmen Nei Dajie, Beijing", accountType: "Saving" }
+            };
+            const b = banks[a.country] || { bankName: "Local Bank", branchAddress: "", swiftCode: "", bankAddress: "", accountType: "Saving" };
+            a.bankInfo = Object.assign({ receiveDesc: "本地汇款", created: new Date().toISOString().slice(0, 16).replace("T", " ") }, b);
+        }
+
+        function openGlobalDetail(id) {
+            const a = accounts.find((x) => x.id === id);
+            if (!a || a.kind !== "pyvio-va") return;
+            ensureBankInfo(a);
+            const b = a.bankInfo || {};
+            const m = getMerchant(a.merchantId);
+            detailAccountId = id;
+
+            document.getElementById("gdFlag").textContent = CURRENCY_FLAGS[a.currency] || COUNTRY_FLAGS[a.country] || "";
+            document.getElementById("gdAccountNo").textContent = a.accountNo || a.gaId || "—";
+            document.getElementById("gdCurrencySub").textContent = a.currency + " 账户";
+            document.getElementById("gdDisableBtn").textContent = a.status === "enabled" ? "停用账户" : "启用账户";
+
+            const fields = [
+                ["账户名称", esc(m ? m.merchantName : "—") + ' <i class="fas fa-pen"></i>'],
+                ["账户昵称", esc(a.accountName || "—") + ' <i class="fas fa-pen"></i>'],
+                ["收款账号", '<span class="gd-account-no">' + esc(a.accountNo || "—") + '</span> <i class="fas fa-pen"></i>'],
+                ["账户地点", esc(COUNTRY_NAMES[a.country] || a.country)],
+                ["银行名称", esc(b.bankName || "—") + ' <i class="fas fa-pen"></i>'],
+                ["银行地址", esc(b.bankAddress || "—")],
+                ["支行地址", esc(b.branchAddress || "—")],
+                ["账户类型", esc(b.accountType || "—")],
+                ["SWIFT Code", esc(b.swiftCode || "—") + ' <i class="fas fa-copy"></i>'],
+                ["到账收款方式", esc(b.receiveDesc || "本地汇款")],
+                ["账户创建时间", esc(b.created || "—")]
+            ];
+            let html = "";
+            fields.forEach((f) => {
+                html += '<div class="detail-field"><div class="detail-field__label">' + f[0] + '</div><div class="detail-field__value">' + f[1] + "</div></div>";
+            });
+            document.getElementById("gdDetailGrid").innerHTML = html;
+            document.getElementById("globalDetailModal").classList.add("active");
+        }
+
+        function closeGlobalDetail() {
+            document.getElementById("globalDetailModal").classList.remove("active");
+            detailAccountId = null;
+        }
+
+        function setMultiSelect(id, values) {
+            const sel = document.getElementById(id);
+            const boxes = sel ? sel.querySelectorAll('input[type="checkbox"]') : document.querySelectorAll('.industry-chip input[type="checkbox"]');
+            boxes.forEach((box) => {
+                box.checked = values.indexOf(box.value) !== -1;
+            });
+        }
+
+        function m_syncKycOptions() {
+            const mt = document.getElementById("m_formMerchantType").value;
+            const sel = document.getElementById("m_formKycType");
+            const current = sel.value;
+            Array.from(sel.options).forEach((opt) => {
+                opt.disabled = mt === "B2B" && /-individual$/.test(opt.value);
+            });
+            if (mt === "B2B" && /-individual$/.test(current)) {
+                sel.value = "china-enterprise-limited";
+            }
+            m_syncKycFields();
+        }
+
+        function m_syncKycFields() {
+            const kyc = document.getElementById("m_formKycType").value;
+            const isEnterprise = !/-individual$/.test(kyc);
+            document.getElementById("m_individualFields").style.display = isEnterprise ? "none" : "";
+            document.getElementById("m_companyFields").style.display = isEnterprise ? "" : "none";
+            const isB2B = document.getElementById("m_formMerchantType").value === "B2B";
+            document.getElementById("m_onlineStoreGroup").style.display = (isEnterprise && isB2B) ? "" : "none";
+        }
+
+        function openNewMerchantStandalone() {
+            window.open("店铺- 注册Pyvio商户.html", "_blank");
+        }
+
+        function openMerchantModal(merchant) {
+            editingMerchantId = merchant ? merchant.id : null;
+            document.getElementById("merchantModalTitle").textContent = merchant ? "编辑 Pyvio 商户" : "注册 Pyvio 商户";
+
+            document.getElementById("m_formPartnerUserId").value = merchant ? (merchant.partnerUserId || "") : ("PV" + Date.now());
+            document.getElementById("m_formClientId").value = merchant ? (merchant.clientId || "") : ("CT" + Date.now());
+            document.getElementById("m_formMerchantType").value = merchant ? (merchant.merchantType || "B2C") : "B2C";
+            document.getElementById("m_formKycType").value = merchant ? (merchant.kycType || "china-individual") : "china-individual";
+            document.getElementById("m_formEmail").value = merchant ? (merchant.email || "") : "";
+            document.getElementById("m_formPhone").value = merchant ? (merchant.phone || "") : "";
+            setMultiSelect("m_formIndustry", merchant ? (merchant.industry || []) : []);
+
+            const ind = merchant && merchant.individualInfo ? merchant.individualInfo : {};
+            document.getElementById("m_i_name").value = ind.name || "";
+            document.getElementById("m_i_nameEn").value = ind.nameEn || "";
+            document.getElementById("m_i_idNo").value = ind.idNumber || "";
+            document.getElementById("m_i_birth").value = ind.dateOfBirth || "";
+            document.getElementById("m_i_issue").value = ind.issueDate || "";
+            document.getElementById("m_i_expire").value = ind.expirationDate || "";
+            const indAddr = ind.residentialAddress || {};
+            document.getElementById("m_i_country").value = indAddr.country || "";
+            document.getElementById("m_i_state").value = indAddr.state || "";
+            document.getElementById("m_i_city").value = indAddr.city || "";
+            document.getElementById("m_i_postcode").value = indAddr.postcode || "";
+            document.getElementById("m_i_line1").value = indAddr.line1 || "";
+
+            const ci = merchant && merchant.companyInfo ? merchant.companyInfo : {};
+            document.getElementById("m_companyType").value = ci.companyType || "Corporation";
+            document.getElementById("m_companyName").value = ci.companyName || "";
+            document.getElementById("m_companyNameEn").value = ci.companyNameEn || "";
+            document.getElementById("m_identifyNo").value = ci.identifyNo || "";
+            document.getElementById("m_listed").value = ci.listed || "0";
+            document.getElementById("m_stateOwned").value = ci.stateOwned || "0";
+            document.getElementById("m_foreignOwned").value = ci.foreignOwned || "0";
+            document.getElementById("m_establishDate").value = ci.establishDate || "";
+            document.getElementById("m_commencementDate").value = ci.commencementDate || "";
+            document.getElementById("m_validPeriod").value = ci.validPeriod || "";
+            document.getElementById("m_onlineStoreUrl").value = ci.onlineStoreUrl || "";
+            const op = ci.operationAddress || {};
+            document.getElementById("m_op_country").value = op.country || "";
+            document.getElementById("m_op_state").value = op.state || "";
+            document.getElementById("m_op_city").value = op.city || "";
+            document.getElementById("m_op_postcode").value = op.postcode || "";
+            document.getElementById("m_op_line1").value = op.line1 || "";
+            const ubo = ci.ubo || {};
+            document.getElementById("m_ubo_name").value = ubo.name || "";
+            document.getElementById("m_ubo_nameEn").value = ubo.nameEn || "";
+            document.getElementById("m_ubo_idNo").value = ubo.idNo || "";
+            document.getElementById("m_ubo_birth").value = ubo.birth || "";
+            document.getElementById("m_ubo_issue").value = ubo.issue || "";
+            document.getElementById("m_ubo_expire").value = ubo.expire || "";
+            document.getElementById("m_ubo_address").value = ubo.address || "";
+
+            document.getElementById("m_unitId").value = merchant ? (merchant.unitId || "") : ("UT" + Date.now());
+            document.getElementById("m_regStatus").value = merchant ? (merchant.regStatus || "pending") : "pending";
+            const resultStatus = REG_STATUS[document.getElementById("m_regStatus").value] || REG_STATUS.pending;
+            document.getElementById("m_resultPartnerUserId").textContent = document.getElementById("m_formPartnerUserId").value;
+            document.getElementById("m_resultUnitId").textContent = document.getElementById("m_unitId").value;
+            document.getElementById("m_resultClientId").textContent = document.getElementById("m_formClientId").value;
+            const resultTag = document.getElementById("m_resultStatusTag");
+            resultTag.className = "tos-tag " + resultStatus.cls;
+            resultTag.textContent = resultStatus.label;
+
+            m_syncKycOptions();
+            document.getElementById("merchantModal").classList.add("active");
+        }
+
+        function saveMerchant() {
+            const merchantType = document.getElementById("m_formMerchantType").value;
+            const kycType = document.getElementById("m_formKycType").value;
+            const industry = Array.from(document.querySelectorAll('#m_formIndustry input[type="checkbox"]:checked')).map((o) => o.value);
+            if (!industry.length) { alert("请至少选择一个行业分类"); return; }
+            const isEnterprise = !/-individual$/.test(kycType);
+            const isB2B = merchantType === "B2B";
+
+            const individualInfo = isEnterprise ? null : {
+                name: document.getElementById("m_i_name").value.trim(),
+                nameEn: document.getElementById("m_i_nameEn").value.trim(),
+                idNumber: document.getElementById("m_i_idNo").value.trim(),
+                dateOfBirth: document.getElementById("m_i_birth").value.trim(),
+                issueDate: document.getElementById("m_i_issue").value.trim(),
+                expirationDate: document.getElementById("m_i_expire").value.trim(),
+                residentialAddress: {
+                    country: document.getElementById("m_i_country").value.trim(),
+                    state: document.getElementById("m_i_state").value.trim(),
+                    city: document.getElementById("m_i_city").value.trim(),
+                    postcode: document.getElementById("m_i_postcode").value.trim(),
+                    line1: document.getElementById("m_i_line1").value.trim()
+                }
+            };
+            const companyInfo = !isEnterprise ? null : {
+                companyType: document.getElementById("m_companyType").value,
+                companyName: document.getElementById("m_companyName").value.trim(),
+                companyNameEn: document.getElementById("m_companyNameEn").value.trim(),
+                identifyNo: document.getElementById("m_identifyNo").value.trim(),
+                listed: document.getElementById("m_listed").value,
+                stateOwned: document.getElementById("m_stateOwned").value,
+                foreignOwned: document.getElementById("m_foreignOwned").value,
+                establishDate: document.getElementById("m_establishDate").value.trim(),
+                commencementDate: document.getElementById("m_commencementDate").value.trim(),
+                validPeriod: document.getElementById("m_validPeriod").value.trim(),
+                onlineStoreUrl: document.getElementById("m_onlineStoreUrl").value.trim(),
+                operationAddress: {
+                    country: document.getElementById("m_op_country").value.trim(),
+                    state: document.getElementById("m_op_state").value.trim(),
+                    city: document.getElementById("m_op_city").value.trim(),
+                    postcode: document.getElementById("m_op_postcode").value.trim(),
+                    line1: document.getElementById("m_op_line1").value.trim()
+                },
+                ubo: {
+                    name: document.getElementById("m_ubo_name").value.trim(),
+                    nameEn: document.getElementById("m_ubo_nameEn").value.trim(),
+                    idNo: document.getElementById("m_ubo_idNo").value.trim(),
+                    birth: document.getElementById("m_ubo_birth").value.trim(),
+                    issue: document.getElementById("m_ubo_issue").value.trim(),
+                    expire: document.getElementById("m_ubo_expire").value.trim(),
+                    address: document.getElementById("m_ubo_address").value.trim()
+                }
+            };
+
+            if (isB2B && isEnterprise && !companyInfo.onlineStoreUrl) { alert("B2B 企业需填写网店链接"); return; }
+
+            const prev = editingMerchantId === null ? null : merchants.find((m) => m.id === editingMerchantId);
+            const base = {
+                id: editingMerchantId === null ? Date.now() : editingMerchantId,
+                partnerUserId: document.getElementById("m_formPartnerUserId").value || ("PV" + Date.now()),
+                clientId: document.getElementById("m_formClientId").value || ("CT" + Date.now()),
+                email: document.getElementById("m_formEmail").value.trim(),
+                phone: document.getElementById("m_formPhone").value.trim(),
+                merchantType, kycType, industry,
+                unitId: document.getElementById("m_unitId").value || ("UT" + Date.now()),
+                regStatus: document.getElementById("m_regStatus").value,
+                merchantName: isEnterprise ? companyInfo.companyName : individualInfo.name,
+                individualInfo, companyInfo,
+                createdAt: prev ? prev.createdAt : new Date().toISOString().slice(0, 16).replace("T", " ")
+            };
+
+            if (editingMerchantId === null) {
+                merchants.push(base);
+            } else if (prev) {
+                Object.assign(prev, base);
+            }
+
+            persist();
+            document.getElementById("merchantModal").classList.remove("active");
+            editingMerchantId = null;
+            render();
+            showToast("Pyvio 商户已保存");
+        }
+
+        function closeMerchantModal() {
+            document.getElementById("merchantModal").classList.remove("active");
+            editingMerchantId = null;
+        }
+
+        function toggleStatus(id) {
+            const target = accounts.find((a) => a.id === id);
+            if (!target) return;
+            if (target.status === "enabled" && target.isDefault) {
+                alert("默认收款账户不能停用，请先设置其他账户为默认");
+                return;
+            }
+            target.status = target.status === "enabled" ? "disabled" : "enabled";
+            persist();
+            render();
+        }
+
+        function setDefault(id) {
+            accounts.forEach((a) => { a.isDefault = a.id === id; });
+            persist();
+            render();
+            showToast("默认收款账户已切换为「" + accountLabel(getDefaultAccount()) + "」");
+        }
+
+        function requestDelete(scope, id) {
+            if (scope === "merchant") {
+                const target = merchants.find((m) => m.id === id);
+                if (!target) return;
+                const vaCount = accounts.filter((a) => a.kind === "pyvio-va" && a.merchantId === id).length;
+                if (vaCount > 0) {
+                    alert("该商户下已有 " + vaCount + " 个全球账户，请先删除全球账户再删除商户");
+                    return;
+                }
+                pendingDelete = { scope, id };
+                document.getElementById("confirmTitle").textContent = "删除 Pyvio 商户";
+                document.getElementById("confirmText").textContent = "确认删除「" + merchantLabel(target) + "」？删除后该商户将无法再添加全球账户。";
+            } else if (scope === "payee") {
+                const target = payees.find((p) => p.id === id);
+                if (!target) return;
+                pendingDelete = { scope, id };
+                document.getElementById("confirmTitle").textContent = "删除收款账户";
+                document.getElementById("confirmText").textContent = "确认删除「" + payeeDisplayName(target) + "」？删除后该收款账户将不再可用。";
+            } else {
+                const target = accounts.find((a) => a.id === id);
+                if (!target) return;
+                if (target.isDefault) {
+                    alert("默认收款账户不能删除，请先设置其他账户为默认");
+                    return;
+                }
+                pendingDelete = { scope, id };
+                document.getElementById("confirmTitle").textContent = "删除收款账户";
+                document.getElementById("confirmText").textContent = "确认删除「" + accountLabel(target) + "」？删除后该账户将不再用于收款/提现到账。";
+            }
+            document.getElementById("confirmModal").classList.add("active");
+        }
+
+        function doDelete() {
+            if (!pendingDelete) return;
+            if (pendingDelete.scope === "merchant") {
+                merchants = merchants.filter((m) => m.id !== pendingDelete.id);
+            } else if (pendingDelete.scope === "payee") {
+                payees = payees.filter((p) => p.id !== pendingDelete.id);
+            } else {
+                accounts = accounts.filter((a) => a.id !== pendingDelete.id);
+            }
+            pendingDelete = null;
+            persist();
+            document.getElementById("confirmModal").classList.remove("active");
+            render();
+            showToast("已删除");
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            toast.textContent = msg;
+            toast.classList.add("show");
+            clearTimeout(showToast._t);
+            showToast._t = setTimeout(() => toast.classList.remove("show"), 1800);
+        }
+
+        function bindUploads() {
+            document.querySelectorAll(".upload-item").forEach((item) => {
+                const input = item.querySelector(".upload-dash__input");
+                const hint = item.querySelector(".upload-dash__hint");
+                const dash = item.querySelector(".upload-dash");
+                const remove = item.querySelector(".upload-remove");
+                if (!input || !hint || !dash || !remove) return;
+                const defaultHint = hint.textContent;
+                input.addEventListener("change", () => {
+                    const file = input.files && input.files[0];
+                    if (!file) return;
+                    if (file.size > 10 * 1024 * 1024) {
+                        alert("文件大小不能超过 10MB，请重新选择");
+                        input.value = "";
+                        return;
+                    }
+                    dash.classList.add("has-file");
+                    item.classList.add("has-file");
+                    hint.textContent = "已选择：" + file.name;
+                });
+                remove.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    input.value = "";
+                    dash.classList.remove("has-file");
+                    item.classList.remove("has-file");
+                    hint.textContent = defaultHint;
+                });
+            });
+        }
+
+        // ===== 事件绑定 =====
+        document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => switchTab(t.dataset.tab)));
+        document.getElementById("bannerRegisterBtn").addEventListener("click", () => openNewMerchantStandalone());
+        document.getElementById("bankAddBtn").addEventListener("click", () => openBankModal(null));
+        document.getElementById("pyvioOpenGlobalBtn").addEventListener("click", () => openGlobalAccountWizard());
+        document.getElementById("pyvioBankAddBtn").addEventListener("click", () => openPayeeModal(null));
+        document.getElementById("pyvioBankSearch").addEventListener("input", renderPyvioBank);
+        document.getElementById("pyvioBankHolderFilter").addEventListener("change", renderPyvioBank);
+        document.getElementById("pyvioBankStatusFilter").addEventListener("change", renderPyvioBank);
+        document.getElementById("closePayeeModalBtn").addEventListener("click", closePayeeModal);
+        document.getElementById("cancelPayeeModalBtn").addEventListener("click", closePayeeModal);
+        document.getElementById("holderCompany").addEventListener("click", () => { payeeHolder = "Company"; applyPayeeCardState(); });
+        document.getElementById("holderPersonal").addEventListener("click", () => { payeeHolder = "Personal"; applyPayeeCardState(); });
+        document.getElementById("accWallet").addEventListener("click", () => { payeeAcc = "E-Wallet"; _payeeType = "E-Wallet"; applyPayeeCardState(); });
+        document.getElementById("accBank").addEventListener("click", () => { payeeAcc = "bank"; if (_payeeType === "E-Wallet") _payeeType = "BeneficiaryBankAccount"; applyPayeeCardState(); });
+        document.getElementById("authYes").addEventListener("click", () => { payeeAuth = "Y"; applyPayeeCardState(); });
+        document.getElementById("authNo").addEventListener("click", () => { payeeAuth = "N"; applyPayeeCardState(); });
+        document.getElementById("p_formCurrency").addEventListener("change", renderPayeeMethods);
+        document.getElementById("p_formCountry").addEventListener("change", renderPayeeMethods);
+        document.querySelectorAll(".payee-create__nav-item").forEach((item) => {
+            item.addEventListener("click", () => payeeGoSection(item.dataset.payeeSec));
+        });
+        document.getElementById("p_methodOptions").addEventListener("click", (e) => {
+            const card = e.target.closest(".payee-method-card");
+            if (!card) return;
+            payeePayMethod = card.dataset.method;
+            renderPayeeMethods();
+        });
+        document.getElementById("payeeSubmitBtn").addEventListener("click", savePayee);
+        document.getElementById("payeeModal").addEventListener("click", (e) => { if (e.target === e.currentTarget) closePayeeModal(); });
+        document.getElementById("closePayeeDetailBtn").addEventListener("click", closePayeeDetail);
+        document.getElementById("payeeDetailModal").addEventListener("click", (e) => { if (e.target === e.currentTarget) closePayeeDetail(); });
+        document.getElementById("closeAccountModalBtn").addEventListener("click", closeAccountModal);
+        document.getElementById("cancelAccountModalBtn").addEventListener("click", closeAccountModal);
+        document.getElementById("saveAccountBtn").addEventListener("click", saveBank);
+        document.getElementById("accountModal").addEventListener("click", (e) => { if (e.target === e.currentTarget) closeAccountModal(); });
+
+        document.querySelectorAll("#gwStep1Panel .purpose-card").forEach((c) => {
+            c.addEventListener("click", () => setGwBizType(c.dataset.biz));
+        });
+        document.getElementById("gwNextBtn").addEventListener("click", () => setGwStep(2));
+        document.getElementById("gwPrevBtn").addEventListener("click", () => setGwStep(1));
+        document.getElementById("gwSubmitBtn").addEventListener("click", saveGlobalAccount);
+        document.getElementById("formVaCountry").addEventListener("change", updateCapability);
+        document.getElementById("formVaCurrency").addEventListener("change", updateCapability);
+
+        document.getElementById("pyvioTableBody").addEventListener("click", (e) => {
+            const row = e.target.closest("tr[data-id]");
+            if (!row) return;
+            openGlobalDetail(Number(row.getAttribute("data-id")));
+        });
+        document.getElementById("gdBackBtn").addEventListener("click", closeGlobalDetail);
+        document.getElementById("globalDetailModal").addEventListener("click", (e) => { if (e.target === e.currentTarget) closeGlobalDetail(); });
+        document.getElementById("gdDisableBtn").addEventListener("click", () => {
+            if (detailAccountId === null) return;
+            toggleStatus(detailAccountId);
+            openGlobalDetail(detailAccountId);
+        });
+        document.getElementById("gdStatementBtn").addEventListener("click", () => showToast("VA 对账单为原型占位"));
+        document.getElementById("gdDownloadBtn").addEventListener("click", () => showToast("银行开户证明下载为原型占位"));
+
+        document.getElementById("closeMerchantModalBtn").addEventListener("click", closeMerchantModal);
+        document.getElementById("cancelMerchantModalBtn").addEventListener("click", closeMerchantModal);
+        document.getElementById("saveMerchantBtn").addEventListener("click", saveMerchant);
+        document.getElementById("merchantModal").addEventListener("click", (e) => { if (e.target === e.currentTarget) closeMerchantModal(); });
+        document.getElementById("m_formMerchantType").addEventListener("change", m_syncKycOptions);
+        document.getElementById("m_formKycType").addEventListener("change", m_syncKycFields);
+
+        document.getElementById("pyvioSearch").addEventListener("input", renderPyvio);
+        document.getElementById("pyvioCountryFilter").addEventListener("change", renderPyvio);
+        document.getElementById("pyvioCurrencyFilter").addEventListener("change", renderPyvio);
+        document.getElementById("pyvioStatusFilter").addEventListener("change", renderPyvio);
+        document.getElementById("bankSearch").addEventListener("input", renderBank);
+
+        document.getElementById("cancelConfirmBtn").addEventListener("click", () => { pendingDelete = null; document.getElementById("confirmModal").classList.remove("active"); });
+        document.getElementById("confirmDeleteBtn").addEventListener("click", doDelete);
+        document.getElementById("confirmModal").addEventListener("click", (e) => { if (e.target === e.currentTarget) { pendingDelete = null; document.getElementById("confirmModal").classList.remove("active"); } });
+
+        document.getElementById("bankTableBody").addEventListener("click", (e) => {
+            const btn = e.target.closest(".btn-link");
+            if (!btn || !btn.hasAttribute("data-action")) return;
+            const id = Number(btn.getAttribute("data-id"));
+            const action = btn.getAttribute("data-action");
+            if (action === "edit") { const a = accounts.find((x) => x.id === id); if (a) openBankModal(a); }
+            else if (action === "default") setDefault(id);
+            else if (action === "toggle") toggleStatus(id);
+            else if (action === "delete") requestDelete("account", id);
+        });
+        document.getElementById("pyvioBankTableBody").addEventListener("click", (e) => {
+            const btn = e.target.closest(".btn-link");
+            if (!btn || !btn.hasAttribute("data-action")) return;
+            const id = Number(btn.getAttribute("data-id"));
+            const action = btn.getAttribute("data-action");
+            if (action === "detail") openPayeeDetail(id);
+            else if (action === "edit") { const p = payees.find((x) => x.id === id); if (p) openPayeeModal(p); }
+            else if (action === "delete") requestDelete("payee", id);
+        });
+
+        initPyvioFilters();
+        bindUploads();
+        render();
+    </script>
+</body>
+</html>

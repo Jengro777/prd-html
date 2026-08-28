@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>申请全球账户 · 店铺端</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --tos-primary: #42b7ae;
+            --tos-primary-hover: #339b94;
+            --tos-primary-bg: #e6f7f6;
+            --tos-bg: #f5f7fa;
+            --tos-card: #fff;
+            --tos-border: #e5e7eb;
+            --tos-border-soft: #f0f2f5;
+            --tos-text: #303133;
+            --tos-text-secondary: #606266;
+            --tos-text-muted: #909399;
+            --tos-success: #52c41a;
+            --tos-warning: #faad14;
+            --tos-error: #f5222d;
+            --tos-radius-card: 12px;
+            --tos-radius-control: 8px;
+            --tos-radius-tag: 4px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--tos-bg);
+            color: var(--tos-text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow: hidden;
+        }
+
+        /* ===== 工作区背影（示意顶部栏 + 侧栏） ===== */
+        .workspace {
+            position: fixed;
+            inset: 0;
+            background: var(--tos-bg);
+        }
+        .workspace__topbar {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 64px;
+            background: #fff;
+            border-bottom: 1px solid var(--tos-border-soft);
+            z-index: 1;
+        }
+        /* ===== 侧栏导航 ===== */
+        .sidebar {
+            width: 210px;
+            background: #fff;
+            border-right: 1px solid var(--tos-border-soft);
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 2;
+        }
+        .sidebar__end-select {
+            width: calc(100% - 24px);
+            height: 32px;
+            margin: 8px 12px 0;
+            padding: 0 26px 0 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 13px;
+            color: #333;
+            outline: none;
+            cursor: pointer;
+            font-family: inherit;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%2710%27><path d=%27M2 4l3 3 3-3%27 fill=%27none%27 stroke=%27%23999%27 stroke-width=%271.5%27 stroke-linecap=%27round%27/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+        }
+        .sidebar__head {
+            padding: 20px 16px 16px;
+            border-bottom: 1px solid var(--tos-border-soft);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar__logo {
+            width: 34px; height: 34px; border-radius: 8px; background: var(--tos-primary); color: #fff;
+            display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0;
+        }
+        .sidebar__title { font-size: 15px; font-weight: 700; color: #1f2937; white-space: nowrap; }
+        .sidebar__nav { flex: 1; padding: 8px 0; overflow-y: auto; }
+        .sidebar__group-title { padding: 12px 14px 4px; font-size: 10px; color: var(--tos-text-muted); font-weight: 600; letter-spacing: 0.5px; }
+        .sidebar__item {
+            display: flex; align-items: center; gap: 8px; padding: 9px 14px; font-size: 13px;
+            color: var(--tos-text-secondary); cursor: pointer; text-decoration: none; border-left: 3px solid transparent; transition: all 0.12s;
+        }
+        .sidebar__item:hover { background: #f5f5f5; color: var(--tos-text); }
+        .sidebar__item--active { color: var(--tos-primary); font-weight: 600; background: var(--tos-primary-bg); border-left-color: var(--tos-primary); }
+        .sidebar__item i { width: 16px; text-align: center; font-size: 12px; }
+        .workspace__content {
+            position: absolute;
+            top: 64px; left: 210px; right: 0; bottom: 0;
+            padding: 24px;
+            overflow: hidden;
+        }
+        .workspace__skeleton {
+            height: 100%;
+            border-radius: var(--tos-radius-card);
+            background: repeating-linear-gradient(180deg, #fbfcfd 0, #fbfcfd 40px, #f0f2f5 40px, #f0f2f5 42px, #fff 42px, #fff 100%);
+            opacity: 0.35;
+        }
+
+        /* ===== 弹窗无遮罩：透明背景，占据右侧内容区 ===== */
+        .payout-account-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            background: transparent;
+            pointer-events: none;
+        }
+        .payout-account-dialog {
+            position: fixed;
+            top: 64px;
+            left: 210px;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #fff;
+            pointer-events: auto;
+        }
+
+        .payout-account-dialog__head {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--tos-border-soft);
+        }
+        .payout-account-dialog__title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--tos-text);
+        }
+        .payout-account-dialog__close {
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--tos-text-muted);
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .payout-account-dialog__close:hover {
+            background: #f0f2f5;
+            color: var(--tos-text);
+        }
+
+        /* ===== 步骤条 ===== */
+        .gaSteps {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 24px;
+            background: #fbfcfd;
+            border-bottom: 1px solid var(--tos-border-soft);
+            flex-shrink: 0;
+        }
+        .gaSteps__item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--tos-text-muted);
+            font-size: 14px;
+        }
+        .gaSteps__item.is-active {
+            color: var(--tos-primary);
+            font-weight: 600;
+        }
+        .gaSteps__num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #fff;
+            border: 1px solid #d9dee8;
+            font-size: 12px;
+            color: var(--tos-text-muted);
+        }
+        .gaSteps__item.is-active .gaSteps__num {
+            background: var(--tos-primary);
+            border-color: var(--tos-primary);
+            color: #fff;
+        }
+        .gaSteps__item.is-done .gaSteps__num {
+            background: var(--tos-success);
+            border-color: var(--tos-success);
+            color: #fff;
+        }
+        .gaSteps__sep {
+            color: #d9dee8;
+        }
+
+        /* ===== 主体 ===== */
+        .gaBody {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            padding: 20px 24px;
+        }
+        .gaSectionTitle {
+            margin-bottom: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--tos-text);
+        }
+        .helper-text {
+            margin-top: 4px;
+            font-size: 12px;
+            color: var(--tos-text-muted);
+            line-height: 1.6;
+        }
+
+        /* 用途卡片 */
+        .purposeList {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .purposeCard {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            border: 1px solid var(--tos-border);
+            border-radius: 10px;
+            background: #fff;
+            cursor: pointer;
+            transition: border-color 0.12s, background 0.12s, box-shadow 0.12s;
+        }
+        .purposeCard:hover { border-color: #b5e5e0; }
+        .purposeCard.is-selected {
+            border-color: var(--tos-primary);
+            background: var(--tos-primary-bg);
+        }
+        .purposeCard__icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #f0f2f5;
+            color: var(--tos-text-secondary);
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .purposeCard.is-selected .purposeCard__icon {
+            background: var(--tos-primary);
+            color: #fff;
+        }
+        .purposeCard__title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--tos-text);
+        }
+        .purposeCard__desc {
+            margin-top: 2px;
+            font-size: 13px;
+            color: var(--tos-text-muted);
+        }
+        .purposeCard__check {
+            margin-left: auto;
+            color: var(--tos-primary);
+            font-size: 18px;
+        }
+
+        /* 表单 */
+        .form-group { margin-bottom: 18px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--tos-text);
+        }
+        .form-group label .required { color: var(--tos-error); margin-left: 2px; }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            height: 36px;
+            padding: 0 12px;
+            border: 1px solid var(--tos-border);
+            border-radius: var(--tos-radius-control);
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--tos-text);
+            background: #fff;
+            outline: none;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--tos-primary);
+            box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.16);
+        }
+        .form-group input[disabled] {
+            background: #fafafa;
+            color: var(--tos-text-muted);
+            cursor: not-allowed;
+        }
+
+        /* 收款能力 */
+        .gaCapability {
+            margin-bottom: 18px;
+            padding: 12px 16px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: 8px;
+            background: #fbfcfd;
+        }
+        .gaCapability__title {
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--tos-text);
+        }
+        .gaCapability__row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 0;
+            font-size: 13px;
+            color: var(--tos-text-secondary);
+        }
+        .gaCapability__check { color: var(--tos-success); }
+        .gaCapability__text { flex: 1; }
+        .gaCapability__num { color: var(--tos-text-muted); font-size: 12px; }
+
+        /* 底部按钮 */
+        .payout-account-dialog__foot {
+            flex-shrink: 0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 12px 20px;
+            border-top: 1px solid var(--tos-border-soft);
+        }
+        .btn-primary, .btn-secondary {
+            height: 34px;
+            padding: 0 16px;
+            border: 1px solid transparent;
+            border-radius: var(--tos-radius-control);
+            font-size: 13px;
+            font-weight: 500;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        .btn-primary { background: var(--tos-primary); border-color: var(--tos-primary); color: #fff; }
+        .btn-primary:hover { background: var(--tos-primary-hover); border-color: var(--tos-primary-hover); }
+        .btn-secondary { background: #fff; border-color: var(--tos-border); color: var(--tos-text-secondary); }
+        .btn-secondary:hover { background: #fafafa; border-color: #d1d5db; }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000;
+            padding: 10px 20px;
+            border-radius: var(--tos-radius-control);
+            background: var(--tos-success);
+            color: #fff;
+            font-size: 14px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+        .toast.show { opacity: 1; }
+        .toast.warn { background: var(--tos-warning); }
+        .toast.error { background: var(--tos-error); }
+
+        @media (max-width: 680px) {
+            .payout-account-dialog { left: 0; }
+            .sidebar { display: none; }
+            .workspace__content { left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 工作区背影，仅作定位示意 -->
+    <div class="workspace">
+        <div class="workspace__topbar"></div>
+        <aside class="sidebar">
+            <select class="sidebar__end-select" onchange="if(this.value)location.href=this.value"><option value="" selected>店铺端</option><option value="../../平台端/运营-钱包对账汇总.html">平台端</option></select>
+            <div class="sidebar__head"><div class="sidebar__logo"><i class="fas fa-store"></i></div><span class="sidebar__title">商家中心</span></div>
+            <nav class="sidebar__nav">
+                <div class="sidebar__group-title">提现管理</div>
+                <a class="sidebar__item" href="../商家提现单详情.html"><i class="fas fa-receipt"></i> 提现单详情</a>
+                <a class="sidebar__item" href="../店铺- 钱包对账单汇总.html"><i class="fas fa-file-invoice-dollar"></i> 钱包对账单</a>
+                <a class="sidebar__item sidebar__item--active" href="店铺- 收款账户管理.html"><i class="fas fa-credit-card"></i> 收款账户</a>
+                <a class="sidebar__item" href="../店铺- 结汇额度管理.html"><i class="fas fa-coins"></i> 结汇额度</a>
+            </nav>
+        </aside>
+        <div class="workspace__content"><div class="workspace__skeleton"></div></div>
+    </div>
+
+    <!-- ===== 申请全球账户 · 弹窗 ===== -->
+    <div class="payout-account-overlay">
+        <div class="payout-account-dialog" id="gaDialog">
+            <div class="payout-account-dialog__head">
+                <span class="payout-account-dialog__title">申请全球账户</span>
+                <button class="payout-account-dialog__close" id="gaCloseBtn" title="关闭">&times;</button>
+            </div>
+
+            <!-- 步骤条 -->
+            <div class="gaSteps" id="gaSteps"></div>
+
+            <!-- 主体 -->
+            <div class="gaBody">
+                <!-- 第 1 步：申请用途 -->
+                <div id="gaStep1Panel">
+                    <div class="gaSectionTitle">您申请的收款账户将如何使用</div>
+                    <div class="helper-text" style="margin: 0 0 14px">收款账户用途为可选项，可不指定；选择不同用途将展示对应的补充字段。</div>
+                    <div class="purposeList" id="gaPurposeList"></div>
+                </div>
+
+                <!-- 第 2 步：账户信息 -->
+                <div id="gaStep2Panel" style="display:none;">
+                    <div class="form-group">
+                        <label>您需要哪个国家的银行账户<span class="required">*</span></label>
+                        <select id="gaCountry"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>选择币种<span class="required">*</span></label>
+                        <select id="gaCurrency"></select>
+                    </div>
+                    <div class="gaCapability" id="gaCapability"></div>
+
+                    <!-- Collection：平台 + 店铺ID -->
+                    <div class="ga-biz-group" id="gaCollectionGroup" style="display:none;">
+                        <div class="form-group">
+                            <label>选择平台<span class="required">*</span></label>
+                            <select id="gaPlatform"></select>
+                            <div class="helper-text">Collection 收款需指定平台（如 Lazada/Shopee/Shopify 等）</div>
+                        </div>
+                        <div class="form-group">
+                            <label>店铺ID<span class="required">*</span></label>
+                            <input id="gaStoreId" disabled placeholder="店铺ID（默认取当前店铺，不可修改）" />
+                            <div class="helper-text">店铺ID(Store ID)默认取当前店铺，仅展示不可修改</div>
+                        </div>
+                    </div>
+
+                    <!-- B2B Collection：收款用途 -->
+                    <div class="ga-biz-group" id="gaB2BGroup" style="display:none;">
+                        <div class="form-group">
+                            <label>收款用途<span class="required">*</span></label>
+                            <select id="gaAccountPurpose"></select>
+                            <div class="helper-text">B2B Collection 需指定一般贸易 / 服务贸易收款用途</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>多币种</label>
+                        <select id="gaMultiCurrency">
+                            <option value="N">否（默认）</option>
+                            <option value="Y">是</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="payout-account-dialog__foot">
+                <button class="btn-secondary" id="gaPrevBtn" style="display:none;">上一步</button>
+                <button class="btn-primary" id="gaNextBtn">下一步</button>
+                <button class="btn-primary" id="gaSubmitBtn" style="display:none;">提交</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const COUNTRY_NAMES = {
+            BR: "巴西", BH: "巴林", CA: "加拿大", CN: "中国", DE: "德国", DK: "丹麦",
+            GB: "英国", GH: "加纳", HK: "香港（中国）", ID: "印度尼西亚", MX: "墨西哥",
+            MY: "马来西亚", NG: "尼日利亚", PH: "菲律宾", SG: "新加坡", TH: "泰国",
+            US: "美国", VN: "越南"
+        };
+        const CURRENCY_NAMES = {
+            USD: "美元", CNY: "人民币", EUR: "欧元", HKD: "港币", GBP: "英镑", SGD: "新币",
+            PHP: "比索", THB: "泰铢", IDR: "印尼盾", MYR: "马币", VND: "越南盾",
+            BRL: "雷亚尔", CAD: "加元", MXN: "比索", NGN: "奈拉", GHS: "塞地"
+        };
+        const VA_COUNTRIES = ["BR","BH","CA","CN","DE","DK","GB","GH","HK","ID","MX","MY","NG","PH","SG","TH","US","VN"];
+        const VA_CURRENCIES = ["BRL","CAD","EUR","GBP","GHS","HKD","IDR","MXN","MYR","NGN","PHP","SGD","THB","USD","VND"];
+        const PLATFORMS = ["TOSPINO","App Store","Facebook Audience Network","Google Admob","Google Adsense","Google Play","Jumia","Lazada","Shopee","Shopify","Shopyy","TikTok Shop","Tokopedia","Mercado Libre"];
+        const ACCOUNT_PURPOSES = [
+            { value: "02", label: "02 - 一般贸易收款（General trade receipts）" },
+            { value: "22", label: "22 - 服务贸易（国际物流）（service trade: International logistics）" },
+            { value: "23", label: "23 - 服务贸易（广告营销）（service trade: Advertising marketing）" }
+        ];
+        const PURPOSES = [
+            { value: "Collection", label: "平台收款", desc: "用于电商平台回款", icon: "fa-store" },
+            { value: "B2B Collection", label: "B2B 收款（外贸收款）", desc: "用于一般贸易 / 服务贸易收款", icon: "fa-briefcase" },
+            { value: "Direct Payment", label: "直接付款", desc: "用于直接付款场景", icon: "fa-money" }
+        ];
+
+        const gaSteps = ["申请用途", "账户信息"];
+        let currentStep = 1;
+        let bizType = "";
+
+        const $ = (id) => document.getElementById(id);
+
+        function countryLabel(code) {
+            return COUNTRY_NAMES[code] || code || "—";
+        }
+
+        function renderSteps() {
+            $("gaSteps").innerHTML = gaSteps.map((label, idx) => {
+                const step = idx + 1;
+                const cls = step === currentStep ? " is-active" : (step < currentStep ? " is-done" : "");
+                return '<div class="gaSteps__item' + cls + '"><span class="gaSteps__num">' + step + '</span><span class="gaSteps__label">' + label + '</span></div>' +
+                    (idx < gaSteps.length - 1 ? '<span class="gaSteps__sep">&gt;</span>' : "");
+            }).join("");
+        }
+
+        function renderPurposes() {
+            $("gaPurposeList").innerHTML = PURPOSES.map((p) => {
+                const selected = bizType === p.value ? " is-selected" : "";
+                const check = bizType === p.value ? '<i class="fas fa-check-circle purposeCard__check"></i>' : "";
+                return '<div class="purposeCard' + selected + '" data-biz="' + p.value + '">' +
+                    '<div class="purposeCard__icon"><i class="fas ' + p.icon + '"></i></div>' +
+                    '<div class="purposeCard__text"><div class="purposeCard__title">' + p.label + '</div><div class="purposeCard__desc">' + p.desc + '</div></div>' +
+                    check + "</div>";
+            }).join("");
+        }
+
+        function fillSelect(sel, values, labelFn) {
+            sel.innerHTML = values.map((v) => {
+                const label = labelFn ? labelFn(v) : v;
+                return '<option value="' + v + '">' + label + "</option>";
+            }).join("");
+        }
+
+        function renderCapability() {
+            const country = $("gaCountry").value;
+            const label = countryLabel(country);
+            $("gaCapability").innerHTML =
+                '<div class="gaCapability__title">收款能力</div>' +
+                '<div class="gaCapability__row"><span class="gaCapability__check"><i class="fas fa-check"></i></span><span class="gaCapability__text">国际 SWIFT 转账</span><span class="gaCapability__num">0 - 1</span></div>' +
+                '<div class="gaCapability__row"><span class="gaCapability__check"><i class="fas fa-check"></i></span><span class="gaCapability__text">' + label + ' 本地银行账户</span><span class="gaCapability__num">—</span></div>';
+        }
+
+        function updateBizGroups() {
+            const collection = bizType === "Collection";
+            const b2b = bizType === "B2B Collection";
+            $("gaCollectionGroup").style.display = collection ? "" : "none";
+            $("gaB2BGroup").style.display = b2b ? "" : "none";
+        }
+
+        function toStep(step) {
+            if (step < 1) step = 1;
+            if (step > gaSteps.length) step = gaSteps.length;
+            currentStep = step;
+            $("gaStep1Panel").style.display = step === 1 ? "" : "none";
+            $("gaStep2Panel").style.display = step === 2 ? "" : "none";
+            $("gaPrevBtn").style.display = step > 1 ? "" : "none";
+            $("gaNextBtn").style.display = step < gaSteps.length ? "" : "none";
+            $("gaSubmitBtn").style.display = step >= gaSteps.length ? "" : "none";
+            renderSteps();
+            if (step === 2) renderCapability();
+        }
+
+        let toastTimer = null;
+        function showToast(msg, type) {
+            const t = $("toast");
+            t.textContent = msg;
+            t.className = "toast show" + (type === "error" ? " error" : type === "warn" ? " warn" : "");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+        }
+
+        function resetForm() {
+            bizType = "";
+            currentStep = 1;
+            $("gaCountry").value = "";
+            $("gaCurrency").value = "";
+            $("gaPlatform").value = "";
+            $("gaAccountPurpose").value = "";
+            $("gaMultiCurrency").value = "N";
+            $("gaStoreId").value = "1640612294964712448";
+            // 若当前 un-selected 用途则展示默认位
+            updateBizGroups();
+            renderPurposes();
+            toStep(1);
+        }
+
+        function submit() {
+            if (!$("gaCountry").value) { showToast("请选择国家/地区", "error"); return; }
+            if (!$("gaCurrency").value) { showToast("请选择币种", "error"); return; }
+            if (bizType === "Collection" && !$("gaStoreId").value) { showToast("请填写平台店铺ID", "error"); return; }
+            if (bizType === "Collection" && !$("gaPlatform").value) { showToast("选择平台收款请先选择平台", "error"); return; }
+            if (bizType === "B2B Collection" && !$("gaAccountPurpose").value) { showToast("请选择收款用途（一般贸易 / 服务贸易）", "error"); return; }
+            const country = countryLabel($("gaCountry").value);
+            showToast("全球收款账户已开通（" + $("gaCurrency").value + " · " + country + "）");
+            setTimeout(() => { resetForm(); }, 600);
+        }
+
+        // 初始化
+        fillSelect($("gaCountry"), VA_COUNTRIES, (v) => countryLabel(v) + "（" + v + "）");
+        fillSelect($("gaCurrency"), VA_CURRENCIES, (v) => v + " " + (CURRENCY_NAMES[v] || ""));
+        fillSelect($("gaPlatform"), PLATFORMS);
+        fillSelect($("gaAccountPurpose"), ACCOUNT_PURPOSES.map((p) => p.value), (v) => (ACCOUNT_PURPOSES.find((p) => p.value === v) || {}).label || v);
+
+        document.getElementById("gaPurposeList").addEventListener("click", (e) => {
+            const card = e.target.closest(".purposeCard");
+            if (!card) return;
+            const val = card.dataset.biz;
+            bizType = bizType === val ? "" : val;
+            renderPurposes();
+            updateBizGroups();
+        });
+        $("gaCountry").addEventListener("change", renderCapability);
+        $("gaNextBtn").addEventListener("click", () => { if (currentStep < gaSteps.length) toStep(currentStep + 1); });
+        $("gaPrevBtn").addEventListener("click", () => { if (currentStep > 1) toStep(currentStep - 1); });
+        $("gaSubmitBtn").addEventListener("click", submit);
+        $("gaCloseBtn").addEventListener("click", () => {
+            showToast("申请全球账户弹窗已关闭（原型）", "warn");
+            setTimeout(resetForm, 400);
+        });
+
+        resetForm();
+    </script>
+</body>
+</html>

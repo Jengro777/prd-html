@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 Pyvio 商户 · 店铺端</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --tos-primary: #42b7ae;
+            --tos-primary-hover: #339b94;
+            --tos-primary-bg: #e6f7f6;
+            --tos-bg: #f5f7fa;
+            --tos-card: #fff;
+            --tos-border: #e5e7eb;
+            --tos-border-soft: #f0f2f5;
+            --tos-text: #303133;
+            --tos-text-secondary: #606266;
+            --tos-text-muted: #909399;
+            --tos-success: #52c41a;
+            --tos-warning: #faad14;
+            --tos-error: #f5222d;
+            --tos-radius-card: 12px;
+            --tos-radius-control: 8px;
+            --tos-radius-tag: 4px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--tos-bg);
+            color: var(--tos-text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow: hidden;
+        }
+
+        /* ===== 工作区背影 ===== */
+        .workspace { position: fixed; inset: 0; background: var(--tos-bg); }
+        .workspace__topbar { position: absolute; top: 0; left: 0; right: 0; height: 64px; background: #fff; border-bottom: 1px solid var(--tos-border-soft); z-index: 1; }
+        /* ===== 侧栏导航 ===== */
+        .sidebar {
+            width: 210px;
+            background: #fff;
+            border-right: 1px solid var(--tos-border-soft);
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 2;
+        }
+        .sidebar__end-select {
+            width: calc(100% - 24px);
+            height: 32px;
+            margin: 8px 12px 0;
+            padding: 0 26px 0 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 13px;
+            color: #333;
+            outline: none;
+            cursor: pointer;
+            font-family: inherit;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%2710%27><path d=%27M2 4l3 3 3-3%27 fill=%27none%27 stroke=%27%23999%27 stroke-width=%271.5%27 stroke-linecap=%27round%27/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+        }
+        .sidebar__head {
+            padding: 20px 16px 16px;
+            border-bottom: 1px solid var(--tos-border-soft);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar__logo {
+            width: 34px; height: 34px; border-radius: 8px; background: var(--tos-primary); color: #fff;
+            display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0;
+        }
+        .sidebar__title { font-size: 15px; font-weight: 700; color: #1f2937; white-space: nowrap; }
+        .sidebar__nav { flex: 1; padding: 8px 0; overflow-y: auto; }
+        .sidebar__group-title { padding: 12px 14px 4px; font-size: 10px; color: var(--tos-text-muted); font-weight: 600; letter-spacing: 0.5px; }
+        .sidebar__item {
+            display: flex; align-items: center; gap: 8px; padding: 9px 14px; font-size: 13px;
+            color: var(--tos-text-secondary); cursor: pointer; text-decoration: none; border-left: 3px solid transparent; transition: all 0.12s;
+        }
+        .sidebar__item:hover { background: #f5f5f5; color: var(--tos-text); }
+        .sidebar__item--active { color: var(--tos-primary); font-weight: 600; background: var(--tos-primary-bg); border-left-color: var(--tos-primary); }
+        .sidebar__item i { width: 16px; text-align: center; font-size: 12px; }
+        .workspace__content { position: absolute; top: 64px; left: 210px; right: 0; bottom: 0; padding: 24px; }
+        .workspace__skeleton { height: 100%; border-radius: var(--tos-radius-card); background: #fbfcfd; opacity: 0.4; border: 1px dashed #e5e7eb; }
+
+        /* ===== 弹窗 ===== */
+        .payout-account-overlay { position: fixed; inset: 0; z-index: 50; background: transparent; pointer-events: none; }
+        .payout-account-dialog {
+            position: fixed; top: 64px; left: 210px; right: 0; bottom: 0;
+            display: flex; flex-direction: column; overflow: hidden; background: #fff; pointer-events: auto;
+        }
+        .payout-account-dialog__head { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--tos-border-soft); }
+        .payout-account-dialog__title { font-size: 16px; font-weight: 600; color: var(--tos-text); }
+        .payout-account-dialog__close { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: 6px; background: transparent; color: var(--tos-text-muted); font-size: 18px; cursor: pointer; }
+        .payout-account-dialog__close:hover { background: #f0f2f5; color: var(--tos-text); }
+
+        /* 账户类型 */
+        .payout-account-type { flex-shrink: 0; padding: 12px 24px; background: #fbfcfd; border-bottom: 1px solid var(--tos-border-soft); }
+        .payout-account-type__label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 500; color: var(--tos-text-secondary); }
+        .payout-account-type select { width: 100%; height: 40px; padding: 0 12px; border: 1px solid var(--tos-border); border-radius: var(--tos-radius-control); font-size: 14px; font-family: inherit; color: var(--tos-text); background: #fff; outline: none; }
+        .payout-account-type select:focus { border-color: var(--tos-primary); box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.16); }
+
+        /* 向导 */
+        .wizard { display: flex; flex: 1 1 auto; min-height: 0; width: 100%; }
+        .wizard__side { width: 150px; flex-shrink: 0; padding: 20px 12px; background: #fbfcfd; border-right: 1px solid var(--tos-border-soft); }
+        .wizard__nav { display: flex; flex-direction: column; gap: 6px; }
+        .wizard__nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; cursor: pointer; color: var(--tos-text-secondary); border: 1px solid transparent; transition: background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s; }
+        .wizard__nav-item:hover { background: #f0fbfa; color: var(--tos-primary); border-color: #b5e5e0; }
+        .wizard__nav-item.active { background: var(--tos-primary-bg); color: var(--tos-primary); font-weight: 600; border-color: #b5e5e0; box-shadow: inset 3px 0 0 0 var(--tos-primary); }
+        .wizard__nav-num { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; flex-shrink: 0; border-radius: 50%; background: #fff; border: 1px solid #d9dee8; font-size: 12px; color: var(--tos-text-secondary); }
+        .wizard__nav-item.active .wizard__nav-num { background: var(--tos-primary); border-color: var(--tos-primary); color: #fff; }
+        .wizard__nav-item.done .wizard__nav-num { background: var(--tos-success); border-color: var(--tos-success); color: #fff; }
+        .wizard__nav-label { font-size: 14px; white-space: nowrap; }
+        .wizard__main { flex: 1; padding: 20px 24px 12px; overflow-y: auto; }
+
+        /* 表单 */
+        .form-section { margin-bottom: 20px; }
+        .form-section__title, .form-group-title { margin-bottom: 12px; font-size: 14px; font-weight: 600; color: var(--tos-text); }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 500; color: var(--tos-text); }
+        .form-group label .req { color: var(--tos-error); margin-left: 2px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; height: 36px; padding: 0 12px; border: 1px solid var(--tos-border); border-radius: var(--tos-radius-control);
+            font-size: 13px; font-family: inherit; color: var(--tos-text); background: #fff; outline: none;
+        }
+        .form-group textarea { height: auto; padding: 8px 12px; resize: vertical; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--tos-primary); box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.16); }
+        .form-group input[readonly], .form-group input[disabled] { background: #fafafa; color: var(--tos-text-muted); cursor: not-allowed; }
+        .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-row-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+        .helper-text { margin-top: 4px; font-size: 12px; color: var(--tos-text-muted); line-height: 1.6; }
+        .card-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; color: var(--tos-text-secondary); }
+        .api-key { margin-left: 6px; padding: 1px 6px; border: 1px solid var(--tos-border-soft); border-radius: 4px; background: #fafafa; color: var(--tos-text-muted); font-size: 11px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: nowrap; }
+        .kyc-box { width: 100%; padding: 12px; border: 1px solid var(--tos-border-soft); border-radius: 8px; background: #fbfcfd; }
+        .kyc-box + .form-group-title, .kyc-box + .form-group { margin-top: 16px; }
+        .checkbox-inline { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--tos-text); cursor: pointer; }
+
+        /* 行业分类 */
+        .industry-group { padding: 12px; border: 1px solid var(--tos-border-soft); border-radius: 8px; background: #fbfcfd; }
+        .industry-group + .industry-group { margin-top: 12px; }
+        .industry-group__title { margin-bottom: 8px; font-size: 12px; font-weight: 600; color: var(--tos-text-secondary); }
+        .industry-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .industry-chip { display: inline-flex; align-items: center; padding: 5px 10px; border: 1px solid var(--tos-border); border-radius: 8px; background: #fff; font-size: 12px; color: var(--tos-text-secondary); cursor: pointer; user-select: none; transition: border-color 0.12s, background 0.12s, color 0.12s; }
+        .industry-chip:hover { border-color: var(--tos-primary); color: var(--tos-primary); }
+        .industry-chip input { display: none; }
+        .industry-chip.is-checked, .industry-chip:has(input:checked) { border-color: var(--tos-primary); background: var(--tos-primary-bg); color: var(--tos-primary); font-weight: 500; }
+
+        /* 上传 */
+        .upload-field { margin-bottom: 14px; }
+        .upload-field__label { margin-bottom: 6px; font-size: 13px; font-weight: 600; color: var(--tos-text); }
+        .upload-dash { position: relative; display: flex; align-items: center; gap: 10px; padding: 10px 34px 10px 12px; border: 1px dashed #d9dee8; border-radius: var(--tos-radius-control); background: #fbfcfd; color: var(--tos-text-secondary); font-size: 12px; cursor: pointer; transition: border-color 0.12s, background 0.12s; }
+        .upload-dash:hover { border-color: var(--tos-primary); background: rgba(66, 183, 174, 0.06); }
+        .upload-dash.has-file { border-style: solid; border-color: var(--tos-primary); background: var(--tos-primary-bg); }
+        .upload-dash__input { display: none; }
+        .upload-dash__label { font-weight: 500; color: var(--tos-text); }
+        .upload-dash__hint { margin-left: auto; color: var(--tos-text-muted); font-size: 11px; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .upload-dash.has-file .upload-dash__hint { color: var(--tos-primary); }
+        .upload-dash__remove { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; display: none; align-items: center; justify-content: center; border: none; border-radius: 50%; background: #fff; color: var(--tos-text-muted); font-size: 14px; line-height: 1; cursor: pointer; }
+        .upload-dash.has-file:hover .upload-dash__remove { display: flex; }
+        .upload-dash__remove:hover { color: var(--tos-error); background: #fff1f0; }
+        .upload-field__desc, .upload-field__error { margin-top: 6px; font-size: 12px; }
+        .upload-field__desc { color: var(--tos-text-muted); }
+        .upload-field__error { color: var(--tos-error); }
+
+        /* 底部按钮 */
+        .payout-account-dialog__foot { flex-shrink: 0; display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--tos-border-soft); }
+        .btn-primary, .btn-secondary { height: 34px; padding: 0 16px; border: 1px solid transparent; border-radius: var(--tos-radius-control); font-size: 13px; font-weight: 500; font-family: inherit; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
+        .btn-primary { background: var(--tos-primary); border-color: var(--tos-primary); color: #fff; }
+        .btn-primary:hover { background: var(--tos-primary-hover); border-color: var(--tos-primary-hover); }
+        .btn-secondary { background: #fff; border-color: var(--tos-border); color: var(--tos-text-secondary); }
+        .btn-secondary:hover { background: #fafafa; border-color: #d1d5db; }
+
+        /* 创建结果弹窗 */
+        .result-overlay { position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; }
+        .result-overlay.active { display: flex; }
+        .result-card { width: 520px; max-width: 92vw; padding: 0 0 20px; background: #fff; border-radius: var(--tos-radius-card); box-shadow: 0 20px 60px rgba(15,23,42,0.18); }
+        .result-card__head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--tos-border-soft); }
+        .result-card__title { font-size: 16px; font-weight: 600; color: var(--tos-text); }
+        .result-card__body { padding: 20px; }
+        .reg-result { border: 1px solid var(--tos-border-soft); border-radius: 8px; overflow: hidden; }
+        .reg-result__row { display: flex; align-items: center; border-bottom: 1px solid var(--tos-border-soft); }
+        .reg-result__row:last-child { border-bottom: none; }
+        .reg-result__label { width: 120px; flex-shrink: 0; padding: 10px 14px; font-size: 12px; color: var(--tos-text-muted); background: #fafafa; border-right: 1px solid var(--tos-border-soft); }
+        .reg-result__value { padding: 10px 14px; font-size: 13px; color: var(--tos-text); word-break: break-all; }
+        .reg-result__note { margin-top: 12px; font-size: 12px; color: var(--tos-text-muted); }
+        .result-card__foot { display: flex; justify-content: flex-end; gap: 8px; padding: 0 20px; }
+        .tos-tag { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: var(--tos-radius-tag); font-size: 12px; font-weight: 500; white-space: nowrap; }
+        .tos-tag--success { background: #f0faf0; color: var(--tos-success); }
+        .tos-tag--warning { background: #fff7e6; color: #d48806; }
+
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 3000; padding: 10px 20px; border-radius: var(--tos-radius-control); background: var(--tos-success); color: #fff; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+        .toast.show { opacity: 1; }
+        .toast.warn { background: var(--tos-warning); }
+        .toast.error { background: var(--tos-error); }
+
+        @media (max-width: 680px) {
+            .payout-account-dialog { left: 0; }
+            .sidebar { display: none; }
+            .workspace__content { left: 0; }
+            .wizard__side { display: none; }
+            .form-row-2, .form-row-4 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 工作区背影 -->
+    <div class="workspace">
+        <div class="workspace__topbar"></div>
+        <aside class="sidebar">
+            <select class="sidebar__end-select" onchange="if(this.value)location.href=this.value"><option value="" selected>店铺端</option><option value="../../平台端/运营-钱包对账汇总.html">平台端</option></select>
+            <div class="sidebar__head"><div class="sidebar__logo"><i class="fas fa-store"></i></div><span class="sidebar__title">商家中心</span></div>
+            <nav class="sidebar__nav">
+                <div class="sidebar__group-title">提现管理</div>
+                <a class="sidebar__item" href="../商家提现单详情.html"><i class="fas fa-receipt"></i> 提现单详情</a>
+                <a class="sidebar__item" href="../店铺- 钱包对账单汇总.html"><i class="fas fa-file-invoice-dollar"></i> 钱包对账单</a>
+                <a class="sidebar__item sidebar__item--active" href="店铺- 收款账户管理.html"><i class="fas fa-credit-card"></i> 收款账户</a>
+                <a class="sidebar__item" href="../店铺- 结汇额度管理.html"><i class="fas fa-coins"></i> 结汇额度</a>
+            </nav>
+        </aside>
+        <div class="workspace__content"><div class="workspace__skeleton"></div></div>
+    </div>
+
+    <!-- ===== 注册 Pyvio 商户 · 弹窗 ===== -->
+    <div class="payout-account-overlay">
+        <div class="payout-account-dialog" id="merchantDialog">
+            <div class="payout-account-dialog__head">
+                <span class="payout-account-dialog__title">注册 Pyvio 商户</span>
+                <button class="payout-account-dialog__close" id="mCloseBtn" title="关闭">&times;</button>
+            </div>
+
+            <!-- 账户类型 -->
+            <div class="payout-account-type">
+                <span class="payout-account-type__label">账户类型</span>
+                <select>
+                    <option value="pyvio">Pyvio 移动钱包</option>
+                </select>
+            </div>
+
+            <!-- 向导 -->
+            <div class="wizard">
+                <div class="wizard__side">
+                    <div class="wizard__nav">
+                        <div class="wizard__nav-item active" data-step="1"><span class="wizard__nav-num">1</span><span class="wizard__nav-label">基础信息</span></div>
+                        <div class="wizard__nav-item" data-step="2"><span class="wizard__nav-num">2</span><span class="wizard__nav-label">KYC 资料</span></div>
+                    </div>
+                </div>
+                <div class="wizard__main">
+                    <!-- 第 1 步：基础信息 -->
+                    <div class="form-section" id="pwStep1">
+                        <div class="form-section__title">基础信息 <span class="api-key">请求体</span></div>
+                        <div class="form-group">
+                            <label>合作方用户ID（partner_user_id）<span class="req">*</span></label>
+                            <input id="m_partnerUserId" readonly placeholder="店铺超级管理员账号 ID">
+                            <div class="helper-text">Pyvio 的 partner_user_id，系统自动带入店铺超级管理员账号 ID</div>
+                        </div>
+                        <div class="form-group">
+                            <label>客户端ID（client_id，Pyvio首次注册生成）</label>
+                            <input id="m_clientId" placeholder="选填，Pyvio 首次注册生成">
+                            <div class="helper-text">选填：首次注册 Pyvio 后生成；同一 KYC 开多个 unit 时必填</div>
+                        </div>
+                        <div class="form-group">
+                            <label>行业分类<span class="req">*</span></label>
+                            <select id="m_industryLevel1" style="margin-bottom:12px;">
+                                <option value="tangible">实物商品（Tangible Goods）</option>
+                                <option value="intangible">数字商品与服务（Intangible Goods &amp; Service）</option>
+                            </select>
+                            <div id="m_industryGroups"></div>
+                            <div class="helper-text">先选择「实物商品」或「数字商品与服务」其一，再勾选对应行业（同组可多选）</div>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label>邮箱</label>
+                                <input id="m_email" placeholder="选填">
+                            </div>
+                            <div class="form-group">
+                                <label>手机号</label>
+                                <input id="m_phone" placeholder="选填">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 第 2 步：KYC 资料 -->
+                    <div class="form-section" id="pwStep2" style="display:none;">
+                        <div class="form-section__title">KYC 资料 <span class="api-key">individual_info / company_info</span></div>
+
+                        <div class="form-group">
+                            <label>商户类型<span class="req">*</span></label>
+                            <select id="m_merchantType">
+                                <option value="B2C">B2C</option>
+                                <option value="B2B">B2B</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>KYC 类型<span class="req">*</span></label>
+                            <select id="m_kycType"></select>
+                            <div class="helper-text">B2C 支持个人与企业客户，B2B 仅企业客户，切换商户类型自动收窄可选 KYC 类型</div>
+                        </div>
+
+                        <!-- B2B 资料提供方式 -->
+                        <div id="m_b2bGroup" style="display:none;">
+                            <div class="form-group">
+                                <label>B2B 资料提供方式<span class="req">*</span></label>
+                                <select id="m_evidenceType">
+                                    <option value="website">店铺网址</option>
+                                    <option value="doc">贸易背景材料</option>
+                                </select>
+                                <div class="helper-text">Pyvio 要求 B2B 至少提供店铺网址或贸易背景材料之一</div>
+                            </div>
+                            <div class="form-group" id="m_websiteGroup">
+                                <label>线上店铺网址<span class="req">*</span></label>
+                                <input id="m_onlineStoreUrl" placeholder="如 https://shop.example.com 或平台店铺链接">
+                            </div>
+                            <div class="upload-field" id="m_docGroup" style="display:none;">
+                                <div class="upload-field__label">BUSINESS_DOCUMENT · 贸易背景材料<span class="req">*</span></div>
+                                <label class="upload-dash" data-file="bd_BUSINESS_DOCUMENT">
+                                    <input type="file" class="upload-dash__input" accept=".jpg,.jpeg,.png,.pdf,.xls,.xlsx,.doc,.docx,.zip,.rar">
+                                    <span class="upload-dash__label">BUSINESS_DOCUMENT · 贸易背景材料</span>
+                                    <span class="upload-dash__hint">合同/物流单/报关单等 · 点击上传</span>
+                                    <button type="button" class="upload-dash__remove" title="移除">×</button>
+                                </label>
+                                <div class="upload-field__desc">点击上传 · ≤10MB</div>
+                            </div>
+                        </div>
+
+                        <!-- 个人 KYC -->
+                        <div id="m_individualFields" style="display:none;">
+                            <div class="form-group-title">个人证件附件 <span class="api-key">individual_info.attachments[]</span></div>
+                            <div class="kyc-box" id="m_individualUploads"></div>
+                        </div>
+
+                        <!-- 企业 KYC -->
+                        <div id="m_companyFields" style="display:none;">
+                            <div class="form-group-title">公司信息 <span class="api-key">company_info</span></div>
+                            <div class="kyc-box">
+                                <div class="form-row-2">
+                                    <div class="form-group">
+                                        <label>公司名称<span class="req">*</span></label>
+                                        <input id="m_companyName" placeholder="请填写公司名称">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>英文公司名称</label>
+                                        <input id="m_companyNameEn" placeholder="如 Tospino Co., Ltd.">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>统一社会信用代码<span class="req">*</span></label>
+                                    <input id="m_identifyNo" maxlength="18" placeholder="请填写统一社会信用代码">
+                                </div>
+                                <div class="form-row-4">
+                                    <div class="form-group">
+                                        <label>公司类型<span class="req">*</span></label>
+                                        <select id="m_companyType">
+                                            <option value="Corporation">Corporation · 股份有限公司</option>
+                                            <option value="Limited Company">Limited Company · 有限责任公司</option>
+                                            <option value="IICH">IICH · 个体工商</option>
+                                            <option value="Partnership">Partnership · 合伙企业</option>
+                                            <option value="Others">Others · 其他</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>是否上市<span class="req">*</span></label>
+                                        <select id="m_listed"><option value="0">否</option><option value="1">是</option></select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>是否国有<span class="req">*</span></label>
+                                        <select id="m_stateOwned"><option value="0">否</option><option value="1">是</option></select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>是否外资<span class="req">*</span></label>
+                                        <select id="m_foreignOwned"><option value="0">否</option><option value="1">是</option></select>
+                                    </div>
+                                </div>
+                                <div class="form-row-4">
+                                    <div class="form-group">
+                                        <label>成立日期<span class="req">*</span></label>
+                                        <input id="m_establishDate" maxlength="8" placeholder="YYYYMMDD">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>营业期限起始<span class="req">*</span></label>
+                                        <input id="m_commencementDate" maxlength="8" placeholder="YYYYMMDD">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>营业期限截止</label>
+                                        <input id="m_validPeriod" maxlength="8" placeholder="YYYYMMDD" disabled>
+                                    </div>
+                                    <div class="form-group" style="display:flex;align-items:flex-end;height:36px;">
+                                        <label class="checkbox-inline"><input type="checkbox" id="m_validPeriodPermanent" checked> 长期有效</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>注册地址<span class="req">*</span></label>
+                                    <div class="form-row-4">
+                                        <div class="form-group"><input id="m_reg_country" placeholder="国家" value="CN"></div>
+                                        <div class="form-group"><input id="m_reg_state" placeholder="省份" value="浙江省"></div>
+                                        <div class="form-group"><input id="m_reg_city" placeholder="城市" value="杭州市"></div>
+                                        <div class="form-group"><input id="m_reg_postcode" placeholder="邮编" value="311200"></div>
+                                    </div>
+                                    <div class="form-group"><input id="m_reg_line1" placeholder="详细地址" value="湖滨街道24号"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="checkbox-inline"><input type="checkbox" id="m_opSameAsReg" checked> 经营地址同注册地址</label>
+                                </div>
+                                <div class="form-group">
+                                    <label>经营地址<span class="req">*</span></label>
+                                    <div class="form-row-4">
+                                        <div class="form-group"><input id="m_op_country" placeholder="国家" value="CN" disabled></div>
+                                        <div class="form-group"><input id="m_op_state" placeholder="省份" value="浙江省" disabled></div>
+                                        <div class="form-group"><input id="m_op_city" placeholder="城市" value="杭州市" disabled></div>
+                                        <div class="form-group"><input id="m_op_postcode" placeholder="邮编" value="311200" disabled></div>
+                                    </div>
+                                    <div class="form-group"><input id="m_op_line1" placeholder="详细地址" value="湖滨街道24号" disabled></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group-title">企业证件附件 <span class="api-key">company_info.attachments[]</span></div>
+                            <div class="kyc-box" id="m_companyUploads"></div>
+
+                            <div class="form-group-title">法人信息 <span class="api-key">company_info.legal_info</span></div>
+                            <div class="kyc-box">
+                                <div class="form-group">
+                                    <label>法人证件类型</label>
+                                    <select id="m_legal_idType">
+                                        <option value="prc">中国身份证（PRC ID）</option>
+                                        <option value="other">其他证件</option>
+                                    </select>
+                                    <div class="helper-text">中国身份证只需上传证件附件；其他证件需填写并上传完整证件信息</div>
+                                </div>
+                                <div id="m_legal_other" style="display:none;">
+                                    <div class="form-row-2">
+                                        <div class="form-group"><label>姓名</label><input id="m_legal_name" placeholder="如 张三"></div>
+                                        <div class="form-group"><label>英文名</label><input id="m_legal_nameEn" placeholder="如 San Zhang"></div>
+                                    </div>
+                                    <div class="form-row-4">
+                                        <div class="form-group"><label>证件号</label><input id="m_legal_idNo" placeholder="证件号"></div>
+                                        <div class="form-group"><label>出生日期</label><input id="m_legal_birth" maxlength="8" placeholder="YYYYMMDD"></div>
+                                        <div class="form-group"><label>签发日期</label><input id="m_legal_issue" maxlength="8" placeholder="YYYYMMDD"></div>
+                                        <div class="form-group"><label>有效期至</label><input id="m_legal_expire" maxlength="8" placeholder="YYYYMMDD"></div>
+                                    </div>
+                                    <div class="form-row-4">
+                                        <div class="form-group"><input id="m_legal_country" placeholder="国家" value="CN"></div>
+                                        <div class="form-group"><input id="m_legal_state" placeholder="省份" value="浙江省"></div>
+                                        <div class="form-group"><input id="m_legal_city" placeholder="城市" value="杭州市"></div>
+                                        <div class="form-group"><input id="m_legal_postcode" placeholder="邮编"></div>
+                                    </div>
+                                    <div class="form-group"><input id="m_legal_line1" placeholder="详细地址"></div>
+                                </div>
+                                <div id="m_legalUploads"></div>
+                            </div>
+
+                            <div class="form-group-title">实际受益人（UBO） <span class="api-key">company_info.ubo_list</span></div>
+                            <div class="kyc-box">
+                                <div class="form-group">
+                                    <label>证件类型</label>
+                                    <select id="m_ubo_idType">
+                                        <option value="prc">中国身份证（PRC ID）</option>
+                                        <option value="other">其他证件</option>
+                                    </select>
+                                    <div class="helper-text">中国身份证只需上传证件附件；其他证件需填写并上传完整证件信息</div>
+                                </div>
+                                <div id="m_ubo_other" style="display:none;">
+                                    <div class="form-row-2">
+                                        <div class="form-group"><label>姓名</label><input id="m_ubo_name" placeholder="如 张三"></div>
+                                        <div class="form-group"><label>英文名</label><input id="m_ubo_nameEn" placeholder="如 San Zhang"></div>
+                                    </div>
+                                    <div class="form-row-4">
+                                        <div class="form-group"><label>证件号</label><input id="m_ubo_idNo" placeholder="证件号"></div>
+                                        <div class="form-group"><label>出生日期</label><input id="m_ubo_birth" maxlength="8" placeholder="YYYYMMDD"></div>
+                                        <div class="form-group"><label>签发日期</label><input id="m_ubo_issue" maxlength="8" placeholder="YYYYMMDD"></div>
+                                        <div class="form-group"><label>有效期至</label><input id="m_ubo_expire" maxlength="8" placeholder="YYYYMMDD"></div>
+                                    </div>
+                                    <div class="form-row-4">
+                                        <div class="form-group"><input id="m_ubo_country" placeholder="国家" value="CN"></div>
+                                        <div class="form-group"><input id="m_ubo_state" placeholder="省份" value="浙江省"></div>
+                                        <div class="form-group"><input id="m_ubo_city" placeholder="城市" value="杭州市"></div>
+                                        <div class="form-group"><input id="m_ubo_postcode" placeholder="邮编"></div>
+                                    </div>
+                                    <div class="form-group"><input id="m_ubo_line1" placeholder="详细地址"></div>
+                                </div>
+                                <div id="m_uboUploads"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="payout-account-dialog__foot">
+                <button class="btn-secondary" id="mCancelBtn">取消</button>
+                <button class="btn-secondary" id="mPrevBtn" style="display:none;">上一步</button>
+                <button class="btn-primary" id="mNextBtn">下一步</button>
+                <button class="btn-primary" id="mSubmitBtn" style="display:none;">提交</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 创建结果 -->
+    <div class="result-overlay" id="resultOverlay">
+        <div class="result-card">
+            <div class="result-card__head">
+                <span class="result-card__title">注册结果</span>
+                <button class="payout-account-dialog__close" id="resultCloseBtn">&times;</button>
+            </div>
+            <div class="result-card__body">
+                <div class="reg-result">
+                    <div class="reg-result__row"><span class="reg-result__label">平台用户 ID</span><span class="reg-result__value card-mono" id="r_partnerUserId">—</span></div>
+                    <div class="reg-result__row"><span class="reg-result__label">单元 ID</span><span class="reg-result__value card-mono" id="r_unitId">—</span></div>
+                    <div class="reg-result__row"><span class="reg-result__label">客户 ID</span><span class="reg-result__value card-mono" id="r_clientId">—</span></div>
+                    <div class="reg-result__row"><span class="reg-result__label">注册状态</span><span class="reg-result__value"><span class="tos-tag tos-tag--warning" id="r_status">Pending 待审核</span></span></div>
+                </div>
+                <div class="reg-result__note">以上为创建 Pyvio 用户成功后返回的数据。</div>
+            </div>
+            <div class="result-card__foot">
+                <button class="btn-primary" id="resultDoneBtn">完成</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const INDIVIDUAL_KYC = new Set(["china-individual", "hk-individual", "foreign-individual"]);
+        const KYC_OPTIONS = [
+            { value: "china-individual", label: "中国个人（china-individual）", individual: true },
+            { value: "hk-individual", label: "香港个人（hk-individual）", individual: true },
+            { value: "foreign-individual", label: "境外个人（foreign-individual）", individual: true },
+            { value: "china-enterprise-self-employed", label: "中国个体户（china-enterprise-self-employed）", individual: false },
+            { value: "china-enterprise-limited", label: "中国有限责任公司（china-enterprise-limited）", individual: false },
+            { value: "china-enterprise-investment", label: "中国投资类公司（china-enterprise-investment）", individual: false },
+            { value: "hk-enterprise", label: "香港企业（hk-enterprise）", individual: false },
+            { value: "foreign-enterprise", label: "境外企业（foreign-enterprise）", individual: false }
+        ];
+        const COMPANY_TYPE_BY_KYC = {
+            "china-enterprise-self-employed": "IICH",
+            "china-enterprise-limited": "Corporation",
+            "china-enterprise-investment": "Limited Company",
+            "hk-enterprise": "Corporation",
+            "foreign-enterprise": "Corporation"
+        };
+        const INDUSTRY_GROUPS = {
+            tangible: {
+                title: "实物商品（Tangible Goods）",
+                items: [
+                    ["Automotive","汽车"],["Baby","母婴"],["Beauty and personal care","美妆个护"],["Computers","电脑"],
+                    ["Arts Crafts","手工艺品"],["Electronics","电子产品"],["Fashion Clothing and Accessories","时尚服饰配饰"],
+                    ["Health and Household","健康与家居"],["Home and Kitchen","家居厨房"],["Industrial and Scientific","工业与科研"],
+                    ["Luggage","箱包"],["Movies Television","影视"],["Pet supplies","宠物用品"],["Sports and Outdoors","运动户外"],
+                    ["Tools Home Improvement","工具家装"],["Toys and Games","玩具游戏"],["Food","食品"]
+                ]
+            },
+            intangible: {
+                title: "数字商品与服务（Intangible Goods & Service）",
+                items: [
+                    ["Accounting, Human Resources & Legal","会计、人力资源与法律"],
+                    ["Advertising services, advertising publishers, advertising channels and exhibitions","广告服务、广告商与展览"],
+                    ["Art Design Architecture and Media","艺术设计建筑与媒体"],["Data Entry & Admin","数据录入与行政管理"],
+                    ["Digital Goods: Computer software, mobile applications producer developers or selling (Excludes Games)","数字商品：软件与移动应用（不含游戏）"],
+                    ["Digital goods: online games","数字商品：在线游戏"],["Engineering & Science","工程与科学"],
+                    ["File sharing / storage services (cyber-lockers)","文件共享/存储服务"],["Freight, Shipping & Transportation","货运、航运与运输"],
+                    ["Lodging, hotels, motels resort and accommodation services","住宿与酒店服务"],["Media and Internet Video Service","媒体与互联网视频"],
+                    ["Online Education","在线教育"],["Passenger railways, limousines, taxicabs, motor freight carriers","客运铁路、专车、出租车与货运承运"],
+                    ["Photographic studios and portraits","摄影工作室与肖像"],["Telecommunications","电信"],["Translation & Languages","翻译与语言"],
+                    ["Travel agency, ticketing services, and tour operators","旅行社、票务与旅游运营"],["Websites, IT & Software","网站、IT 与软件"]
+                ]
+            }
+        };
+        const INDIVIDUAL_UPLOADS = [
+            { key: "i_PRCC_ID_Emblem", label: "PRC_ID_Emblem · 身份证国徽面", hint: "点击上传 · JPG/PNG ≤10MB", accept: ".jpg,.jpeg,.png,.pdf" },
+            { key: "i_PRCC_ID_Portrait", label: "PRC_ID_Portrait · 身份证人像面", hint: "点击上传 · JPG/PNG ≤10MB", accept: ".jpg,.jpeg,.png,.pdf" },
+            { key: "i_ID_Hand", label: "ID_Hand · 手持证件照", hint: "点击上传 · JPG/PNG ≤10MB", accept: ".jpg,.jpeg,.png,.pdf" },
+            { key: "i_BAP", label: "BAP · 银行账户证明", hint: "点击上传 · JPG/PNG/PDF ≤10MB", accept: ".jpg,.jpeg,.png,.pdf" },
+            { key: "i_PLATFORM_SCREENSHOT", label: "PLATFORM_SCREENSHOT · 平台店铺截图", hint: "点击上传 · JPG/PNG/PDF ≤10MB", accept: ".jpg,.jpeg,.png,.pdf" }
+        ];
+        const COMPANY_UPLOADS = [
+            { key: "c_BI", label: "BI · 营业执照", hint: "点击上传 · ≤10MB", accept: ".jpg,.jpeg,.png,.pdf,.xls,.xlsx,.doc,.docx,.zip,.rar" },
+            { key: "c_BAP", label: "BAP · 银行账户证明", hint: "点击上传 · ≤10MB", accept: ".jpg,.jpeg,.png,.pdf,.xls,.xlsx,.doc,.docx,.zip,.rar" },
+            { key: "c_SSC", label: "SSC · 股东名册 / 公司章程", hint: "点击上传 · ≤10MB", accept: ".jpg,.jpeg,.png,.pdf,.xls,.xlsx,.doc,.docx,.zip,.rar" },
+            { key: "c_Other", label: "Other · 其他补充材料（选填）", hint: "点击上传 · ≤10MB", accept: ".jpg,.jpeg,.png,.pdf,.xls,.xlsx,.doc,.docx,.zip,.rar" }
+        ];
+
+        const $ = (id) => document.getElementById(id);
+        let currentStep = 1;
+        const totalSteps = 2;
+
+        let toastTimer = null;
+        function showToast(msg, type) {
+            const t = $("toast");
+            t.textContent = msg;
+            t.className = "toast show" + (type === "error" ? " error" : type === "warn" ? " warn" : "");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+        }
+
+        function isEnterprise() {
+            const kyc = $("m_kycType").value;
+            return !INDIVIDUAL_KYC.has(kyc);
+        }
+
+        function renderKycOptions() {
+            const mt = $("m_merchantType").value;
+            const sel = $("m_kycType");
+            const current = sel.value;
+            sel.innerHTML = KYC_OPTIONS.map((o) => {
+                const disabled = mt === "B2B" && o.individual;
+                return '<option value="' + o.value + '"' + (disabled ? " disabled" : "") + ">" + o.label + "</option>";
+            }).join("");
+            if (mt === "B2B" && INDIVIDUAL_KYC.has(current)) sel.value = "china-enterprise-limited";
+        }
+
+        function renderIndustryGroups() {
+            const l1 = $("m_industryLevel1").value;
+            const g = INDUSTRY_GROUPS[l1];
+            if (!g) { $("m_industryGroups").innerHTML = ""; return; }
+            let html = '<div class="industry-group"><div class="industry-group__title">' + g.title + "</div><div class=\"industry-chips\">";
+            g.items.forEach(([v, label]) => {
+                html += '<label class="industry-chip"><input type="checkbox" value="' + v + '"><span>' + label + "</span></label>";
+            });
+            html += "</div></div>";
+            $("m_industryGroups").innerHTML = html;
+        }
+
+        function uploadCardHtml(item, keySuffix) {
+            const key = item.key + (keySuffix || "");
+            return '<div class="upload-field"><div class="upload-field__label">' + item.label + '<span class="req">*</span></div>' +
+                '<label class="upload-dash" data-upl="' + key + '"><input type="file" class="upload-dash__input" accept="' + item.accept + '">' +
+                '<span class="upload-dash__label">' + item.label + '</span><span class="upload-dash__hint">' + item.hint + '</span>' +
+                '<button type="button" class="upload-dash__remove" title="移除">×</button></label>' +
+                '<div class="upload-field__desc">' + item.hint + "</div></div>";
+        }
+
+        function renderUploads() {
+            if (isEnterprise()) {
+                $("m_companyUploads").innerHTML = COMPANY_UPLOADS.map((i) => uploadCardHtml(i)).join("");
+                buildLegalAndUboUploads();
+            }
+        }
+
+        function buildLegalAndUboUploads() {
+            const legalIdType = $("m_legal_idType").value;
+            const uboIdType = $("m_ubo_idType").value;
+            let legalHtml = '<div class="form-group-title" style="margin-top:12px;">法人证件附件<span class="api-key">attachments[]</span></div>';
+            if (legalIdType === "prc") {
+                legalHtml += uploadCardHtml({ key: "l_PRCC_ID_Emblem", label: "PRC_ID_Emblem · 身份证国徽面", hint: "中国法人 · 点击上传", accept: ".jpg,.jpeg,.png,.pdf" });
+                legalHtml += uploadCardHtml({ key: "l_PRCC_ID_Portrait", label: "PRC_ID_Portrait · 身份证人像面", hint: "中国法人 · 点击上传", accept: ".jpg,.jpeg,.png,.pdf" });
+            } else {
+                legalHtml += uploadCardHtml({ key: "l_PP", label: "PP · 护照", hint: "港澳台 / 境外法人 · 点击上传", accept: ".jpg,.jpeg,.png,.pdf" });
+            }
+            $("m_legalUploads").innerHTML = legalHtml;
+
+            let uboHtml = '<div class="form-group-title" style="margin-top:12px;">受益人证件附件<span class="api-key">attachments[]</span></div>';
+            if (uboIdType === "prc") {
+                uboHtml += uploadCardHtml({ key: "ubo_PRCC_ID_Emblem", label: "PRC_ID_Emblem · 身份证国徽面", hint: "中国身份证 · 点击上传", accept: ".jpg,.jpeg,.png,.pdf" });
+                uboHtml += uploadCardHtml({ key: "ubo_PRCC_ID_Portrait", label: "PRC_ID_Portrait · 身份证人像面", hint: "中国身份证 · 点击上传", accept: ".jpg,.jpeg,.png,.pdf" });
+            } else {
+                uboHtml += uploadCardHtml({ key: "ubo_PP", label: "PP · 护照/其他证件", hint: "护照/其他 · 点击上传", accept: ".jpg,.jpeg,.png,.pdf" });
+            }
+            $("m_uboUploads").innerHTML = uboHtml;
+        }
+
+        function bindUploadListeners(root) {
+            (root || document).querySelectorAll(".upload-dash").forEach((dash) => {
+                if (dash.dataset.bound) return;
+                dash.dataset.bound = "1";
+                const input = dash.querySelector(".upload-dash__input");
+                const remove = dash.querySelector(".upload-dash__remove");
+                input.addEventListener("change", () => {
+                    const f = input.files && input.files[0];
+                    if (!f) return;
+                    dash.classList.add("has-file");
+                    dash.querySelector(".upload-dash__hint").textContent = f.name;
+                });
+                remove.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dash.classList.remove("has-file");
+                    dash.querySelector(".upload-dash__hint").textContent = dash.dataset.hint || "";
+                    input.value = "";
+                });
+                dash.dataset.hint = dash.querySelector(".upload-dash__hint").textContent;
+            });
+        }
+
+        function syncKycFields() {
+            const ent = isEnterprise();
+            $("m_individualFields").style.display = ent ? "none" : "";
+            $("m_companyFields").style.display = ent ? "" : "none";
+            $("m_b2bGroup").style.display = $("m_merchantType").value === "B2B" ? "" : "none";
+            if (!ent) {
+                $("m_individualUploads").innerHTML = INDIVIDUAL_UPLOADS.map((i) => uploadCardHtml(i)).join("");
+            } else {
+                renderUploads();
+            }
+            syncB2BEvidence();
+            bindUploadListeners();
+        }
+
+        function syncB2BEvidence() {
+            const type = $("m_evidenceType").value;
+            $("m_websiteGroup").style.display = type === "website" ? "" : "none";
+            $("m_docGroup").style.display = type === "doc" ? "" : "none";
+            bindUploadListeners($("m_docGroup"));
+        }
+
+        function toStep(step) {
+            if (step < 1) step = 1;
+            if (step > totalSteps) step = totalSteps;
+            currentStep = step;
+            $("pwStep1").style.display = step === 1 ? "" : "none";
+            $("pwStep2").style.display = step === 2 ? "" : "none";
+            $("mPrevBtn").style.display = step > 1 ? "" : "none";
+            $("mNextBtn").style.display = step < totalSteps ? "" : "none";
+            $("mSubmitBtn").style.display = step >= totalSteps ? "" : "none";
+            document.querySelectorAll(".wizard__nav-item").forEach((item) => {
+                const s = Number(item.dataset.step);
+                item.classList.toggle("active", s === step);
+                item.classList.toggle("done", s < step);
+            });
+            if (step === 2) syncKycFields();
+        }
+
+        function validateStep1() {
+            if (!$("m_partnerUserId").value) { showToast("请填写合作方用户ID", "error"); return false; }
+            const checked = document.querySelectorAll("#m_industryGroups .industry-chip input:checked");
+            if (!checked.length) { showToast("请至少选择一个行业分类", "error"); return false; }
+            return true;
+        }
+
+        function submit() {
+            if (!validateStep1()) return;
+            const ent = isEnterprise();
+            if (ent) {
+                if (!$("m_companyName").value) { showToast("请填写公司名称", "error"); return; }
+                if (!$("m_identifyNo").value) { showToast("请填写统一社会信用代码", "error"); return; }
+            }
+            if ($("m_merchantType").value === "B2B" && $("m_evidenceType").value === "website" && !$("m_onlineStoreUrl").value) {
+                showToast("请填写线上店铺网址（必填）", "error"); return;
+            }
+            const hasUpload = document.querySelector("#m_individualUploads .upload-dash.has-file, #m_companyUploads .upload-dash.has-file");
+            if (!hasUpload && !ent) { showToast("请上传至少一个证件/附件文件", "error"); return; }
+            // 模拟注册成功
+            $("r_partnerUserId").textContent = $("m_partnerUserId").value || "PV16887897986562";
+            $("r_unitId").textContent = "UT" + Date.now();
+            $("r_clientId").textContent = "CT" + Date.now();
+            $("r_status").className = "tos-tag tos-tag--warning";
+            $("r_status").textContent = "Pending 待审核";
+            $("resultOverlay").classList.add("active");
+        }
+
+        // 初始化
+        $("m_partnerUserId").value = "16887897986562";
+        $("m_industryLevel1").value = "tangible";
+        renderIndustryGroups();
+        renderKycOptions();
+        $("m_merchantType").value = "B2C";
+        $("m_kycType").value = "china-enterprise-limited";
+        renderKycOptions();
+        syncKycFields();
+        toStep(1);
+        bindUploadListeners();
+
+        document.querySelectorAll(".wizard__nav-item").forEach((item) => {
+            item.addEventListener("click", () => toStep(Number(item.dataset.step)));
+        });
+        $("mNextBtn").addEventListener("click", () => {
+            if (currentStep === 1 && !validateStep1()) return;
+            toStep(currentStep + 1);
+        });
+        $("mPrevBtn").addEventListener("click", () => toStep(currentStep - 1));
+        $("mSubmitBtn").addEventListener("click", submit);
+        $("mCancelBtn").addEventListener("click", () => showToast("注册 Pyvio 商户弹窗已关闭（原型）", "warn"));
+        $("mCloseBtn").addEventListener("click", () => showToast("注册 Pyvio 商户弹窗已关闭（原型）", "warn"));
+        $("resultDoneBtn").addEventListener("click", () => $("resultOverlay").classList.remove("active"));
+        $("resultCloseBtn").addEventListener("click", () => $("resultOverlay").classList.remove("active"));
+        $("resultOverlay").addEventListener("click", (e) => { if (e.target === e.currentTarget) $("resultOverlay").classList.remove("active"); });
+        $("m_merchantType").addEventListener("change", () => {
+            renderKycOptions();
+            syncKycFields();
+            const resolved = COMPANY_TYPE_BY_KYC[$("m_kycType").value];
+            if (resolved) $("m_companyType").value = resolved;
+        });
+        $("m_kycType").addEventListener("change", () => {
+            syncKycFields();
+            const resolved = COMPANY_TYPE_BY_KYC[$("m_kycType").value];
+            if (resolved) $("m_companyType").value = resolved;
+        });
+        $("m_industryLevel1").addEventListener("change", renderIndustryGroups);
+        $("m_evidenceType").addEventListener("change", syncB2BEvidence);
+        $("m_legal_idType").addEventListener("change", () => {
+            $("m_legal_other").style.display = $("m_legal_idType").value === "other" ? "" : "none";
+            buildLegalAndUboUploads(); bindUploadListeners();
+        });
+        $("m_ubo_idType").addEventListener("change", () => {
+            $("m_ubo_other").style.display = $("m_ubo_idType").value === "other" ? "" : "none";
+            buildLegalAndUboUploads(); bindUploadListeners();
+        });
+        $("m_validPeriodPermanent").addEventListener("change", () => {
+            $("m_validPeriod").disabled = $("m_validPeriodPermanent").checked;
+        });
+        $("m_opSameAsReg").addEventListener("change", () => {
+            const opFields = ["country","state","city","postcode","line1"];
+            if ($("m_opSameAsReg").checked) {
+                const map = { country: "m_reg_country", state: "m_reg_state", city: "m_reg_city", postcode: "m_reg_postcode", line1: "m_reg_line1" };
+                Object.entries(map).forEach(([k, id]) => {
+                    const el = $("m_op_" + k); if (el) el.value = $(id).value;
+                });
+            }
+            opFields.forEach((k) => { const el = $("m_op_" + k); if (el) el.disabled = $("m_opSameAsReg").checked; });
+        });
+    </script>
+</body>
+</html>
