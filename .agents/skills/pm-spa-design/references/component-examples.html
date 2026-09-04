@@ -20,10 +20,10 @@
                 --tos-primary: #42b7ae;
                 --tos-primary-hover: #339b94;
                 --tos-primary-bg: #e6f7f6;
-                --tos-bg: #f5f7fa;
+                --tos-bg: #fafafa;
                 --tos-card: #fff;
                 --tos-border: #e5e7eb;
-                --tos-border-soft: #f0f2f5;
+                --tos-border-soft: #f0f1f2;
                 --tos-text: #333;
                 --tos-text-secondary: #666;
                 --tos-text-muted: #999;
@@ -102,17 +102,25 @@
                 white-space: nowrap;
             }
 
-            /* 默认内容区：限宽居中，用于表单/详情/配置/阅读等交互型页面 */
+            /* 内容面板：画布 #fafafa，白面板描边/圆角/轻阴影，默认限宽居中 */
             .tos-page {
                 max-width: 1440px;
-                margin: 0 auto;
+                margin: 16px auto;
                 padding: 20px;
+                background: #fff;
+                border: 1px solid #f0f1f2;
+                border-radius: 8px;
+                box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
             }
-            /* 数据密集页：列表/明细/看板/工作台结果区，横向撑满主区域 */
+            /* 满宽面板：数据密集页，四周仅露 8px 画布 */
             .tos-page--full {
                 max-width: none;
-                margin: 0;
+                margin: 8px;
                 padding: 20px;
+                background: #fff;
+                border: 1px solid #f0f1f2;
+                border-radius: 8px;
+                box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
             }
 
             .tos-page-title {

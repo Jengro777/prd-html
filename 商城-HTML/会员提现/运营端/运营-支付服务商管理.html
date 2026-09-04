@@ -92,6 +92,16 @@
         .check-label { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; color: var(--tos-text); cursor: pointer; }
         @media (max-width: 1024px) { .tos-sidebar { width: 64px; } .tos-sidebar__logo-text, .tos-sidebar__group-title, .tos-sidebar__item span { display: none; } .tos-sidebar__item { justify-content: center; padding: 10px; } .tos-main { margin-left: 64px; } .provider-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 640px) { .tos-sidebar { display: none; } .tos-main { margin-left: 0; } .provider-grid { grid-template-columns: 1fr; } .tos-page { padding: 14px; } }
+        /* 画布 #fafafa + 白色内容面板 + 线条分隔 */
+        body, #app, .tos-main { background: #fafafa; }
+        .tos-page { background: #fff; margin: 16px auto; border: 1px solid #f0f1f2; border-radius: 8px; box-shadow: 0 1px 2px rgba(16,24,40,.04); }
+        .tos-page--full { background: #fff; margin: 8px; border: 1px solid #f0f1f2; border-radius: 8px; box-shadow: 0 1px 2px rgba(16,24,40,.04); }
+        .tos-page-title { margin-bottom: 0; padding-bottom: 18px; border-bottom: 1px solid #f0f1f2; }
+        .tos-card { background: transparent; border: 0; border-radius: 0; padding: 20px; box-shadow: none; }
+        .tos-card+.tos-card { margin-top: 0; border-top: 1px solid #f0f1f2; }
+        .tos-metric-grid { margin-bottom: 0; padding: 20px 0; border-bottom: 1px solid #f0f1f2; }
+        .tos-stat { background: transparent; border: 0; border-radius: 0; box-shadow: none; }
+        .tos-table th { background: #fafafa; }
     </style>
 </head>
 <body>

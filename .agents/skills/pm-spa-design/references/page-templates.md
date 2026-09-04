@@ -6,8 +6,9 @@
 
 内容区 `<main>` 按页面类型选用容器，详见 `design-system.md` 第 6 节「内容区宽度」：
 
-- 表单、详情、配置、阅读页：`<main class="tos-page">`（限宽居中）。
-- 列表、明细/对账、看板、工作台结果区：`<main class="tos-page tos-page--full">`（横向撑满）。
+- 画布底色 `#fafafa`，内容面板白底 + `1px #f0f1f2` 描边 + `8px` 圆角 + 轻阴影，面板内用细线分区。
+- 表单、详情、配置、阅读页：`<main class="tos-page">`（限宽居中，`margin: 16px auto`）。
+- 列表、明细/对账、看板、工作台结果区：`<main class="tos-page tos-page--full">`（满宽面板，`margin: 8px`）。
 
 ```html
 <div id="app">

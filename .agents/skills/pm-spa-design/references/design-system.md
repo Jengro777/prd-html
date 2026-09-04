@@ -18,11 +18,11 @@
 | --- | --- | --- |
 | 主色 | `#42b7ae` | 主按钮、当前态、关键链接、聚焦边框 |
 | 主色浅底 | `#e6f7f6` | 选中背景、弱提示背景 |
-| 页面背景 | `#f5f7fa` | 页面底色 |
+| 页面背景（画布） | `#fafafa` | 页面底色 |
 | 卡片背景 | `#ffffff` | 内容承载 |
 | 悬停背景 | `#fafafa` | 表格行、次按钮悬停 |
 | 边框 | `#e5e7eb` | 输入框、卡片、表格 |
-| 弱边框 | `#f0f2f5` | 分割线、卡片内分组 |
+| 弱边框 | `#f0f1f2` | 面板描边、面板内分割线 |
 
 ### 文字色
 
@@ -64,6 +64,7 @@
 
 | 场景 | 阴影 |
 | --- | --- |
+| 内容面板 | `0 1px 2px rgba(16, 24, 40, 0.04)` |
 | 普通卡片 | `0 1px 2px rgba(15, 23, 42, 0.03)` |
 | 悬浮卡片 | `0 4px 16px rgba(15, 23, 42, 0.04)` |
 | 弹窗/抽屉 | `0 20px 60px rgba(15, 23, 42, 0.18)` |
@@ -102,7 +103,7 @@ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica N
 ```css
 .tos-card {
     background: #fff;
-    border: 1px solid #f0f2f5;
+    border: 1px solid #f0f1f2;
     border-radius: 12px;
     padding: 20px;
     box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
@@ -131,6 +132,8 @@ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica N
 ```
 
 卡片用于承载一组业务内容。不要把每个字段、每行数据、每个提示都做成卡片。
+
+> 在内容面板内使用 `.tos-card` 作为承托区块时（列表、对账、配置等），应改为透明背景、去边框、无圆角阴影，改用 `border-top: 1px solid #f0f1f2` 与相邻区块分隔，避免面板内出现「卡片套卡片」。
 
 ### 按钮
 
@@ -393,14 +396,18 @@ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica N
 
 ## 6. 页面模式
 
-### 内容区宽度（按页面类型选用）
+### 内容区（画布 + 面板，按页面类型选用）
 
-内容区提供两种容器，根据页面类型智能选择，不要一刀切用同一种宽度：
+内容区采用「浅灰画布 + 白色面板」结构，面板内用细线分区。不要一刀切用同一种宽度。
 
-- **`.tos-page`（默认，限宽居中）**：`max-width: 1440px; margin: 0 auto; padding: 20px;`。用于阅读/交互型页面——表单页、详情页、设置/配置页、长文与结果展示。内容不横向铺满，保证行宽可读。
-- **`.tos-page--full`（撑满）**：`max-width: none; margin: 0; padding: 20px;`，不设最大宽度、不居中。用于数据密集型页面——列表页、流水/明细对账、资金看板、工作台结果区等。内容吃满主区域宽度，让表格和指标尽量横向铺开。
+- **画布底色**：`body / #app / .tos-main { background: #fafafa; }`。
+- **内容面板**：`#fff` 白底，描边 `1px solid #f0f1f2`，圆角 `8px`，阴影 `0 1px 2px rgba(16, 24, 40, 0.04)`。
+- **`.tos-page`（默认，限宽居中面板）**：`max-width: 1440px; margin: 16px auto; padding: 20px;`。用于阅读/交互型页面——表单页、详情页、设置/配置页、长文与结果展示。四周留白较多，保证行宽可读。
+- **`.tos-page--full`（满宽面板）**：`max-width: none; margin: 8px; padding: 20px;`。内容吃满主区域宽度，四周仅露 8px 画布。用于数据密集型页面——列表页、流水/明细对账、资金看板、工作台结果区等。
 
-> 规则：列表、看板、明细、结果区一律用 `.tos-page--full`；表单、详情、配置、阅读页用默认 `.tos-page`。页面骨架中按此给 `<main>` 叠加 class，例如 `<main class="tos-page tos-page--full">`。
+> 规则：列表、看板、明细、结果区一律用 `.tos-page--full`；表单、详情、配置、阅读页用默认 `.tos-page`。骨架按此给 `<main>` 叠加 class，例如 `<main class="tos-page tos-page--full">`。
+>
+> 面板内分区：页面标题下方与相邻业务区块之间用 `1px solid #f0f1f2` 细线分隔；统计卡 `.tos-stat` 去边框阴影，融入面板；表格表头 `th` 用浅灰 `#fafafa`。面板内的 `.tos-card` 作承托区块时用透明背景、去边框，靠 `border-top` 与相邻区块分隔。
 
 ### 列表页
 

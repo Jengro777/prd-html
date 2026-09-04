@@ -19,6 +19,7 @@ disable-model-invocation: false
 9. **响应式**：桌面优先 12 栅格/左右布局；小屏自动单列。标题、按钮、表格、卡片文字不得溢出或互相遮挡。
 10. **第一屏原则**：业务工具页面第一屏直接展示可操作内容，不做营销式 hero，不写功能说明大段文案。
 11. **H5 页面左侧菜单**：生成会员端/消费者端 H5 页面时，必须包含左侧固定导航菜单（`position:fixed; left:0`，200px 宽，纯 `<a href>` 跳转），方便在桌面浏览器中切换查看多个 H5 页面。侧边栏顶部必须有 `<select class="sidebar__end-select">` 端切换下拉框，方便在会员端/运营端之间跳转。H5 容器 414px `margin:0 auto` 居中。详细模板见 `references/page-templates.md` 第 8 节。
+12. **内容区**：采用「画布 `#fafafa` + 白色面板」结构，面板描边 `1px #f0f1f2`、圆角 `8px`、轻阴影，面板内用细线分区。数据密集页（列表/明细/对账/看板/结果区）用 `.tos-page--full`（`margin: 8px`），表单/详情/配置/阅读页用 `.tos-page`（`margin: 16px auto; max-width: 1440px`）。详见 `references/design-system.md` 第 6 节。
 
 ## 工作流程
 
