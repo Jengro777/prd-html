@@ -36,7 +36,8 @@
         .tos-header__left { display: flex; align-items: center; gap: 12px; }
         .tos-header__title { font-size: 15px; font-weight: 600; color: #1f2937; }
         .tos-header__breadcrumb { font-size: 12px; color: var(--tos-text-muted); }
-        .tos-page { padding: 20px; max-width: 1400px; }
+        .tos-page { max-width: 1440px; margin: 0 auto; padding: 20px; }
+        .tos-page--full { max-width: none; margin: 0; }
         .tos-page-title { margin-bottom: 20px; }
         .tos-page-title h1 { margin: 0; color: #1f2937; font-size: 20px; font-weight: 600; }
         .tos-page-title p { margin: 4px 0 0; color: var(--tos-text-muted); font-size: 13px; }
@@ -90,7 +91,7 @@
         .form-group input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--tos-primary); cursor: pointer; margin: 0; }
         .check-label { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; color: var(--tos-text); cursor: pointer; }
         @media (max-width: 1024px) { .tos-sidebar { width: 64px; } .tos-sidebar__logo-text, .tos-sidebar__group-title, .tos-sidebar__item span { display: none; } .tos-sidebar__item { justify-content: center; padding: 10px; } .tos-main { margin-left: 64px; } .provider-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 640px) { .tos-sidebar { display: none; } .tos-main { margin-left: 0; } .provider-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 640px) { .tos-sidebar { display: none; } .tos-main { margin-left: 0; } .provider-grid { grid-template-columns: 1fr; } .tos-page { padding: 14px; } }
     </style>
 </head>
 <body>
@@ -129,7 +130,7 @@
             </div>
         </header>
 
-        <main class="tos-page">
+        <main class="tos-page tos-page--full">
             <section class="tos-page-title">
                 <h1>支付服务商管理</h1>
                 <p>管理收款和付款两类服务商，配置 API 密钥、启用状态及账户充值。</p>

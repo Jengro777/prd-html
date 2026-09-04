@@ -4,6 +4,11 @@
 
 ## 通用页面骨架
 
+内容区 `<main>` 按页面类型选用容器，详见 `design-system.md` 第 6 节「内容区宽度」：
+
+- 表单、详情、配置、阅读页：`<main class="tos-page">`（限宽居中）。
+- 列表、明细/对账、看板、工作台结果区：`<main class="tos-page tos-page--full">`（横向撑满）。
+
 ```html
 <div id="app">
     <div class="tos-shell">

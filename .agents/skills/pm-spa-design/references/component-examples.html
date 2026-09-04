@@ -102,9 +102,16 @@
                 white-space: nowrap;
             }
 
+            /* 默认内容区：限宽居中，用于表单/详情/配置/阅读等交互型页面 */
             .tos-page {
                 max-width: 1440px;
                 margin: 0 auto;
+                padding: 20px;
+            }
+            /* 数据密集页：列表/明细/看板/工作台结果区，横向撑满主区域 */
+            .tos-page--full {
+                max-width: none;
+                margin: 0;
                 padding: 20px;
             }
 
@@ -524,7 +531,8 @@
                     font-size: 16px;
                 }
 
-                .tos-page {
+                .tos-page,
+                .tos-page--full {
                     padding: 16px;
                 }
 
