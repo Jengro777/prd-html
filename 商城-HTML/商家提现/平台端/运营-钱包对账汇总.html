@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>亚马逊卖家钱包 · 多店铺综合对账单 | 店铺+时间+类型筛选 | 导出CSV</title>
+    <title>Tospino钱包 · 综合对账单</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
         * {
@@ -18,7 +18,7 @@
             color: #0f172a;
         }
         .container {
-            max-width: 1500px;
+            max-width: 1400px;
             margin: 0 auto;
         }
         .main-card {
@@ -104,7 +104,7 @@
             border-bottom: 1px solid #edf2f7;
             padding: 1rem 2rem 0.8rem 2rem;
         }
-        .filter-row {
+        .date-row {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
@@ -114,7 +114,7 @@
             padding-bottom: 0.6rem;
             border-bottom: 1px dashed #e2e8f0;
         }
-        .shop-controls, .date-controls {
+        .date-controls {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
@@ -123,15 +123,12 @@
             padding: 0.3rem 1rem;
             border-radius: 48px;
         }
-        .filter-label {
+        .date-label {
             font-size: 0.7rem;
-            font-weight: 600;
-            color: #1e3a5f;
-            background: #eef2ff;
-            padding: 0.2rem 0.7rem;
-            border-radius: 30px;
+            font-weight: 500;
+            color: #334155;
         }
-        .date-input, .shop-select {
+        .date-input {
             border: 1px solid #cbd5e1;
             border-radius: 24px;
             padding: 0.3rem 0.8rem;
@@ -139,12 +136,7 @@
             font-family: monospace;
             background: white;
         }
-        .shop-select {
-            font-family: system-ui;
-            min-width: 140px;
-            cursor: pointer;
-        }
-        .reset-date, .reset-shop {
+        .reset-date {
             background: #eef2ff;
             color: #1e3a5f;
             border-radius: 40px;
@@ -153,7 +145,7 @@
             cursor: pointer;
             transition: 0.1s;
         }
-        .reset-date:hover, .reset-shop:hover {
+        .reset-date:hover {
             background: #e0e7ff;
         }
         .btn-export {
@@ -179,7 +171,6 @@
             flex-wrap: wrap;
             align-items: center;
             gap: 0.6rem;
-            margin-top: 0.2rem;
         }
         .filter-chip {
             background: #f1f5f9;
@@ -201,6 +192,7 @@
             color: white;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
+        /* 去掉标题后的间距调整 */
         .summary-bar {
             padding: 0.5rem 2rem 0 2rem;
             font-size: 0.7rem;
@@ -215,7 +207,7 @@
         }
         .data-table th {
             background: #f8fafd;
-            padding: 0.8rem 0.8rem;
+            padding: 0.8rem 1rem;
             text-align: left;
             font-weight: 600;
             color: #1e3a5f;
@@ -223,7 +215,7 @@
             font-size: 0.7rem;
         }
         .data-table td {
-            padding: 0.8rem 0.8rem;
+            padding: 0.8rem 1rem;
             border-bottom: 1px solid #f0f4fa;
             vertical-align: middle;
         }
@@ -255,14 +247,100 @@
             font-size: 0.7rem;
             color: #4a5b7a;
         }
-        .shop-badge {
-            background: #e6f0fa;
-            border-radius: 30px;
-            padding: 0.2rem 0.7rem;
-            font-size: 0.65rem;
-            font-weight: 500;
+        /* ===== 支出资金组成（展开查看）===== */
+        .compose-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+            color: #1e3a5f;
+            font-size: 0.68rem;
+            padding: 0.2rem 0.6rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+        }
+        .compose-toggle:hover {
+            border-color: #42b7ae;
+            color: #42b7ae;
+            background: #e6f7f6;
+        }
+        .compose-toggle .arrow {
             display: inline-block;
-            color: #075985;
+            transition: transform 0.15s ease;
+            font-size: 0.62rem;
+        }
+        .compose-toggle.open .arrow {
+            transform: rotate(180deg);
+        }
+        .compose-panel {
+            background: #fbfcfe;
+            border-top: 1px dashed #dde4ee;
+        }
+        .compose-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7rem;
+        }
+        .compose-table th {
+            background: #f3f6fb;
+            color: #334155;
+            padding: 0.45rem 0.8rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid #e5eaf2;
+            white-space: nowrap;
+        }
+        .compose-table td {
+            padding: 0.45rem 0.8rem;
+            border-bottom: 1px solid #f0f4fa;
+            color: #334155;
+            white-space: nowrap;
+        }
+        .compose-table tfoot td {
+            background: #fefce8;
+            font-weight: 700;
+            border-bottom: 0;
+        }
+        .compose-table .mono {
+            font-family: monospace;
+            font-weight: 600;
+        }
+        .compose-bill-type {
+            display: inline-block;
+            padding: 1px 6px;
+            border-radius: 4px;
+            background: #eef2ff;
+            color: #4f46e5;
+            font-size: 0.62rem;
+            font-weight: 600;
+            margin-right: 0.35rem;
+        }
+        .compose-tag {
+            display: inline-block;
+            padding: 0.1rem 0.45rem;
+            border-radius: 4px;
+            font-size: 0.62rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .compose-tag--first {
+            background: #e6f7f6;
+            color: #0e7490;
+        }
+        .compose-tag--split {
+            background: #fff7e6;
+            color: #b45309;
+        }
+        .compose-tag--exhaust {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+        .compose-amount-used {
+            color: #b91c1c;
+            font-weight: 600;
         }
         .total-row {
             background: #fefce8;
@@ -293,7 +371,8 @@
             .balance-summary { padding: 0.8rem 1rem; }
             .balance-number { font-size: 1.1rem; }
             .filter-section { padding: 0.8rem 1rem; }
-            .filter-row { flex-direction: column; align-items: stretch; }
+            .date-row { flex-direction: column; align-items: stretch; }
+            .date-controls { justify-content: space-between; }
             .summary-bar { padding: 0.5rem 1rem; }
         }
 
@@ -536,25 +615,20 @@
             border-bottom: 1px solid var(--tos-border-soft);
             padding: 20px;
         }
-        .filter-row {
+        .date-row {
             border-bottom: 1px dashed var(--tos-border-soft);
         }
-        .shop-controls,
         .date-controls {
             background: #fafafa;
             border-radius: var(--tos-radius-control);
             padding: 4px 8px;
         }
-        .filter-label {
-            background: var(--tos-primary-bg);
-            color: var(--tos-primary);
-            border-radius: var(--tos-radius-tag);
-            padding: 2px 8px;
-            font-size: 12px;
+        .date-label {
+            font-size: 13px;
             font-weight: 500;
+            color: var(--tos-text-secondary);
         }
-        .date-input,
-        .shop-select {
+        .date-input {
             height: 32px;
             border: 1px solid var(--tos-border);
             border-radius: var(--tos-radius-control);
@@ -563,18 +637,15 @@
             font-family: inherit;
             background: var(--tos-card);
             color: var(--tos-text);
-            min-width: 140px;
         }
-        .reset-date,
-        .reset-shop {
+        .reset-date {
             background: transparent;
             color: var(--tos-primary);
             border-radius: var(--tos-radius-control);
             padding: 4px 8px;
             font-size: 12px;
         }
-        .reset-date:hover,
-        .reset-shop:hover {
+        .reset-date:hover {
             background: var(--tos-primary-bg);
         }
         .btn-export {
@@ -687,13 +758,6 @@
             font-size: 13px;
             color: var(--tos-text-secondary);
         }
-        .shop-badge {
-            background: #f5f5f5;
-            color: var(--tos-text-secondary);
-            border-radius: var(--tos-radius-tag);
-            padding: 2px 8px;
-            font-size: 12px;
-        }
         .total-row {
             background: #fafafa;
             font-weight: 700;
@@ -759,100 +823,6 @@
             font-size: 13px;
             line-height: 1.8;
         }
-        /* ===== 支出资金组成（展开查看）===== */
-        .compose-toggle {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            border: 1px solid var(--tos-border);
-            border-radius: var(--tos-radius-control);
-            background: #fff;
-            color: var(--tos-primary);
-            font-size: 12px;
-            padding: 4px 10px;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.15s ease;
-        }
-        .compose-toggle:hover {
-            border-color: var(--tos-primary);
-            background: var(--tos-primary-bg);
-        }
-        .compose-toggle .arrow {
-            display: inline-block;
-            transition: transform 0.15s ease;
-            font-size: 10px;
-        }
-        .compose-toggle.open .arrow {
-            transform: rotate(180deg);
-        }
-        .compose-panel {
-            background: #fbfcfe;
-            border-top: 1px dashed var(--tos-border);
-        }
-        .compose-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;
-        }
-        .compose-table th {
-            background: #fafafa;
-            color: var(--tos-text-secondary);
-            padding: 8px 12px;
-            text-align: left;
-            font-weight: 500;
-            border-bottom: 1px solid var(--tos-border-soft);
-            white-space: nowrap;
-        }
-        .compose-table td {
-            padding: 8px 12px;
-            border-bottom: 1px solid #f5f5f5;
-            color: var(--tos-text);
-            white-space: nowrap;
-        }
-        .compose-table tfoot td {
-            background: #fafafa;
-            font-weight: 600;
-            border-bottom: 0;
-        }
-        .compose-table .mono {
-            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-            font-weight: 600;
-        }
-        .compose-bill-type {
-            display: inline-block;
-            padding: 1px 6px;
-            border-radius: var(--tos-radius-tag);
-            background: #eef2ff;
-            color: #4f46e5;
-            font-size: 10px;
-            font-weight: 600;
-            margin-right: 6px;
-        }
-        .compose-tag {
-            display: inline-block;
-            padding: 1px 6px;
-            border-radius: var(--tos-radius-tag);
-            font-size: 11px;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-        .compose-tag--first {
-            background: var(--tos-primary-bg);
-            color: var(--tos-primary);
-        }
-        .compose-tag--split {
-            background: #fff7e6;
-            color: #d48806;
-        }
-        .compose-tag--exhaust {
-            background: #f5f5f5;
-            color: var(--tos-text-secondary);
-        }
-        .compose-amount-used {
-            color: var(--tos-error);
-            font-weight: 600;
-        }
         @media (max-width: 960px) {
             .balance-summary {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -867,6 +837,95 @@
             body {
                 padding: 1rem;
             }
+        }
+
+        /* ===== 店铺筛选（可搜索下拉）===== */
+        .store-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        .store-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--tos-text-secondary);
+        }
+        .store-select {
+            position: relative;
+            width: 300px;
+            max-width: 100%;
+        }
+        .store-search-box {
+            width: 100%;
+            height: 32px;
+            border: 1px solid var(--tos-border);
+            border-radius: var(--tos-radius-control);
+            padding: 0 10px 0 34px;
+            font-size: 13px;
+            color: var(--tos-text);
+            background: #fff url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='7'/><path d='M21 21l-4.3-4.3'/></svg>") no-repeat left 10px center;
+            outline: none;
+            cursor: text;
+        }
+        .store-search-box:focus {
+            border-color: var(--tos-primary);
+            box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.16);
+        }
+        .store-list {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: var(--tos-card);
+            border: 1px solid var(--tos-border);
+            border-radius: var(--tos-radius-control);
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+            z-index: 30;
+            max-height: 240px;
+            overflow-y: auto;
+            display: none;
+        }
+        .store-list.open {
+            display: block;
+        }
+        .store-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            font-size: 13px;
+            color: var(--tos-text);
+            cursor: pointer;
+            border-bottom: 1px solid var(--tos-border-soft);
+        }
+        .store-option:last-child {
+            border-bottom: 0;
+        }
+        .store-option:hover {
+            background: var(--tos-primary-bg);
+        }
+        .store-option.active {
+            background: var(--tos-primary-bg);
+            color: var(--tos-primary);
+            font-weight: 600;
+        }
+        .store-option .store-check {
+            margin-left: auto;
+            font-size: 12px;
+            color: var(--tos-primary);
+        }
+        .store-empty {
+            padding: 10px 12px;
+            font-size: 12px;
+            color: var(--tos-text-muted);
+        }
+        .store-name {
+            white-space: nowrap;
+            font-size: 12px;
+            color: var(--tos-text-secondary);
         }
     </style>
 </head>
@@ -891,13 +950,13 @@
     <div class="main-card">
         <div class="card-header">
             <h1>
-                亚马逊卖家钱包 · 多店铺综合对账单
-                <span class="header-badge">店铺 + 时间 + 业务类型筛选，导出 CSV</span>
+                亚马逊卖家钱包 · 综合对账单
+                <span class="header-badge">店铺筛选 + 时间筛选 + 业务类型筛选 + 导出 CSV</span>
             </h1>
-            <p>多店铺资金归集，每笔流水关联店铺，唯一钱包对账单号，余额连续自洽；每笔支出可展开查看资金组成，追溯由哪些收入构成</p>
+            <p>平台维度聚合全部店铺钱包流水：钱包对账单号（WBI{日期}）聚合多种业务类型（订单结算入账 / 提现 / 广告费 / 技术服务费 / 费用调增·赔偿款）；每种业务类型均分配一个对账子单号（父级-序号）；可按店铺 / 时间 / 业务类型筛选；余额连续自洽；每笔支出可展开查看资金组成，追溯由哪些收入构成</p>
         </div>
 
-        <!-- 余额汇总卡片（全量店铺数据展示，不受筛选影响） -->
+        <!-- 余额汇总卡片（全局全量数据展示，不受筛选影响） -->
         <div class="balance-summary" id="balanceSummary">
             <div class="balance-item">
                 <div class="balance-label">期初余额 (2026-03-01)</div>
@@ -906,36 +965,33 @@
             </div>
             <div class="balance-item">
                 <div class="balance-label">全量收入总额</div>
-                <div class="balance-number positive" id="totalIncomeAll">+ $0.00</div>
-                <div>结算入账 + 费用调增/赔偿款</div>
+                <div class="balance-number positive" id="totalIncomeAll">+ $10,360.00</div>
+                <div>订单结算入账 + 费用调增/赔偿款</div>
             </div>
             <div class="balance-item">
                 <div class="balance-label">全量支出总额</div>
-                <div class="balance-number warning" id="totalExpenseAll">- $0.00</div>
+                <div class="balance-number warning" id="totalExpenseAll">- $7,790.00</div>
                 <div>提现 + 广告费 + 服务费 · 支出可溯源到收入</div>
             </div>
             <div class="balance-item">
                 <div class="balance-label">期末余额</div>
-                <div class="balance-number positive" id="closingBalanceAll">$0.00</div>
+                <div class="balance-number positive" id="closingBalanceAll">$15,000.50</div>
                 <div><span class="verify-badge" id="verifyBadge">✓ 自洽校验通过</span></div>
             </div>
         </div>
 
-        <!-- 筛选区域: 店铺筛选 + 时间范围 + 业务类型 -->
+        <!-- 筛选区域：店铺可搜索下拉 + 时间范围 + 业务类型 -->
         <div class="filter-section">
-            <div class="filter-row">
-                <div class="shop-controls">
-                    <span class="filter-label">店铺筛选</span>
-                    <select id="shopSelect" class="shop-select">
-                        <option value="all">📊 全部店铺</option>
-                        <option value="US_MAIN">🇺🇸 美国站 - 主力店</option>
-                        <option value="EU_CENTRAL">🇪🇺 欧洲站 - 综合店</option>
-                        <option value="JP_TOKYO">🇯🇵 日本站 - 东京店</option>
-                    </select>
-                    <span class="reset-shop" id="resetShopBtn">重置店铺</span>
+            <div class="store-row">
+                <span class="store-label">店铺</span>
+                <div class="store-select" id="storeSelect">
+                    <input type="text" id="storeSearch" class="store-search-box" placeholder="搜索店铺名称…" autocomplete="off" />
+                    <div class="store-list" id="storeList"></div>
                 </div>
+            </div>
+            <div class="date-row">
                 <div class="date-controls">
-                    <span class="filter-label">时间范围</span>
+                    <span class="date-label">时间范围</span>
                     <input type="date" id="startDate" class="date-input" value="2026-03-01">
                     <span>—</span>
                     <input type="date" id="endDate" class="date-input" value="2026-03-31">
@@ -945,7 +1001,7 @@
             </div>
             <div class="type-row">
                 <span class="filter-chip active" data-type="all">全部业务</span>
-                <span class="filter-chip" data-type="settlement">结算入账</span>
+                <span class="filter-chip" data-type="settlement">订单结算入账</span>
                 <span class="filter-chip" data-type="withdrawal">提现</span>
                 <span class="filter-chip" data-type="adfee">广告费</span>
                 <span class="filter-chip" data-type="servicefee">技术服务费</span>
@@ -953,6 +1009,7 @@
             </div>
         </div>
 
+        <!-- 仅保留筛选统计摘要，无大标题 -->
         <div class="summary-bar" id="summaryBar"></div>
 
         <div style="overflow-x: auto;">
@@ -960,8 +1017,8 @@
                 <thead>
                     <tr>
                         <th>钱包对账单号</th>
-                        <th>店铺信息</th>
                         <th>业务类型</th>
+                        <th>店铺</th>
                         <th>业务单号 / 关联凭证</th>
                         <th>业务日期</th>
                         <th>收入金额 (+) </th>
@@ -980,8 +1037,7 @@
         <div class="footer-note">
             <div style="display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between;">
                 <div><strong>自洽校验</strong><br>期初 + 全量收入 − 全量支出 = 期末余额，每笔流水余额连续递推</div>
-                <div><strong>钱包对账单号原则</strong><br>全局唯一 WBI-YYYYMMDD-NNN，提现拆分对应多个子单号</div>
-                <div><strong>店铺维度</strong><br>支持按店铺独立筛选，查看不同站点资金流向</div>
+                <div><strong>对账单号原则</strong><br>钱包对账单号 = <span class="code">WBI{YYYYMMDD}</span>（父级），聚合多种业务类型（订单结算入账/提现/广告费/技术服务费/费用调增·赔偿款）；对账子单号 = 父级单号-<span class="code">{序号}</span>，如 <span class="code">WBI20260302-001</span>；单内每笔业务以各自单据号（STL/AD/FEE/ADJ 等）为凭证，同一结算单可被多笔支出部分占用</div>
                 <div><strong>支出资金组成</strong><br>每笔支出展开可见资金来源构成：支出金额 = 各收入来源占用金额之和；同一结算单可被多笔支出部分占用（二次/多次拆分），参考 STL-20260315-001 二次拆分示例</div>
             </div>
             <div style="margin-top: 12px; border-top: 1px solid var(--tos-border-soft); padding-top: 8px;">
@@ -993,46 +1049,85 @@
 </div>
 
 <script>
-    // ---------- 原始全量流水数据（新增店铺字段，保证余额连续自洽）---------
+    // ---------- 原始全量流水数据（保证余额连续自洽）---------
     const OPENING_BALANCE = 12430.50;
-    // 每笔交易明确店铺: US_MAIN(美国主力), EU_CENTRAL(欧洲), JP_TOKYO(日本)
+    // 平台维度下参与汇总的店铺
+    const STORE_LIST = [
+        { id: "all", name: "全部店铺" },
+        { id: "store-us", name: "亚马逊美国站 · 跨境优选" },
+        { id: "store-eu", name: "亚马逊欧洲站 · 环球精选" },
+        { id: "store-jp", name: "亚马逊日本站 · 出海优选" }
+    ];
     const rawTransactions = [
-        { id: "WBI-20260302-001", shopCode: "US_MAIN", shopName: "🇺🇸 美国站 - 主力店", type: "settlement", typeLabel: "结算入账", typeIcon: "📦", refRaw: "STL-20260228-101 (周期:02/15-02/28)", date: "2026-03-02", income: 3250.00, expense: 0 },
-        { id: "WBI-20260305-002", shopCode: "EU_CENTRAL", shopName: "🇪🇺 欧洲站 - 综合店", type: "adfee", typeLabel: "广告费", typeIcon: "📢", refRaw: "AD-ORDER-45892 SP广告活动", date: "2026-03-05", income: 0, expense: 890.00, composition: [
-            { incomeId: "STL-20260228-101", incomeType: "结算入账", incomeDate: "2026-03-02", incomeAmount: 3250.00, used: 890.00, remainingAfter: 2360.00, usedNo: 1 }
+        { id: "WBI-20260302-001", type: "settlement", typeLabel: "订单结算入账", typeIcon: "📦", store: "store-us", businessId: "STL-20260228-101", refRaw: "STL-20260228-101 (周期:02/15-02/28)", date: "2026-03-02", income: 3250.00, expense: 0 },
+        { id: "WBI-20260305-002", type: "adfee", typeLabel: "广告费", typeIcon: "📢", store: "store-us", businessId: "AD-ORDER-45892", refRaw: "AD-ORDER-45892 SP广告活动", date: "2026-03-05", income: 0, expense: 890.00, composition: [
+            { incomeSubId: "WBI20260302-001", incomeId: "STL-20260228-101", incomeType: "订单结算入账", incomeDate: "2026-03-02", incomeAmount: 3250.00, used: 890.00, remainingAfter: 2360.00, usedNo: 1 }
         ] },
-        { id: "WBI-20260310-003", shopCode: "US_MAIN", shopName: "🇺🇸 美国站 - 主力店", type: "servicefee", typeLabel: "技术服务费", typeIcon: "⚙️", refRaw: "FEE-202603-专业计划 (月度订阅+推荐费)", date: "2026-03-10", income: 0, expense: 139.99, composition: [
-            { incomeId: "STL-20260228-101", incomeType: "结算入账", incomeDate: "2026-03-02", incomeAmount: 3250.00, used: 139.99, remainingAfter: 2220.01, usedNo: 2 }
+        { id: "WBI-20260308-EU-001", type: "settlement", typeLabel: "订单结算入账", typeIcon: "📦", store: "store-eu", businessId: "STL-20260308-EU-001", refRaw: "STL-20260308-EU-001 (周期:02/22-03/07)", date: "2026-03-08", income: 1180.00, expense: 0 },
+        { id: "WBI-20260310-003", type: "servicefee", typeLabel: "技术服务费", typeIcon: "⚙️", store: "store-us", businessId: "FEE-202603", refRaw: "FEE-202603-专业计划 (月度订阅+推荐费)", date: "2026-03-10", income: 0, expense: 139.99, composition: [
+            { incomeSubId: "WBI20260302-001", incomeId: "STL-20260228-101", incomeType: "订单结算入账", incomeDate: "2026-03-02", incomeAmount: 3250.00, used: 139.99, remainingAfter: 2220.01, usedNo: 2 }
         ] },
-        { id: "WBI-20260315-004", shopCode: "JP_TOKYO", shopName: "🇯🇵 日本站 - 东京店", type: "settlement", typeLabel: "结算入账", typeIcon: "📦", refRaw: "STL-20260315-001 (周期:03/01-03/14)", date: "2026-03-15", income: 5000.00, expense: 0 },
-        { id: "WBI-20260320-005", shopCode: "US_MAIN", shopName: "🇺🇸 美国站 - 主力店", type: "withdrawal", typeLabel: "提现", typeIcon: "🏦", refRaw: "提现主单:WD-20260320-001 / 占用结算单:STL-20260315-001(部分)", date: "2026-03-20", income: 0, expense: 2500.00, composition: [
-            { incomeId: "STL-20260315-001", incomeType: "结算入账", incomeDate: "2026-03-15", incomeAmount: 5000.00, used: 2500.00, remainingAfter: 2500.00, usedNo: 1 }
+        { id: "WBI-20260312-JP-001", type: "settlement", typeLabel: "订单结算入账", typeIcon: "📦", store: "store-jp", businessId: "STL-20260312-JP-001", refRaw: "STL-20260312-JP-001 (周期:03/01-03/11)", date: "2026-03-12", income: 660.00, expense: 0 },
+        { id: "WBI-20260315-004", type: "settlement", typeLabel: "订单结算入账", typeIcon: "📦", store: "store-us", businessId: "STL-20260315-001", refRaw: "STL-20260315-001 (周期:03/01-03/14)", date: "2026-03-15", income: 5000.00, expense: 0 },
+        { id: "WBI-20260318-EU-002", type: "adfee", typeLabel: "广告费", typeIcon: "📢", store: "store-eu", businessId: "AD-EU-45112", refRaw: "AD-EU-45112 SP广告活动", date: "2026-03-18", income: 0, expense: 260.00, composition: [
+            { incomeSubId: "WBI20260308-001", incomeId: "STL-20260308-EU-001", incomeType: "订单结算入账", incomeDate: "2026-03-08", incomeAmount: 1180.00, used: 260.00, remainingAfter: 920.00, usedNo: 1 }
         ] },
-        { id: "WBI-20260325-006", shopCode: "EU_CENTRAL", shopName: "🇪🇺 欧洲站 - 综合店", type: "withdrawal", typeLabel: "提现", typeIcon: "🏦", refRaw: "提现主单:WD-20260325-002 / 占用结算单:STL-20260228-101(剩余)+STL-20260315-001(二次拆分)", date: "2026-03-25", income: 0, expense: 3200.00, composition: [
-            { incomeId: "STL-20260228-101", incomeType: "结算入账", incomeDate: "2026-03-02", incomeAmount: 3250.00, used: 2220.01, remainingAfter: 0.00, usedNo: 3 },
-            { incomeId: "STL-20260315-001", incomeType: "结算入账", incomeDate: "2026-03-15", incomeAmount: 5000.00, used: 979.99, remainingAfter: 1520.01, usedNo: 2 }
+        { id: "WBI-20260320-005", type: "withdrawal", typeLabel: "提现", typeIcon: "🏦", store: "store-us", businessId: "WD-20260320-001", refRaw: "提现主单:WD-20260320-001 / 占用结算单:STL-20260315-001(部分)", date: "2026-03-20", income: 0, expense: 2500.00, composition: [
+            { incomeSubId: "WBI20260315-001", incomeId: "STL-20260315-001", incomeType: "订单结算入账", incomeDate: "2026-03-15", incomeAmount: 5000.00, used: 2500.00, remainingAfter: 2500.00, usedNo: 1 }
         ] },
-        { id: "WBI-20260328-007", shopCode: "JP_TOKYO", shopName: "🇯🇵 日本站 - 东京店", type: "adjustment", typeLabel: "费用调增/赔偿款", typeIcon: "💰", refRaw: "ADJ-20260328-仓储费多扣返还 (平台调账/FBA赔偿)", date: "2026-03-28", income: 270.00, expense: 0 },
-        { id: "WBI-20260330-008", shopCode: "US_MAIN", shopName: "🇺🇸 美国站 - 主力店", type: "servicefee", typeLabel: "月度仓储费", typeIcon: "📦", refRaw: "FBA-STORAGE-MAR 长期仓储费", date: "2026-03-30", income: 0, expense: 80.01, composition: [
-            { incomeId: "STL-20260315-001", incomeType: "结算入账", incomeDate: "2026-03-15", incomeAmount: 5000.00, used: 80.01, remainingAfter: 1440.00, usedNo: 3 }
+        { id: "WBI-20260325-006", type: "withdrawal", typeLabel: "提现", typeIcon: "🏦", store: "store-us", businessId: "WD-20260325-002", refRaw: "提现主单:WD-20260325-002 / 占用结算单:STL-20260228-101(剩余)+STL-20260315-001(二次拆分)", date: "2026-03-25", income: 0, expense: 3200.00, composition: [
+            { incomeSubId: "WBI20260302-001", incomeId: "STL-20260228-101", incomeType: "订单结算入账", incomeDate: "2026-03-02", incomeAmount: 3250.00, used: 2220.01, remainingAfter: 0.00, usedNo: 3 },
+            { incomeSubId: "WBI20260315-001", incomeId: "STL-20260315-001", incomeType: "订单结算入账", incomeDate: "2026-03-15", incomeAmount: 5000.00, used: 979.99, remainingAfter: 1520.01, usedNo: 2 }
+        ] },
+        { id: "WBI-20260326-EU-003", type: "withdrawal", typeLabel: "提现", typeIcon: "🏦", store: "store-eu", businessId: "WD-20260326-EU-001", refRaw: "提现主单:WD-20260326-EU-001 / 占用结算单:STL-20260308-EU-001(二次拆分)", date: "2026-03-26", income: 0, expense: 420.00, composition: [
+            { incomeSubId: "WBI20260308-001", incomeId: "STL-20260308-EU-001", incomeType: "订单结算入账", incomeDate: "2026-03-08", incomeAmount: 1180.00, used: 420.00, remainingAfter: 500.00, usedNo: 2 }
+        ] },
+        { id: "WBI-20260327-JP-002", type: "withdrawal", typeLabel: "提现", typeIcon: "🏦", store: "store-jp", businessId: "WD-20260327-JP-001", refRaw: "提现主单:WD-20260327-JP-001 / 占用结算单:STL-20260312-JP-001(部分)", date: "2026-03-27", income: 0, expense: 300.00, composition: [
+            { incomeSubId: "WBI20260312-001", incomeId: "STL-20260312-JP-001", incomeType: "订单结算入账", incomeDate: "2026-03-12", incomeAmount: 660.00, used: 300.00, remainingAfter: 360.00, usedNo: 1 }
+        ] },
+        { id: "WBI-20260328-007", type: "adjustment", typeLabel: "费用调增/赔偿款", typeIcon: "💰", store: "store-us", businessId: "ADJ-20260328", refRaw: "ADJ-20260328-仓储费多扣返还 (平台调账/FBA赔偿)", date: "2026-03-28", income: 270.00, expense: 0 },
+        { id: "WBI-20260330-008", type: "servicefee", typeLabel: "月度仓储费", typeIcon: "📦", store: "store-us", businessId: "FBA-STORAGE-MAR", refRaw: "FBA-STORAGE-MAR 长期仓储费", date: "2026-03-30", income: 0, expense: 80.01, composition: [
+            { incomeSubId: "WBI20260315-001", incomeId: "STL-20260315-001", incomeType: "订单结算入账", incomeDate: "2026-03-15", incomeAmount: 5000.00, used: 80.01, remainingAfter: 1440.00, usedNo: 3 }
         ] }
     ];
 
     // 计算每笔交易后的全局余额（连续递推）
     let running = OPENING_BALANCE;
+    const dateSeqCount = {};
     const fullTransactions = rawTransactions.map(tx => {
         const delta = (tx.income || 0) - (tx.expense || 0);
         running = running + delta;
         const balanceAfter = Math.round(running * 100) / 100;
-        return { ...tx, balanceAfter };
+        const dateCompact = tx.date.replace(/-/g, "");
+        const statementId = `WBI${dateCompact}`;
+        const seq = (dateSeqCount[dateCompact] = (dateSeqCount[dateCompact] || 0) + 1);
+        const subId = `${statementId}-${String(seq).padStart(3, "0")}`;
+        return { ...tx, statementId, subId, balanceAfter };
     });
-    
-    // 全量汇总数据（不受筛选影响）
+    // 收入被哪些支出占用（倒查：以 Income ID 聚合后续支出）
+    const consumeByIncome = {};
+    fullTransactions.forEach(tx => {
+        if (tx.expense > 0 && tx.composition && tx.composition.length) {
+            tx.composition.forEach(c => {
+                (consumeByIncome[c.incomeId] = consumeByIncome[c.incomeId] || []).push({
+                    subId: tx.subId,
+                    type: tx.type,
+                    typeLabel: tx.typeLabel,
+                    businessId: tx.businessId,
+                    date: tx.date,
+                    used: c.used,
+                    remainingAfter: c.remainingAfter,
+                    usedNo: c.usedNo
+                });
+            });
+        }
+    });
+    // 全量汇总数据
     const totalIncomeAll = fullTransactions.reduce((s, t) => s + t.income, 0);
     const totalExpenseAll = fullTransactions.reduce((s, t) => s + t.expense, 0);
     const finalBalanceAll = fullTransactions.length ? fullTransactions[fullTransactions.length-1].balanceAfter : OPENING_BALANCE;
-    
-    // 更新卡片
+
+    // 显示全量卡片
     document.getElementById("totalIncomeAll").innerHTML = `+ $${totalIncomeAll.toFixed(2)}`;
     document.getElementById("totalExpenseAll").innerHTML = `- $${totalExpenseAll.toFixed(2)}`;
     document.getElementById("closingBalanceAll").innerHTML = `$${finalBalanceAll.toFixed(2)}`;
@@ -1042,46 +1137,128 @@
         document.getElementById("verifyBadge").innerHTML = "⚠️ 校验异常";
     }
 
-    // ---------- 状态管理 ----------
+    // 状态管理
     let currentTypeFilter = "all";
-    let currentShopFilter = "all";      // "all" 或具体店铺code
     let startDate = "2026-03-01";
     let endDate = "2026-03-31";
+    let currentStore = "all";
+    let storeSearchText = "";
 
-    // 日期范围判定（包容边界，endDate当天包含在内）
+    function getStoreName(id) {
+        if (id === "all") return "全部店铺";
+        const s = STORE_LIST.find(x => x.id === id);
+        return s ? s.name : id;
+    }
+
+    function storeOptionsHtml() {
+        const q = storeSearchText.trim().toLowerCase();
+        const filtered = STORE_LIST.filter(s => s.id === "all" || !q || s.name.toLowerCase().includes(q));
+        if (filtered.length === 0) {
+            return `<div class="store-empty">未找到匹配店铺</div>`;
+        }
+        return filtered.map(s => `
+            <div class="store-option${s.id === currentStore ? " active" : ""}" data-store="${s.id}">
+                <i class="fas fa-store" style="font-size:12px; color:${s.id === "all" ? "var(--tos-primary)" : "var(--tos-text-muted)"};"></i>
+                <span>${s.name}</span>
+                ${s.id === currentStore ? '<i class="fas fa-check store-check"></i>' : ""}
+            </div>
+        `).join("");
+    }
+
+    function openStoreList() {
+        const list = document.getElementById("storeList");
+        list.innerHTML = storeOptionsHtml();
+        list.classList.add("open");
+    }
+
+    function closeStoreList() {
+        const list = document.getElementById("storeList");
+        list.classList.remove("open");
+    }
+
+    function selectStore(id) {
+        currentStore = id;
+        document.getElementById("storeSearch").value = getStoreName(id);
+        closeStoreList();
+        renderTable();
+    }
+
     function isDateInRange(dateStr) {
         if (!startDate && !endDate) return true;
         const d = new Date(dateStr);
         if (startDate && new Date(startDate) > d) return false;
         if (endDate) {
             const endPlus = new Date(endDate);
-            endPlus.setHours(23, 59, 59);
+            endPlus.setHours(23,59,59);
             if (endPlus < d) return false;
         }
         return true;
     }
 
-    // 综合筛选：店铺 + 类型 + 日期
     function getFilteredTransactions() {
         let filtered = fullTransactions;
-        if (currentShopFilter !== "all") {
-            filtered = filtered.filter(tx => tx.shopCode === currentShopFilter);
-        }
         if (currentTypeFilter !== "all") {
             filtered = filtered.filter(tx => tx.type === currentTypeFilter);
+        }
+        if (currentStore !== "all") {
+            filtered = filtered.filter(tx => tx.store === currentStore);
         }
         filtered = filtered.filter(tx => isDateInRange(tx.date));
         return filtered;
     }
 
-    // 渲染表格及底部汇总
+    // 查看组成面板：统一 10 列字段（同时支持收入与支出）
+    function buildComposePanel(id, intro, rows) {
+        const body = rows.map(r => {
+            const usedHtml = r.used > 0.001
+                ? (r.ioType === "支出"
+                    ? `<span class="compose-amount-used">- $${r.used.toFixed(2)}</span>`
+                    : `<span class="amount-in">+ $${r.used.toFixed(2)}</span>`)
+                : `<span style="color:#94a3b8;">—</span>`;
+            const remainHtml = r.remaining <= 0.001
+                ? `<span class="compose-tag compose-tag--exhaust">已占用完毕</span>`
+                : `$${r.remaining.toFixed(2)}`;
+            return `<tr>
+                <td><span class="wallet-bill-id" style="color:#0f766e;">${r.subId}</span></td>
+                <td>${r.srcType}</td>
+                <td><span class="mono">${r.orgNo}</span></td>
+                <td>$${r.income.toFixed(2)}</td>
+                <td>${r.entryTime}</td>
+                <td>${remainHtml}</td>
+                <td>${r.relType}</td>
+                <td>${r.ioType}</td>
+                <td>${usedHtml}</td>
+                <td>${r.mark}</td>
+            </tr>`;
+        }).join("");
+        return `<tr id="compose-${id}" class="compose-panel" style="display:none;"><td colspan="9">
+            <div style="padding:0.6rem 1rem;">
+                <div style="font-size:0.7rem; font-weight:600; color:#334155; margin-bottom:0.4rem;">${intro}</div>
+                <table class="compose-table">
+                    <thead><tr>
+                        <th>对账子单号</th>
+                        <th>原单据类型</th>
+                        <th>原始单号</th>
+                        <th>原单据收入</th>
+                        <th>原单据入账时间</th>
+                        <th>原单据剩余金额</th>
+                        <th>关联业务类型</th>
+                        <th>收支类型</th>
+                        <th>占用金额</th>
+                        <th>占用标记</th>
+                    </tr></thead>
+                    <tbody>${body}</tbody>
+                </table>
+            </div>
+        </td></tr>`;
+    }
+
     function renderTable() {
         const filtered = getFilteredTransactions();
         const tbody = document.getElementById("tableBody");
         const tfoot = document.getElementById("tableFooter");
         const summaryBar = document.getElementById("summaryBar");
         if (!tbody) return;
-        
         if (filtered.length === 0) {
             tbody.innerHTML = `<tr><td colspan="9" class="empty-message">当前店铺/时间/业务类型下无流水记录</td></tr>`;
             tfoot.innerHTML = '';
@@ -1100,61 +1277,63 @@
             const typeDisplay = `${tx.typeLabel}`;
             const incomeHtml = tx.income > 0 ? `<span class="amount-in">$${tx.income.toFixed(2)}</span>` : "—";
             const expenseHtml = tx.expense > 0 ? `<span class="amount-out">$${tx.expense.toFixed(2)}</span>` : "—";
-            // 店铺显示徽章
-            const shopHtml = `<span class="shop-badge">${tx.shopName}</span>`;
-            // 支出资金组成：支出流水可展开查看由哪些收入构成
+            // 查看组成：每种业务类型统一 10 列双向字段
             let composeCell = "—";
             let composePanel = "";
             if (tx.expense > 0 && tx.composition && tx.composition.length) {
-                const srcRows = tx.composition.map(c => {
+                const compRows = tx.composition.map(c => {
                     const usedNoLabel = c.usedNo === 1
                         ? `<span class="compose-tag compose-tag--first">首次占用</span>`
                         : `<span class="compose-tag compose-tag--split">${c.usedNo}次拆分</span>`;
-                    const remainingLabel = c.remainingAfter <= 0.001
-                        ? `<span class="compose-tag compose-tag--exhaust">已占用完毕</span>`
-                        : `$${c.remainingAfter.toFixed(2)}`;
-                    return `<tr>
-                        <td><span class="compose-bill-type">${tx.typeLabel}</span><span class="mono" style="color:#d48806;">${tx.id}</span></td>
-                        <td>${c.incomeType}</td>
-                        <td><span class="mono">${c.incomeId}</span></td>
-                        <td>${c.incomeDate}</td>
-                        <td>$${c.incomeAmount.toFixed(2)}</td>
-                        <td><span class="compose-amount-used">- $${c.used.toFixed(2)}</span></td>
-                        <td>${remainingLabel}</td>
-                        <td>${usedNoLabel}</td>
-                    </tr>`;
-                }).join("");
+                    return {
+                        subId: c.incomeSubId,
+                        srcType: c.incomeType,
+                        orgNo: c.incomeId,
+                        income: c.incomeAmount,
+                        entryTime: c.incomeDate,
+                        remaining: c.remainingAfter,
+                        relType: tx.typeLabel,
+                        ioType: "支出",
+                        used: c.used,
+                        mark: usedNoLabel
+                    };
+                });
+                const usedTotal = tx.composition.reduce((s, c) => s + c.used, 0);
                 composeCell = `<button class="compose-toggle" onclick="toggleCompose('${tx.id}')"><i class="fas fa-layer-group"></i> 查看组成 <span class="arrow">▾</span></button>`;
-                composePanel = `<tr id="compose-${tx.id}" class="compose-panel" style="display:none;"><td colspan="9">
-                    <div style="padding:10px 16px;">
-                        <div style="font-size:12px; font-weight:600; color:var(--tos-text); margin-bottom:8px;">
-                            支出资金组成 · ${tx.composition.length} 笔收入来源，支出合计 $${tx.expense.toFixed(2)} 由以下收入构成，钱包对账单号可按单据类型追溯
-                        </div>
-                        <table class="compose-table">
-                            <thead><tr>
-                                <th>钱包对账单号</th>
-                                <th>原收入类型</th>
-                                <th>原收入单号<br>(Income ID)</th>
-                                <th>原单据入账时间</th>
-                                <th>原单据净收入<br>(原始金额)</th>
-                                <th>本次支出占用<br>(钱包划出)</th>
-                                <th>原单据剩余金额<br>(占用后钱包余额)</th>
-                                <th>占用标记</th>
-                            </tr></thead>
-                            <tbody>${srcRows}</tbody>
-                            <tfoot><tr>
-                                <td colspan="5" style="text-align:right;">支出合计核对 ✔</td>
-                                <td><span class="compose-amount-used">- $${tx.expense.toFixed(2)}</span></td>
-                                <td colspan="2">与支出金额一致，占用来源可逐笔追溯</td>
-                            </tr></tfoot>
-                        </table>
-                    </div>
-                </td></tr>`;
+                composePanel = buildComposePanel(tx.id,
+                    `${tx.typeLabel}资金组成 · ${tx.composition.length} 笔收入来源，支出合计 $${tx.expense.toFixed(2)} 由以下收入构成。<span style="color:#0f766e;">对账子单号</span> = 父级钱包对账单号-序号（如 <span class="code">WBI20260302-001</span>），其父级 <b>不同于</b>本支出钱包对账单号 ${tx.statementId}<br><span style="color:#64748b;">占用合计 $${usedTotal.toFixed(2)} 与支出金额一致</span>`,
+                    compRows);
+            } else if (tx.income > 0) {
+                const cons = consumeByIncome[tx.businessId] || [];
+                const consumed = cons.reduce((s, x) => s + x.used, 0);
+                const remaining = Math.round((tx.income - consumed) * 100) / 100;
+                const mark = consumed <= 0.001 ? "未占用" : (remaining <= 0.001 ? "已占用完毕" : "部分占用");
+                const srcType = tx.type === "settlement" ? "订单收入" : tx.typeLabel;
+                const periodNote = tx.type === "settlement" ? ((tx.refRaw.match(/\(周期:[^)]*\)/) || [])[0] || "") : "";
+                const relType = consumed > 0.001
+                    ? cons.map(x => x.typeLabel).filter((v, i, a) => a.indexOf(v) === i).join(" / ")
+                    : "—";
+                const compRows = [{
+                    subId: tx.subId,
+                    srcType,
+                    orgNo: tx.businessId + (periodNote ? ` ${periodNote}` : ""),
+                    income: tx.income,
+                    entryTime: tx.date,
+                    remaining,
+                    relType,
+                    ioType: "收入",
+                    used: consumed,
+                    mark
+                }];
+                composeCell = `<button class="compose-toggle" onclick="toggleCompose('${tx.id}')"><i class="fas fa-layer-group"></i> 查看组成 <span class="arrow">▾</span></button>`;
+                composePanel = buildComposePanel(tx.id,
+                    `${tx.type === "settlement" ? "订单结算入账" : "费用调增/赔偿款"}组成 · 净收入 $${tx.income.toFixed(2)}，收支类型为收入（占用金额为正）`,
+                    compRows);
             }
             rows += `<tr>
-                <td><span class="wallet-bill-id">${tx.id}</span></td>
-                <td>${shopHtml}</td>
+                <td><span class="wallet-bill-id">${tx.statementId}</span></td>
                 <td><span class="badge-type ${typeClass}">${typeDisplay}</span></td>
+                <td><span class="store-name">${getStoreName(tx.store)}</span></td>
                 <td><span class="ref-business-id">${tx.refRaw}</span></td>
                 <td>${tx.date}</td>
                 <td>${incomeHtml}</td>
@@ -1171,40 +1350,41 @@
             sumExpense += tx.expense;
         }
         const footerHtml = `<tr class="total-row">
-            <td colspan="6" style="text-align: right; font-weight: 700;">筛选结果汇总 (${filtered.length}笔)</td>
+            <td colspan="5" style="text-align: right; font-weight: 700;">筛选结果汇总 (${filtered.length}笔)</td>
             <td style="font-weight: 700; color:#52c41a;">$${sumIncome.toFixed(2)}</td>
             <td style="font-weight: 700; color:#f5222d;">$${sumExpense.toFixed(2)}</td>
-            <td style="font-weight: 700; background:#fafafa;">—</td>
-        </tr>`;
+            <td colspan="2" style="font-weight: 700; background:#fafafa;">—</td>
+         </tr>`;
         tfoot.innerHTML = footerHtml;
 
-        // 更新顶部摘要栏
+        // 更新顶部统计摘要（无大标题）
         if (summaryBar) {
-            summaryBar.innerHTML = `当前筛选: ${filtered.length}笔记录 | 收入 $${sumIncome.toFixed(2)} / 支出 $${sumExpense.toFixed(2)}`;
+            const storeLabel = currentStore === "all" ? "全部店铺" : getStoreName(currentStore);
+            summaryBar.innerHTML = `当前筛选: ${storeLabel} · ${filtered.length}笔记录 | 收入 $${sumIncome.toFixed(2)} / 支出 $${sumExpense.toFixed(2)}`;
         }
     }
 
-    // 导出CSV（包含店铺信息字段）
     function exportToCSV() {
         const filtered = getFilteredTransactions();
         if (filtered.length === 0) {
             alert("没有符合条件的数据可导出");
             return;
         }
-        const headers = ["钱包对账单号", "店铺名称", "业务类型", "业务单号/凭证", "业务日期", "收入金额(USD)", "支出金额(USD)", "支出资金组成", "交易后余额(USD)"];
+        const headers = ["钱包对账单号", "对账子单号", "业务类型", "店铺", "业务单号/凭证", "业务日期", "收入金额(USD)", "支出金额(USD)", "支出资金组成", "交易后余额(USD)"];
         const rows = filtered.map(tx => {
             let typeDisplay = `${tx.typeLabel}`;
             let composeSummary = "—";
             if (tx.expense > 0 && tx.composition && tx.composition.length) {
                 composeSummary = tx.composition.map(c => {
                     const mark = c.usedNo > 1 ? `(${c.usedNo}次拆分)` : "";
-                    return `${c.incomeId}:${c.used.toFixed(2)}${mark}`;
+                    return `${c.incomeSubId}:${c.incomeId}:${c.used.toFixed(2)}${mark}`;
                 }).join("; ");
             }
             return [
-                tx.id,
-                tx.shopName,
+                tx.statementId,
+                tx.subId,
                 typeDisplay,
+                getStoreName(tx.store),
                 tx.refRaw.replace(/,/g, ";"),
                 tx.date,
                 tx.income > 0 ? tx.income.toFixed(2) : "0.00",
@@ -1218,7 +1398,7 @@
         const link = document.createElement("a");
         const url = URL.createObjectURL(blob);
         link.href = url;
-        link.setAttribute("download", `wallet_statement_multi_shop_${new Date().toISOString().slice(0,19)}.csv`);
+        link.setAttribute("download", `wallet_statement_${new Date().toISOString().slice(0,19)}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -1235,7 +1415,6 @@
         if (btn) btn.classList.toggle("open", isHidden);
     }
 
-    // 重置日期
     function resetDateRange() {
         startDate = "2026-03-01";
         endDate = "2026-03-31";
@@ -1244,17 +1423,7 @@
         renderTable();
     }
 
-    // 重置店铺为全部
-    function resetShopFilter() {
-        currentShopFilter = "all";
-        const shopSelect = document.getElementById("shopSelect");
-        if (shopSelect) shopSelect.value = "all";
-        renderTable();
-    }
-
-    // 绑定全局事件
     function bindGlobalEvents() {
-        // 业务类型筛选
         const typeChips = document.querySelectorAll(".type-row .filter-chip");
         typeChips.forEach(chip => {
             chip.addEventListener("click", () => {
@@ -1265,29 +1434,29 @@
                 renderTable();
             });
         });
-        
-        // 店铺下拉变化
-        const shopSelect = document.getElementById("shopSelect");
-        if (shopSelect) {
-            shopSelect.addEventListener("change", (e) => {
-                currentShopFilter = e.target.value;
-                renderTable();
-            });
-        }
-        
-        // 日期输入框
+        // 店铺筛选：可搜索下拉
+        const storeSearch = document.getElementById("storeSearch");
+        const storeList = document.getElementById("storeList");
+        storeSearch.addEventListener("focus", () => { storeSearchText = ""; openStoreList(); });
+        storeSearch.addEventListener("input", (e) => { storeSearchText = e.target.value; openStoreList(); });
+        storeSearch.addEventListener("blur", () => { setTimeout(closeStoreList, 150); });
+        storeSearch.addEventListener("keydown", (e) => { if (e.key === "Escape") closeStoreList(); });
+        storeList.addEventListener("mousedown", (e) => {
+            const opt = e.target.closest(".store-option");
+            if (!opt) return;
+            e.preventDefault();
+            selectStore(opt.getAttribute("data-store"));
+        });
         const startInput = document.getElementById("startDate");
         const endInput = document.getElementById("endDate");
         startInput.addEventListener("change", (e) => { startDate = e.target.value; renderTable(); });
         endInput.addEventListener("change", (e) => { endDate = e.target.value; renderTable(); });
-        
-        // 重置按钮
         document.getElementById("resetDateBtn").addEventListener("click", resetDateRange);
-        document.getElementById("resetShopBtn").addEventListener("click", resetShopFilter);
         document.getElementById("exportBtn").addEventListener("click", exportToCSV);
     }
 
     function init() {
+        document.getElementById("storeSearch").value = "全部店铺";
         bindGlobalEvents();
         renderTable();
     }

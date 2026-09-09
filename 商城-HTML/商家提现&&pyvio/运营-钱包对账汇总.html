@@ -318,7 +318,7 @@
             <div class="balance-item">
                 <div class="balance-label">💰 全量收入总额</div>
                 <div class="balance-number positive" id="totalIncomeAll">+ $0.00</div>
-                <div>结算入账 + 费用调增/赔偿款</div>
+                <div>订单结算入账 + 费用调增/赔偿款</div>
             </div>
             <div class="balance-item">
                 <div class="balance-label">📤 全量支出总额</div>
@@ -356,7 +356,7 @@
             </div>
             <div class="type-row">
                 <span class="filter-chip active" data-type="all">全部业务</span>
-                <span class="filter-chip" data-type="settlement">结算入账</span>
+                <span class="filter-chip" data-type="settlement">订单结算入账</span>
                 <span class="filter-chip" data-type="withdrawal">提现</span>
                 <span class="filter-chip" data-type="adfee">广告费</span>
                 <span class="filter-chip" data-type="servicefee">技术服务费</span>
@@ -405,10 +405,10 @@
     const OPENING_BALANCE = 12430.50;
     // 每笔交易明确店铺: US_MAIN(美国主力), EU_CENTRAL(欧洲), JP_TOKYO(日本)
     const rawTransactions = [
-        { id: "WBI-20260302-001", shopCode: "US_MAIN", shopName: "🇺🇸 美国站 - 主力店", type: "settlement", typeLabel: "结算入账", typeIcon: "📦", refRaw: "STL-20260228-101 (周期:02/15-02/28)", date: "2026-03-02", income: 3250.00, expense: 0 },
+        { id: "WBI-20260302-001", shopCode: "US_MAIN", shopName: "🇺🇸 美国站 - 主力店", type: "settlement", typeLabel: "订单结算入账", typeIcon: "📦", refRaw: "STL-20260228-101 (周期:02/15-02/28)", date: "2026-03-02", income: 3250.00, expense: 0 },
         { id: "WBI-20260305-002", shopCode: "EU_CENTRAL", shopName: "🇪🇺 欧洲站 - 综合店", type: "adfee", typeLabel: "广告费", typeIcon: "📢", refRaw: "AD-ORDER-45892 SP广告活动", date: "2026-03-05", income: 0, expense: 890.00 },
         { id: "WBI-20260310-003", shopCode: "US_MAIN", shopName: "🇺🇸 美国站 - 主力店", type: "servicefee", typeLabel: "技术服务费", typeIcon: "⚙️", refRaw: "FEE-202603-专业计划 (月度订阅+推荐费)", date: "2026-03-10", income: 0, expense: 139.99 },
-        { id: "WBI-20260315-004", shopCode: "JP_TOKYO", shopName: "🇯🇵 日本站 - 东京店", type: "settlement", typeLabel: "结算入账", typeIcon: "📦", refRaw: "STL-20260312-205 (周期:03/01-03/12)", date: "2026-03-15", income: 5000.00, expense: 0 },
+        { id: "WBI-20260315-004", shopCode: "JP_TOKYO", shopName: "🇯🇵 日本站 - 东京店", type: "settlement", typeLabel: "订单结算入账", typeIcon: "📦", refRaw: "STL-20260312-205 (周期:03/01-03/12)", date: "2026-03-15", income: 5000.00, expense: 0 },
         { id: "WBI-20260320-005", shopCode: "US_MAIN", shopName: "🇺🇸 美国站 - 主力店", type: "withdrawal", typeLabel: "提现", typeIcon: "🏦", refRaw: "提现主单:WD-20260320-001 / 关联结算单:STL-20260312-205(部分)", date: "2026-03-20", income: 0, expense: 2500.00 },
         { id: "WBI-20260325-006", shopCode: "EU_CENTRAL", shopName: "🇪🇺 欧洲站 - 综合店", type: "withdrawal", typeLabel: "提现", typeIcon: "🏦", refRaw: "提现主单:WD-20260325-002 / 关联结算单:STL-20260228-101+STL-20260312-205(剩余)", date: "2026-03-25", income: 0, expense: 3200.00 },
         { id: "WBI-20260328-007", shopCode: "JP_TOKYO", shopName: "🇯🇵 日本站 - 东京店", type: "adjustment", typeLabel: "费用调增/赔偿款", typeIcon: "💰", refRaw: "ADJ-20260328-仓储费多扣返还 (平台调账/FBA赔偿)", date: "2026-03-28", income: 270.00, expense: 0 },

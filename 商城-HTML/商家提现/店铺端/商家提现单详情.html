@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>提现对账凭证 · 亚马逊卖家钱包 | 子单号溯源</title>
+    <title>提现详情</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
         * {
@@ -598,7 +598,7 @@
                 提现对账凭证 · 钱包资金明细
                 <span class="header-badge">对账专用 · 子单号可追溯</span>
             </h1>
-            <p>提现主单 → 钱包对账单号（提现子单） → 关联结算单，每笔提现独立对账凭证</p>
+            <p>提现主单 → 钱包对账单号（父级 WBI{日期}） → 对账子单号（WBI{日期}-序号） → 关联结算单，每笔提现独立对账凭证</p>
         </div>
 
         <!-- 提现主单信息（不变，核心提现记录） -->
@@ -625,7 +625,7 @@
             </div>
         </div>
 
-        <!-- 明细表格：钱包对账单号（提现子单号）为核心 -->
+        <!-- 明细表格：对账子单号（父级钱包对账单号-序号）为核心 -->
         <div class="section-title">
             <span>提现资金来源拆分 · 钱包对账单明细</span>
             <span class="section-sub">每个子单号 = 一次独立对账凭证</span>
@@ -633,7 +633,7 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>钱包对账单号<br><span style="font-weight:normal; font-size:0.7rem;">(提现子单号 / 对账凭证ID)</span></th>
+                    <th>钱包对账单号</th>
                     <th>原收入类型</th>
                     <th>原收入单号<br>(Income ID)</th>
                     <th>原单据入账时间</th>
@@ -644,8 +644,8 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><span class="badge-wallet-bill">WALLET-BILL-20260401-001-01</span></td>
-                    <td>结算入账</td>
+                    <td><span class="badge-wallet-bill">WBI20260401</span></td>
+                    <td>订单结算入账</td>
                     <td><span class="badge-settlement">STL-20260315-001</span></td>
                     <td>2026-03-15</td>
                     <td class="amount-positive">$5,000.00</td>
@@ -653,8 +653,8 @@
                     <td>$1,000.00</td>
                 </tr>
                 <tr>
-                    <td><span class="badge-wallet-bill">WALLET-BILL-20260401-001-02</span></td>
-                    <td>结算入账</td>
+                    <td><span class="badge-wallet-bill">WBI20260401</span></td>
+                    <td>订单结算入账</td>
                     <td><span class="badge-settlement">STL-20260330-002</span></td>
                     <td>2026-03-30</td>
                     <td class="amount-positive">$3,000.00</td>
@@ -662,11 +662,11 @@
                     <td>$2,000.00</td>
                 </tr>
                  <!-- 补充一个典型场景：STL-20260315-001 被二次提现占用的示例（仅作示意，增强对账理解）
-                      第一次占用 $4,000（上方 WALLET-BILL-20260401-001-01），剩余 $1,000 由后续提现主单二次拆分 -->
+                      第一次占用 $4,000（上方 WBI20260401），剩余 $1,000 由后续提现主单二次拆分 -->
                  <tr>
-                    <td><span class="badge-wallet-bill">WALLET-BILL-20260405-001-01</span></td>
-                    <td>结算入账</td>
-                    <td><span class="badge-settlement">STL-20260315-001</span> 
+                    <td><span class="badge-wallet-bill">WBI20260405</span></td>
+                    <td>订单结算入账</td>
+                    <td><span class="badge-settlement">STL-20260315-001</span>
                         <span style="background:#fff7e6; color:#d48806; padding:1px 6px; border-radius:4px; font-size:12px; margin-left:4px;">二次拆分 · 场景示例</span>
                      </td>
                     <td>2026-03-15</td>
@@ -688,17 +688,17 @@
             <div style="display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between;">
                 <div style="flex: 1; min-width: 260px;">
                     <strong>命名规则</strong><br>
-                    <span class="code">WALLET-BILL-{提现主单号后段}-{序号}</span>，例如 <span class="code">WALLET-BILL-20260401-001-01</span><br>
-                    每个子单号对应一次钱包资金划出记录，支持部分提现与结算单分拆，是支付公司与亚马逊对账的原子凭证。
+                    <span class="code">钱包对账单号(父级) = WBI{YYYYMMDD}</span>，<span class="code">对账子单号 = WBI{YYYYMMDD}-{序号}</span>，例如 <span class="code">WBI20260401-001</span><br>
+                    每个对账子单号对应一次钱包资金划出记录，支持部分提现与结算单分拆，是支付公司与亚马逊对账的原子凭证。
                 </div>
                 <div style="flex: 1; min-width: 260px;">
                     <strong>核心对账价值</strong><br>
-                    同一结算单可分多次提现，生成多个钱包对账单号；提现主单为资金归集单，钱包对账单号为底层溯源 ID。
+                    同一结算单可分多次提现，生成多个对账子单号；提现主单为资金归集单，对账子单号为底层溯源 ID。
                 </div>
             </div>
             <div class="reconcile-note">
-                对账场景：支付商发起提现 $5,000 后生成两笔钱包对账单号，分别对应 STL-20260315-001 与 STL-20260330-002 两笔结算单资金划扣，按 <span class="code">WALLET-BILL-xxxx</span> 逐笔核对流水与结算单净收入。
-                <br>二次拆分：STL-20260315-001 剩余 $1,000 在后续提现主单中被再次占用，生成新的钱包对账单号 WALLET-BILL-20260405-001-01，同一结算单可被多次部分提现。
+                对账场景：支付商发起提现 $5,000 后生成两笔对账子单号 WBI20260401-001 与 WBI20260401-002，分别对应 STL-20260315-001 与 STL-20260330-002 两笔结算单资金划扣，按 <span class="code">WBI{日期}-序号</span> 逐笔核对流水与结算单净收入。
+                <br>二次拆分：STL-20260315-001 剩余 $1,000 在后续提现主单中被再次占用，生成新的对账子单号 WBI20260405-001，同一结算单可被多次部分提现。
             </div>
         </div>
     </div>
