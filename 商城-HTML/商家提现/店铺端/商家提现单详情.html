@@ -57,35 +57,7 @@
             border-radius: 40px;
             letter-spacing: 0.3px;
         }
-        /* 提现主单信息 */
-        .withdrawal-info {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            background: #f8fafc;
-            padding: 1rem 1.8rem;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .info-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-        .info-label {
-            font-size: 0.65rem;
-            color: #5b6e8c;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .info-value {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #1e293b;
-        }
-        .info-value.amount {
-            font-size: 1.4rem;
-            color: #15803d;
-        }
+        /* 提现单信息 */
         .withdrawal-badge {
             font-family: monospace;
             background: #ff9900;
@@ -97,23 +69,6 @@
             display: inline-block;
         }
         /* 表格 */
-        .section-title {
-            padding: 1rem 1.8rem 0.5rem 1.8rem;
-            font-weight: 600;
-            font-size: 0.8rem;
-            color: #334155;
-            background: white;
-            display: flex;
-            align-items: baseline;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-        .section-sub {
-            font-size: 0.7rem;
-            font-weight: normal;
-            color: #5b6e8c;
-        }
         .data-table {
             width: 100%;
             border-collapse: collapse;
@@ -166,13 +121,6 @@
             font-weight: 600;
             border-top: 1px solid #e2e8f0;
         }
-        .footer-note {
-            background: #fef9e6;
-            padding: 0.8rem 1.8rem;
-            font-size: 0.7rem;
-            color: #7a6400;
-            border-top: 1px solid #f0e1b6;
-        }
         .code {
             font-family: monospace;
             background: #eef2ff;
@@ -184,22 +132,9 @@
             background: #fff2d7;
             font-weight: 600;
         }
-        .reconcile-note {
-            margin-top: 0.25rem;
-            font-size: 0.7rem;
-        }
         @media (max-width: 680px) {
             .data-table th, .data-table td {
                 padding: 0.5rem 0.6rem;
-            }
-            .withdrawal-info {
-                gap: 0.8rem;
-            }
-            .section-title {
-                padding: 0.8rem 1rem 0.2rem 1rem;
-            }
-            .footer-note {
-                padding: 0.7rem 1rem;
             }
         }
 
@@ -270,7 +205,7 @@
         }
         .sidebar__title {
             font-size: 15px;
-            font-weight: 700;
+            font-weight: 600;
             color: #1f2937;
             white-space: nowrap;
         }
@@ -281,7 +216,7 @@
         }
         .sidebar__group-title {
             padding: 12px 14px 4px;
-            font-size: 10px;
+            font-size: 12px;
             color: var(--tos-text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -332,7 +267,7 @@
             --tos-primary: #42b7ae;
             --tos-primary-hover: #339b94;
             --tos-primary-bg: #e6f7f6;
-            --tos-bg: #f5f7fa;
+            --tos-bg: #fafafa;
             --tos-card: #fff;
             --tos-border: #e5e7eb;
             --tos-border-soft: #f0f2f5;
@@ -350,6 +285,11 @@
             background: var(--tos-bg);
             color: var(--tos-text);
             padding: 2rem 12px 2rem 212px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans SC", "Noto Sans CJK SC", "WenQuanYi Micro Hei", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         .container {
             max-width: 1920px;
@@ -362,22 +302,25 @@
             overflow: hidden;
         }
         .card-header {
+            position: relative;
             background: var(--tos-card);
             color: var(--tos-text);
-            padding: 20px;
-            border-bottom: 1px solid var(--tos-border-soft);
+            padding: 20px 64px 20px 20px;
+            border-bottom: 1px solid var(--tos-border);
         }
         .card-header h1 {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
+            line-height: 1.4;
             color: #1f2937;
             gap: 10px;
         }
         .card-header p {
-            font-size: 12px;
+            font-size: 13px;
+            line-height: 1.6;
             color: var(--tos-text-muted);
             opacity: 1;
-            margin-top: 4px;
+            margin-top: 6px;
         }
         .header-badge {
             background: var(--tos-primary-bg);
@@ -388,26 +331,16 @@
             padding: 2px 8px;
             letter-spacing: 0;
         }
-        .withdrawal-info {
-            gap: 32px;
-            background: #fafafa;
-            padding: 20px;
-            border-bottom: 1px solid var(--tos-border-soft);
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
         }
-        .info-label {
-            font-size: 12px;
-            color: var(--tos-text-muted);
-            text-transform: none;
-            letter-spacing: 0;
-        }
-        .info-value {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--tos-text);
-        }
-        .info-value.amount {
-            font-size: 24px;
-            color: #1f2937;
+        .card-header__main {
+            flex: 1;
+            min-width: 280px;
         }
         .withdrawal-badge {
             font-family: inherit;
@@ -417,18 +350,6 @@
             padding: 2px 8px;
             font-size: 12px;
             font-weight: 600;
-        }
-        .section-title {
-            padding: 20px 20px 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--tos-text);
-            background: var(--tos-card);
-        }
-        .section-sub {
-            font-size: 12px;
-            font-weight: 400;
-            color: var(--tos-text-muted);
         }
         .data-table {
             font-size: 13px;
@@ -478,13 +399,6 @@
             font-weight: 600;
             border-top: 1px solid var(--tos-border);
         }
-        .footer-note {
-            background: var(--tos-card);
-            padding: 16px 20px;
-            font-size: 12px;
-            color: var(--tos-text-secondary);
-            border-top: 1px solid var(--tos-border-soft);
-        }
         .code {
             font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
             background: #f5f5f5;
@@ -497,27 +411,12 @@
             background: var(--tos-primary-bg);
             font-weight: 600;
         }
-        .reconcile-note {
-            margin-top: 10px;
-            border-top: 1px dashed var(--tos-border);
-            padding-top: 8px;
-        }
-        .withdrawal-info {
-            display: grid;
-            grid-template-columns: repeat(5, minmax(0, 1fr));
-            gap: 16px;
-        }
-        .info-value {
-            font-size: 14px;
-        }
-        .info-value.amount {
-            font-size: 26px;
-        }
-        .section-title {
-            padding: 24px 20px 8px;
-        }
         .data-table {
             font-size: 14px;
+            font-variant-numeric: tabular-nums;
+        }
+        .table-scroll {
+            overflow-x: auto;
         }
         .data-table th {
             padding: 12px 16px;
@@ -552,26 +451,311 @@
         .total-row td {
             font-weight: 600;
         }
-        .footer-note {
+        /* ===== 提现单信息 · 与列表字段一一对应 ===== */
+        .page-crumb {
+            margin: 0 0 12px;
             font-size: 13px;
-            line-height: 1.8;
+            color: var(--tos-text-muted);
         }
-        @media (max-width: 900px) {
-            .withdrawal-info {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
+        .page-crumb em {
+            color: var(--tos-text);
+            font-style: normal;
+        }
+
+        /* 右上角「?」：对账口径说明 */
+        .help-wrap {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+        }
+        .help-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border: 1px solid var(--tos-border);
+            border-radius: 50%;
+            background: #fff;
+            color: var(--tos-text-muted);
+            font-size: 12px;
+            line-height: 1;
+            cursor: pointer;
+            transition: all 0.12s;
+        }
+        .help-btn:hover,
+        .help-btn[aria-expanded="true"] {
+            border-color: var(--tos-primary);
+            background: var(--tos-primary-bg);
+            color: var(--tos-primary);
+        }
+        .help-panel {
+            position: absolute;
+            top: 34px;
+            right: 0;
+            width: 520px;
+            max-width: calc(100vw - 56px);
+            background: #fff;
+            border: 1px solid var(--tos-border);
+            border-radius: var(--tos-radius-card);
+            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+            z-index: 30;
+        }
+        .help-panel[hidden] {
+            display: none;
+        }
+        .help-panel__head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--tos-border-soft);
+        }
+        .help-panel__head h2 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--tos-text);
+        }
+        .help-panel__close {
+            padding: 2px 6px;
+            border: none;
+            border-radius: 4px;
+            background: none;
+            color: var(--tos-text-muted);
+            font-size: 14px;
+            line-height: 1;
+            cursor: pointer;
+        }
+        .help-panel__close:hover {
+            background: #f5f5f5;
+            color: var(--tos-text);
+        }
+        .help-panel__body {
+            max-height: 60vh;
+            padding: 2px 16px 12px;
+            overflow-y: auto;
+        }
+        .help-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .help-item:last-child {
+            border-bottom: none;
+        }
+        .help-item__title {
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--tos-text);
+        }
+        .help-item__text {
+            font-size: 12px;
+            line-height: 1.8;
+            color: var(--tos-text-secondary);
+        }
+        .status-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            height: 22px;
+            padding: 0 8px;
+            border-radius: var(--tos-radius-tag);
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 1;
+        }
+        .status-tag--success {
+            background: #f0faf0;
+            color: var(--tos-success);
+        }
+        .status-tag--warning {
+            background: #fff7e6;
+            color: var(--tos-warning);
+        }
+        .status-tag--error {
+            background: #fff1f0;
+            color: var(--tos-error);
+        }
+        .status-tag--default {
+            background: #f5f5f5;
+            color: var(--tos-text-secondary);
+        }
+        .status-tag i {
+            font-size: 10px;
+        }
+        /* 详情信息：紧凑描述列表（标签 + 值同行，无边框） */
+        .detail-section {
+            padding: 12px 20px;
+            border-top: 1px solid var(--tos-border);
+        }
+        .card-header + .detail-section {
+            border-top: none;
+            padding-top: 16px;
+        }
+        .detail-section--title-only {
+            padding-bottom: 0;
+        }
+        .detail-section__title {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--tos-text);
+        }
+        .detail-section__title::before {
+            content: "";
+            width: 3px;
+            height: 14px;
+            border-radius: 2px;
+            background: var(--tos-primary);
+            flex-shrink: 0;
+        }
+        .detail-section__note {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--tos-text-muted);
+        }
+        .info-list {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px 24px;
+        }
+        .info-cell {
+            display: grid;
+            grid-template-columns: 72px minmax(0, 1fr);
+            gap: 8px;
+            align-items: baseline;
+            min-width: 0;
+        }
+        .info-cell__label {
+            font-size: 12px;
+            color: var(--tos-text-muted);
+        }
+        .info-cell__value {
+            font-size: 14px;
+            font-weight: 400;
+            font-variant-numeric: tabular-nums;
+            color: var(--tos-text);
+            word-break: break-all;
+        }
+        .info-cell__value--strong {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .info-cell__value--mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        }
+        .info-cell__hint {
+            margin-left: 4px;
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--tos-text-muted);
+        }
+        .detail-flag {
+            margin-left: 6px;
+            padding: 0 4px;
+            border-radius: 3px;
+            background: #f5f5f5;
+            color: var(--tos-text-muted);
+            font-size: 12px;
+            font-style: normal;
+            font-weight: 400;
+        }
+        /* 状态流转：步骤条（圆点压在贯穿细线上） */
+        .flow-line {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px 24px;
+        }
+        .flow-line::before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            left: 4px;
+            right: 4px;
+            height: 1px;
+            background: #e9ebef;
+        }
+        .flow-node {
+            position: relative;
+            display: grid;
+            grid-template-columns: 8px minmax(0, 1fr);
+            gap: 8px;
+            padding-right: 12px;
+            background: var(--tos-card);
+        }
+        .flow-node__dot {
+            width: 8px;
+            height: 8px;
+            margin-top: 6px;
+            border-radius: 50%;
+            background: #d9d9d9;
+            box-shadow: 0 0 0 3px var(--tos-card);
+            flex-shrink: 0;
+        }
+        .flow-node__body {
+            min-width: 0;
+        }
+        .flow-node__name {
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 20px;
+            color: var(--tos-text);
+        }
+        .flow-node__time {
+            margin-top: 2px;
+            font-size: 12px;
+            line-height: 18px;
+            font-variant-numeric: tabular-nums;
+            color: var(--tos-text-muted);
+        }
+        .flow-node--done .flow-node__dot {
+            background: var(--tos-success);
+        }
+        .flow-node--current .flow-node__dot {
+            background: var(--tos-primary);
+            box-shadow: 0 0 0 3px var(--tos-card), 0 0 0 6px rgba(66, 183, 174, 0.16);
+        }
+        .flow-node--current .flow-node__name {
+            color: var(--tos-primary-hover);
+        }
+        @media (max-width: 1280px) {
+            .info-list {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
             }
         }
-        @media (max-width: 480px) {
-            .withdrawal-info {
-                grid-template-columns: 1fr;
+        @media (max-width: 960px) {
+            .info-list {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px 20px;
             }
         }
         @media (max-width: 680px) {
             body {
                 padding: 1rem;
             }
-            .withdrawal-info {
-                gap: 12px;
+            .info-list {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .detail-section {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+            .flow-line {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 14px;
+            }
+            .flow-line::before {
+                display: none;
             }
             .data-table th, .data-table td {
                 padding: 8px 10px;
@@ -592,44 +776,175 @@
         </nav>
     </aside>
 <div class="container">
+    <nav class="page-crumb">财务中心 / 提现 / <em>提现详情</em></nav>
     <div class="main-card">
         <div class="card-header">
-            <h1>
-                提现对账凭证 · 钱包资金明细
-                <span class="header-badge">对账专用 · 子单号可追溯</span>
-            </h1>
-            <p>提现主单 → 钱包对账单号（父级 WBI{日期}） → 对账子单号（WBI{日期}-序号） → 关联结算单，每笔提现独立对账凭证</p>
+            <!-- 右上角：对账口径说明（点击问号查看） -->
+            <div class="help-wrap">
+                <button type="button" class="help-btn" id="reconcileHelpBtn" aria-label="对账口径说明" aria-expanded="false" aria-controls="reconcileHelpPanel" title="对账口径说明">
+                    <i class="fas fa-question" aria-hidden="true"></i>
+                </button>
+                <div class="help-panel" id="reconcileHelpPanel" hidden>
+                    <div class="help-panel__head">
+                        <h2>对账口径说明</h2>
+                        <button type="button" class="help-panel__close" id="reconcileHelpClose" aria-label="关闭">
+                            <i class="fas fa-xmark" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div class="help-panel__body">
+                        <div class="help-item">
+                            <div class="help-item__title">命名规则</div>
+                            <div class="help-item__text">
+                                <span class="code">钱包对账单号(父级) = WBI{YYYYMMDD}</span>，<span class="code">对账子单号 = WBI{YYYYMMDD}-{序号}</span>，例如 <span class="code">WBI20260401-001</span>。<br>
+                                每个对账子单号对应一次钱包资金划出记录，支持部分提现与结算单分拆，是支付公司与亚马逊对账的原子凭证。
+                            </div>
+                        </div>
+                        <div class="help-item">
+                            <div class="help-item__title">核心对账价值</div>
+                            <div class="help-item__text">同一结算单可分多次提现，生成多个对账子单号；提现主单为资金归集单，对账子单号为底层溯源 ID。</div>
+                        </div>
+                        <div class="help-item">
+                            <div class="help-item__title">对账场景</div>
+                            <div class="help-item__text">支付商发起提现 $5,000 后生成两笔对账子单号 WBI20260401-001 与 WBI20260401-002，分别对应 STL-20260315-001 与 STL-20260330-002 两笔结算单资金划扣，按 <span class="code">WBI{日期}-序号</span> 逐笔核对流水与结算单净收入。</div>
+                        </div>
+                        <div class="help-item">
+                            <div class="help-item__title">二次拆分</div>
+                            <div class="help-item__text">STL-20260315-001 剩余 $1,000 在后续提现主单中被再次占用，生成新的对账子单号 WBI20260405-001，同一结算单可被多次部分提现。</div>
+                        </div>
+                        <div class="help-item">
+                            <div class="help-item__title">费用口径</div>
+                            <div class="help-item__text">提现手续费按提现货币金额计收并单列，<span class="code">收款金额 = 提现货币金额 − 提现手续费</span>；提现金额仍为钱包划出合计，不受手续费影响。</div>
+                        </div>
+                        <div class="help-item">
+                            <div class="help-item__title">状态说明</div>
+                            <div class="help-item__text">
+                                列表筛选项：待审核 · 处理中 · 提现完成 · 已驳回 · 已取消。<br>
+                                已驳回：展示驳回原因与驳回时间；已取消：展示取消来源（商家撤回 / 平台取消）与取消时间；待审核、处理中为中间态，完成时间留空。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-header__main">
+                <h1>
+                    提现详情 · 对账凭证
+                    <span class="header-badge">对账专用 · 子单号可追溯</span>
+                </h1>
+                <p>来自「财务中心 / 提现」列表，13 个列表字段全量展示，另含 3 项详情补充字段；提现主单 → 钱包对账单号（父级 WBI{日期}） → 对账子单号（WBI{日期}-序号） → 关联结算单。</p>
+            </div>
         </div>
 
-        <!-- 提现主单信息（不变，核心提现记录） -->
-        <div class="withdrawal-info">
-            <div class="info-item">
-                <span class="info-label">提现主单号</span>
-                <span class="info-value"><span class="withdrawal-badge">WD-20260401-001</span></span>
+        <!-- 状态流转：覆盖列表筛选项的 5 个状态 -->
+        <div class="detail-section">
+            <h3 class="detail-section__title">状态流转</h3>
+            <div class="flow-line">
+                <div class="flow-node flow-node--done">
+                    <span class="flow-node__dot"></span>
+                    <div class="flow-node__body">
+                        <div class="flow-node__name">提交申请 · 待审核</div>
+                        <div class="flow-node__time">2026-04-01 10:23:45 UTC</div>
+                    </div>
+                </div>
+                <div class="flow-node flow-node--done">
+                    <span class="flow-node__dot"></span>
+                    <div class="flow-node__body">
+                        <div class="flow-node__name">审核通过 · 处理中</div>
+                        <div class="flow-node__time">2026-04-01 11:05:12 UTC</div>
+                    </div>
+                </div>
+                <div class="flow-node flow-node--done">
+                    <span class="flow-node__dot"></span>
+                    <div class="flow-node__body">
+                        <div class="flow-node__name">支付商打款中</div>
+                        <div class="flow-node__time">2026-04-01 12:30:08 UTC</div>
+                    </div>
+                </div>
+                <div class="flow-node flow-node--current">
+                    <span class="flow-node__dot"></span>
+                    <div class="flow-node__body">
+                        <div class="flow-node__name">提现完成</div>
+                        <div class="flow-node__time">2026-04-02 06:16:29 UTC</div>
+                    </div>
+                </div>
             </div>
-            <div class="info-item">
-                <span class="info-label">提现金额</span>
-                <span class="info-value amount">$5,000.00 USD</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">提现时间</span>
-                <span class="info-value">2026-04-01 10:23:45 UTC</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">到账银行</span>
-                <span class="info-value">中国银行 · 尾号 1234</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">支付服务商</span>
-                <span class="info-value">Payoneer</span>
+        </div>
+
+        <!-- 提现单信息：列表 13 个字段全量展示 + 3 项详情补充 -->
+        <div class="detail-section">
+            <h3 class="detail-section__title">提现单信息<span class="detail-section__note">13 个列表字段全量展示，另含 3 项详情补充</span></h3>
+            <div class="info-list">
+                <div class="info-cell">
+                    <span class="info-cell__label">提现金额</span>
+                    <span class="info-cell__value info-cell__value--strong">5,000.00 USD</span>
+                </div>
+                <div class="info-cell">
+                    <span class="info-cell__label">提现货币</span>
+                    <span class="info-cell__value">USD</span>
+                </div>
+                <div class="info-cell">
+                    <span class="info-cell__label">汇率</span>
+                    <span class="info-cell__value">1.000000</span>
+                </div>
+                <div class="info-cell">
+                    <span class="info-cell__label">提现货币金额</span>
+                    <span class="info-cell__value info-cell__value--strong">5,000.00 USD</span>
+                </div>
+                <div class="info-cell">
+                    <span class="info-cell__label">提现手续费</span>
+                    <span class="info-cell__value">5.00 USD<span class="info-cell__hint">费率 0.1%</span></span>
+                </div>
+                <div class="info-cell">
+                    <span class="info-cell__label">收款金额</span>
+                    <span class="info-cell__value info-cell__value--strong">4,995.00 USD</span>
+                </div>
+                <div class="info-cell">
+                    <span class="info-cell__label">提现单号</span>
+                    <span class="info-cell__value info-cell__value--mono">739139558456688640</span>
+                </div>
+                <div class="info-cell">
+                    <span class="info-cell__label">对账主单号</span>
+                    <span class="info-cell__value"><span class="withdrawal-badge">WD-20260401-001</span><span class="detail-flag">详情补充</span></span>
+                </div>
+                <div class="info-cell">
+                    <span class="info-cell__label">提现状态</span>
+                    <span class="info-cell__value"><span class="status-tag status-tag--success">提现完成</span></span>
+                </div>
+                <div class="info-cell">
+                    <span class="info-cell__label">创建时间</span>
+                    <span class="info-cell__value">2026-04-01 10:23:45 UTC</span>
+                </div>
+                <div class="info-cell">
+                    <span class="info-cell__label">完成时间</span>
+                    <span class="info-cell__value">2026-04-02 06:16:29 UTC</span>
+                </div>
+                <div class="info-cell">
+                    <span class="info-cell__label">账户类型</span>
+                    <span class="info-cell__value">银行卡账户</span>
+                </div>
+                <div class="info-cell">
+                    <span class="info-cell__label">账户性质</span>
+                    <span class="info-cell__value">对公</span>
+                </div>
+                <div class="info-cell">
+                    <span class="info-cell__label">收款账户</span>
+                    <span class="info-cell__value info-cell__value--mono">0538031101015</span>
+                </div>
+                <div class="info-cell">
+                    <span class="info-cell__label">到账银行</span>
+                    <span class="info-cell__value">中国银行 · 尾号 1234<span class="detail-flag">详情补充</span></span>
+                </div>
+                <div class="info-cell">
+                    <span class="info-cell__label">支付服务商</span>
+                    <span class="info-cell__value">Payoneer<span class="detail-flag">详情补充</span></span>
+                </div>
             </div>
         </div>
 
         <!-- 明细表格：对账子单号（父级钱包对账单号-序号）为核心 -->
-        <div class="section-title">
-            <span>提现资金来源拆分 · 钱包对账单明细</span>
-            <span class="section-sub">每个子单号 = 一次独立对账凭证</span>
+        <div class="detail-section detail-section--title-only">
+            <h3 class="detail-section__title">提现资金来源拆分 · 钱包对账单明细<span class="detail-section__note">每个子单号 = 一次独立对账凭证</span></h3>
         </div>
+        <div class="table-scroll">
         <table class="data-table">
             <thead>
                 <tr>
@@ -667,41 +982,55 @@
                     <td><span class="badge-wallet-bill">WBI20260405</span></td>
                     <td>订单结算入账</td>
                     <td><span class="badge-settlement">STL-20260315-001</span>
-                        <span style="background:#fff7e6; color:#d48806; padding:1px 6px; border-radius:4px; font-size:12px; margin-left:4px;">二次拆分 · 场景示例</span>
+                        <span style="background:#f5f5f5; color:var(--tos-text-secondary); padding:1px 6px; border-radius:4px; font-size:12px; margin-left:4px;">二次拆分 · 场景示例</span>
                      </td>
                     <td>2026-03-15</td>
                     <td class="amount-positive">$5,000.00</td>
                     <td class="amount-negative">$1,000.00</td>
-                    <td><span style="color:#d48806;">$0.00 (已全部提完)</span></td>
+                    <td><span style="color:var(--tos-warning);">$0.00 (已全部提完)</span></td>
                  </tr>
             </tbody>
             <!-- 汇总行：总提现金额=01+02 两个子单金额之和，完全匹配提现主单；03 为二次拆分场景示例，不计入本单 -->
             <tr class="total-row">
-                <td colspan="4" style="text-align: right; font-weight: 600;">提现主单总金额核对 ✔</td>
-                <td class="amount-negative" style="font-weight: 700;">$5,000.00</td>
-                <td style="font-size:0.7rem;">汇总 01+02（03 为二次拆分场景示例）</td>
+                <td colspan="5" style="text-align: right; font-weight: 600;">提现主单总金额核对 ✔</td>
+                <td class="amount-negative" style="font-weight: 600; text-align: right;">$5,000.00</td>
+                <td style="font-size:12px; font-weight:400;">汇总 01+02（03 为二次拆分场景示例）</td>
             </tr>
         </table>
-
-        <!-- 拆分说明 + 对账逻辑解释（强调钱包对账单号必要性） -->
-        <div class="footer-note">
-            <div style="display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between;">
-                <div style="flex: 1; min-width: 260px;">
-                    <strong>命名规则</strong><br>
-                    <span class="code">钱包对账单号(父级) = WBI{YYYYMMDD}</span>，<span class="code">对账子单号 = WBI{YYYYMMDD}-{序号}</span>，例如 <span class="code">WBI20260401-001</span><br>
-                    每个对账子单号对应一次钱包资金划出记录，支持部分提现与结算单分拆，是支付公司与亚马逊对账的原子凭证。
-                </div>
-                <div style="flex: 1; min-width: 260px;">
-                    <strong>核心对账价值</strong><br>
-                    同一结算单可分多次提现，生成多个对账子单号；提现主单为资金归集单，对账子单号为底层溯源 ID。
-                </div>
-            </div>
-            <div class="reconcile-note">
-                对账场景：支付商发起提现 $5,000 后生成两笔对账子单号 WBI20260401-001 与 WBI20260401-002，分别对应 STL-20260315-001 与 STL-20260330-002 两笔结算单资金划扣，按 <span class="code">WBI{日期}-序号</span> 逐笔核对流水与结算单净收入。
-                <br>二次拆分：STL-20260315-001 剩余 $1,000 在后续提现主单中被再次占用，生成新的对账子单号 WBI20260405-001，同一结算单可被多次部分提现。
-            </div>
         </div>
     </div>
 </div>
+<script>
+    (function () {
+        var btn = document.getElementById("reconcileHelpBtn");
+        var closeBtn = document.getElementById("reconcileHelpClose");
+        var panel = document.getElementById("reconcileHelpPanel");
+        if (!btn || !panel) return;
+
+        function setOpen(open) {
+            panel.hidden = !open;
+            btn.setAttribute("aria-expanded", open ? "true" : "false");
+        }
+
+        btn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            setOpen(panel.hidden);
+        });
+
+        if (closeBtn) {
+            closeBtn.addEventListener("click", function () {
+                setOpen(false);
+            });
+        }
+
+        document.addEventListener("click", function (e) {
+            if (!panel.hidden && !panel.contains(e.target) && e.target !== btn) setOpen(false);
+        });
+
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape" && !panel.hidden) setOpen(false);
+        });
+    })();
+</script>
 </body>
 </html>
