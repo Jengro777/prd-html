@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>通过收费创建授权 · Paystack 开发文档（中文）</title>
+<meta name="description" content="通过收费创建授权 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>企业可以对客户的账户发起付款授权请求。一旦客户同意，该企业就可以定期从他们的账户中扣除费用。</p>
+<p>直接借记是一种支付渠道，允许企业在获得客户同意后从客户的银行账户中扣除费用。在从客户的账户中扣除费用之前，他们需要获得与其联络的企业的同意。企业可以创建一项授权书，寻求客户的许可以借记其账户。</p>
+<p>处理任务有三个独立的流程。使用“收费”在付款时设置授权，使用“设置授权”直接创建授权而无需付款，并使用“校验”随时检查授权的状态。</p>
+<p>此功能仅适用于尼日利亚的企业。</p>
+<h2>通过收费创建授权</h2>
+<p>在一个流程中进行付款并设置授权。使用包含客户账户和地址的 <code class="inline">direct_debit</code> 对象向 <a href="https://paystack.com/docs/api/charge#create">创建电荷 API</a> 接口发出 <code class="inline">POST</code> 请求：</p>
+<pre class="code">#!/bin/sh
+curl https://api.paystack.co/charge
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{
+&quot;email&quot;: &quot;ravi@demo.com&quot;,
+&quot;amount&quot;: &quot;1000000&quot;,
+&quot;currency&quot;: &quot;NGN&quot;,
+&quot;direct_debit&quot;: {
+&quot;account&quot;: { &quot;number&quot;: &quot;0123456789&quot;, &quot;bank_code&quot;: &quot;057&quot; },
+&quot;address&quot;: { &quot;street&quot;: &quot;126 Joel Ogunnaike&quot;, &quot;city&quot;: &quot;Ikeja&quot;, &quot;state&quot;: &quot;Lagos&quot;, &quot;country&quot;: &quot;NG&quot; },
+&quot;phone&quot;: &quot;+2348012345678&quot;
+}
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Charge attempted&quot;,
+  &quot;data&quot;: {
+    &quot;reference&quot;: &quot;dd-charge-8f3a1c&quot;,
+    &quot;status&quot;: &quot;pending_bank_transfer&quot;,
+    &quot;amount&quot;: 1000000,
+    &quot;account_number&quot;: &quot;1234567890&quot;,
+    &quot;bank_name&quot;: &quot;Test Bank&quot;
+  }
+}</pre>
+<div class="table-wrap"><table class="data"><thead><tr><th>领域</th><th>必填</th><th>注释</th></tr></thead><tbody><tr><td><code class="inline">email</code></td><td>是的</td><td>客户邮箱。</td></tr><tr><td><code class="inline">amount</code></td><td>是的</td><td>整数，在 kobo 中表示 NGN。</td></tr><tr><td><code class="inline">currency</code></td><td>否</td><td>默认为集成的默认货币。</td></tr><tr><td><code class="inline">reference</code></td><td>否</td><td>你独特的参考。如果省略则自动生成。</td></tr><tr><td><code class="inline">direct_debit.account.number</code></td><td>是的</td><td>10 位帐号。</td></tr><tr><td><code class="inline">direct_debit.account.bank_code</code></td><td>是的</td><td>银行代码，例如<code class="inline">057</code>。</td></tr><tr><td><code class="inline">direct_debit.address.street</code></td><td>是的</td><td>街道。</td></tr><tr><td><code class="inline">direct_debit.address.city</code></td><td>是的</td><td>城市。</td></tr><tr><td><code class="inline">direct_debit.address.state</code></td><td>是的</td><td>状态。</td></tr><tr><td><code class="inline">direct_debit.address.country</code></td><td>否</td><td>国家。</td></tr><tr><td><code class="inline">direct_debit.phone</code></td><td>否</td><td>客户电话。</td></tr></tbody></table></div>
+<p>响应包括 <code class="inline">pending_bank_transfer</code> 状态以及 <code class="inline">account_number</code>、<code class="inline">bank_name</code> 和 <code class="inline">amount</code>。向客户提供这些详细信息以完成一次性转账。一旦我们收到转账，该任务就会生效。投票<a href="https://paystack.com/docs/payments/direct-debit/?pscb=2#verify">校验</a>进行确认，或聆听Webhook。</p>
+<h2>初始化交易</h2>
+<p>或者，为客户设置授权的最快方法是将带有自定义过滤器的 <code class="inline">bank</code> 通道传递到 <a href="https://paystack.com/docs/api/transaction#initialize">初始化交易API</a> 接口：</p>
+<pre class="code">curl https://api.paystack.co/transaction/initialize
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;email&quot;: &quot;customer@email.com&quot;,
+&quot;amount&quot;: &quot;10000&quot;,
+&quot;channels&quot;: [&quot;bank&quot;],
+&quot;metadata&quot;: {
+&quot;custom_filters&quot;: {
+&quot;recurring&quot;: true
+}
+}
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Authorization URL created&quot;,
+  &quot;data&quot;: {
+    &quot;authorization_url&quot;: &quot;https://checkout.paystack.com/zcwh3axoir37x7q&quot;,
+    &quot;access_code&quot;: &quot;zcwh3axoir37x7q&quot;,
+    &quot;reference&quot;: &quot;gz8nyit2zd&quot;
+  }
+}</pre>
+<p>在完成交易的过程中，获得客户的同意，允许我们创建可用于后续付款的授权。仅当客户的账户属于直接借记的 <a href="https://paystack.com/docs/payments/direct-debit/?pscb=2#supported-banks">支持的银行</a> 范围内时，才会创建授权。你可以按照<a href="https://paystack.com/docs/payments/direct-debit/?pscb=2#verify-a-mandate">核实授权</a>部分的步骤获取授权状态。</p>
+<h2>直接设置授权</h2>
+<p>要创建不付款的授权，请使用 <a href="https://paystack.com/docs/api/customer#initialize-authorization">初始化授权API</a> 接口向客户发出授权请求：</p>
+<pre class="code">#!/bin/sh
+curl https://api.paystack.co/customer/authorization/initialize
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{
+&quot;email&quot;: &quot;ravi@demo.com&quot;,
+&quot;channel&quot;: &quot;direct_debit&quot;,
+&quot;callback_url&quot;: &quot;http://test.url.com&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Authorization initialized&quot;,
+  &quot;data&quot;: {
+    &quot;redirect_url&quot;: &quot;https://link.paystack.co/82t4mp5b5mfn51h&quot;,
+    &quot;access_code&quot;: &quot;82t4mp5b5mfn51h&quot;,
+    &quot;reference&quot;: &quot;dfbzfotsrbv4n5s82t4mp5b5mfn51h&quot;
+  }
+}</pre>
+<p>响应包含一个 <code class="inline">redirect_url</code>，你可以重定向客户以同意你的请求。如果你在请求中提供了<code class="inline">callback_url</code>，客户将在同意后被发送到该页面。</p>
+<p>为了获得更好的UI体验，你可以通过在请求中添加<code class="inline">account</code>和<code class="inline">address</code>对象来预先填写一些客户信息：</p>
+<pre class="code">curl https://api.paystack.co/customer/authorization/initialize
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{
+&quot;channel&quot;: &quot;direct_debit&quot;,
+&quot;email&quot;: &quot;ravi@demo.com&quot;,
+&quot;callback_url&quot;: &quot;http://test.url.com&quot;,
+&quot;account&quot;: {
+&quot;number&quot;: &quot;0128034955&quot;,
+&quot;bank_code&quot;: &quot;058&quot;
+},
+&quot;address&quot;: {
+&quot;state&quot;: &quot;Lagos&quot;,
+&quot;city&quot;: &quot;Akoka&quot;,
+&quot;street&quot;: &quot;17 Beckley Avenue&quot;
+}
+}&#x27;
+-X POST</pre>
+<p>虽然 <code class="inline">account</code> 和 <code class="inline">address</code> 对象都是可选的，但在使用时，两个对象中的所有参数都是强制性的。 <code class="inline">account</code>对象中的<code class="inline">bank_code</code>代表客户的银行。</p>
+<p>你还可以通过在同一请求中传递 <code class="inline">use_hosted_url</code> 来控制客户看到的授权设置体验。对于非托管流程，将其设置为 <code class="inline">false</code>，你可以自行执行设置步骤，或者对于托管流程，将其保留为 <code class="inline">true</code>（默认值），我们在<code class="inline">redirect_url</code> 上显示设置。由于 <code class="inline">true</code> 是默认值，因此现有托管集成不受影响。</p>
+<pre class="code">curl https://api.paystack.co/customer/authorization/initialize
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{
+&quot;channel&quot;: &quot;direct_debit&quot;,
+&quot;email&quot;: &quot;ravi@demo.com&quot;,
+&quot;use_hosted_url&quot;: false
+}&#x27;
+-X POST</pre>
+<p>对于非托管流，响应包含 <code class="inline">mandate</code> 对象和 <code class="inline">transferDetails</code> 而不是 <code class="inline">redirect_url</code>：</p>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Authorization initialized&quot;,
+  &quot;data&quot;: {
+    &quot;reference&quot;: &quot;54eyym8uf802ycx&quot;,
+    &quot;mandate&quot;: {
+      &quot;id&quot;: 3315722,
+      &quot;status&quot;: &quot;pending&quot;,
+      &quot;isNew&quot;: true
+    },
+    &quot;transferDetails&quot;: {
+      &quot;amount&quot;: &quot;50.00&quot;,
+      &quot;account_number&quot;: &quot;9880218357&quot;,
+      &quot;account_name&quot;: &quot;NIBSS DIRECT DEBIT&quot;,
+      &quot;bank_name&quot;: &quot;Paystack-Titan&quot;
+    },
+    &quot;status&quot;: &quot;pending_bank_transfer&quot;
+  }
+}</pre>
+<p>向客户出示<code class="inline">transferDetails</code>即可完成一次性转账。一旦我们收到转账，该任务就会生效。投票<a href="https://paystack.com/docs/payments/direct-debit/?pscb=2#verify">校验</a>进行确认，或聆听Webhook。</p>
+<h2>支持的银行</h2>
+<p>我们目前支持下列银行。我们正在积极与合作伙伴合作，支持更多银行，并且我们将随时向你通报新增银行的最新情况。</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>银行</th><th>银行代码</th></tr></thead><tbody><tr><td>存取银行</td><td>044</td></tr><tr><td>花旗银行尼日利亚</td><td>023</td></tr><tr><td>尼日利亚生态银行</td><td>050</td></tr><tr><td>富达银行</td><td>070</td></tr><tr><td>尼日利亚第一银行</td><td>011</td></tr><tr><td>第一城市纪念碑银行</td><td>214</td></tr><tr><td>环球银行</td><td>00103</td></tr><tr><td>担保信托银行</td><td>058</td></tr><tr><td>遗产银行</td><td>030</td></tr><tr><td>贾兹银行</td><td>301</td></tr><tr><td>鼎石银行</td><td>082</td></tr><tr><td>北极星银行</td><td>076</td></tr><tr><td>保费信托银行</td><td>105</td></tr><tr><td>普罗维达斯银行</td><td>101</td></tr><tr><td>斯坦比克IBTC银行</td><td>221</td></tr><tr><td>渣打银行</td><td>068</td></tr><tr><td>英镑银行</td><td>232</td></tr><tr><td>太阳信托银行</td><td>100</td></tr><tr><td>泰坦银行</td><td>102</td></tr><tr><td>尼日利亚联合银行</td><td>032</td></tr><tr><td>非洲联合银行</td><td>033</td></tr><tr><td>联合银行</td><td>215</td></tr><tr><td>维马银行</td><td>035</td></tr><tr><td>真力时银行</td><td>057</td></tr></tbody></table></div>
+<p>在创建授权之前，我们会对银行代码进行校验。如果提供的银行代码不在支持的银行列表中，我们将返回 <code class="inline">Bank not supported for direct debit</code> 错误。</p>
+<h2>校验</h2>
+<p>随时检查任务的状态或费用的状态。</p>
+<h3>校验授权</h3>
+<p>我们将以下 Webhook 事件发送到你的 Webhook URL 以传达客户授权的状态：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>活动</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">direct_debit.authorization.created</code></td><td>当客户批准你的授权请求时发送此信息。这并不意味着客户的账户已准备好收费。</td></tr><tr><td><code class="inline">direct_debit.authorization.active</code></td><td>当客户的授权处于活动状态且可以向其账户收费时发送此信息。</td></tr></tbody></table></div>
+<pre class="code">{
+  &quot;event&quot;: &quot;direct_debit.authorization.created&quot;,
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Authorization retrieved successfully&quot;,
+  &quot;data&quot;: {
+    &quot;authorization_code&quot;: &quot;AUTH_JV4T9Wawdj&quot;,
+    &quot;active&quot;: false,
+    &quot;last4&quot;: &quot;1234&quot;,
+    &quot;channel&quot;: &quot;direct_debit&quot;,
+    &quot;card_type&quot;: &quot;mandate&quot;,
+    &quot;bank&quot;: &quot;Guaranty Trust Bank&quot;,
+    &quot;exp_month&quot;: 1,
+    &quot;exp_year&quot;: 2034,
+    &quot;country_code&quot;: &quot;NG&quot;,
+    &quot;brand&quot;: &quot;Guaranty Trust Bank&quot;,
+    &quot;reusable&quot;: true,
+    &quot;signature&quot;: &quot;SIG_u8SqR3E6ty2koQ9i5IrI&quot;,
+    &quot;account_name&quot;: &quot;Ravi Demo&quot;,
+    &quot;customer&quot;: {
+      &quot;first_name&quot;: &quot;Ravi&quot;,
+      &quot;last_name&quot;: &quot;Demo&quot;,
+      &quot;code&quot;: &quot;CUS_g0a2pm2ilthhh62&quot;,
+      &quot;email&quot;: &quot;ravi@demo.com&quot;,
+      &quot;phone&quot;: &quot;&quot;,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;
+    }
+  }
+}</pre>
+<p>或者，你可以通过使用初始化请求中的引用向 <a href="https://paystack.com/docs/api/customer#verify-authorization">校验授权API</a> 发出请求来确认授权状态。</p>
+<pre class="code">#!/bin/sh
+curl https://api.paystack.co/customer/authorization/verify/:reference
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-X GET</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Authorization retrieved successfully&quot;,
+  &quot;data&quot;: {
+    &quot;authorization_code&quot;: &quot;AUTH_JV4T9Wawdj&quot;,
+    &quot;channel&quot;: &quot;direct_debit&quot;,
+    &quot;bank&quot;: &quot;Guaranty Trust Bank&quot;,
+    &quot;active&quot;: true,
+    &quot;customer&quot;: {
+      &quot;code&quot;: &quot;CUS_24lze1c8i2zl76y&quot;,
+      &quot;email&quot;: &quot;ravi@demo.com&quot;
+    }
+  }
+}</pre>
+<p>如果授权尚未获得批准或者你在创建授权之前尝试进行校验，你将收到 <code class="inline">404 error</code>，响应如下所示：</p>
+<pre class="code">{
+  &quot;status&quot;: false,
+  &quot;message&quot;: &quot;Authorization does not exist or does not belong to integration&quot;,
+  &quot;metadata&quot;: {
+    &quot;nextStep&quot;: &quot;Try again later&quot;
+  },
+  &quot;type&quot;: &quot;api_error&quot;,
+  &quot;code&quot;: &quot;unknown&quot;
+}</pre>
+<p>当调用校验授权接口时，你将受到我们的速率限制规则的约束。</p>
+<h3>校验费用</h3>
+<p>要校验充电状态，你需要监听 <a href="https://paystack.com/docs/payments/webhooks/">你的Webhook URL</a> 上的 <code class="inline">charge.success</code> 事件：</p>
+<pre class="code">{
+  &quot;event&quot;: &quot;charge.success&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 1504238596,
+    &quot;domain&quot;: &quot;live&quot;,
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;reference&quot;: &quot;nl3eljdd6qgbrho&quot;,
+    &quot;amount&quot;: 10000,
+    &quot;message&quot;: &quot;madePayment&quot;,
+    &quot;gateway_response&quot;: &quot;Payment successful&quot;,
+    &quot;paid_at&quot;: &quot;2023-10-24T12:32:30.000Z&quot;,
+    &quot;created_at&quot;: &quot;2023-10-24T12:32:24.000Z&quot;,
+    &quot;channel&quot;: &quot;direct_debit&quot;,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;ip_address&quot;: null,
+    &quot;metadata&quot;: &quot;&quot;,
+    &quot;fees_breakdown&quot;: null,
+    &quot;log&quot;: null,
+    &quot;fees&quot;: 0,
+    &quot;fees_split&quot;: null,
+    &quot;authorization&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_JV4T9Wawdj&quot;,
+      &quot;bin&quot;: null,
+      &quot;last4&quot;: null,
+      &quot;exp_month&quot;: null,
+      &quot;exp_year&quot;: null,
+      &quot;channel&quot;: &quot;direct_debit&quot;,
+      &quot;card_type&quot;: null,
+      &quot;bank&quot;: &quot;Guaranty Trust Bank&quot;,
+      &quot;country_code&quot;: &quot;NG&quot;,
+      &quot;brand&quot;: null,
+      &quot;reusable&quot;: true,
+      &quot;signature&quot;: null,
+      &quot;account_name&quot;: null
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 180061682,
+      &quot;first_name&quot;: &quot;Ravi&quot;,
+      &quot;last_name&quot;: &quot;Demo&quot;,
+      &quot;email&quot;: &quot;ravi@demo.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_24lze1c8i2zl76y&quot;,
+      &quot;phone&quot;: &quot;&quot;,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;,
+      &quot;international_format_phone&quot;: null
+    },
+    &quot;plan&quot;: {},
+    &quot;subaccount&quot;: {},
+    &quot;split&quot;: {},
+    &quot;order_id&quot;: null,
+    &quot;paidAt&quot;: &quot;2023-10-24T12:32:30.000Z&quot;,
+    &quot;requested_amount&quot;: 10000,
+    &quot;pos_transaction_data&quot;: null,
+    &quot;source&quot;: {
+      &quot;type&quot;: &quot;api&quot;,
+      &quot;source&quot;: &quot;merchant_api&quot;,
+      &quot;entry_point&quot;: &quot;charge&quot;,
+      &quot;identifier&quot;: null
+    }
+  }
+}</pre>
+<p>或者，你可以使用收费请求响应中的 <code class="inline">reference</code> 向 <a href="https://paystack.com/docs/api/transaction#verify">校验交易API</a> 接口发出请求。</p>
+<pre class="code">#!/bin/sh
+curl https://api.paystack.co/transaction/verify/:reference
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-X GET</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Verification successful&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 1504238596,
+    &quot;domain&quot;: &quot;live&quot;,
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;reference&quot;: &quot;nl3eljdd6qgbrho&quot;,
+    &quot;receipt_number&quot;: null,
+    &quot;amount&quot;: 10000,
+    &quot;message&quot;: &quot;madePayment&quot;,
+    &quot;gateway_response&quot;: &quot;Payment successful&quot;,
+    &quot;paid_at&quot;: &quot;2023-10-24T12:32:30.000Z&quot;,
+    &quot;created_at&quot;: &quot;2023-10-24T12:32:24.000Z&quot;,
+    &quot;channel&quot;: &quot;direct_debit&quot;,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;ip_address&quot;: null,
+    &quot;metadata&quot;: &quot;&quot;,
+    &quot;log&quot;: null,
+    &quot;fees&quot;: null,
+    &quot;fees_split&quot;: null,
+    &quot;authorization&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_JV4T9Wawdj&quot;,
+      &quot;bin&quot;: null,
+      &quot;last4&quot;: null,
+      &quot;exp_month&quot;: null,
+      &quot;exp_year&quot;: null,
+      &quot;channel&quot;: &quot;direct_debit&quot;,
+      &quot;card_type&quot;: null,
+      &quot;bank&quot;: &quot;Guaranty Trust Bank&quot;,
+      &quot;country_code&quot;: &quot;NG&quot;,
+      &quot;brand&quot;: null,
+      &quot;reusable&quot;: true,
+      &quot;signature&quot;: null,
+      &quot;account_name&quot;: null
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 180061682,
+      &quot;first_name&quot;: &quot;Dami&quot;,
+      &quot;last_name&quot;: &quot;Olukini&quot;,
+      &quot;email&quot;: &quot;damilola@test.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_24lze1c8i2zl76y&quot;,
+      &quot;phone&quot;: &quot;&quot;,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;,
+      &quot;international_format_phone&quot;: null
+    },
+    &quot;plan&quot;: null,
+    &quot;split&quot;: {},
+    &quot;order_id&quot;: null,
+    &quot;paidAt&quot;: &quot;2023-10-24T12:32:30.000Z&quot;,
+    &quot;createdAt&quot;: &quot;2023-10-24T12:32:24.000Z&quot;,
+    &quot;requested_amount&quot;: 10000,
+    &quot;pos_transaction_data&quot;: null,
+    &quot;source&quot;: null,
+    &quot;fees_breakdown&quot;: null,
+    &quot;transaction_date&quot;: &quot;2023-10-24T12:32:24.000Z&quot;,
+    &quot;plan_object&quot;: {},
+    &quot;subaccount&quot;: {}
+  }
+}</pre>
+<p>在某些情况下，授权可能会陷入 <code class="inline">pending</code> 状态。在这种情况下，你可以向客户收取激活费用：</p>
+<pre class="code">#!/bin/sh
+curl https://api.paystack.co/customer/{id}/directdebit-activation-charge
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{
+&quot;authorization_id&quot; : 1069309917
+}&#x27;
+-X PUT</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Mandate is queued for retry&quot;
+}</pre>
+<p>对于多个客户，你可以使用 <a href="https://paystack.com/docs/api/directdebit#activation-charge">直接借记激活费用 API</a> 接口，如下所示：</p>
+<pre class="code">#!/bin/sh
+curl https://api.paystack.co/directdebit/activation-charge
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{
+&quot;customer_ids&quot;: [28958104, 983697220]
+}&#x27;
+-X PUT</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Mandate is queued for retry&quot;
+}</pre>
+<p>此请求将导致从客户的账户中扣除<strong>NGN50</strong>，以便我们确认是否可以从客户的账户中扣除。但是，一旦我们完成检查，这笔费用就会退还。</p>
+<h2>经常性费用</h2>
+<p>客户批准授权后，我们会提供 <code class="inline">authorization_code</code>，你可以使用该<code class="inline">authorization_code</code>定期从其账户中扣除费用。你可以通过将 <code class="inline">authorization_code</code> 与匹配的 <code class="inline">email</code> 传递到 <a href="https://paystack.com/docs/api/transaction#charge-authorization">充电授权API</a> 接口来借记客户的账户。</p>
+<pre class="code">#!/bin/sh
+curl https://api.paystack.co/transaction/charge_authorization
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{
+&quot;authorization_code&quot; : &quot;AUTH_JV4T9Wawdj&quot;,
+&quot;email&quot;: &quot;ravi@demo.com&quot;,
+&quot;amount&quot;: &quot;10000&quot;,
+&quot;currency&quot;: &quot;NGN&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Charge attempted&quot;,
+  &quot;data&quot;: {
+    &quot;amount&quot;: 10000,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;transaction_date&quot;: &quot;2023-10-24T12:32:24.000Z&quot;,
+    &quot;status&quot;: &quot;processing&quot;,
+    &quot;reference&quot;: &quot;nl3eljdd6qgbrho&quot;,
+    &quot;domain&quot;: &quot;live&quot;,
+    &quot;metadata&quot;: &quot;&quot;,
+    &quot;gateway_response&quot;: &quot;Transaction in progress&quot;,
+    &quot;message&quot;: null,
+    &quot;channel&quot;: &quot;direct_debit&quot;,
+    &quot;ip_address&quot;: null,
+    &quot;log&quot;: null,
+    &quot;fees&quot;: null,
+    &quot;authorization&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_JV4T9Wawdj&quot;,
+      &quot;bin&quot;: null,
+      &quot;last4&quot;: null,
+      &quot;exp_month&quot;: null,
+      &quot;exp_year&quot;: null,
+      &quot;channel&quot;: &quot;direct_debit&quot;,
+      &quot;card_type&quot;: null,
+      &quot;bank&quot;: &quot;Guaranty Trust Bank&quot;,
+      &quot;country_code&quot;: &quot;NG&quot;,
+      &quot;brand&quot;: null,
+      &quot;reusable&quot;: true,
+      &quot;signature&quot;: null,
+      &quot;account_name&quot;: null
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 180061682,
+      &quot;first_name&quot;: &quot;Ravi&quot;,
+      &quot;last_name&quot;: &quot;Demo&quot;,
+      &quot;email&quot;: &quot;ravi@demo.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_24lze1c8i2zl76y&quot;,
+      &quot;phone&quot;: &quot;&quot;,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;,
+      &quot;international_format_phone&quot;: null
+    },
+    &quot;plan&quot;: null,
+    &quot;id&quot;: 1504238596
+  }
+}</pre>
+<p>默认情况下，当我们结束向客户账户收费时，我们返回状态 <code class="inline">processing</code>。你需要 <code class="inline">data.reference</code> 参数来校验费用状态。</p>
+<p>你还可以通过<a href="https://paystack.com/docs/api/subscription/#create">创建订阅 API</a>接口使用订阅授权。如果客户有其他授权，请确保你发送上面返回的 <code class="inline">authorization_code</code>，否则 Paystack 将选择最新的授权。 Checkout我们的<a href="https://paystack.com/docs/payments/subscriptions/">订阅文档</a>了解更多信息。</p>
+<h2>停用授权</h2>
+<p>你可能需要在交易完成后或根据客户的请求停用授权。为此，请向 <a href="https://paystack.com/docs/api/customer#deactivate-authorization">停用授权API</a> 发出 <code class="inline">POST</code> 请求：</p>
+<pre class="code">#!/bin/sh
+curl https://api.paystack.co/customer/authorization/deactivate
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{
+&quot;authorization_code&quot;: &quot;AUTH_xxxIjkZVj5&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Authorization has been deactivated&quot;
+}</pre>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/payments/direct-debit/" target="_blank" rel="noopener">https://paystack.com/docs/payments/direct-debit/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

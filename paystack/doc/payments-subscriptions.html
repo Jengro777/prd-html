@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>制定计划 · Paystack 开发文档（中文）</title>
+<meta name="description" content="制定计划 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>订阅 API 允许开发人员在其应用程序中嵌入定期计费功能，而无需自行管理计费周期。商户可以轻松创建计划并定期自动向客户收费。我们仅支持银行卡和直接借记卡（尼日利亚）。</p>
+<p>设置订阅的方法如下：</p>
+<ol><li><a href="https://paystack.com/docs/payments/subscriptions/#create-a-plan">制定计划</a></li><li><a href="https://paystack.com/docs/payments/subscriptions/#create-a-subscription">创建订阅</a></li><li><a href="https://paystack.com/docs/payments/subscriptions/#listen-for-subscription-events">监听订阅事件</a></li></ol>
+<h2>制定计划</h2>
+<p>计划是订阅的基础构建块。计划代表你销售的产品、销售价格以及收费频率。</p>
+<p>你可以通过 <a href="https://dashboard.paystack.com/#/plans">PaystackDashboard</a> 创建计划，或者通过调用 <a href="https://paystack.com/docs/api/plan#create">创建计划API</a> 接口，传递：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>参数</th><th>类型</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">name</code></td><td>字符串</td><td>计划名称</td></tr><tr><td><code class="inline">interval</code></td><td>字符串</td><td>对该计划收取订阅费的时间间隔。可用选项有 <code class="inline">hourly</code>、<code class="inline">daily</code>、<code class="inline">weekly</code>、<code class="inline">monthly</code>、<code class="inline">quarterly</code>、<code class="inline">biannually</code>（每 6 个月）和 <code class="inline">annually</code></td></tr><tr><td><code class="inline">amount</code></td><td>整数</td><td>收费金额</td></tr></tbody></table></div>
+<pre class="code">curl https://api.paystack.co/plan
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;name&quot;: &quot;Monthly Retainer&quot;,
+&quot;interval&quot;: &quot;monthly&quot;,
+&quot;amount&quot;: 500000
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Plan created&quot;,
+  &quot;data&quot;: {
+    &quot;name&quot;: &quot;Monthly Retainer&quot;,
+    &quot;interval&quot;: &quot;monthly&quot;,
+    &quot;amount&quot;: 500000,
+    &quot;integration&quot;: 428626,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;plan_code&quot;: &quot;PLN_u4cqud8vabi89hx&quot;,
+    &quot;invoice_limit&quot;: 0,
+    &quot;send_invoices&quot;: true,
+    &quot;send_sms&quot;: true,
+    &quot;hosted_page&quot;: false,
+    &quot;migrate&quot;: false,
+    &quot;id&quot;: 49122,
+    &quot;createdAt&quot;: &quot;2020-05-22T12:36:12.333Z&quot;,
+    &quot;updatedAt&quot;: &quot;2020-05-22T12:36:12.333Z&quot;
+  }
+}</pre>
+<p>按月间隔的订阅计费取决于创建订阅的月份日期。如果订阅是在当月 28 日或之前创建的，则在计划有效期内每月会在同一天计费。在 29 日至 31 日之间创建的订阅将在计划有效期内的每个后续月份的 28 日计费</p>
+<p>你还可以传递 <code class="inline">invoice_limit</code>，它允许你设置可以在此计划中向客户收费的次数。因此，如果你在包月套餐中设置 <code class="inline">invoice_limit: 5</code>，那么客户将每月付费，为期 5 个月。如果你没有通过<code class="inline">invoice_limit</code>，我们将继续向客户收取费用，直至计划取消。</p>
+<h2>创建订阅</h2>
+<p>现在我们有了计划，我们可以继续下一步：为客户订阅该计划。我们可以通过多种方式创建新订阅。</p>
+<ol><li>将计划代码添加到交易</li><li>使用 <a href="https://paystack.com/docs/api/subscription#create">创建订阅 API</a> 接口</li></ol>
+<h3>将计划代码添加到交易中</h3>
+<p>你可以使用 <a href="https://paystack.com/docs/api/transaction#initialize">初始化交易API</a> 接口为客户创建订阅，方法是将你创建的计划的 <code class="inline">plan_code</code> 添加到请求正文中。这将覆盖传递的交易金额，并向客户收取计划金额。</p>
+<p>客户付款后，他们将自动订阅该计划，并根据计划中设置的时间间隔（和发票限额）进行计费。</p>
+<pre class="code">curl https://api.paystack.co/transaction/initialize
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;email&quot;: &quot;customer@email.com&quot;,
+&quot;amount&quot;: &quot;500000&quot;,
+&quot;plan&quot;: &quot;PLN_xxxxxxxxxx&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Authorization URL created&quot;,
+  &quot;data&quot;: {
+    &quot;authorization_url&quot;: &quot;https://checkout.paystack.com/nkdks46nymizns7&quot;,
+    &quot;access_code&quot;: &quot;nkdks46nymizns7&quot;,
+    &quot;reference&quot;: &quot;nms6uvr1pl&quot;
+  }
+}</pre>
+<h3>使用创建订阅接口</h3>
+<p>你还可以通过调用 <a href="https://paystack.com/docs/api/subscription#create">创建订阅 API</a> 接口，传递 <code class="inline">customer</code> 和 <code class="inline">plan</code> 来创建订阅。客户必须已经在你的 Paystack 集成上完成了交易。这是因为订阅 API 使用卡和直接借记授权向客户收费，因此需要有现有的授权才能收费。</p>
+<p>如果客户有多个授权，你可以在创建订阅时通过将 <code class="inline">authorization_code</code> 传递为 <code class="inline">authorization</code> 来选择用于订阅的授权。否则，Paystack 会选择最近的<code class="inline">authorization</code>进行收费。</p>
+<pre class="code">curl https://api.paystack.co/subscription
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;customer&quot;: &quot;CUS_xxxxxxxxxx&quot;, &quot;plan&quot;: &quot;PLN_xxxxxxxxxx&quot; }&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Subscription successfully created&quot;,
+  &quot;data&quot;: {
+    &quot;customer&quot;: 24259516,
+    &quot;plan&quot;: 49122,
+    &quot;integration&quot;: 428626,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;start&quot;: 1590152172,
+    &quot;status&quot;: &quot;active&quot;,
+    &quot;quantity&quot;: 1,
+    &quot;amount&quot;: 500000,
+    &quot;authorization&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_pmx3mgawyd&quot;,
+      &quot;bin&quot;: &quot;408408&quot;,
+      &quot;last4&quot;: &quot;4081&quot;,
+      &quot;exp_month&quot;: &quot;12&quot;,
+      &quot;exp_year&quot;: &quot;2020&quot;,
+      &quot;channel&quot;: &quot;card&quot;,
+      &quot;card_type&quot;: &quot;visa DEBIT&quot;,
+      &quot;bank&quot;: &quot;Test Bank&quot;,
+      &quot;country_code&quot;: &quot;NG&quot;,
+      &quot;brand&quot;: &quot;visa&quot;,
+      &quot;reusable&quot;: true,
+      &quot;signature&quot;: &quot;SIG_2Gvc6pNuzJmj4TCchXfp&quot;,
+      &quot;account_name&quot;: null
+    },
+    &quot;invoice_limit&quot;: 0,
+    &quot;subscription_code&quot;: &quot;SUB_i6wmhzi0lu95oz7&quot;,
+    &quot;email_token&quot;: &quot;n27dvho4kjsf1sq&quot;,
+    &quot;id&quot;: 161872,
+    &quot;createdAt&quot;: &quot;2020-05-22T12:56:12.514Z&quot;,
+    &quot;updatedAt&quot;: &quot;2020-05-22T12:56:12.514Z&quot;,
+    &quot;cron_expression&quot;: &quot;0 0 22 * *&quot;,
+    &quot;next_payment_date&quot;: &quot;2020-06-22T00:00:00.000Z&quot;
+  }
+}</pre>
+<p>你还可以传递 <code class="inline">start_date</code> 参数，该参数可让你设置首次借记的日期。这使得此方法非常适合以下情况：你希望在开始向客户收费之前给他们一段免费时间，或者你想要将客户切换到其他计划时。</p>
+<p>如果订阅收费失败，我们不会重试。订阅非常适合付款后交付价值的情况。例如互联网服务或流媒体服务的支付。</p>
+<h2>监听订阅事件</h2>
+<p>创建订阅将导致 Paystack 发送以下事件：</p>
+<ol><li>发送 <code class="inline">subscription.create</code> 事件表示已为付费客户创建了订阅。</li><li>如果你通过向交易添加计划代码来创建订阅，还会发送 <code class="inline">charge.success</code> 事件以指示交易成功。</li></ol>
+<p>每个后续计费周期都会发生以下步骤：</p>
+<ol><li>将发送 <code class="inline">invoice.create</code> 事件来指示将对订阅进行收费尝试。该信息将在下一个付款日期前 3 天发送。</li><li>如果收费尝试成功，则在下一个付款日期，将发送 <code class="inline">charge.success</code> 事件。如果没有，则会发送 <code class="inline">invoice.payment_failed</code> 事件。</li><li>尝试充电后将发送 <code class="inline">invoice.update</code> 事件。这将包含此订阅付款的发票的最终状态，以及收费信息（如果成功）</li></ol>
+<p>取消订阅也会触发事件：</p>
+<ol><li>将发送 <code class="inline">subscription.not_renew</code> 事件以指示订阅不会在下一个付款日期续订。</li><li>在下一个付款日，将发送<code class="inline">subscription.disable</code>事件，表明订阅已取消。</li></ol>
+<p>完成订阅的所有计费周期后，将发送最终 <code class="inline">subscription.disable</code> 事件，并将 <code class="inline">status</code> 设置为 <code class="inline">complete</code>。</p>
+<pre class="code">{
+  &quot;event&quot;: &quot;invoice.create&quot;,
+  &quot;data&quot;: {
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;invoice_code&quot;: &quot;INV_thy2vkmirn2urwv&quot;,
+    &quot;amount&quot;: 50000,
+    &quot;period_start&quot;: &quot;2018-12-20T15:00:00.000Z&quot;,
+    &quot;period_end&quot;: &quot;2018-12-19T23:59:59.000Z&quot;,
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;paid&quot;: true,
+    &quot;paid_at&quot;: &quot;2018-12-20T15:00:06.000Z&quot;,
+    &quot;description&quot;: null,
+    &quot;authorization&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_9246d0h9kl&quot;,
+      &quot;bin&quot;: &quot;408408&quot;,
+      &quot;last4&quot;: &quot;4081&quot;,
+      &quot;exp_month&quot;: &quot;12&quot;,
+      &quot;exp_year&quot;: &quot;2020&quot;,
+      &quot;channel&quot;: &quot;card&quot;,
+      &quot;card_type&quot;: &quot;visa DEBIT&quot;,
+      &quot;bank&quot;: &quot;Test Bank&quot;,
+      &quot;country_code&quot;: &quot;NG&quot;,
+      &quot;brand&quot;: &quot;visa&quot;,
+      &quot;reusable&quot;: true,
+      &quot;signature&quot;: &quot;SIG_iCw3p0rsG7LUiQwlsR3t&quot;,
+      &quot;account_name&quot;: &quot;BoJack Horseman&quot;
+    },
+    &quot;subscription&quot;: {
+      &quot;status&quot;: &quot;active&quot;,
+      &quot;subscription_code&quot;: &quot;SUB_fq7dbe8tju0i1v8&quot;,
+      &quot;email_token&quot;: &quot;3a1h7bcu8zxhm8k&quot;,
+      &quot;amount&quot;: 50000,
+      &quot;cron_expression&quot;: &quot;0 * * * *&quot;,
+      &quot;next_payment_date&quot;: &quot;2018-12-20T00:00:00.000Z&quot;,
+      &quot;open_invoice&quot;: null
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 46,
+      &quot;first_name&quot;: &quot;Asample&quot;,
+      &quot;last_name&quot;: &quot;Personpaying&quot;,
+      &quot;email&quot;: &quot;asam@ple.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_00w4ath3e2ukno4&quot;,
+      &quot;phone&quot;: &quot;&quot;,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;
+    },
+    &quot;transaction&quot;: {
+      &quot;reference&quot;: &quot;9cfbae6e-bbf3-5b41-8aef-d72c1a17650g&quot;,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;amount&quot;: 50000,
+      &quot;currency&quot;: &quot;NGN&quot;
+    },
+    &quot;created_at&quot;: &quot;2018-12-20T15:00:02.000Z&quot;
+  }
+}</pre>
+<h2>管理订阅</h2>
+<p>你已经制定了计划，并开始向客户订阅这些计划。在本节中，我们将讨论如何管理这些订阅，以确保你不会错过付款，并且你的客户不会失去服务。</p>
+<p>订阅状态是管理订阅的关键。每个状态都包含有关订阅的信息，让你知道是否需要采取行动来保留该客户。目前订阅有 5 种可能的状态。</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>状态</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">active</code></td><td>订阅当前处于活动状态，将在下一个付款日期收取费用。</td></tr><tr><td><code class="inline">non-renewing</code></td><td>订阅当前处于活动状态，但我们不会在下一个付款日期收取费用。当订阅即将完成或已取消（但我们尚未到达下一个付款日期）时，就会发生这种情况。</td></tr><tr><td><code class="inline">attention</code></td><td>订阅仍然有效，但尝试向客户的卡收费时出现问题。问题可能是卡过期、资金不足等。我们将尝试在下一个付款日期再次向该卡收费。</td></tr><tr><td><code class="inline">completed</code></td><td>订阅已完成，不再收费。</td></tr><tr><td><code class="inline">cancelled</code></td><td>订阅已取消，我们将不再尝试通过订阅卡收费。</td></tr></tbody></table></div>
+<h3>处理订阅付款问题</h3>
+<p>如上一节所述，如果订阅状态为<code class="inline">attention</code>，则表示尝试向客户的卡扣款时出现问题，我们无法成功扣款。</p>
+<p>要解决此问题，你可以查看 <a href="https://paystack.com/docs/api/subscription#fetch">获取订阅 API</a> 响应正文中返回的 <code class="inline">most_recent_invoice</code> 对象。此对象包含有关最近尝试对订阅卡进行收费的信息。如果订阅的状态为 <code class="inline">attention</code>，则 <code class="inline">most_recent_invoice</code> 对象将有一个设置为 <code class="inline">failed</code> 的状态字段和一个描述字段，其中包含有关尝试向卡充值时出错的更多信息。</p>
+<pre class="code">{
+  &quot;data&quot;: {
+    &quot;most_recent_invoice&quot;: {
+      &quot;subscription&quot;: 326005,
+      &quot;integration&quot;: 530700,
+      &quot;domain&quot;: &quot;test&quot;,
+      &quot;invoice_code&quot;: &quot;INV_fjtns483x9c2fyw&quot;,
+      &quot;customer&quot;: 92740135,
+      &quot;transaction&quot;: 1430031421,
+      &quot;amount&quot;: 50000,
+      &quot;period_start&quot;: &quot;2021-11-10T13:00:00.000Z&quot;,
+      &quot;period_end&quot;: &quot;2021-11-10T13:59:59.000Z&quot;,
+      &quot;status&quot;: &quot;attention&quot;,
+      &quot;paid&quot;: 1,
+      &quot;retries&quot;: 1,
+      &quot;authorization&quot;: 242063633,
+      &quot;paid_at&quot;: &quot;2021-11-10T13:00:09.000Z&quot;,
+      &quot;next_notification&quot;: &quot;2021-11-07T13:59:59.000Z&quot;,
+      &quot;notification_flag&quot;: null,
+      &quot;description&quot;: &quot;Insufficient Funds&quot;,
+      &quot;id&quot;: 3953926,
+      &quot;created_at&quot;: &quot;2021-11-10T13:00:05.000Z&quot;,
+      &quot;updated_at&quot;: &quot;2021-11-10T13:00:10.000Z&quot;
+    }
+  }
+}</pre>
+<p>每个月初，我们还会发送 <code class="inline">subscription.expiring_cards</code> Webhook，其中包含有关当月到期的卡的所有订阅的信息。你可以使用它来主动联系你的客户，并让他们更新其订阅中的卡。</p>
+<pre class="code">{
+  &quot;event&quot;: &quot;subscription.expiring_cards&quot;,
+  &quot;data&quot;: [
+    {
+      &quot;expiry_date&quot;: &quot;12/2021&quot;,
+      &quot;description&quot;: &quot;visa ending with 4081&quot;,
+      &quot;brand&quot;: &quot;visa&quot;,
+      &quot;subscription&quot;: {
+        &quot;id&quot;: 94729,
+        &quot;subscription_code&quot;: &quot;SUB_lejj927x2kxciw1&quot;,
+        &quot;amount&quot;: 44000,
+        &quot;next_payment_date&quot;: &quot;2021-11-11T00:00:01.000Z&quot;,
+        &quot;plan&quot;: {
+          &quot;interval&quot;: &quot;monthly&quot;,
+          &quot;id&quot;: 22637,
+          &quot;name&quot;: &quot;Premium Service (Monthly)&quot;,
+          &quot;plan_code&quot;: &quot;PLN_pfmwz75o021slex&quot;
+        }
+      },
+      &quot;customer&quot;: {
+        &quot;id&quot;: 7808239,
+        &quot;first_name&quot;: &quot;Bojack&quot;,
+        &quot;last_name&quot;: &quot;Horseman&quot;,
+        &quot;email&quot;: &quot;bojackhoresman@gmail.com&quot;,
+        &quot;customer_code&quot;: &quot;CUS_8v6g420rc16spqw&quot;
+      }
+    }
+  ]
+}</pre>
+<h3>更新订阅</h3>
+<p>要更改订阅，你将使用 <a href="https://paystack.com/docs/api/plan/#update">更新计划API</a> 接口。你应该考虑是否要更改现有订阅或保持原样。例如，如果你要更新价格或收费间隔。你将使用 <code class="inline">update_existing_subscriptions</code> 参数来控制它：</p>
+<ul><li>当设置为 <code class="inline">true</code> 时：所有订阅都将更新，并且更改将应用于下一个计费周期。</li><li>当设置为 <code class="inline">false</code> 时：当前订阅将保持不变，只有新订阅才会跟随更新。</li></ul>
+<p>如果省略此参数，更新将自动应用于所有订阅。</p>
+<h3>更新订阅卡</h3>
+<p>当客户的订阅的卡或银行出现付款问题时，你可以生成指向托管订阅管理页面的链接，他们可以在其中更新其授权。在该页面上，你的客户可以选择添加新卡、直接借记账户或取消订阅。如果他们选择添加一张新卡，Paystack 会向该卡收取少量费用以将其代币化。不用担心，费用会立即退还。</p>
+<pre class="code">curl https://api.paystack.co/subscription/:code/manage/link
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-X GET</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Link generated&quot;,
+  &quot;data&quot;: {
+    &quot;link&quot;: &quot;https://paystack.com/manage/subscriptions/qlgwhpyq1ts9nsw?subscription_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWJzY3JpcHRpb25fY29kZSI6IlNVQl9xbGd3aHB5cTB0czluc3ciLCJpbnRlZ3JhdGlvbiI6MzUzNTE0LCJkb21haW4iOiJ0ZXN0IiwiZW1haWxfdG9rZW4iOiJzNXIwZjA0ODdwcnNtZWsiLCJpYXQiOjE2MzUyNTkxMzEsIm5iZiI6MTYzNTI1OTEzcjeR82XhwIjoxNjM1MzQ1NTMxfQ.FK1glvwMjHu9J8P-4n2oXPN_u_fIpQZ-F_s5x_4WLag&quot;
+  }
+}</pre>
+<p>如果你已经有一个页面供订阅者管理其订阅，你可以选择在该页面上添加一个按钮或链接来生成链接并将客户重定向到订阅管理页面。</p>
+<p>或者，你可以触发 Paystack 向客户发送一封邮箱，其中包含链接。</p>
+<pre class="code">curl https://api.paystack.co/subscription/:code/manage/email
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Email successfully sent&quot;
+}</pre>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/payments/subscriptions/" target="_blank" rel="noopener">https://paystack.com/docs/payments/subscriptions/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

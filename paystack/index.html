@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paystack 中文文档</title>
+<meta name="description" content="Paystack 开发者文档与 API 参考中文版（本地静态镜像）。">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="hero">
+  <div class="hero__inner">
+    <div class="hero__badge">中文翻译版 · 静态镜像</div>
+    <h1>Paystack 中文文档</h1>
+    <p>本目录将 Paystack 官方开发者文档与 API 参考整理为中文静态页面，便于产品与研发同学离线查阅支付能力、接口参数与错误码约定。接口路径、字段名与代码示例保持与官方原文一致。</p>
+    <div class="grid-links" style="margin-top:20px">
+      <a class="chip" style="background:rgba(255,255,255,.12);border-color:transparent;color:#fff" href="doc/index.html">开发文档</a>
+      <a class="chip" style="background:rgba(255,255,255,.12);border-color:transparent;color:#fff" href="api/index.html">API 参考</a>
+      <a class="chip" style="background:rgba(255,255,255,.12);border-color:transparent;color:#fff" href="https://paystack.com/docs/" target="_blank" rel="noopener">官方英文原文</a>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <section class="section">
+    <h2 style="margin-top:0">两部分内容</h2>
+    <div class="cards">
+      <a class="card" href="doc/index.html">
+        <div class="card__title">开发文档</div>
+        <div class="card__desc">Paystack 文档中文版：首页快速开始、受理支付、发起转账、示例项目，并已镜像 <strong>53 个文档页</strong>（Payments / Terminal / Transfers / Identity Verification / Developer Tools / Guides / Changelog 全部子页面）。</div>
+        <div class="card__link">进入 →</div>
+      </a>
+      <a class="card" href="api/index.html">
+        <div class="card__title">API 参考</div>
+        <div class="card__desc">API 简介与约定（Base URL、环境与密钥、请求与响应结构、meta、支持的货币），以及认证、速率限制、分页、错误处理；下方为 30 个接口分组、173 个接口的中文参数文档。</div>
+        <div class="card__link">进入 →</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 style="margin-top:0">接口分组</h2>
+    <p class="lead">点击进入各分组，查看接口的用途、请求方法、路径、全部参数（类型 / 是否必填 / 说明）与请求、响应示例。</p>
+    <div class="grid-links">
+      <a class="chip" href="api/transaction.html">交易</a>
+      <a class="chip" href="api/charge.html">扣款</a>
+      <a class="chip" href="api/customer.html">客户</a>
+      <a class="chip" href="api/dedicated-virtual-account.html">专属虚拟账户</a>
+      <a class="chip" href="api/directdebit.html">直接借记</a>
+      <a class="chip" href="api/preauthorization.html">预授权</a>
+      <a class="chip" href="api/apple-pay.html">Apple Pay</a>
+      <a class="chip" href="api/capitec-pay.html">Capitec Pay</a>
+      <a class="chip" href="api/split.html">分账</a>
+      <a class="chip" href="api/subaccount.html">子账户</a>
+      <a class="chip" href="api/plan.html">订阅计划</a>
+      <a class="chip" href="api/subscription.html">订阅</a>
+      <a class="chip" href="api/product.html">商品</a>
+      <a class="chip" href="api/storefront.html">店铺</a>
+      <a class="chip" href="api/order.html">订单</a>
+      <a class="chip" href="api/page.html">支付页面</a>
+      <a class="chip" href="api/payment-request.html">付款请求</a>
+      <a class="chip" href="api/settlement.html">结算</a>
+      <a class="chip" href="api/transfer-recipient.html">转账收款人</a>
+      <a class="chip" href="api/transfer.html">转账</a>
+      <a class="chip" href="api/transfer-control.html">转账控制</a>
+      <a class="chip" href="api/bulk-charge.html">批量扣款</a>
+      <a class="chip" href="api/integration.html">集成配置</a>
+      <a class="chip" href="api/dispute.html">争议</a>
+      <a class="chip" href="api/refund.html">退款</a>
+      <a class="chip" href="api/webhook-events.html">Webhook 事件</a>
+      <a class="chip" href="api/terminal.html">终端</a>
+      <a class="chip" href="api/virtual-terminal.html">虚拟终端</a>
+      <a class="chip" href="api/verification.html">校验</a>
+      <a class="chip" href="api/miscellaneous.html">其他接口</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 style="margin-top:0">阅读说明</h2>
+    <ul>
+      <li>页面内容来自 Paystack 官方文档（<a href="https://paystack.com/docs/" target="_blank" rel="noopener">paystack.com/docs</a> 与 <a href="https://paystack.com/docs/api/" target="_blank" rel="noopener">paystack.com/docs/api</a>），正文已翻译为中文：<code>doc/</code> 为开发文档 53 个页面，<code>api/</code> 为 API 参考 30 个接口分组。</li>
+      <li>接口路径、请求/响应字段名、状态码取值与代码示例保持英文原样，避免与真实调用产生偏差。</li>
+      <li>文档正文由机器翻译生成后做了术语统一（如 Webhook、Checkout、接口、专属虚拟账户等），专业表述若需逐字校对，可对照每页底部链接的官方英文原文。</li>
+    </ul>
+  </section>
+</div>
+
+<footer class="site-footer">Paystack 中文文档 · 本地静态镜像 · 翻译内容仅供内部参考</footer>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简介 · Paystack 开发文档（中文）</title>
+<meta name="description" content="简介 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>Webhook 允许你设置一个通知系统，该系统可用于接收对 Paystack API 发出的某些请求的更新。</p>
+<h2>简介</h2>
+<p>通常，当你向 API 接口发出请求时，你希望得到近乎立即的响应。但是，某些请求可能需要很长时间才能处理，这可能会导致超时错误。为了防止超时错误，将返回待处理的响应。由于你的记录需要根据请求的最终状态进行更新，因此你需要：</p>
+<ol><li>提出更新请求（通常称为轮询）或者，</li><li>使用 Webhook URL 监听事件。</li></ol>
+<p>我们建议你使用 Webhook 为你的客户提供价值，而不是使用回调或轮询。使用回调，我们无法控制客户端发生的情况。你也没有。如果客户设备上的网络连接失败或较弱，或者设备在交易后关闭，则回调可能会失败。</p>
+<h2>轮询 vs Webhook</h2>
+<p><a href="https://paystack.com/docs/static/4e48ac469a56d3f950460a6f7203b0fe/8c557/polling_webhooks.png">![图 1：显示轮询和 Webhook 之间的比较的图像</a>](https://paystack.com/docs/static/4e48ac469a56d3f950460a6f7203b0fe/4352a/polling_Webhook.png)</p>
+<p>轮询需要定期发出 <code class="inline">GET</code> 请求来获取请求的最终状态。例如，当客户进行交易付款时，你不断请求交易状态，直到获得成功的交易状态。</p>
+<p>使用 Webhook，资源服务端（本例中为 Paystack）会在请求状态发生变化时向你的服务端发送更新。请求状态的变化称为 <strong>事件</strong>。你通常会在称为 <strong>Webhook URL</strong> 的 <code class="inline">POST</code> 接口上监听这些事件。</p>
+<p>下表突出显示了轮询和 Webhook 之间的一些差异：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th></th><th>轮询</th><th>Webhook</th></tr></thead><tbody><tr><td>更新方式</td><td>手册</td><td>自动</td></tr><tr><td>速率限制</td><td>是的</td><td>否</td></tr><tr><td>受缩放影响</td><td>是的</td><td>否</td></tr></tbody></table></div>
+<h2>创建一个 Webhook URL</h2>
+<p>Webhook URL 只是资源服务端向其发送更新的<code class="inline">POST</code> 接口。 URL需要解析JSON请求并返回<code class="inline">200 OK</code>：</p>
+<pre class="code">
+app.post(&quot;/my/webhook/url&quot;, function(req, res) {
+
+const event = req.body;
+
+res.send(200);
+});</pre>
+<p>当你的 Webhook URL 接收到事件时，它需要解析并确认该事件。确认事件意味着在 HTTP 标头中返回 <code class="inline">200 OK</code>。如果响应标头中没有 <code class="inline">200 OK</code>，则会在接下来的 72 小时内发送事件：</p>
+<ul><li>在生产模式下，前 4 次尝试每 3 分钟发送一次 Webhook 事件，然后在接下来的 72 小时内每小时重试一次</li><li>在测试模式下，Webhook 事件每小时发送一次，持续 10 小时，请求超时为 30 秒。</li></ul>
+<p>如果你的 Webhook 函数中有额外的任务，你应该立即返回 200 OK 响应。长时间运行的任务会导致请求超时并从服务端发出自动错误响应。如果没有 <code class="inline">200 OK</code> 响应，则按照上一段所述重试。</p>
+<h2>校验事件来源</h2>
+<p>由于你的 Webhook URL 是公开可用的，因此你需要校验事件是否源自 Paystack 而不是不良参与者。有两种方法可以确保发送到你的 Webhook URL 的事件来自 Paystack：</p>
+<ol><li>签名校验</li><li>IP 白名单</li></ol>
+<h3>签名校验</h3>
+<p>从 Paystack 发送的事件带有 <code class="inline">x-paystack-signature header</code>。此标头的值是使用你的密钥签名的事件负载的<code class="inline">HMAC SHA512</code>签名。应在处理事件之前校验标头签名：</p>
+<pre class="code">const crypto = require(&#x27;crypto&#x27;);
+const secret = process.env.SECRET_KEY;
+
+app.use(express.json({
+verify: (req, res, buf) =&gt; {
+req.rawBody = buf;
+}
+}));
+
+app.post(&quot;/my/webhook/url&quot;, function(req, res) {
+
+const hash = crypto.createHmac(&#x27;sha512&#x27;, secret).update(req.rawBody).digest(&#x27;hex&#x27;);
+if (hash == req.headers[&#x27;x-paystack-signature&#x27;]) {
+
+const event = req.body;
+
+}
+res.send(200);
+});</pre>
+<h3>IP 白名单</h3>
+<p>使用此方法，你只允许某些 IP 地址访问你的 Webhook URL，同时阻止其他地址。 Paystack 只会从以下 IP 地址发送 Webhook：</p>
+<ol><li><strong>52.31.139.75</strong></li><li><strong>52.49.173.169</strong></li><li><strong>52.214.14.220</strong></li></ol>
+<p>你应该将这些 IP 地址列入白名单，并将来自其他 IP 地址的请求视为伪造。</p>
+<p>上面列出的IP地址适用于测试和实际环境。你可以在暂存和生产环境中将它们列入白名单。</p>
+<h2>上线清单</h2>
+<p>现在你已经成功创建了 Webhook URL，以下是一些确保你获得愉快体验的方法：</p>
+<ol><li>将 Webhook URL 添加到你的 Paystack <a href="https://dashboard.paystack.com/#/settings/developer">仪表板</a> 或 <a href="https://dashboard.paystack.com/v2/developers">画布</a></li><li>确保你的 Webhook URL 是公开可用的（本地主机 URL 无法接收事件）</li><li>如果使用<code class="inline">.htaccess</code>，请记住将尾随<code class="inline">/</code>添加到URL</li><li>测试你的 Webhook 以确保你获得 JSON 主体并返回 <code class="inline">200 OK</code> HTTP 响应</li><li>如果你的 Webhook 函数具有长时间运行的任务，则应首先通过返回 <code class="inline">200 OK</code> 确认接收到 Webhook，然后再继续处理长时间运行的任务</li><li>如果我们没有从你的 Webhook 收到 <code class="inline">200 OK</code> HTTP 回复，我们会将其标记为失败的尝试</li><li>在生产模式下，前 4 次尝试每 3 分钟重试一次失败的尝试，然后在接下来的 72 小时内每小时重试一次</li><li>在测试模式下，在接下来的 10 小时内每小时重试失败的尝试。每次尝试的超时时间为 30 秒。</li></ol>
+<h2>查看和重新发送事件</h2>
+<p>我们记录尝试传递给你的 Webhook URL 的每个 Webhook 事件，包括其负载和你的服务端返回的响应。使用 <a href="https://paystack.com/docs/api/webhook-events">Webhook 事件 API</a> 可以：</p>
+<ul><li>按类别、事件类型、状态或日期列出和过滤你的事件历史记录</li><li>将一组事件或与过滤器匹配的每个事件重新发送到你当前的 Webhook URL</li></ul>
+<p>我们将每个事件重新发送到为你进行身份校验的环境配置的 Webhook URL。</p>
+<h2>支持的活动</h2>
+<pre class="code">{
+  &quot;event&quot;: &quot;customeridentification.failed&quot;,
+  &quot;data&quot;: {
+    &quot;customer_id&quot;: 82796315,
+    &quot;customer_code&quot;: &quot;CUS_XXXXXXXXXXXXXXX&quot;,
+    &quot;email&quot;: &quot;email@email.com&quot;,
+    &quot;identification&quot;: {
+      &quot;country&quot;: &quot;NG&quot;,
+      &quot;type&quot;: &quot;bank_account&quot;,
+      &quot;bvn&quot;: &quot;123*****456&quot;,
+      &quot;account_number&quot;: &quot;012****345&quot;,
+      &quot;bank_code&quot;: &quot;999991&quot;
+    },
+    &quot;reason&quot;: &quot;Account number or BVN is incorrect&quot;
+  }
+}</pre>
+<h2>事件类型</h2>
+<p>以下是我们目前提出的事件。当我们将来采取更多行动时，我们会在此列表中添加更多内容。</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>活动</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">charge.dispute.create</code></td><td>已记录针对你企业的争议</td></tr><tr><td><code class="inline">charge.dispute.remind</code></td><td>已记录的争议尚未解决</td></tr><tr><td><code class="inline">charge.dispute.resolve</code></td><td>争议已解决</td></tr><tr><td><code class="inline">charge.success</code></td><td>充值成功</td></tr><tr><td><code class="inline">customeridentification.failed</code></td><td>客户ID校验失败</td></tr><tr><td><code class="inline">customeridentification.success</code></td><td>客户ID校验成功</td></tr><tr><td><code class="inline">dedicatedaccount.assign.failed</code></td><td>当无法创建 DVA 并将其分配给客户时发送此消息</td></tr><tr><td><code class="inline">dedicatedaccount.assign.success</code></td><td>当 DVA 成功创建并分配给客户时发送</td></tr><tr><td><code class="inline">invoice.create</code></td><td>已为你账户上的订阅创建发票。这通常发生在订阅到期前 3 天或每当我们向客户发送第一个待处理发票通知时</td></tr><tr><td><code class="inline">invoice.payment_failed</code></td><td>发票付款失败</td></tr><tr><td><code class="inline">invoice.update</code></td><td>发票已更新。这通常意味着我们能够成功向客户收费。你应该检查返回的发票对象并采取必要的措施</td></tr><tr><td><code class="inline">paymentrequest.pending</code></td><td>付款请求已发送给客户</td></tr><tr><td><code class="inline">paymentrequest.success</code></td><td>付款请求已付款</td></tr><tr><td><code class="inline">refund.failed</code></td><td>无法处理退款。退款金额将存入你的账户</td></tr><tr><td><code class="inline">refund.pending</code></td><td>退款已启动，正在等待处理者的响应。</td></tr><tr><td><code class="inline">refund.processed</code></td><td>处理者已成功处理退款。</td></tr><tr><td><code class="inline">refund.processing</code></td><td>处理者已收到退款。</td></tr><tr><td><code class="inline">subscription.create</code></td><td>订阅已创建</td></tr><tr><td><code class="inline">subscription.disable</code></td><td>你账户上的订阅已被禁用</td></tr><tr><td><code class="inline">subscription.expiring_cards</code></td><td>包含有关当月到期的卡的所有订阅的信息。在月初发送给使用订阅的商户</td></tr><tr><td><code class="inline">subscription.not_renew</code></td><td>你账户的订阅状态已更改为不可续订。这意味着下一个付款日期不会收取订阅费用</td></tr><tr><td><code class="inline">transfer.failed</code></td><td>你尝试的转移失败</td></tr><tr><td><code class="inline">transfer.success</code></td><td>已成功转移</td></tr><tr><td><code class="inline">transfer.reversed</code></td><td>你尝试的转账已被撤销</td></tr></tbody></table></div>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/payments/webhooks/" target="_blank" rel="noopener">https://paystack.com/docs/payments/webhooks/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

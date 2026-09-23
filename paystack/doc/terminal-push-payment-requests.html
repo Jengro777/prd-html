@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简介 · Paystack 开发文档（中文）</title>
+<meta name="description" content="简介 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>你可以通过在销售点系统、网络或移动应用程序上发起付款请求并在 Paystack 终端上完成来接受当面付款</p>
+<h2>简介</h2>
+<p>Paystack 终端可帮助你弥合线上和线下支付之间的差距。你可以从为你的销售点系统、网络或移动应用程序提供支持的服务端创建付款请求，并使用我们的终端离线完成支付。</p>
+<p>集成流程分为三步：</p>
+<ol><li>创建付款请求</li><li>将付款请求发送至终端</li><li>收听付款通知</li></ol>
+<p><a href="https://paystack.com/docs/static/3480532ec2d6ea28a7afbd63645b33b4/8c557/instant-payment.png">![图 1：推送事件集成流程图</a>](https://paystack.com/docs/static/3480532ec2d6ea28a7afbd63645b33b4/6029f/instant-payment.png)</p>
+<h2>创建付款请求</h2>
+<p>本文档重点介绍如何将付款发送到我们的终端。你可以参考如何<a href="https://paystack.com/docs/terminal/invoice-payments/#create-an-invoice">创建发票</a>进一步了解付款请求</p>
+<p>当用户选择了商品并准备付款时，你可以从应用程序向我们的 <code class="inline">/paymentrequest</code> 接口发起付款请求：</p>
+<pre class="code">curl https://api.paystack.co/paymentrequest
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{
+&quot;customer&quot;: &quot;CUS_5lgv9bc41uw15pb&quot;,
+&quot;description&quot;: &quot;Invoice for Damilola&quot;,
+&quot;line_items&quot;: [
+{ &quot;name&quot;: &quot;Pancakes and sausage&quot;, &quot;amount&quot;: &quot;2000&quot;, &quot;quantity&quot;: 1 },
+{ &quot;name&quot;: &quot;Chicken Salad&quot;, &quot;amount&quot;: &quot;3000&quot;, &quot;quantity&quot;: 1 }
+]
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Payment request created&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 6304434,
+    &quot;integration&quot;: 463433,
+    &quot;domain&quot;: &quot;live&quot;,
+    &quot;amount&quot;: 5000,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;due_date&quot;: &quot;2021-05-18T00:00:00.000Z&quot;,
+    &quot;has_invoice&quot;: true,
+    &quot;invoice_number&quot;: 4,
+    &quot;description&quot;: &quot;Invoice for Damilola&quot;,
+    &quot;line_items&quot;: [
+      {
+        &quot;name&quot;: &quot;Pancakes and sausage&quot;,
+        &quot;amount&quot;: &quot;2000&quot;,
+        &quot;quantity&quot;: 1
+      },
+      {
+        &quot;name&quot;: &quot;Chicken Salad&quot;,
+        &quot;amount&quot;: &quot;3000&quot;,
+        &quot;quantity&quot;: 1
+      }
+    ],
+    &quot;tax&quot;: [],
+    &quot;request_code&quot;: &quot;PRQ_kwahak3i05nt1ds&quot;,
+    &quot;status&quot;: &quot;pending&quot;,
+    &quot;paid&quot;: false,
+    &quot;metadata&quot;: null,
+    &quot;notifications&quot;: [],
+    &quot;offline_reference&quot;: &quot;4634336304434&quot;,
+    &quot;customer&quot;: 28958104,
+    &quot;created_at&quot;: &quot;2021-05-17T14:48:53.269Z&quot;
+  }
+}</pre>
+<p>下一步需要<code class="inline">id</code>和<code class="inline">offline_reference</code>。你应该存储这两个参数，因为它们将在接下来的部分中使用。</p>
+<h2>检查终端状态</h2>
+<p>或者，在将付款请求推送到终端之前，你可能需要检查终端是否在线并且可以接收请求。你可以向<a href="https://paystack.com/docs/api/terminal#fetch-terminal-status">终端状态API</a>发出请求来检查终端的状态：</p>
+<pre class="code">curl https://api.paystack.co/terminal/:id/presence
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-X GET
+</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Terminal status retrieved&quot;,
+  &quot;data&quot;: {
+    &quot;online&quot;: true,
+    &quot;available&quot;: true
+  }
+}</pre>
+<p>如果同时满足<code class="inline">online: true</code>和<code class="inline">available: true</code>，则终端已准备好接收请求。如果任一参数为 <code class="inline">false</code>，请确保终端未用于处理付款。</p>
+<h2>推送到终端</h2>
+<p>Paystack Terminal可以接收并处理从商户服务端发送的支付请求，从而使开发人员能够构建令人愉快的亲身体验。</p>
+<p>为了在终端上完成支付请求，你需要向<a href="https://paystack.com/docs/api/terminal#send-event">终端事件 API</a>发出请求，并传递先前创建的支付请求的<code class="inline">id</code>和<code class="inline">offline_reference</code>：</p>
+<pre class="code">curl https://api.paystack.co/terminal/:terminal_id/event
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{
+&quot;type&quot;: &quot;invoice&quot;,
+&quot;action&quot;: &quot;process&quot;,
+&quot;data&quot;: {
+&quot;id&quot;: 7895939,
+&quot;reference&quot;: 4634337895939
+}
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Event sent to Terminal&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: &quot;616d721e8c5cd40a0cdd54a6&quot;
+  }
+}</pre>
+<h2>校验事件传递</h2>
+<p>当你向终端推送时，如果响应成功，则表明我们的服务端已成功接收推送请求并转发至终端。这并不一定意味着设备已成功接收请求。</p>
+<p>要确认终端收到事件，可以向<a href="https://paystack.com/docs/api/terminal#fetch-event-status">终端事件状态 API</a>发出请求：</p>
+<pre class="code">curl https://api.paystack.co/terminal/:terminal_id/event/:event_id
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-X GET</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Message Status Retrieved&quot;,
+  &quot;data&quot;: {
+    &quot;delivered&quot;: true
+  }
+}</pre>
+<p>终端收到支付请求后，会显示支付请求详情，供客户查看并进行支付。</p>
+<p>你只能确认设备在请求发起后 48 小时内收到了事件</p>
+<h2>收听通知</h2>
+<p>支付发票费用后，我们会使用 Webhook 向你的服务端发送更新。在你的 Webhook URL 上，你应该监听这些事件：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>活动</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">charge.success</code></td><td>当客户成功付款时发送此信息。它包含交易、客户和卡详细信息。</td></tr><tr><td><code class="inline">paymentrequest.success</code></td><td>发送此信息也表明发票付款成功。它包含发票详细信息。</td></tr><tr><td><code class="inline">paymentrequest.pending</code></td><td>当付款请求成功创建时发送。</td></tr><tr><td><code class="inline">invoice.payment_failed</code></td><td>当发票付款失败时发送此信息。</td></tr></tbody></table></div>
+<pre class="code">{
+  &quot;event&quot;: &quot;charge.success&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 1259864309,
+    &quot;domain&quot;: &quot;live&quot;,
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;reference&quot;: &quot;pos_wtwyrj7n6x&quot;,
+    &quot;amount&quot;: &quot;5000&quot;,
+    &quot;message&quot;: &quot;Payment Made&quot;,
+    &quot;gateway_response&quot;: &quot;Approved or completed successfully&quot;,
+    &quot;paid_at&quot;: &quot;2021-11-04T16:32:33.000Z&quot;,
+    &quot;created_at&quot;: &quot;2021-11-04T16:32:04.000Z&quot;,
+    &quot;channel&quot;: &quot;pos&quot;,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;ip_address&quot;: &quot;35.178.254.191, 172.70.162.115&quot;,
+    &quot;metadata&quot;: 0,
+    &quot;log&quot;: null,
+    &quot;fees&quot;: null,
+    &quot;fees_split&quot;: null,
+    &quot;authorization&quot;: {
+      &quot;exp_month&quot;: null,
+      &quot;exp_year&quot;: null,
+      &quot;account_name&quot;: null,
+      &quot;receiver_bank_account_number&quot;: null,
+      &quot;receiver_bank&quot;: null
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 180059003,
+      &quot;first_name&quot;: null,
+      &quot;last_name&quot;: null,
+      &quot;email&quot;: &quot;pos_e3iesb-eh@email.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_xztjqwng1kzwdbt&quot;,
+      &quot;phone&quot;: null,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;,
+      &quot;international_format_phone&quot;: null
+    },
+    &quot;plan&quot;: {},
+    &quot;subaccount&quot;: {},
+    &quot;split&quot;: {},
+    &quot;order_id&quot;: null,
+    &quot;paidAt&quot;: &quot;2021-11-04T16:32:33.000Z&quot;,
+    &quot;requested_amount&quot;: &quot;200&quot;,
+    &quot;pos_transaction_data&quot;: null,
+    &quot;source&quot;: {
+      &quot;type&quot;: &quot;offline&quot;,
+      &quot;source&quot;: &quot;pos&quot;,
+      &quot;entry_point&quot;: &quot;pos_initialize&quot;,
+      &quot;identifier&quot;: &quot;2232WE17&quot;
+    }
+  }
+}</pre>
+<p>交易完成后，我们将立即发送 Webhook。如果你的系统不可用，我们将在接下来的 72 小时内每小时重试一次。如果 72 小时后你的 Webhook URL 上没有收到事件，你可以使用 <a href="https://paystack.com/docs/api/payment-request#verify">校验付款请求API</a> 或直接在仪表板上检查状态来校验发票状态。</p>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/terminal/push-payment-requests/" target="_blank" rel="noopener">https://paystack.com/docs/terminal/push-payment-requests/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

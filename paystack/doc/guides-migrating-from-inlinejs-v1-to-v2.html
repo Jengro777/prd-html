@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>有什么新消息 · Paystack 开发文档（中文）</title>
+<meta name="description" content="有什么新消息 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>在本指南中，我们将介绍如何迁移到 Popup V2，以便你在应用程序中受理支付时可以开始利用更精细的控制。</p>
+<h2>有什么新消息</h2>
+<p>Popup V2 包含多种功能，可帮助开发人员安全地定制并更好地控制其前端应用程序的支付。 Popup V2 上提供的一些闪亮新功能包括：</p>
+<ul><li>从 API 发起交易并用 Popup 完成交易</li><li>还有更多...</li></ul>
+<h2>更新依赖</h2>
+<p>你可以根据你的工作流程和偏好安装Popup V2：</p>
+<pre class="code">&lt;script src=&quot;https://js.paystack.co/v2/inline.js&quot;&gt;</pre>
+<p>如果你使用 <code class="inline">NPM</code> 或 <code class="inline">Yarn</code>，请确保导入该库：</p>
+<pre class="code">import PaystackPop from &#x27;@paystack/inline-js&#x27;;</pre>
+<h2>更新方法</h2>
+<p>在 Popup V1 和 V2 上初始化交易时存在细微差别。为了确保平稳过渡，我们将突出显示差异并向你展示如何更新必要的方法和参数。</p>
+<h3>初始化</h3>
+<p>对于Popup V1，交易使用<code class="inline">PaystackPop.setup()</code>方法初始化。然后通过调用 <code class="inline">openIframe()</code> 方法来触发 Popup：</p>
+<pre class="code">let paystack = PaystackPop.setup({
+key: &#x27;pk_domain_xxxxxxxxxx&#x27;,
+email: &#x27;example@email.com&#x27;,
+amount: 10000
+});
+
+paystack.openIframe();</pre>
+<p>Popup V2 提供了更直观的界面，如下图：</p>
+<pre class="code">const paystack = new PaystackPop();
+paystack.newTransaction({
+key: &#x27;pk_domain_xxxxxxxxxx&#x27;,
+email: &#x27;example@email.com&#x27;,
+amount: 10000
+});</pre>
+<h3>回调</h3>
+<p>回调用于获取付款状态。我们替换了一些回调方法，并在 Popup v2 中引入了新方法。</p>
+<ul><li>版本1</li></ul>
+<pre class="code">let paystack = PaystackPop.setup({
+
+callback: function(transaction){
+
+},
+onClose: function(){
+
+}
+});
+
+paystack.openIframe();</pre>
+<ul><li>版本2</li></ul>
+<pre class="code">const paystack = new PaystackPop();
+paystack.newTransaction({
+
+
+onSuccess: (transaction) =&gt; {
+
+},
+onCancel: () =&gt; {
+
+}
+});</pre>
+<p>指示交易成功的<code class="inline">callback()</code>方法现已替换为<code class="inline">onSuccess()</code>回调。 <code class="inline">onClose()</code> 方法可让你知道用户何时关闭 Popup，现已替换为 <code class="inline">onCancel()</code>。</p>
+<p>另请注意，V2 允许你使用箭头函数。哎呀，保留额外的击键来做其他事情吧。</p>
+<h2>后续步骤</h2>
+<p>我们去直播吧。测试你的集成以确保其按预期工作并删除所有冗余代码。你可以查看 <a href="https://paystack.com/docs/developer-tools/inlinejs/">InlineJS 参考指南</a> 了解 Popup V2 中提供的其他强大功能。快乐编码。</p>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/guides/migrating-from-inlinejs-v1-to-v2/" target="_blank" rel="noopener">https://paystack.com/docs/guides/migrating-from-inlinejs-v1-to-v2/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

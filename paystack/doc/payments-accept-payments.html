@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>初始化交易 · Paystack 开发文档（中文）</title>
+<meta name="description" content="初始化交易 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>要受理支付，请使用我们的 API、我们的客户端 JavaScript 库、Popup JS 或我们的 SDK 创建交易。每笔交易都包含一个可用于完成支付的链接。</p>
+<p>Paystack Popup 是一个 JavaScript 库，允许开发人员为其 Web 应用程序构建安全且方便的支付流程。你可以通过 <code class="inline">CDN</code>、<code class="inline">NPM</code> 或 <code class="inline">Yarn</code> 将其添加到你的前端应用程序：</p>
+<pre class="code">&lt;script src=&quot;https://js.paystack.co/v2/inline.js&quot;&gt;</pre>
+<p>如果你使用 <code class="inline">NPM</code> 或 <code class="inline">Yarn</code>，请确保导入库，如下所示：</p>
+<pre class="code">import PaystackPop from &#x27;@paystack/inline-js&#x27;</pre>
+<p>成功安装库后，你现在可以开始三步集成过程：</p>
+<ol><li>初始化交易</li><li>完成交易</li><li>校验交易状态</li></ol>
+<h3>初始化交易</h3>
+<p>首先，你需要从后端初始化交易。从后端初始化交易可确保你完全控制交易细节。为此，请从后端向 <a href="https://paystack.com/docs/api/transaction#initialize">初始化交易API</a> 接口发出 <code class="inline">POST</code> 请求：</p>
+<pre class="code">curl https://api.paystack.co/transaction/initialize
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;email&quot;: &quot;customer@email.com&quot;,
+&quot;amount&quot;: &quot;500000&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Authorization URL created&quot;,
+  &quot;data&quot;: {
+    &quot;authorization_url&quot;: &quot;https://checkout.paystack.com/nkdks46nymizns7&quot;,
+    &quot;access_code&quot;: &quot;nkdks46nymizns7&quot;,
+    &quot;reference&quot;: &quot;nms6uvr1pl&quot;
+  }
+}</pre>
+<p>响应的 <code class="inline">data</code> 对象包含完成交易所需的 <code class="inline">access_code</code> 参数。你应该存储此参数并将其发送到你的前端。</p>
+<p>切勿直接从前端调用 Paystack API，以避免在前端暴露你的密钥。对 Paystack API 的所有请求都应从你的服务端发起，并且你的前端从服务端获取响应。</p>
+<h3>完成交易</h3>
+<p>你的前端应用程序应向后端发出请求以初始化交易并获取 <code class="inline">access_code</code>，如上一节所述。从后端获取<code class="inline">access_code</code>后，你可以使用Popup来完成交易：</p>
+<pre class="code">const popup = new PaystackPop()
+popup.resumeTransaction(access_code)</pre>
+<p><code class="inline">resumeTransaction</code>方法触发浏览器中的结账，允许用户选择自己喜欢的支付渠道来完成交易。你可以查看 <a href="https://paystack.com/docs/developer-tools/inlinejs/">InlineJS 参考指南</a> 了解Popup V2 中提供的功能。</p>
+<h3>校验交易状态</h3>
+<p>最后，你需要通过<a href="https://paystack.com/docs/payments/webhooks/">使用 Webhook</a>或<a href="https://paystack.com/docs/payments/verify-payments/">校验交易接口</a>确认交易的状态。无论使用哪种方法，你都需要使用以下参数来确认是否应该向客户交付价值：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>参数</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">data.status</code></td><td>表示支付是否成功</td></tr><tr><td><code class="inline">data.amount</code></td><td>这表示你的产品或服务的价格（以你的货币的较低面值表示）。</td></tr></tbody></table></div>
+<p>在校验交易状态时，你还应该校验金额，以确保其与你提供的服务的价值相匹配。如果金额不匹配，则不会向客户提供价值。</p>
+<h2>重定向</h2>
+<p>在这里，你从服务端调用 <a href="https://paystack.com/docs/api/transaction#initialize">初始化交易API</a> 来生成结账链接，然后将用户重定向到该链接以便他们可以付款。付款后，用户将返回你的网站<code class="inline">callback_url</code></p>
+<p>确认你的服务端可以与 Paystack 服务端建立 TLSv1.2 连接。大多数最新的软件都具有此功能。如果你有任何 SSL 错误，请联系你的服务提供商以获取指导。</p>
+<h3>收集客户信息</h3>
+<p>要初始化交易，你需要传递邮箱、名字、姓氏金额、交易参考等信息。邮箱和金额为必填项。你还可以在 <code class="inline">metadata</code> 对象字段中传递任何其他附加信息。</p>
+<p>如果你已经存储了客户信息，则可以从你的数据库、会话或 cookie 中检索客户信息，或者从如下例所示的表单中检索客户信息。</p>
+<pre class="code">&lt;form action=&quot;/save-order-and-pay&quot; method=&quot;POST&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;user_email&quot; value=&quot;&lt;?php echo $email; ?&gt;&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;amount&quot; value=&quot;&lt;?php echo $amount; ?&gt;&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;cartid&quot; value=&quot;&lt;?php echo $cartid; ?&gt;&quot;&gt;
+&lt;button type=&quot;submit&quot; name=&quot;pay_now&quot; id=&quot;pay-now&quot; title=&quot;Pay now&quot;&gt;Pay now&lt;/button&gt;
+&lt;/form&gt;</pre>
+<h3>初始化交易</h3>
+<p>当客户单击付款操作按钮时，通过向我们的 API 发出 POST 请求来初始化交易。将邮箱、金额和任何其他参数传递给<a href="https://paystack.com/docs/api/transaction#initialize">初始化交易API</a>接口。</p>
+<p>如果 API 调用成功，我们将返回授权 URL，你将重定向到该授权，以便客户输入付款信息以完成交易。</p>
+<p><strong>重要提示</strong></p>
+<ol><li><code class="inline">amount</code> 应位于 <a href="https://paystack.com/api#supported-currency">支持的货币</a> 的子单元中。</li><li>我们使用上面表格中的<code class="inline">cart_id</code>作为我们的交易<code class="inline">reference</code>。你应该使用系统中的唯一交易标识符作为参考。</li><li>我们在 transaction_data 数组中设置 <code class="inline">callback_url</code>。如果你不这样做，我们将使用设置的 <a href="https://dashboard.paystack.co/#/settings/developer">在你的仪表板上</a> 或 <a href="https://dashboard.paystack.com/v2/developers">在画布上</a>。如果需要，在代码中设置它可以让你灵活地使用重定向URL</li><li>如果你未在仪表板或代码上设置回调 URL，则用户在付款后不会被重定向回你的网站。</li><li>你可以为测试交易设置测试回调 URL，为实时交易设置实时回调 URL。</li></ol>
+<pre class="code">&lt;?php
+$url = &quot;https://api.paystack.co/transaction/initialize&quot;;
+
+$fields = [
+&#x27;email&#x27; =&gt; &quot;customer@email.com&quot;,
+&#x27;amount&#x27; =&gt; &quot;20000&quot;,
+&#x27;callback_url&#x27; =&gt; &quot;https://hello.pstk.xyz/callback&quot;,
+&#x27;metadata&#x27; =&gt; [&quot;cancel_action&quot; =&gt; &quot;https://your-cancel-url.com&quot;]
+];
+
+$fields_string = http_build_query($fields);
+
+
+$ch = curl_init();
+
+
+curl_setopt($ch,CURLOPT_URL, $url);
+curl_setopt($ch,CURLOPT_POST, true);
+curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+&quot;Authorization: Bearer SECRET_KEY&quot;,
+&quot;Cache-Control: no-cache&quot;,
+));
+
+
+curl_setopt($ch,CURLOPT_RETURNTRANSFER, true);
+
+
+$result = curl_exec($ch);
+echo $result;
+?&gt;</pre>
+<h3>校验交易</h3>
+<p>如果交易成功，Paystack会将用户重定向回你设置的<code class="inline">callback_url</code>。我们将在 URL 中附加交易引用。在上面的示例中，用户将被重定向到<code class="inline">http://your_website.com/postpayment_callback.php?reference=YOUR_REFERENCE</code>。</p>
+<p>因此，你从 URL 参数中检索引用，并使用它来调用校验接口来确认交易的状态。了解更多关于<a href="https://paystack.com/docs/payments/verify-payments/">校验交易</a>的信息。</p>
+<p>在传递价值之前调用校验接口来确认交易的状态非常重要。仅仅因为<code class="inline">callback_url</code>被访问并不能证明交易成功。</p>
+<h3>手柄 Webhook</h3>
+<p>付款成功后，Paystack 会向你提供的 Webhook URL 发送<code class="inline">charge.success</code> Webhook 事件。了解有关使用 <a href="https://paystack.com/docs/payments/webhooks/">Webhook</a> 的更多信息。</p>
+<h2>手机SDK</h2>
+<p>通过我们的移动设备SDK，我们提供了一系列适合平台美观的方法和界面。交易在服务端上发起并在SDK中完成。 SDK 需要 <code class="inline">access_code</code> 来显示受理支付的 UI 组件。</p>
+<p>要获取 <code class="inline">access_code</code>，你需要通过在服务端上向 <a href="https://paystack.com/docs/api/transaction#initialize">初始化交易API</a> 接口发出 <code class="inline">POST</code> 请求来初始化交易：</p>
+<pre class="code">curl https://api.paystack.co/transaction/initialize
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;email&quot;: &quot;customer@email.com&quot;,
+&quot;amount&quot;: &quot;500000&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Authorization URL created&quot;,
+  &quot;data&quot;: {
+    &quot;authorization_url&quot;: &quot;https://checkout.paystack.com/nkdks46nymizns7&quot;,
+    &quot;access_code&quot;: &quot;nkdks46nymizns7&quot;,
+    &quot;reference&quot;: &quot;nms6uvr1pl&quot;
+  }
+}</pre>
+<p>交易成功初始化后，你会收到包含 <code class="inline">access_code</code> 的响应。你需要将此<code class="inline">access_code</code>返回到你的移动应用程序。</p>
+<p>不要直接在你的移动应用程序上向初始化交易接口发出 API 请求，因为它需要你的密钥。你的密钥只能在可以采取更强安全措施的服务端上使用。</p>
+<p><code class="inline">access_code</code>就位后，你现在可以使用SDK来完成交易。</p>
+<h3>Android SDK</h3>
+<p>你需要通过将 <code class="inline">paystack-ui</code> 依赖项添加到应用程序级<code class="inline">build.gradle</code>文件的<code class="inline">dependencies</code>块来安装SDK：</p>
+<p>安装前你应该检查<a href="https://central.sonatype.com/artifact/com.paystack.android/paystack-ui/versions">梅文中心</a>以获取最新版本。</p>
+<ul><li>构建.gradle</li></ul>
+<pre class="code">dependencies {
+implementation &#x27;com.paystack.android:paystack-ui:0.0.9&#x27;
+}</pre>
+<p>现在受理支付的所有要求都已到位，你可以初始化并使用 SDK，如下所示：</p>
+<pre class="code">
+
+import com.paystack.android.core.Paystack
+import com.paystack.android.ui.paymentsheet.PaymentSheet
+import com.paystack.android.ui.paymentsheet.PaymentSheetResult
+
+class MainActivity : AppCompatActivity() {
+private lateinit var paymentSheet: PaymentSheet
+
+override fun onCreate(savedInstanceState: Bundle?) {
+super.onCreate(savedInstanceState)
+
+
+Paystack.builder()
+.setPublicKey(&quot;pk_test_xxxx&quot;)
+.build()
+paymentSheet = PaymentSheet(this, ::paymentComplete)
+
+}
+
+private fun makePayment() {
+
+paymentSheet.launch(&quot;br6cgmvflhn3qtd&quot;)
+}
+
+
+private fun paymentComplete(paymentSheetResult: PaymentSheetResult) {
+val message = when (paymentSheetResult) {
+PaymentSheetResult.Cancelled -&gt; &quot;Cancelled&quot;
+is PaymentSheetResult.Failed -&gt; {
+Log.e(&quot;Something went wrong&quot;, paymentSheetResult.error.message.orEmpty(), paymentSheetResult.error)
+paymentSheetResult.error.message ?: &quot;Failed&quot;
+}
+
+is PaymentSheetResult.Completed -&gt; {
+
+Log.d(&quot;Payment successful&quot;, paymentSheetResult.paymentCompletionDetails.toString())
+&quot;Successful&quot;
+}
+}
+}
+}</pre>
+<p>你可以查看<a href="https://paystack.com/docs/developer-tools/android-sdk/">Android SDK 参考</a>以了解有关可用于集成的方法和接口的更多信息。</p>
+<h3>iOS SDK</h3>
+<p>SDK的安装可以通过<a href="https://www.swift.org/documentation/package-manager/">Swift 包管理器</a>完成。要添加所需的软件包，请确保已安装 <a href="https://developer.apple.com/xcode/">最新版本的 XCode</a> 并按照以下步骤操作：</p>
+<ol><li>选择文件 > 添加包依赖项...</li><li>在包依赖弹出窗口的搜索框中复制<a href="https://github.com/PaystackHQ/paystack-sdk-ios">存储库 URL 并粘贴它</a></li></ol>
+<p>你可以阅读 <a href="https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app">Swift 包管理器文档</a> 了解有关向项目添加包的更多信息。</p>
+<p>现在受理支付的所有要求都已到位，你可以初始化并使用 SDK：</p>
+<pre class="code">import SwiftUI
+import PaystackCore
+import PaystackUI
+
+struct PaymentView: View {
+let paystack = try? PaystackBuilder
+.newInstance
+.setKey(&quot;pk_domain_xxxxxxxx&quot;)
+.build()
+
+var body: some View {
+VStack(spacing: 8) {
+Text(&quot;Make Payemnt&quot;)
+
+paystack?.chargeUIButton(accessCode: &quot;0peioxfhpn&quot;, onComplete: paymentDone) {
+Text(&quot;Initiate Payment&quot;)
+}
+}
+.padding()
+}
+
+func paymentDone(_ result: TransactionResult) {
+
+print(result)
+}
+}
+
+</pre>
+<p>你可以查看<a href="https://paystack.com/docs/developer-tools/ios-sdk/">iOS SDK 参考</a>以了解有关可用于集成的方法和接口的更多信息。</p>
+<h2>充电API</h2>
+<p><a href="https://paystack.com/docs/api/charge#create">创建电荷 API</a> 接口允许你将任何支付渠道的详细信息以及交易详细信息（<code class="inline">email</code>、<code class="inline">amount</code> 等）直接传递到 Paystack。我们提供了几个 <a href="https://paystack.com/docs/payments/payment-channels/">支付渠道</a>，你可以根据你的用例进行利用。</p>
+<h3>使用案例</h3>
+<p>Charge API 暴露了为我们的结账提供动力的核心组件。开发人员可以使用这些组件来开发满足客户特定需求的解决方案。其中一些需求包括：</p>
+<ol><li>为非智能手机用户提供服务。你的某些用户可能使用无法访问互联网的手机。通过费用API，你可以从服务端发起付款请求，并通过电话号码向这些用户发送付款完成提示。</li><li>利用移动设备 OS APIs 获得更好的用户体验。一些企业通过移动应用程序（Android和iOS）提供产品。移动操作系统提供了一组丰富的APIs供开发人员利用。其中一个APIs允许开发人员在表单中自动填充OTP。还有用于拨号代码的APIs。开发人员可以将收费API与移动OSAPIs结合起来，为用户提供更丰富的体验。</li></ol>
+<p>以下是 Charge API 的示例有效负载，其中包含交易详细信息和支付工具的对象 - 在本例中为移动货币：</p>
+<pre class="code">{
+  &quot;amount&quot;: 1000,
+  &quot;email&quot;: &quot;customer@email.com&quot;,
+  &quot;currency&quot;: &quot;GHS&quot;,
+  &quot;mobile_money&quot;: {
+    &quot;phone&quot;: &quot;0553241149&quot;,
+    &quot;provider&quot;: &quot;MTN&quot;
+  }
+}</pre>
+<h3>手续费API回复</h3>
+<p>当你调用 <a href="https://paystack.com/docs/api/charge#create">创建电荷 API</a> 接口时，响应包含一个 <code class="inline">data.status</code>，它告诉你该过程的下一步是什么。根据 <code class="inline">data.status</code> 中的值，你可能需要提示用户输入响应消息中指示的内容（例如 OTP 或 PIN 码或出生日期），或显示用户需要在其设备上完成的操作 - 例如扫描 QR 代码或拨打 USSD 代码或重定向到 3DSecure 页面。因此，你按照<code class="inline">data.status</code>上的提示进行操作，直到不再需要用户输入，然后通过<a href="https://paystack.com/docs/payments/webhooks/">Webhook</a>监听事件。</p>
+<p>对于提示用户输入的步骤，你将需要向用户显示一个表单以收集请求的输入并将其发送到相关的接口，如下表所示。对于需要用户在设备上完成操作的步骤，我们建议你在用户执行该操作后显示一个确认付款的按钮，以便你可以通过 <a href="https://paystack.com/docs/payments/webhooks/">Webhook</a> 监听事件。</p>
+<p>以下是你可以从 <a href="https://paystack.com/docs/api/charge#create">创建电荷 API</a> 接口收到的回复列表以及下一步应该做什么：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>价值</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">pending</code></td><td>交易正在处理中。获得此状态后至少 10 秒致电检查待处理费用以检查状态</td></tr><tr><td><code class="inline">timeout</code></td><td>交易失败。向用户显示<code class="inline">data.message</code>后即可开始新的收费</td></tr><tr><td><code class="inline">success</code></td><td>交易成功。你现在可以提供价值</td></tr><tr><td><code class="inline">send_birthday</code></td><td>需要客户的生日才能完成交易。通过接受出生日期的输入向用户显示 <code class="inline">data.display_text</code> 并提交给 <a href="https://paystack.com/docs/api/charge#submit-birthday">提交生日API</a> 接口以及参考和生日</td></tr><tr><td><code class="inline">send_otp</code></td><td>Paystack需要客户提供OTP才能完成交易。使用接受 OTP 的输入向用户显示 <code class="inline">data.display_text</code>，并将 OTP 提交给 <a href="https://paystack.com/docs/api/charge#submit-otp">提交 OTP API</a> 接口以及引用和 otp</td></tr><tr><td><code class="inline">failed</code></td><td>交易失败。对此没有补救措施，向用户显示 <code class="inline">data.message</code> 后开始新的收费</td></tr></tbody></table></div>
+<h3>手柄 Webhook</h3>
+<p>付款成功后，Paystack 会向你提供的 Webhook URL 发送<code class="inline">charge.success</code> Webhook 事件。强烈建议你在向客户提供价值之前使用 <a href="https://paystack.com/docs/payments/webhooks/">Webhook</a> 确认付款状态。</p>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/payments/accept-payments/" target="_blank" rel="noopener">https://paystack.com/docs/payments/accept-payments/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

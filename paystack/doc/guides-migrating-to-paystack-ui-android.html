@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>有什么新消息 · Paystack 开发文档（中文）</title>
+<meta name="description" content="有什么新消息 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>在本指南中，我们将向你展示如何迁移到 Paystack UI，它是 UI 组件和方法的集合，允许你在 Android 应用程序中受理支付。</p>
+<h2>有什么新消息</h2>
+<p>Paystack UI 是从头开始构建的，旨在解决前 SDK 的痛点：</p>
+<ol><li><strong>可扩展性</strong>：此前，我们的SDK仅支持卡作为支付渠道。我们使用模块化架构构建了新的SDK，允许我们添加可用的支付渠道。</li><li><strong>更好UX</strong>：SDK为UI组件提供了更简洁的外观和直观的支付体验。</li><li><strong>安全</strong>：交易现在从后端发起并在移动应用程序上完成，让开发者完全控制。</li><li><strong>改进DX</strong>：我们公开了直观的APIs，让你可以编写更少的代码行以获得更快的结果</li></ol>
+<h2>整合流程</h2>
+<p>前一个SDK需要付出很大的努力才能启动并运行。开发人员需要：</p>
+<ul><li>构建一个接口来收集卡的详细信息</li></ul>
+<p>这些步骤虽然看似简单，但往往需要大量的工程工作来实施和维护。通过 Paystack UI，我们负责界面设计和管理处理状态，使开发人员能够专注于构建他们的产品。使用 Paystack UI，开发人员将：</p>
+<p>开发人员只是与现成的界面进行交互，而不是制作自己的界面。</p>
+<h2>更新依赖项</h2>
+<p>使用 Paystack UI 的第一步是将其添加到你的依赖项列表中：</p>
+<ul><li>构建.gradle</li></ul>
+<pre class="code">dependencies {
+// remove this
+implementation &#x27;co.paystack.android:paystack:3.1.2&#x27;
+// add this
+implementation &#x27;com.paystack.android:paystack-ui:0.0.9&#x27;
+}</pre>
+<p>不要忘记同步项目以拉入库。</p>
+<p>成功安装依赖项后，你现在可以将库导入到你的项目中：</p>
+<pre class="code">import com.paystack.android.core.Paystack
+import com.paystack.android.ui.paymentsheet.PaymentSheet</pre>
+<h2>更新接口</h2>
+<p>SDK 需要初始化才能使用，所以这是我们要做的第一个代码更改：</p>
+<pre class="code">PaystackSdk.initialize(applicationContext)
+PaystackSdk.setPublicKey(&quot;pk_your-public-key&quot;)</pre>
+<h3>PaystackUI</h3>
+<pre class="code">Paystack.builder
+.setPublicKey(&quot;pk_your-public-key&quot;)
+.build()</pre>
+<p>与之前的SDK不同，PaystackUI使用构建器模式来构建对象。</p>
+<h3>回调</h3>
+<p>回调用于管理SDK端的后支付流程。这就是你管理交易最终状态的方式。</p>
+<pre class="code">PaystackSdk.chargeCard(this, charge, object : TransactionCallback {
+override fun onSuccess(transaction: Transaction) {
+Log.d(&quot;Main Activity&quot;, &quot;onSuccess: &quot; + transaction.getReference);
+}
+
+override fun beforeValidate(transaction: Transaction) {
+Log.d(&quot;Main Activity&quot;, &quot;beforeValidate: &quot; + transaction.reference)
+}
+
+override fun onError(error: Throwable, transaction: Transaction) {
+Log.d(&quot;Main Activity&quot;, &quot;onError: &quot; + error.localizedMessage)
+Log.d(&quot;Main Activity&quot;, &quot;onError: $error&quot;)
+}
+})</pre>
+<h3>PaystackUI</h3>
+<pre class="code">private fun paymentComplete(paymentSheetResult: PaymentSheetResult) {
+val message = when (paymentSheetResult) {
+PaymentSheetResult.Cancelled -&gt; &quot;Cancelled&quot;
+is PaymentSheetResult.Failed -&gt; {
+Log.e(&quot;Something went wrong&quot;, paymentSheetResult.error.message.orEmpty(), paymentSheetResult.error)
+paymentSheetResult.error.message ?: &quot;Failed&quot;
+}
+
+is PaymentSheetResult.Completed -&gt; {
+
+Log.d(&quot;Payment successful&quot;, paymentSheetResult.paymentCompletionDetails.toString())
+&quot;Successful&quot;
+}
+}
+}</pre>
+<p>我们将 <code class="inline">TransactionCallback</code> 替换为 <code class="inline">PaymentSheetResult</code>，它公开了三种状态：<code class="inline">Failed</code>、<code class="inline">Cancelled</code> 和 <code class="inline">Completed</code>，可用于管理后支付流程。</p>
+<h3>受理支付</h3>
+<p>以前，受理支付需要你创建 <code class="inline">Card</code> 和 <code class="inline">Charge</code> 对象的实例。使用 Paystack UI，你可以使用 <a href="https://paystack.com/docs/api/transaction#initialize">初始化交易API</a> 接口从服务端初始化交易，并使用返回的 <code class="inline">access_code</code> 来触发 <code class="inline">PaymentSheet</code>，如下所示：</p>
+<pre class="code">val cardNumber = &quot;4084084084084081&quot;
+val expiryMonth = &quot;11&quot;
+val expiryYear = &quot;24&quot;
+val cvv = &quot;408&quot;
+
+val card = Card(cardNumber, expiryMonth, expiryYear, cvv)
+
+val charge = Charge()
+charge.card = card</pre>
+<h3>PaystackUI</h3>
+<pre class="code">private lateinit var paymentSheet: PaymentSheet
+
+override fun onCreate(savedInstanceState: Bundle?) {
+super.onCreate(savedInstanceState)
+
+
+paymentSheet = PaymentSheet(this, ::paymentComplete)
+}
+
+private fun makePayment() {
+
+paymentSheet.launch(&quot;access_code&quot;)
+}</pre>
+<p>你现在可以测试集成以确认一切正常。</p>
+<h2>结论</h2>
+<p>最后，你可以删除卡片活动或片段以及任何其他补充你之前创建的 UI 的代码。你可以查看 <a href="https://paystack.com/docs/developer-tools/android-sdk/">参考页</a> 了解有关 Paystack UI 上可用的方法和 UI 组件的更多信息。</p>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/guides/migrating-to-paystack-ui-android/" target="_blank" rel="noopener">https://paystack.com/docs/guides/migrating-to-paystack-ui-android/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

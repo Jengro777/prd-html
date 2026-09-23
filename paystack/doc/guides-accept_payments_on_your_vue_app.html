@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简介 · Paystack 开发文档（中文）</title>
+<meta name="description" content="简介 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>需要开始通过你的 Vue 应用程序受理支付？在本文中，我们将探讨如何将 Paystack 与你的 Vue 应用程序连接。我们将在演示的捐赠表格上使用示例结账页面</p>
+<h2>简介</h2>
+<p>我们将在这个演示中使用我们的公钥。你可以在 <strong>PaystackDashboard</strong> 的 <a href="https://dashboard.paystack.com/#/settings/developers">API 密钥和 Webhook</a> 部分或 <strong>薪资画布</strong> 的 <a href="https://dashboard.paystack.com/v2/developers">开发者概览</a> 页面中找到你的 API 键。</p>
+<p>你会注意到你有两个公钥：测试和实时。在构建应用程序时，最好使用测试密钥，因为这将允许你模拟交易。一旦你的应用程序准备好投入生产，你就可以切换到实时密钥。</p>
+<p>由于这是客户端集成，这意味着我们的 API 密钥将被公开。为了防止任何人访问我们的 Paystack 账户，我们希望确保使用我们的 <strong>公钥</strong>。密钥只能在服务端上使用。</p>
+<h2>项目设置</h2>
+<p>如果你已经熟悉Vue，那么本节对你来说会非常熟悉，你可以跳到下一节<a href="https://paystack.com/docs/guides/accept_payments_on_your_vue_app/#install-paystack">安装Paystack</a>。如果没有，VueJS 是一个用于构建前端应用程序的 JavaScript 库。使用 Vue 构建大型应用程序时，NPM 和 Yarn 是流行的安装方法。</p>
+<pre class="code">npm install -g @vue/cli
+
+yarn global add @vue/cli</pre>
+<p>安装后，导航到所需的文件夹并创建一个新的 Vue 项目；</p>
+<pre class="code">vue create project_name</pre>
+<p>终端会显示一些预设配置，作为初学者，建议选择默认配置。这将在当前目录中创建一个示例项目<code class="inline">project_name</code>。出于本指南的目的，我将创建一个简单的慈善表格来收集用户名、邮箱地址并接受捐赠者的付款。</p>
+<p>这是我的 <code class="inline">App.vue</code> 片段：</p>
+<pre class="code">&lt;template&gt;
+&lt;div id=&quot;app&quot;&gt;
+&lt;section&gt;
+&lt;h1&gt;Lorem Ipsum Dolor Sit Amet&lt;/h1&gt;
+&lt;div class=&quot;formcontainer&quot;&gt;
+&lt;hr /&gt;
+&lt;div class=&quot;container&quot;&gt;
+&lt;label for=&quot;uname&quot;&gt;
+&lt;strong&gt;Full Name&lt;/strong&gt;
+&lt;/label&gt;
+&lt;input v-model=&quot;full_name&quot; required type=&quot;text&quot; placeholder=&quot;John Doe&quot; name=&quot;uname&quot; /&gt;
+&lt;label for=&quot;email&quot;&gt;
+&lt;strong&gt;Email Address&lt;/strong&gt;
+&lt;/label&gt;
+&lt;input v-model=&quot;email&quot; required type=&quot;text&quot; placeholder=&quot;customer@email.com&quot; name=&quot;email&quot; /&gt;
+&lt;label for=&quot;amount&quot;&gt;
+&lt;strong&gt;Amount&lt;/strong&gt;
+&lt;/label&gt;
+&lt;input v-model=&quot;amount&quot; type=&quot;tel&quot; placeholder=&quot;1000&quot; name=&quot;amount&quot; required /&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/section&gt;
+&lt;img style=&quot;max-width:200 px;&quot; alt=&quot;Vue logo&quot; src=&quot;./assets/pstk.png&quot; /&gt;
+&lt;/div&gt;
+&lt;/template&gt;
+&lt;script&gt;
+export default {
+name: &quot;App&quot;,
+components: {},
+data: () =&gt; {
+return {
+amount: 0,
+full_name: &#x27;&#x27;,
+email: &#x27;&#x27;,
+};
+}
+};
+&lt;/script&gt;</pre>
+<h2>安装Paystack</h2>
+<p>现在添加 <a href="https://www.npmjs.com/package/vue-paystack">Paystack Vue 包</a>，此包包含 Paystack Inline JS 库和作为单个组件的结账。将此插件添加到你的 vue 项目中；</p>
+<pre class="code">npm install vue-paystack --save</pre>
+<p>安装后，将库导入到你的 App.vue 文件中，如下所示</p>
+<pre class="code">&lt;script&gt;
+import paystack from &#x27;vue-paystack&#x27;;
+
+export default {
+name: &quot;App&quot;,
+components: {
+paystack
+},
+data: () =&gt; {
+return {
+amount: null,
+full_name: null,
+email:null
+};
+}
+};
+&lt;/script&gt;</pre>
+<p>现在该组件已准备好供你在付款表单中使用。</p>
+<h2>受理支付</h2>
+<p>现在让我们将组件添加到表单中。 Paystack 组件有 5 个必需的 props：</p>
+<ol><li><strong>金额</strong> - 我们向客户收取的金额</li><li><strong>邮箱</strong> - Paystack 上的所有交易都需要客户的邮箱地址</li><li><strong>Paystack密钥</strong> - 请记住，客户端代码的公钥始终</li><li><strong>回调</strong> - 成功交易完成后将运行的函数</li><li><strong>关闭</strong> - 当客户关闭 Paystack Checkout 时将运行的函数</li></ol>
+<pre class="code">&lt;paystack
+:amount=&quot;amount * 100&quot;
+:email=&quot;email&quot;
+:paystackkey=&quot;PUBLIC_KEY&quot;
+:reference=&quot;reference&quot;
+:callback=&quot;processPayment&quot;
+:close=&quot;close&quot;
+&gt;
+Make Payment
+&lt;/paystack&gt;</pre>
+<p>客户输入的金额应在提交前转换为<code class="inline">kobo</code>，只需将该值乘以<code class="inline">100</code>即可完成</p>
+<p>唯一的参考字段是自动生成的，邮箱和金额字段是从用户的输入中收集的。以下是回调方法：</p>
+<ol><li>。。</li></ol>
+<pre class="code">
+computed: {
+reference() {
+let text = &quot;&quot;;
+let possible =
+&quot;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&quot;;
+
+for (let i = 0; i &lt; 10; i++)
+text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+return text;
+}
+},
+methods: {
+processPayment: () =&gt; {
+window.alert(&quot;Payment recieved&quot;)
+},
+close: () =&gt; {
+console.log(&quot;You closed checkout page&quot;)
+}
+},
+</pre>
+<ol><li>。。</li></ol>
+<p>好了，我们的支付集成现已完成。完整的代码示例位于<a href="https://github.com/PaystackOSS/sample-vue">这个存储库</a>，你可以查看<a href="https://elfin-news.surge.sh/">现场演示</a>。</p>
+<p>我们还在Vue建立了另一个示例运动鞋商店，这是<a href="https://github.com/PaystackOSS/sample-kix">存储库</a>和<a href="https://kix.surge.sh/">现场演示</a>。</p>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/guides/accept_payments_on_your_vue_app/" target="_blank" rel="noopener">https://paystack.com/docs/guides/accept_payments_on_your_vue_app/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

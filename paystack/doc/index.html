@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paystack 开发文档（中文）</title>
+<meta name="description" content="Paystack 开发者文档中文版：快速开始、收款、转账、身份验证、开发工具与接入指南。">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar__section">
+    <div class="sidebar__caption">文档</div>
+    <a class="sidebar__ep" href="index.html">文档首页</a>
+    <a class="sidebar__ep" href="../api/index.html">API 参考</a>
+  </div>
+  <div class="sidebar__section">
+    <div class="sidebar__caption">收款 Payments</div>
+    <a class="sidebar__ep" href="payments.html">概览</a>
+    <a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+    <a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+    <a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+    <a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+    <a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+    <a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+    <a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+    <a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+    <a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+    <a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+    <a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+    <a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+    <a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+    <a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+    <a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+    <a class="sidebar__ep" href="payments-refunds.html">退款</a>
+    <a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+    <a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+    <a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+  </div>
+  <div class="sidebar__section">
+    <div class="sidebar__caption">终端 Terminal</div>
+    <a class="sidebar__ep" href="terminal.html">概览</a>
+    <a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+    <a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+    <a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+    <a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+  </div>
+  <div class="sidebar__section">
+    <div class="sidebar__caption">转账 Transfers</div>
+    <a class="sidebar__ep" href="transfers.html">概览</a>
+    <a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+    <a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+    <a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+    <a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+    <a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+  </div>
+  <div class="sidebar__section">
+    <div class="sidebar__caption">身份验证 Identity Verification</div>
+    <a class="sidebar__ep" href="identity-verification.html">概览</a>
+    <a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+    <a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+    <a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+  </div>
+  <div class="sidebar__section">
+    <div class="sidebar__caption">开发工具 Developer Tools</div>
+    <a class="sidebar__ep" href="developer-tools.html">概览</a>
+    <a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+    <a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+    <a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+    <a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+    <a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+  </div>
+  <div class="sidebar__section">
+    <div class="sidebar__caption">接入指南 Guides</div>
+    <a class="sidebar__ep" href="guides.html">概览</a>
+    <a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+    <a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+    <a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+    <a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+    <a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+    <a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+    <a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+    <a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+    <a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+    <a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+  </div>
+  <div class="sidebar__section">
+    <div class="sidebar__caption">变更日志 Changelog</div>
+    <a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+  </div>
+</aside>
+
+<main class="content">
+  <div class="content__eyebrow">开发文档</div>
+  <h1>Paystack 开发文档</h1>
+  <p class="lead">欢迎使用 Paystack 开发者文档。在这里，你将了解如何借助 Paystack API 打造出色的支付体验。</p>
+
+  <h2 id="quick-start">快速开始</h2>
+  <div class="cards">
+    <a class="card" href="https://paystack.com/docs/payments/" target="_blank" rel="noopener">
+      <div class="card__title">受理支付</div>
+      <div class="card__desc">从银行卡、银行账户和移动钱包账户收取款项</div>
+      <div class="card__link">查看文档 →</div>
+    </a>
+    <a class="card" href="https://paystack.com/docs/transfers/" target="_blank" rel="noopener">
+      <div class="card__title">转账汇款</div>
+      <div class="card__desc">向银行账户和移动钱包号码发起即时转账</div>
+      <div class="card__link">查看文档 →</div>
+    </a>
+    <a class="card" href="https://paystack.com/docs/identity-verification/" target="_blank" rel="noopener">
+      <div class="card__title">身份验证</div>
+      <div class="card__desc">核验手机号、银行账户或银行卡信息</div>
+      <div class="card__link">查看文档 →</div>
+    </a>
+    <a class="card" href="https://paystack.com/docs/developer-tools/" target="_blank" rel="noopener">
+      <div class="card__title">其他使用方式</div>
+      <div class="card__desc">探索无需直接调用 API 即可受理支付的库与工具</div>
+      <div class="card__link">查看文档 →</div>
+    </a>
+  </div>
+
+  <h2 id="accept-a-payment">受理一笔支付</h2>
+  <p>下面是使用 Paystack API 受理支付的示例流程。</p>
+  <h3>开始之前</h3>
+  <p>调用 Paystack API 时，需使用你的私钥（Secret Key）完成鉴权。</p>
+  <div class="snippet">
+    <div class="snippet__label"><span class="method method--post">POST</span><span class="title">api.paystack.co/transaction/initialize</span><span>cURL</span></div>
+    <pre class="code">curl https://api.paystack.co/transaction/initialize \
+  -H "Authorization: Bearer YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -X POST</pre>
+  </div>
+  <p><a href="../api/transaction.html#initialize">查看「初始化交易」接口参数 →</a></p>
+
+  <h2 id="make-a-transfer">发起一笔转账</h2>
+  <p>在 Paystack 上汇款非常快捷，流程如下。</p>
+  <h3>开始之前</h3>
+  <p>调用 Paystack API 时，需使用你的私钥（Secret Key）完成鉴权。</p>
+  <div class="snippet">
+    <div class="snippet__label"><span class="method method--post">POST</span><span class="title">api.paystack.co/transferrecipient</span><span>cURL</span></div>
+    <pre class="code">curl https://api.paystack.co/transferrecipient \
+  -H "Authorization: Bearer YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -X POST</pre>
+  </div>
+  <p><a href="../api/transfer-recipient.html#create">查看「创建转账收款人」接口参数 →</a></p>
+
+  <h2 id="explore-demos">示例项目</h2>
+  <p>我们准备了一些简单项目，演示如何用 Paystack API 实现各类金融服务场景。<a href="https://github.com/PaystackOSS/" target="_blank" rel="noopener">浏览全部示例</a>，或从下面最受欢迎的示例开始：</p>
+  <div class="cards">
+    <a class="card" href="https://github.com/PaystackOSS/sample-gift-store" target="_blank" rel="noopener">
+      <div class="card__title">礼品商城</div>
+      <div class="card__desc">PaystackOSS/sample-gift-store</div>
+      <div class="card__link">技术栈：Vue · 涉及接口：受理支付、支付校验 →</div>
+    </a>
+    <a class="card" href="https://github.com/PaystackOSS/sample-movie-ticket" target="_blank" rel="noopener">
+      <div class="card__title">电影票</div>
+      <div class="card__desc">PaystackOSS/sample-movie-ticket</div>
+      <div class="card__link">技术栈：Android · 涉及接口：受理支付、支付校验 →</div>
+    </a>
+    <a class="card" href="https://github.com/PaystackOSS/sample-logistics" target="_blank" rel="noopener">
+      <div class="card__title">账单收款</div>
+      <div class="card__desc">PaystackOSS/sample-logistics</div>
+      <div class="card__link">技术栈：Vue · 涉及接口：创建客户、付款请求 →</div>
+    </a>
+    <a class="card" href="https://github.com/PaystackOSS/sample-restaurant" target="_blank" rel="noopener">
+      <div class="card__title">推送收款请求</div>
+      <div class="card__desc">PaystackOSS/sample-restaurant</div>
+      <div class="card__link">技术栈：React · 涉及接口：付款请求、终端事件 →</div>
+    </a>
+  </div>
+
+  <h2 id="more">更多支持</h2>
+  <div class="cards">
+    <a class="card" href="https://payslack.slack.com/" target="_blank" rel="noopener">
+      <div class="card__title">加入 Payslack</div>
+      <div class="card__desc">与 2000+ 开发者一起提问、交流想法</div>
+    </a>
+    <a class="card" href="https://www.npmjs.com/package/@paystack-oss/dev-cli" target="_blank" rel="noopener">
+      <div class="card__title">Paystack CLI</div>
+      <div class="card__desc">用命令行工具提升联调效率</div>
+    </a>
+    <a class="card" href="https://support.paystack.com/" target="_blank" rel="noopener">
+      <div class="card__title">需要其他帮助？</div>
+      <div class="card__desc">如有疑问或需要人工支持，请访问支持中心</div>
+    </a>
+  </div>
+</main>
+</div>
+
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/" target="_blank" rel="noopener">paystack.com/docs</a> ·
+  侧边栏中的子页面链接指向 Paystack 官方英文原文
+</footer>
+</body>
+</html>

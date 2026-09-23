@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目设置 · Paystack 开发文档（中文）</title>
+<meta name="description" content="项目设置 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>使用 Paystack，你的 Android 应用程序中的 <a href="https://paystack.com/docs/payments/accept-payments/">受理支付</a> 比以往任何时候都更容易！通过我们的<a href="https://github.com/PaystackHQ/paystack-sdk-android">Android SDK</a>，你可以轻松开始接受客户的付款。集成过程分为两步：</p>
+<p>在本教程中，我们将构建一个简单的食品订购应用程序，展示如何使用 Paystack Android SDK 在 Android 应用程序中受理支付。该应用程序由两个活动组成，如下所示：</p>
+<p><a href="https://paystack.com/docs/static/5fb0ef949b6407784de12448834303d4/8c557/food_ordering_screen_1.png">![图片 1：主要活动包含芝士汉堡的图片及其描述</a>](https://paystack.com/docs/static/5fb0ef949b6407784de12448834303d4/302a4/food_ordering_screen_1.png)<a href="https://paystack.com/docs/static/287eb2c73d73d1d2de001d8975e2361e/8c557/food_ordering_screen_2.png">![图片 2：Checkout 包含收集卡片详细信息的表单的活动</a>](https://paystack.com/docs/static/287eb2c73d73d1d2de001d8975e2361e/302a4/food_ordering_screen_2.png)</p>
+<p>我从 Pexels 上抓了汉堡的照片。你可以获取它 <a href="https://www.pexels.com/photo/burger-with-fried-fries-on-black-plate-with-sauce-on-the-side-1199957/">这里</a> 或使用你喜欢吃的饭菜的图片。为了保持应用程序的尺寸精简，我选择使用较小版本的图像。</p>
+<p>本指南假设你了解 <a href="https://developer.android.com/guide">Android开发</a> 的基础知识。本指南的目的是向你展示如何通过 Paystack 将支付集成到你的 Android 应用程序中。</p>
+<h2>项目设置</h2>
+<p>本指南是使用 <code class="inline">Android Studio 2023.2.1</code>、<code class="inline">Android Gradle plugin 7.4.2</code> 和 <code class="inline">Gradle 7.5</code> 编写的。早期版本的行为可能有所不同，但最终结果应该是相同的。你还应该确保有稳定的互联网连接来安装项目依赖项。应用程序代码位于 Java 和 Kotlin 中。</p>
+<p>如果你只对集成 SDK 感兴趣，你可以跳到 <a href="https://paystack.com/docs/guides/accept_payments_on_your_android_app/#initialize-payment">初始化付款</a> 部分。</p>
+<h2>创建订餐应用程序</h2>
+<p>让我们打开 Android Studio 并使用以下参数创建一个新项目：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>属性</th><th>价值</th></tr></thead><tbody><tr><td>项目模板</td><td>空活动</td></tr><tr><td>应用程序名称</td><td>食物Checkout</td></tr><tr><td>套餐名称</td><td>com.yourdomain.appname</td></tr><tr><td>语言</td><td>Java 或 Kotlin</td></tr><tr><td>最小值SDK</td><td>API 21：Android 5.0（棒棒糖）</td></tr></tbody></table></div>
+<p>点击<code class="inline">Finish</code>按钮确认项目配置并等待项目依赖安装完成。我们将在应用程序中使用一些资源，因此最好在继续应用程序的其他部分之前设置它们。</p>
+<h3>添加汉堡图像</h3>
+<p>如果你尚未下载汉堡图片，你应该导航至 <a href="https://www.pexels.com/photo/burger-with-fried-fries-on-black-plate-with-sauce-on-the-side-1199957/">像素</a> 并下载。我使用 <code class="inline">Free Download</code> 下拉菜单为图像选择自定义尺寸 (320 x 480)。当图像下载成功后，将其重命名为 <code class="inline">burger.jpg</code> 并拖动到应用程序的可绘制文件夹中：</p>
+<p><a href="https://paystack.com/docs/static/d29d841d4be0a60b9d27e8442cef8ca3/8c557/as_burger_asset.png">![图片 3：Android Studio 的屏幕截图，其中包含更新的汉堡图像可绘制</a>](https://paystack.com/docs/static/d29d841d4be0a60b9d27e8442cef8ca3/9f82e/as_burger_asset.png)</p>
+<h3>更新颜色文件</h3>
+<p>Android Studio 为我们创建的默认颜色与我们应用程序的设计不匹配。打开<code class="inline">values</code>文件夹中的<code class="inline">colors.xml</code>文件并使用以下代码更新它：</p>
+<pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;resources xmlns:tools=&quot;http://schemas.android.com/tools&quot;&gt;
+&lt;color name=&quot;white&quot;&gt;#FFFFFFFF&lt;/color&gt;
+&lt;color name=&quot;silver_400&quot;&gt;#CBC9C9&lt;/color&gt;
+&lt;color name=&quot;azac_500&quot;&gt;#DEB334&lt;/color&gt;
+&lt;color name=&quot;cod_gray_900&quot;&gt;#171516&lt;/color&gt;
+// this is used to modify the default border color of a text input
+&lt;color name=&quot;mtrl_textinput_default_box_stroke_color&quot; tools:override=&quot;true&quot;&gt;#CBC9C9&lt;/color&gt;
+&lt;/resources&gt;</pre>
+<h3>更新应用程序的主题</h3>
+<p>由于我们更新了 <code class="inline">color.xml</code> 文件，我们的 <code class="inline">theme.xml</code> 将出现一些错误，因为我们删除了它之前使用的颜色参考。在更新主题之前，我们应该删除主题的夜间版本，因为我们不会使用它。然后我们可以更新我们的 <code class="inline">theme.xml</code> 文件，如下所示：</p>
+<pre class="code">&lt;resources xmlns:tools=&quot;http://schemas.android.com/tools&quot;&gt;
+
+&lt;style name=&quot;Theme.FoodCheckout&quot; parent=&quot;Theme.MaterialComponents.DayNight.NoActionBar&quot;&gt;
+
+&lt;item name=&quot;colorPrimary&quot;&gt;@color/cod_gray_900&lt;/item&gt;
+
+&lt;item name=&quot;colorPrimaryVariant&quot;&gt;#191919&lt;/item&gt;
+&lt;item name=&quot;colorOnPrimary&quot;&gt;@color/white&lt;/item&gt;
+
+&lt;item name=&quot;colorSecondary&quot;&gt;@color/azac_500&lt;/item&gt;
+&lt;item name=&quot;colorSecondaryVariant&quot;&gt;@color/azac_500&lt;/item&gt;
+&lt;item name=&quot;colorOnSecondary&quot;&gt;@color/cod_gray_900&lt;/item&gt;
+
+&lt;item name=&quot;android:statusBarColor&quot; tools:targetApi=&quot;l&quot;&gt;?attr/colorPrimaryVariant&lt;/item&gt;
+&lt;/style&gt;
+&lt;/resources&gt;</pre>
+<h3>为所有尺寸创建文件</h3>
+<p>此应用程序中使用的所有文本大小、边距和尺寸均引用自 <code class="inline">dimens.xml</code> 文件。要创建一个，请右键单击 <code class="inline">values</code> 文件夹，然后右键单击 <code class="inline">New &gt; Values Resource File</code>：</p>
+<p><a href="https://paystack.com/docs/static/514a8d65926f52acbf867f1d219aa17d/8c557/as_dimens_creation.png">![图4：Android Studio创建尺寸文件时的屏幕截图</a>](https://paystack.com/docs/static/514a8d65926f52acbf867f1d219aa17d/6ee58/as_dimens_creation.png)</p>
+<p>单击<code class="inline">OK</code>确认文件创建并在新创建的文件中添加以下内容：</p>
+<pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;resources&gt;
+&lt;dimen name=&quot;text_14&quot;&gt;14sp&lt;/dimen&gt;
+&lt;dimen name=&quot;text_16&quot;&gt;16sp&lt;/dimen&gt;
+&lt;dimen name=&quot;text_18&quot;&gt;18sp&lt;/dimen&gt;
+&lt;dimen name=&quot;text_24&quot;&gt;24sp&lt;/dimen&gt;
+&lt;dimen name=&quot;text_32&quot;&gt;32sp&lt;/dimen&gt;
+&lt;dimen name=&quot;dimen_8&quot;&gt;8dp&lt;/dimen&gt;
+&lt;dimen name=&quot;dimen_10&quot;&gt;10dp&lt;/dimen&gt;
+&lt;dimen name=&quot;dimen_16&quot;&gt;16dp&lt;/dimen&gt;
+&lt;dimen name=&quot;dimen_20&quot;&gt;20dp&lt;/dimen&gt;
+&lt;dimen name=&quot;dimen_24&quot;&gt;24dp&lt;/dimen&gt;
+&lt;dimen name=&quot;dimen_32&quot;&gt;32dp&lt;/dimen&gt;
+&lt;dimen name=&quot;image_height&quot;&gt;420dp&lt;/dimen&gt;
+&lt;/resources&gt;</pre>
+<h3>添加字符串资源</h3>
+<p>最后，我们添加将在应用程序中使用的所有字符串资源。打开你的 <code class="inline">strings.xml</code> 文件并添加以下内容：</p>
+<pre class="code">&lt;resources&gt;
+&lt;string name=&quot;app_name&quot;&gt;Food Checkout&lt;/string&gt;
+&lt;string name=&quot;meal_name&quot;&gt;Cheese Burger&lt;/string&gt;
+&lt;string name=&quot;meal_description&quot;&gt;
+A properly seasoned patty topped with a slice of fresh tomato, cheese and lettuce enclosed in a
+fluffy bun. It’s accompanied with a side of fries with a sweet and spicy dip.
+&lt;/string&gt;
+
+
+&lt;string name=&quot;meal_price&quot;&gt;Make Payment&lt;/string&gt;
+&lt;/resources&gt;</pre>
+<h2>实施应用程序UI</h2>
+<p>至此我们已经成功：</p>
+<p>我们现在可以继续实现应用程序的主界面。我们将修改食物详细信息 UI 的 <code class="inline">MainActivity</code> 和 <code class="inline">activity_main.xml</code>。打开 <code class="inline">activity_main.xml</code> 文件并将以下代码片段添加到其中：</p>
+<pre class="code">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;androidx.constraintlayout.widget.ConstraintLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
+xmlns:app=&quot;http://schemas.android.com/apk/res-auto&quot;
+xmlns:tools=&quot;http://schemas.android.com/tools&quot;
+android:layout_width=&quot;match_parent&quot;
+android:layout_height=&quot;match_parent&quot;
+android:background=&quot;@color/cod_gray_900&quot;
+tools:context=&quot;.MainActivity&quot;&gt;
+
+&lt;ImageView
+android:id=&quot;@+id/iv_meal_image&quot;
+android:layout_width=&quot;match_parent&quot;
+android:layout_height=&quot;@dimen/image_height&quot;
+android:contentDescription=&quot;@string/meal_name&quot;
+android:scaleType=&quot;centerCrop&quot;
+android:src=&quot;@drawable/burger&quot;
+app:layout_constraintLeft_toLeftOf=&quot;parent&quot;
+app:layout_constraintRight_toRightOf=&quot;parent&quot;
+app:layout_constraintTop_toTopOf=&quot;parent&quot; /&gt;
+
+&lt;TextView
+android:id=&quot;@+id/iv_meal_name&quot;
+android:layout_width=&quot;wrap_content&quot;
+android:layout_height=&quot;wrap_content&quot;
+android:layout_marginStart=&quot;20dp&quot;
+android:layout_marginTop=&quot;@dimen/dimen_20&quot;
+android:layout_marginEnd=&quot;@dimen/dimen_20&quot;
+android:text=&quot;@string/meal_name&quot;
+android:textColor=&quot;@color/azac_500&quot;
+android:textSize=&quot;@dimen/text_24&quot;
+app:layout_constraintLeft_toLeftOf=&quot;parent&quot;
+app:layout_constraintTop_toBottomOf=&quot;@id/iv_meal_image&quot; /&gt;
+
+&lt;TextView
+android:id=&quot;@+id/iv_meal_description&quot;
+android:layout_width=&quot;match_parent&quot;
+android:layout_height=&quot;wrap_content&quot;
+android:layout_marginTop=&quot;@dimen/dimen_10&quot;
+android:layout_marginStart=&quot;@dimen/dimen_20&quot;
+android:layout_marginEnd=&quot;@dimen/dimen_20&quot;
+android:text=&quot;@string/meal_description&quot;
+android:textColor=&quot;@color/white&quot;
+android:textSize=&quot;@dimen/text_14&quot;
+android:lineSpacingMultiplier=&quot;1.2&quot;
+app:layout_constraintLeft_toLeftOf=&quot;parent&quot;
+app:layout_constraintRight_toRightOf=&quot;parent&quot;
+app:layout_constraintTop_toBottomOf=&quot;@id/iv_meal_name&quot; /&gt;
+
+&lt;Button
+android:id=&quot;@+id/btn_checkout&quot;
+android:layout_width=&quot;match_parent&quot;
+android:layout_height=&quot;wrap_content&quot;
+android:layout_marginStart=&quot;@dimen/dimen_20&quot;
+android:layout_marginEnd=&quot;@dimen/dimen_20&quot;
+android:layout_marginBottom=&quot;@dimen/dimen_20&quot;
+android:backgroundTint=&quot;@color/azac_500&quot;
+android:textColor=&quot;@color/cod_gray_900&quot;
+android:text=&quot;@string/meal_price&quot;
+android:textStyle=&quot;bold&quot;
+app:layout_constraintBottom_toBottomOf=&quot;parent&quot;
+app:layout_constraintLeft_toLeftOf=&quot;parent&quot;
+app:layout_constraintRight_toRightOf=&quot;parent&quot; /&gt;
+
+&lt;/androidx.constraintlayout.widget.ConstraintLayout&gt;</pre>
+<p>该界面由四个元素组成：</p>
+<ul><li>ImageView：用于渲染华丽的汉堡图像</li><li>TextView：用于分别呈现餐食名称和描述。</li><li>按钮：用于触发付款单。</li></ul>
+<h2>初始化付款</h2>
+<p>使用SDK，你需要在服务端上开始交易并在SDK上完成交易。要初始化交易，请在服务端上向 <a href="https://paystack.com/docs/api/transaction#initialize">初始化交易API</a> 接口发出 POST 请求：</p>
+<pre class="code">curl https://api.paystack.co/transaction/initialize
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;email&quot;: &quot;customer@email.com&quot;,
+&quot;amount&quot;: &quot;500000&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Authorization URL created&quot;,
+  &quot;data&quot;: {
+    &quot;authorization_url&quot;: &quot;https://checkout.paystack.com/nkdks46nymizns7&quot;,
+    &quot;access_code&quot;: &quot;nkdks46nymizns7&quot;,
+    &quot;reference&quot;: &quot;nms6uvr1pl&quot;
+  }
+}</pre>
+<p>交易成功初始化后，你会收到包含 <code class="inline">access_code</code> 的响应。你需要将此<code class="inline">access_code</code>返回到你的移动应用程序。</p>
+<p>不要直接在你的移动应用程序上向初始化交易接口发出 API 请求，因为它需要你的密钥。你的密钥只能在可以采取更强安全措施的服务端上使用。</p>
+<p><code class="inline">access_code</code>就位后，你现在可以使用SDK来完成交易。</p>
+<h2>安装SDK</h2>
+<p>Android SDK 提供受理支付的方法和接口。要使用 SDK，请将 <code class="inline">paystack-ui</code> 添加到应用程序的 <code class="inline">build.gradle</code> 文件中：</p>
+<p>安装前你应该检查<a href="https://central.sonatype.com/artifact/com.paystack.android/paystack-ui/versions">梅文中心</a>以获取最新版本。</p>
+<ul><li>构建.gradle</li></ul>
+<pre class="code">dependencies {
+implementation &#x27;com.paystack.android:paystack-ui:0.0.9&#x27;
+}</pre>
+<p>由于我们对 <code class="inline">build.gradle</code> 文件进行了一些更改，因此我们需要同步项目以安装所需的依赖项。</p>
+<h2>集成 Paystack SDK</h2>
+<p>我们现在将充实 <code class="inline">MainActivity</code> 来处理先前发起的付款的完成。这是一个 3 步过程：</p>
+<ol><li>初始化SDK</li><li>实施回调</li><li>创建付款表</li></ol>
+<h3>初始化SDK</h3>
+<p>在加载 UI 之前，SDK 使用构建器模式来处理基础配置。你可以在此处添加公钥，如下所示：</p>
+<pre class="code">Paystack.builder()
+.setPublicKey(&quot;pk_domain_xxxxxxxx&quot;)
+.setLoggingEnabled(true)
+.build()</pre>
+<h3>实现一个回调</h3>
+<p>根据用户的操作或处理器的响应，交易可以处于不同的状态。为了正确协调交易，你需要设置一个回调：</p>
+<pre class="code">private fun paymentComplete(paymentSheetResult: PaymentSheetResult) {
+val message = when (paymentSheetResult) {
+PaymentSheetResult.Cancelled -&gt; &quot;Cancelled&quot;
+is PaymentSheetResult.Failed -&gt; {
+Log.e(&quot;Something went wrong&quot;, paymentSheetResult.error.message.orEmpty(), paymentSheetResult.error)
+paymentSheetResult.error.message ?: &quot;Failed&quot;
+}
+
+is PaymentSheetResult.Completed -&gt; {
+
+Log.d(&quot;Payment successful&quot;, paymentSheetResult.paymentCompletionDetails.toString())
+&quot;Successful&quot;
+}
+}
+
+Toast.makeText(this, &quot;Payment $message&quot;, Toast.LENGTH_SHORT).show()
+}</pre>
+<h3>创建付款表</h3>
+<p>在应用程序的活动中启动界面需要 <code class="inline">PaymentSheet</code>。它需要两个参数，将在其中呈现的活动以及交易完成时调用的回调函数：</p>
+<pre class="code">private lateinit var paymentSheet: PaymentSheet
+
+override fun onCreate(savedInstanceState: Bundle?) {
+super.onCreate(savedInstanceState)
+setContentView(R.layout.activity_main)
+
+
+
+paymentSheet = PaymentSheet(this, ::paymentComplete)
+
+
+}</pre>
+<p><code class="inline">PaymentSheet</code> 附带一个 <code class="inline">launch</code> 方法，允许你触发组件的显示。 launch 方法从先前初始化的交易中获取 <code class="inline">access_code</code>。</p>
+<pre class="code">fun makePayment() {
+
+paymentSheet.launch(&quot;br6cgmvflhn3qtd&quot;)
+}</pre>
+<p>可以在按钮的点击监听中添加<code class="inline">makePayment</code>方法来触发<code class="inline">PaymentSheet</code>UI。</p>
+<h2>测试集成</h2>
+<p>我们现在可以测试我们的应用程序以确保它按预期工作。我们有几个 <a href="https://paystack.com/docs/payments/test-payments/">测试卡</a> 可用于模拟不同的支付场景。</p>
+<h2>确认付款</h2>
+<p>在向客户提供服务之前，你应始终确认付款。</p>
+<p>本部分假设你有一个移动应用程序所依赖的后端服务端。你需要使用 <a href="https://paystack.com/docs/payments/webhooks/">Webhook</a> URL 监听事件。</p>
+<p>Webhook 允许 Paystack 向你实时发送集成中发生的事件。付款成功后，我们将向你的 Webhook URL 发送 <code class="inline">charge.success</code> 事件，其中包含有关成功交易的信息。建议你监听此事件以确认付款。当客户出现连接问题以及支付处理商出现延迟时，这种交易确认方法更具弹性。</p>
+<p>或者，你可以将交易参考从应用程序发送到后端服务端。然后，从你的服务端，你可以使用交易参考调用我们的 <a href="https://paystack.com/docs/api/transaction#verify">校验交易API</a> 接口。响应正文将包含一个状态字段，指示交易是否成功。</p>
+<h2>定期付款</h2>
+<p>当交易被确认时，响应正文将包含一个 <code class="inline">authorization</code> 对象：</p>
+<pre class="code">{
+...
+&quot;data&quot;: {
+...
+&quot;authorization&quot;: {
+&quot;authorization_code&quot;:&quot;AUTH_8dfhjjdt&quot;,
+&quot;card_type&quot;:&quot;visa&quot;,
+&quot;last4&quot;:&quot;1381&quot;,
+&quot;exp_month&quot;:&quot;08&quot;,
+&quot;exp_year&quot;:&quot;2018&quot;,
+&quot;bin&quot;:&quot;412345&quot;,
+&quot;bank&quot;:&quot;TEST BANK&quot;,
+&quot;channel&quot;:&quot;card&quot;,
+&quot;signature&quot;: &quot;SIG_idyuhgd87dUYSHO92D&quot;,
+&quot;reusable&quot;:true,
+&quot;country_code&quot;:&quot;NG&quot;
+},
+...
+}
+}</pre>
+<p>当<code class="inline">authorization</code>具有<code class="inline">&quot;reusable&quot;: true</code>值时，客户的卡可用于<a href="https://paystack.com/docs/payments/recurring-charges/">定期付款</a>。你可以存储<code class="inline">authorization_code</code>并用于后续付款。</p>
+<h2>结论</h2>
+<p>本指南的源代码可以在<a href="https://github.com/PaystackOSS/FoodCheckout">FoodCheckout 存储库</a>中找到。 <code class="inline">main</code>分支包含Java代码，而<a href="https://github.com/PaystackOSS/FoodCheckout/tree/kotlin">科特林</a>分支包含Kotlin代码。干杯。</p>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/guides/accept-payments-on-your-android-app/" target="_blank" rel="noopener">https://paystack.com/docs/guides/accept-payments-on-your-android-app/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

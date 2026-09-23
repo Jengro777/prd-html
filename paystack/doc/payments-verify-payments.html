@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>校验付款 · Paystack 开发文档（中文）</title>
+<meta name="description" content="校验付款 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p><a href="https://paystack.com/docs/changelog/api/">API 变更日志</a></p>
+<p><a href="https://paystack.com/docs/api/">请参阅API参考</a></p>
+<h1>校验付款</h1>
+<h4>简而言之</h4>
+<p>校验交易API允许你确认客户交易的状态。</p>
+<h2>交易状态</h2>
+<p>Webhook 是确认交易状态的首选选项，但我们目前仅针对成功的交易发送 Webhook 事件。但是，交易可以具有以下状态：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>状态</th><th>含义</th></tr></thead><tbody><tr><td><code class="inline">abandoned</code></td><td>客户尚未完成交易。</td></tr><tr><td><code class="inline">failed</code></td><td>The transaction failed. For more information on why, refer to the message/gateway response.</td></tr><tr><td><code class="inline">ongoing</code></td><td>客户当前正在尝试执行操作来完成交易。当我们等待客户输入 OTP 或进行转账（对于转账付款交易）时，可以返回此信息。</td></tr><tr><td><code class="inline">pending</code></td><td>目前该交易正在进行中。</td></tr><tr><td><code class="inline">processing</code></td><td>与<code class="inline">pending</code>相同，但适用于直接借记交易。</td></tr><tr><td><code class="inline">queued</code></td><td>该交易已排队等待稍后处理。仅适用于批量收费交易。</td></tr><tr><td><code class="inline">reversed</code></td><td>交易被撤销。这可能意味着交易已退款，或者已成功记录该交易的退款。</td></tr><tr><td><code class="inline">success</code></td><td>交易已成功处理。</td></tr></tbody></table></div>
+<h2>校验交易</h2>
+<p>你可以通过使用交易引用从服务端向 <a href="https://paystack.com/docs/api/transaction#verify">校验交易API</a> 接口发出 <code class="inline">GET</code> 请求来完成此操作。这取决于你用于初始化交易的方法。</p>
+<h3>来自 Popup 或手机 SDK</h3>
+<p>你必须将引用发送到你的服务端，然后从你的服务端调用校验接口。</p>
+<h3>来自重定向API</h3>
+<p>你从你的回调 URL 发起此请求。交易参考作为查询参数返回到你的callbackURL。</p>
+<h4>有用的提示</h4>
+<p>如果你提供数字价值，例如通话时间、钱包充值、数字信用等，请务必确认你尚未为该交易提供价值，以避免双重履行，特别是如果你还使用Webhook。</p>
+<p>以下是校验交易的代码示例：</p>
+<p>显示回复 - [x]</p>
+<pre class="code">#!/bin/sh
+curl https://api.paystack.co/transaction/verify/:reference
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-X GET</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Verification successful&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 4099260516,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;reference&quot;: &quot;re4lyvq3s3&quot;,
+    &quot;receipt_number&quot;: null,
+    &quot;amount&quot;: 40333,
+    &quot;message&quot;: null,
+    &quot;gateway_response&quot;: &quot;Successful&quot;,
+    &quot;paid_at&quot;: &quot;2024-08-22T09:15:02.000Z&quot;,
+    &quot;created_at&quot;: &quot;2024-08-22T09:14:24.000Z&quot;,
+    &quot;channel&quot;: &quot;card&quot;,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;ip_address&quot;: &quot;197.210.54.33&quot;,
+    &quot;metadata&quot;: &quot;&quot;,
+    &quot;log&quot;: {
+      &quot;start_time&quot;: 1724318098,
+      &quot;time_spent&quot;: 4,
+      &quot;attempts&quot;: 1,
+      &quot;errors&quot;: 0,
+      &quot;success&quot;: true,
+      &quot;mobile&quot;: false,
+      &quot;input&quot;: [],
+      &quot;history&quot;: [
+        {
+          &quot;type&quot;: &quot;action&quot;,
+          &quot;message&quot;: &quot;Attempted to pay with card&quot;,
+          &quot;time&quot;: 3
+        },
+        {
+          &quot;type&quot;: &quot;success&quot;,
+          &quot;message&quot;: &quot;Successfully paid with card&quot;,
+          &quot;time&quot;: 4
+        }
+      ]
+    },
+    &quot;fees&quot;: 10283,
+    &quot;fees_split&quot;: null,
+    &quot;authorization&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_uh8bcl3zbn&quot;,
+      &quot;bin&quot;: &quot;408408&quot;,
+      &quot;last4&quot;: &quot;4081&quot;,
+      &quot;exp_month&quot;: &quot;12&quot;,
+      &quot;exp_year&quot;: &quot;2030&quot;,
+      &quot;channel&quot;: &quot;card&quot;,
+      &quot;card_type&quot;: &quot;visa &quot;,
+      &quot;bank&quot;: &quot;TEST BANK&quot;,
+      &quot;country_code&quot;: &quot;NG&quot;,
+      &quot;brand&quot;: &quot;visa&quot;,
+      &quot;reusable&quot;: true,
+      &quot;signature&quot;: &quot;SIG_yEXu7dLBeqG0kU7g95Ke&quot;,
+      &quot;account_name&quot;: null
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 181873746,
+      &quot;first_name&quot;: null,
+      &quot;last_name&quot;: null,
+      &quot;email&quot;: &quot;demo@test.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_1rkzaqsv4rrhqo6&quot;,
+      &quot;phone&quot;: null,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;,
+      &quot;international_format_phone&quot;: null
+    },
+    &quot;plan&quot;: null,
+    &quot;split&quot;: {},
+    &quot;order_id&quot;: null,
+    &quot;paidAt&quot;: &quot;2024-08-22T09:15:02.000Z&quot;,
+    &quot;createdAt&quot;: &quot;2024-08-22T09:14:24.000Z&quot;,
+    &quot;requested_amount&quot;: 30050,
+    &quot;pos_transaction_data&quot;: null,
+    &quot;source&quot;: null,
+    &quot;fees_breakdown&quot;: null,
+    &quot;connect&quot;: null,
+    &quot;transaction_date&quot;: &quot;2024-08-22T09:14:24.000Z&quot;,
+    &quot;plan_object&quot;: {},
+    &quot;subaccount&quot;: {}
+  }
+}</pre>
+<h4>警告</h4>
+<p>API 响应有一个状态键 <code class="inline">response.status</code> 指示 API 调用的状态。这是<strong>不</strong>交易的状态。交易的状态位于校验API响应中的<code class="inline">data</code>对象中，即<code class="inline">response.data.status</code>。了解更多关于<a href="https://paystack.com/docs/api">Paystack API 格式</a>的信息。</p>
+<p>响应还包括<code class="inline">gateway_response_code</code>。查看 <a href="https://paystack.com/docs/payments/gateway-responses/">网关响应</a> 了解完整的值列表以及它们如何映射到响应代码。</p>
+<h2>向回访用户收费</h2>
+<p><code class="inline">verify</code>响应还返回有关用户在<code class="inline">data.authorization</code>对象中支付的支付工具的信息。如果通道是<code class="inline">card</code>，那么你可以针对该用户存储该卡的<code class="inline">authorization_code</code>，并使用该费用向用户收取后续交易费用。了解更多关于<a href="https://paystack.com/docs/payments/recurring-charges/">经常性费用</a>的信息。</p>
+<h4></h4>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/payments/verify-payments/" target="_blank" rel="noopener">https://paystack.com/docs/payments/verify-payments/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

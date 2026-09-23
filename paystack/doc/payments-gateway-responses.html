@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>交易模式 · Paystack 开发文档（中文）</title>
+<meta name="description" content="交易模式 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>使用标准网关响应和 ISO 响应代码处理支付后工作流程。</p>
+<p>处理交易时，Paystack 返回<code class="inline">gateway_response_code</code>，可用于决定下一步做什么。卡交易还返回<code class="inline">response_code</code>，这是原始处理器代码。</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>领域</th><th>含义</th><th>频道</th></tr></thead><tbody><tr><td><code class="inline">response_code</code></td><td>这是从交易处理器返回的 2 或 3 位 ISO 8583 代码。</td><td>卡</td></tr><tr><td><code class="inline">gateway_response_code</code></td><td>这是响应代码的基于字符串的分类。它提供有关响应的附加信息。</td><td>全部</td></tr></tbody></table></div>
+<h2>交易模式</h2>
+<p>这些字段在以下操作中返回到交易对象中：</p>
+<ul><li><code class="inline">charge.success</code> 和其他 <code class="inline">charge.*</code> 交易事件的 Webhook</li><li>最终收费和收费授权回复</li></ul>
+<p><code class="inline">response_code</code> 仅针对卡交易返回。其他通道仅返回<code class="inline">gateway_response_code</code>。</p>
+<h2>响应值</h2>
+<p>通常，响应代码使用 2 位 ISO 8583 代码，Amex 卡除外。下表显示了响应代码如何映射到 <code class="inline">gateway_response_code</code>。任何未列出的代码都会解析为 <code class="inline">unknown</code>。</p>
+<p><code class="inline">approved</code>是唯一的成功值。任何其他值都意味着交易未成功。</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>响应码</th><th>Gateway_response_code</th></tr></thead><tbody><tr><td><code class="inline">00</code></td><td><code class="inline">approved</code></td></tr><tr><td><code class="inline">01</code></td><td><code class="inline">refer_to_card_issuer</code></td></tr><tr><td><code class="inline">02</code></td><td><code class="inline">refer_to_card_issuer_special</code></td></tr><tr><td><code class="inline">03</code></td><td><code class="inline">invalid_merchant</code></td></tr><tr><td><code class="inline">04</code></td><td><code class="inline">pickup_card</code></td></tr><tr><td><code class="inline">05</code></td><td><code class="inline">do_not_honor</code></td></tr><tr><td><code class="inline">06</code></td><td><code class="inline">processing_error</code></td></tr><tr><td><code class="inline">07</code></td><td><code class="inline">pickup_card_special</code></td></tr><tr><td><code class="inline">08</code></td><td><code class="inline">honour_with_identification</code></td></tr><tr><td><code class="inline">09</code></td><td><code class="inline">processing</code></td></tr><tr><td><code class="inline">10</code></td><td><code class="inline">partial_approval</code></td></tr><tr><td><code class="inline">11</code></td><td><code class="inline">vip_approval</code></td></tr><tr><td><code class="inline">12</code></td><td><code class="inline">invalid_transaction</code></td></tr><tr><td><code class="inline">13</code></td><td><code class="inline">invalid_amount</code></td></tr><tr><td><code class="inline">14</code></td><td><code class="inline">invalid_account_number</code></td></tr><tr><td><code class="inline">15</code></td><td><code class="inline">no_such_issuer</code></td></tr><tr><td><code class="inline">16</code></td><td><code class="inline">approved_update_track_3</code></td></tr><tr><td><code class="inline">17</code></td><td><code class="inline">customer_cancellation</code></td></tr><tr><td><code class="inline">18</code></td><td><code class="inline">customer_dispute</code></td></tr><tr><td><code class="inline">19</code></td><td><code class="inline">reenter_transaction</code></td></tr><tr><td><code class="inline">20</code></td><td><code class="inline">invalid_response</code></td></tr><tr><td><code class="inline">21</code></td><td><code class="inline">no_action_taken</code></td></tr><tr><td><code class="inline">22</code></td><td><code class="inline">suspected_malfunction</code></td></tr><tr><td><code class="inline">23</code></td><td><code class="inline">unacceptable_transaction_fee</code></td></tr><tr><td><code class="inline">24</code></td><td><code class="inline">file_update_not_supported</code></td></tr><tr><td><code class="inline">25</code></td><td><code class="inline">unable_to_locate_record</code></td></tr><tr><td><code class="inline">26</code></td><td><code class="inline">duplicate_file_update</code></td></tr><tr><td><code class="inline">27</code></td><td><code class="inline">file_update_field_edit_error</code></td></tr><tr><td><code class="inline">28</code></td><td><code class="inline">file_temporarily_unavailable</code></td></tr><tr><td><code class="inline">29</code></td><td><code class="inline">file_update_not_successful</code></td></tr><tr><td><code class="inline">30</code></td><td><code class="inline">format_error</code></td></tr><tr><td><code class="inline">31</code></td><td><code class="inline">bank_not_supported</code></td></tr><tr><td><code class="inline">32</code></td><td><code class="inline">completed_partially</code></td></tr><tr><td><code class="inline">33</code></td><td><code class="inline">expired_card</code></td></tr><tr><td><code class="inline">34</code></td><td><code class="inline">suspected_fraud</code></td></tr><tr><td><code class="inline">35</code></td><td><code class="inline">contact_acquirer</code></td></tr><tr><td><code class="inline">36</code></td><td><code class="inline">restricted_card</code></td></tr><tr><td><code class="inline">37</code></td><td><code class="inline">call_acquirer_security</code></td></tr><tr><td><code class="inline">38</code></td><td><code class="inline">pin_tries_exceeded</code></td></tr><tr><td><code class="inline">39</code></td><td><code class="inline">no_credit_account</code></td></tr><tr><td><code class="inline">40</code></td><td><code class="inline">function_not_supported</code></td></tr><tr><td><code class="inline">41</code></td><td><code class="inline">pickup_lost_card</code></td></tr><tr><td><code class="inline">42</code></td><td><code class="inline">no_universal_account</code></td></tr><tr><td><code class="inline">43</code></td><td><code class="inline">pickup_stolen_card</code></td></tr><tr><td><code class="inline">44</code></td><td><code class="inline">no_investment_account</code></td></tr><tr><td><code class="inline">45</code></td><td><code class="inline">account_closed</code></td></tr><tr><td><code class="inline">46</code></td><td><code class="inline">identification_required</code></td></tr><tr><td><code class="inline">47</code></td><td><code class="inline">identification_cross_check_required</code></td></tr><tr><td><code class="inline">51</code></td><td><code class="inline">insufficient_funds</code></td></tr><tr><td><code class="inline">52</code></td><td><code class="inline">no_checking_account</code></td></tr><tr><td><code class="inline">53</code></td><td><code class="inline">no_savings_account</code></td></tr><tr><td><code class="inline">54</code></td><td><code class="inline">expired_card</code></td></tr><tr><td><code class="inline">55</code></td><td><code class="inline">invalid_pin</code></td></tr><tr><td><code class="inline">56</code></td><td><code class="inline">no_card_record</code></td></tr><tr><td><code class="inline">57</code></td><td><code class="inline">transaction_not_permitted_cardholder</code></td></tr><tr><td><code class="inline">58</code></td><td><code class="inline">transaction_not_permitted_terminal</code></td></tr><tr><td><code class="inline">59</code></td><td><code class="inline">suspected_fraud</code></td></tr><tr><td><code class="inline">60</code></td><td><code class="inline">contact_acquirer</code></td></tr><tr><td><code class="inline">61</code></td><td><code class="inline">daily_limit_exceeded</code></td></tr><tr><td><code class="inline">62</code></td><td><code class="inline">restricted_card</code></td></tr><tr><td><code class="inline">63</code></td><td><code class="inline">security_violation</code></td></tr><tr><td><code class="inline">64</code></td><td><code class="inline">original_amount_incorrect</code></td></tr><tr><td><code class="inline">65</code></td><td><code class="inline">withdrawal_frequency_exceeded</code></td></tr><tr><td><code class="inline">66</code></td><td><code class="inline">call_acquirer_security</code></td></tr><tr><td><code class="inline">67</code></td><td><code class="inline">hard_capture</code></td></tr><tr><td><code class="inline">68</code></td><td><code class="inline">response_received_too_late</code></td></tr><tr><td><code class="inline">69</code></td><td><code class="inline">advice_received_too_late</code></td></tr><tr><td><code class="inline">75</code></td><td><code class="inline">pin_tries_exceeded</code></td></tr><tr><td><code class="inline">76</code></td><td><code class="inline">unable_to_locate_previous_message</code></td></tr><tr><td><code class="inline">77</code></td><td><code class="inline">previous_message_inconsistent</code></td></tr><tr><td><code class="inline">78</code></td><td><code class="inline">card_blocked_first_use</code></td></tr><tr><td><code class="inline">80</code></td><td><code class="inline">credit_issuer_unavailable</code></td></tr><tr><td><code class="inline">81</code></td><td><code class="inline">pin_cryptographic_error</code></td></tr><tr><td><code class="inline">82</code></td><td><code class="inline">cvv_verification_failed</code></td></tr><tr><td><code class="inline">83</code></td><td><code class="inline">unable_to_verify_pin</code></td></tr><tr><td><code class="inline">85</code></td><td><code class="inline">verification_no_decline</code></td></tr><tr><td><code class="inline">90</code></td><td><code class="inline">cutoff_in_progress</code></td></tr><tr><td><code class="inline">91</code></td><td><code class="inline">issuer_or_switch_inoperative</code></td></tr><tr><td><code class="inline">92</code></td><td><code class="inline">routing_destination_not_found</code></td></tr><tr><td><code class="inline">93</code></td><td><code class="inline">legal_violation</code></td></tr><tr><td><code class="inline">94</code></td><td><code class="inline">duplicate_transmission</code></td></tr><tr><td><code class="inline">95</code></td><td><code class="inline">reconcile_error</code></td></tr><tr><td><code class="inline">96</code></td><td><code class="inline">system_malfunction</code></td></tr><tr><td><code class="inline">97</code></td><td><code class="inline">transaction_timeout</code></td></tr><tr><td><code class="inline">9G</code></td><td><code class="inline">blocked_by_cardholder</code></td></tr></tbody></table></div>
+<h2>美国运通卡</h2>
+<p>与其他使用 2 位 ISO 8583 代码的卡提供商不同，Amex 使用 3 位代码，如下表所示：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>响应码</th><th>网关响应码</th></tr></thead><tbody><tr><td><code class="inline">000</code></td><td><code class="inline">approved</code></td></tr><tr><td><code class="inline">001</code></td><td><code class="inline">honour_with_identification</code></td></tr><tr><td><code class="inline">002</code></td><td><code class="inline">partial_approval</code></td></tr><tr><td><code class="inline">100</code></td><td><code class="inline">declined</code></td></tr><tr><td><code class="inline">101</code></td><td><code class="inline">expired_card</code></td></tr><tr><td><code class="inline">106</code></td><td><code class="inline">pin_tries_exceeded</code></td></tr><tr><td><code class="inline">109</code></td><td><code class="inline">invalid_merchant</code></td></tr><tr><td><code class="inline">110</code></td><td><code class="inline">invalid_amount</code></td></tr><tr><td><code class="inline">111</code></td><td><code class="inline">invalid_account_number</code></td></tr><tr><td><code class="inline">115</code></td><td><code class="inline">function_not_supported</code></td></tr><tr><td><code class="inline">117</code></td><td><code class="inline">invalid_pin</code></td></tr><tr><td><code class="inline">119</code></td><td><code class="inline">transaction_not_permitted_cardholder</code></td></tr><tr><td><code class="inline">122</code></td><td><code class="inline">invalid_cvv</code></td></tr><tr><td><code class="inline">125</code></td><td><code class="inline">invalid_from_date</code></td></tr><tr><td><code class="inline">130</code></td><td><code class="inline">identification_required</code></td></tr><tr><td><code class="inline">181</code></td><td><code class="inline">format_error</code></td></tr><tr><td><code class="inline">183</code></td><td><code class="inline">unsupported_currency</code></td></tr><tr><td><code class="inline">187</code></td><td><code class="inline">card_replaced</code></td></tr><tr><td><code class="inline">189</code></td><td><code class="inline">account_closed</code></td></tr><tr><td><code class="inline">200</code></td><td><code class="inline">pickup_card</code></td></tr><tr><td><code class="inline">911</code></td><td><code class="inline">transaction_timeout</code></td></tr><tr><td><code class="inline">912</code></td><td><code class="inline">bank_unavailable</code></td></tr></tbody></table></div>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/payments/gateway-responses/" target="_blank" rel="noopener">https://paystack.com/docs/payments/gateway-responses/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

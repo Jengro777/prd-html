@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>创建收件人 · Paystack 开发文档（中文）</title>
+<meta name="description" content="创建收件人 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>通过 Paystack 批量转账 API 一次向多个收款人汇款</p>
+<p>某些商业模式需要同时向多个客户汇款。例如，工资管理系统要求在每月的某个时间向所有员工发送工资。诸如此类的大笔支出需要仔细协调，以确保所有客户都能获得报酬，并且你的系统不会不堪重负。</p>
+<p><a href="https://paystack.com/docs/api/transfer#bulk">批量传输API</a> 接口处理大量支出编排，帮助企业专注于为客户提供价值。</p>
+<p>要在 Paystack 上汇款，你需要 API 密钥来校验你的转账。你可以在 Paystack Dashboard 的<a href="https://dashboard.paystack.com/#/settings/developer">设置 → API 密钥和 Webhook</a> 下找到你的密钥。</p>
+<h2>创建收件人</h2>
+<p>转账收款人是你的积分受益人，你可以向其汇款。在向客户汇款之前，你需要先收集他们的详细信息，然后使用他们的详细信息<a href="https://paystack.com/docs/transfers/creating-transfer-recipients/">创建转账收件人</a>。我们支持不同国家的不同接收者：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>类型</th><th>描述</th><th>货币</th></tr></thead><tbody><tr><td><code class="inline">ghipss</code></td><td>这意味着加纳银行间支付和结算系统。它代表加纳的银行账户。</td><td><strong>GHS</strong></td></tr><tr><td><code class="inline">mobile_money</code></td><td>Mobile Money 或 MoMo 是与手机号码绑定的账户。</td><td><strong>GHS/KES</strong></td></tr><tr><td><code class="inline">kepss</code></td><td>这是肯尼亚电子支付和结算系统。它代表肯尼亚的银行账户。</td><td><strong>KES</strong></td></tr><tr><td><code class="inline">nuban</code></td><td>这意味着尼日利亚统一银行帐号。它代表尼日利亚的银行账户。</td><td><strong>NGN</strong></td></tr><tr><td><code class="inline">basa</code></td><td>这指的是南非银行业协会。它代表南非的银行账户。</td><td><strong>ZAR</strong></td></tr><tr><td><code class="inline">authorization</code></td><td>这是代表客户卡的唯一代码。用户使用卡付款后，我们会返回授权码。</td><td><strong>全部</strong></td></tr></tbody></table></div>
+<p>创建后，将 <code class="inline">recipient_code</code> 保存到你的 DB 并使其可用于传输启动。这是传输生命周期中的一次性过程。由于你会定期向多个收件人汇款，因此你只需针对每个转账请求从 DB 获取收件人。</p>
+<h2>管理批次</h2>
+<p>在创建转账请求之前，你需要将请求分成批次。批次是请求的子集，可以更轻松地管理和跟踪传输。在代码中，批次是传输对象的数组：</p>
+<pre class="code">{
+  &quot;transfers&quot;: [
+    {
+      &quot;amount&quot;: 20000,
+      &quot;reference&quot;: &quot;acv_2627bbfe-1a2a-4a1a-8d0e-9d2ee6c31496&quot;,
+      &quot;reason&quot;: &quot;Bonus for the week&quot;,
+      &quot;recipient&quot;: &quot;RCP_gd9vgag7n5lr5ix&quot;
+    },
+    {
+      &quot;amount&quot;: 35000,
+      &quot;reference&quot;: &quot;acv_1bd0c1f8-78c2-463b-8bd4-ed9eeb36be50&quot;,
+      &quot;reason&quot;: &quot;Bonus for the week&quot;,
+      &quot;recipient&quot;: &quot;RCP_zpk2tgagu6lgb4g&quot;
+    },
+    {
+      &quot;amount&quot;: 15000,
+      &quot;reference&quot;: &quot;acv_11bebfc3-18b3-40aa-a4df-c55068c93457&quot;,
+      &quot;reason&quot;: &quot;Bonus for the week&quot;,
+      &quot;recipient&quot;: &quot;RCP_dfznnod8rwxlwgn&quot;
+    }
+  ]
+}</pre>
+<p>你应该始终为每个传输对象生成唯一的传输引用。转账参考将帮助你跟踪和管理每次转账。你可以查看 <a href="https://paystack.com/docs/transfers/single-transfers/#generate-a-transfer-reference">生成传输参考</a> 部分以了解更多信息。</p>
+<p><code class="inline">transfers</code>数组中的每个对象对于单个请求来说都是相同的参数。一个批次不应包含超过 <strong>100 件</strong>，并且每个批次应每隔 <strong>5秒</strong> 发送：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>参数</th><th>配置</th></tr></thead><tbody><tr><td>批量大小</td><td><= 100</td></tr><tr><td>持续时间</td><td>每 5 秒一次</td></tr></tbody></table></div>
+<p>通过<strong>URL</strong>设置转账审批的商户应确保他们可以在几秒（最好是微秒）内批准每批中的所有转账，否则他们可能会面临<code class="inline">blocked</code>状态的转账。因此，在规划批量大小时，你应该考虑校验每次传输的真实性所需的时间。</p>
+<p>持续时间是为了避免受到速率限制。短时间间隔发送多个请求会导致 <code class="inline">429</code>（请求过多）错误。</p>
+<p>正确规划和实施批次后，你现在可以启动批量传输。</p>
+<h2>启动批量传输</h2>
+<p>如果你已启用OTP进行转账审批，则需要禁用它才能使用此接口。</p>
+<p>除了批次中的<code class="inline">transfers</code>数组之外，你还需要添加<code class="inline">currency</code>和<code class="inline">source</code>以向<a href="https://paystack.com/docs/api/transfer#bulk">批量传输API</a>接口发出请求：</p>
+<pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/transfer/bulk&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+content_type=&quot;Content-Type: application/json&quot;
+data=&#x27;{
+&quot;currency&quot;: &quot;NGN&quot;,
+&quot;source&quot;: &quot;balance&quot;,
+&quot;transfers&quot;: [
+{
+&quot;amount&quot;: 20000,
+&quot;reference&quot;: &quot;acv_2627bbfe-1a2a-4a1a-8d0e-9d2ee6c31496&quot;,
+&quot;reason&quot;: &quot;Bonus for the week&quot;,
+&quot;recipient&quot;: &quot;RCP_gd9vgag7n5lr5ix&quot;
+},
+{
+&quot;amount&quot;: 35000,
+&quot;reference&quot;: &quot;acv_1bd0c1f8-78c2-463b-8bd4-ed9eeb36be50&quot;,
+&quot;reason&quot;: &quot;Bonus for the week&quot;,
+&quot;recipient&quot;: &quot;RCP_zpk2tgagu6lgb4g&quot;
+},
+{
+&quot;amount&quot;: 15000,
+&quot;reference&quot;: &quot;acv_11bebfc3-18b3-40aa-a4df-c55068c93457&quot;,
+&quot;reason&quot;: &quot;Bonus for the week&quot;,
+&quot;recipient&quot;: &quot;RCP_dfznnod8rwxlwgn&quot;
+}
+]
+}&#x27;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -H &quot;$content_type&quot; -d &quot;$data&quot; -X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;3 transfers queued.&quot;,
+  &quot;data&quot;: [
+    {
+      &quot;reference&quot;: &quot;acv_2627bbfe-1a2a-4a1a-8d0e-9d2ee6c31496&quot;,
+      &quot;recipient&quot;: &quot;RCP_gd9vgag7n5lr5ix&quot;,
+      &quot;amount&quot;: 20000,
+      &quot;transfer_code&quot;: &quot;TRF_o0mv5dc2lv4t2wdb&quot;,
+      &quot;currency&quot;: &quot;NGN&quot;,
+      &quot;status&quot;: &quot;success&quot;
+    },
+    {
+      &quot;reference&quot;: &quot;acv_1bd0c1f8-78c2-463b-8bd4-ed9eeb36be50&quot;,
+      &quot;recipient&quot;: &quot;RCP_zpk2tgagu6lgb4g&quot;,
+      &quot;amount&quot;: 35000,
+      &quot;transfer_code&quot;: &quot;TRF_tlvxomz43gjso2py&quot;,
+      &quot;currency&quot;: &quot;NGN&quot;,
+      &quot;status&quot;: &quot;success&quot;
+    },
+    {
+      &quot;reference&quot;: &quot;acv_11bebfc3-18b3-40aa-a4df-c55068c93457&quot;,
+      &quot;recipient&quot;: &quot;RCP_dfznnod8rwxlwgn&quot;,
+      &quot;amount&quot;: 15000,
+      &quot;transfer_code&quot;: &quot;TRF_yt2y2gcd3dmli8av&quot;,
+      &quot;currency&quot;: &quot;NGN&quot;,
+      &quot;status&quot;: &quot;success&quot;
+    }
+  ]
+}</pre>
+<p>与单次传输不同，响应对象中的 <code class="inline">data</code> 参数返回一个对象数组。每个对象代表批次中的一次传输。需要注意的是，传输状态的工作方式与单次传输类似。如果你需要回顾如何更新传输状态，你可以查看传输生命周期。</p>
+<p>测试传输始终返回<code class="inline">success</code>，因为不涉及任何处理。实时传输在处理时会排队，因此你需要设置 Webhook URL 来接收你请求的更新。</p>
+<p>虽然你可能已批量发送转账，但系统会针对批量中的每笔转账发送通知。因此，如果你的批次中有 100 笔转账，你将收到该批次的 100 个事件（每次转账一个）。</p>
+<h2>校验转账</h2>
+<p>由于排队和处理时间的原因，传输的更新并不总是即时的，因此你需要设置一个 Webhook URL，我们将在处理完成时进行 <code class="inline">POST</code> 更新。</p>
+<h3>通过Webhook校验</h3>
+<p>处理转账后，我们会将转账的最终状态作为 <code class="inline">POST</code> 请求发送至你的 Webhook URL。</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>活动</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">transfer.success</code></td><td>转账成功后发送</td></tr><tr><td><code class="inline">transfer.failed</code></td><td>传输失败时发送</td></tr><tr><td><code class="inline">transfer.reversed</code></td><td>当我们退还之前因无法完成的转账而借记的金额时，会发送此信息</td></tr></tbody></table></div>
+<pre class="code">{
+  &quot;event&quot;: &quot;transfer.success&quot;,
+  &quot;data&quot;: {
+    &quot;amount&quot;: 100000,
+    &quot;createdAt&quot;: &quot;2025-08-04T10:32:40.000Z&quot;,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;failures&quot;: null,
+    &quot;id&quot;: 860703114,
+    &quot;integration&quot;: {
+      &quot;id&quot;: 463433,
+      &quot;is_live&quot;: true,
+      &quot;business_name&quot;: &quot;Paystack Demo&quot;,
+      &quot;logo_path&quot;: &quot;https://public-files-paystack-prod.s3.eu-west-1.amazonaws.com/integration-logos/hpyxo8n1c7du6gxup7h6.png&quot;
+    },
+    &quot;reason&quot;: &quot;Bonus for the week&quot;,
+    &quot;reference&quot;: &quot;acv_9ee55786-2323-4760-98e2-6380c9cb3f68&quot;,
+    &quot;source&quot;: &quot;balance&quot;,
+    &quot;source_details&quot;: null,
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;titan_code&quot;: null,
+    &quot;transfer_code&quot;: &quot;TRF_v5tip3zx8nna9o78&quot;,
+    &quot;transferred_at&quot;: null,
+    &quot;updatedAt&quot;: &quot;2025-08-04T10:32:40.000Z&quot;,
+    &quot;recipient&quot;: {
+      &quot;active&quot;: true,
+      &quot;createdAt&quot;: &quot;2023-07-11T15:42:27.000Z&quot;,
+      &quot;currency&quot;: &quot;NGN&quot;,
+      &quot;description&quot;: &quot;&quot;,
+      &quot;domain&quot;: &quot;test&quot;,
+      &quot;email&quot;: null,
+      &quot;id&quot;: 56824902,
+      &quot;integration&quot;: 463433,
+      &quot;metadata&quot;: null,
+      &quot;name&quot;: &quot;Jekanmo Padie&quot;,
+      &quot;recipient_code&quot;: &quot;RCP_gd9vgag7n5lr5ix&quot;,
+      &quot;type&quot;: &quot;nuban&quot;,
+      &quot;updatedAt&quot;: &quot;2023-07-11T15:42:27.000Z&quot;,
+      &quot;is_deleted&quot;: false,
+      &quot;details&quot;: {
+        &quot;authorization_code&quot;: null,
+        &quot;account_number&quot;: &quot;9876543210&quot;,
+        &quot;account_name&quot;: null,
+        &quot;bank_code&quot;: &quot;044&quot;,
+        &quot;bank_name&quot;: &quot;Access Bank&quot;
+      }
+    },
+    &quot;session&quot;: {
+      &quot;provider&quot;: null,
+      &quot;id&quot;: null
+    },
+    &quot;fee_charged&quot;: 0,
+    &quot;gateway_response&quot;: null
+  }
+}</pre>
+<h3>通过轮询校验</h3>
+<p>如果你更喜欢使用接口来校验转账状态，你可以使用你用于请求的转账引用来调用 <a href="https://paystack.com/docs/api/transfer#verify">校验传输API</a> 接口：</p>
+<pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/transfer/verify/{reference}&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -X GET</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Transfer retrieved&quot;,
+  &quot;data&quot;: {
+    &quot;amount&quot;: 100000,
+    &quot;createdAt&quot;: &quot;2025-08-04T09:59:19.000Z&quot;,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;failures&quot;: null,
+    &quot;id&quot;: 860670817,
+    &quot;integration&quot;: 463433,
+    &quot;reason&quot;: &quot;Bonus for the week&quot;,
+    &quot;reference&quot;: &quot;acv_9ee55786-2323-4760-98e2-6380c9cb3f67&quot;,
+    &quot;source&quot;: &quot;balance&quot;,
+    &quot;source_details&quot;: null,
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;titan_code&quot;: null,
+    &quot;transfer_code&quot;: &quot;TRF_8opchtrhtjlfz90n&quot;,
+    &quot;request&quot;: 1068403325,
+    &quot;transferred_at&quot;: null,
+    &quot;updatedAt&quot;: &quot;2025-08-04T09:59:19.000Z&quot;,
+    &quot;recipient&quot;: {
+      &quot;active&quot;: true,
+      &quot;createdAt&quot;: &quot;2023-07-11T15:42:27.000Z&quot;,
+      &quot;currency&quot;: &quot;NGN&quot;,
+      &quot;description&quot;: &quot;&quot;,
+      &quot;domain&quot;: &quot;test&quot;,
+      &quot;email&quot;: null,
+      &quot;id&quot;: 56824902,
+      &quot;integration&quot;: 463433,
+      &quot;metadata&quot;: null,
+      &quot;name&quot;: &quot;Jekanmo Padie&quot;,
+      &quot;recipient_code&quot;: &quot;RCP_gd9vgag7n5lr5ix&quot;,
+      &quot;type&quot;: &quot;nuban&quot;,
+      &quot;updatedAt&quot;: &quot;2023-07-11T15:42:27.000Z&quot;,
+      &quot;is_deleted&quot;: false,
+      &quot;isDeleted&quot;: false,
+      &quot;details&quot;: {
+        &quot;authorization_code&quot;: null,
+        &quot;account_number&quot;: &quot;9876543210&quot;,
+        &quot;account_name&quot;: null,
+        &quot;bank_code&quot;: &quot;044&quot;,
+        &quot;bank_name&quot;: &quot;Access Bank&quot;
+      }
+    },
+    &quot;session&quot;: {
+      &quot;provider&quot;: null,
+      &quot;id&quot;: null
+    },
+    &quot;fee_charged&quot;: 1000,
+    &quot;fees_breakdown&quot;: null,
+    &quot;gateway_response&quot;: null
+  }
+}</pre>
+<p>从 API 响应中获取的 HTTP 状态代码表示 API 调用的状态，而不是传输的状态。传输的状态位于响应的<code class="inline">data</code>对象中，即<code class="inline">data.status</code>。仅当你获得 <strong>200 状态码</strong> 时，才应使用 <code class="inline">data.status</code> 值更新传输状态。查看 <a href="https://paystack.com/docs/transfers/how-transfers-work/">如何转移工作页面</a> 了解有关处理传输状态的更多信息。</p>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/transfers/bulk-transfers/" target="_blank" rel="noopener">https://paystack.com/docs/transfers/bulk-transfers/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

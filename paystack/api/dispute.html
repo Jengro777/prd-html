@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Disputes · Paystack API 参考（中文）</title>
+<meta name="description" content="争议 API 中文文档">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab" href="../doc/index.html">开发文档</a>
+    <a class="topbar__tab topbar__tab--active" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section">
+<div class="sidebar__caption">概览</div>
+<a class="sidebar__ep" href="index.html">API 简介与约定</a>
+<a class="sidebar__ep" href="index.html#authentication">认证鉴权</a>
+<a class="sidebar__ep" href="index.html#rate-limits">请求速率限制</a>
+<a class="sidebar__ep" href="index.html#pagination">分页与遍历</a>
+<a class="sidebar__ep" href="index.html#errors">错误处理</a>
+<a class="sidebar__ep" href="index.html#currency">支持的货币</a>
+</div>
+<div class="sidebar__caption">接口分组</div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="transaction.html">交易</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="transaction.html#initialize">初始化交易</a></li>
+<li><a class="sidebar__ep" href="transaction.html#verify">校验交易</a></li>
+<li><a class="sidebar__ep" href="transaction.html#list">查询交易列表</a></li>
+<li><a class="sidebar__ep" href="transaction.html#fetch">查询交易</a></li>
+<li><a class="sidebar__ep" href="transaction.html#charge-authorization">授权扣款</a></li>
+<li><a class="sidebar__ep" href="transaction.html#view-timeline">查看交易时间线</a></li>
+<li><a class="sidebar__ep" href="transaction.html#totals">交易汇总</a></li>
+<li><a class="sidebar__ep" href="transaction.html#export">导出交易</a></li>
+<li><a class="sidebar__ep" href="transaction.html#partial-debit">部分扣款</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="split.html">分账</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="split.html#create">创建分账</a></li>
+<li><a class="sidebar__ep" href="split.html#list">查询/搜索分账</a></li>
+<li><a class="sidebar__ep" href="split.html#fetch">查询分账</a></li>
+<li><a class="sidebar__ep" href="split.html#update">更新分账</a></li>
+<li><a class="sidebar__ep" href="split.html#add-subaccount">添加/更新分账子账户</a></li>
+<li><a class="sidebar__ep" href="split.html#remove-subaccount">从分账中移除子账户</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="terminal.html">终端</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="terminal.html#send-event">发送事件</a></li>
+<li><a class="sidebar__ep" href="terminal.html#fetch-event-status">查询事件状态</a></li>
+<li><a class="sidebar__ep" href="terminal.html#fetch-terminal-status">查询终端状态</a></li>
+<li><a class="sidebar__ep" href="terminal.html#list">查询终端列表</a></li>
+<li><a class="sidebar__ep" href="terminal.html#fetch">查询终端</a></li>
+<li><a class="sidebar__ep" href="terminal.html#update">更新终端</a></li>
+<li><a class="sidebar__ep" href="terminal.html#commission">启用终端</a></li>
+<li><a class="sidebar__ep" href="terminal.html#decommission">停用终端</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="virtual-terminal.html">虚拟终端</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="virtual-terminal.html#create">创建虚拟终端</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#list">查询虚拟终端列表</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#fetch">查询虚拟终端</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#update">更新虚拟终端</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#deactivate">停用虚拟终端</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#assign-destination">分配虚拟终端收款账户</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#unassign-destination">取消虚拟终端收款账户</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#add-split-code">为虚拟终端添加分账代码</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#remove-split-code">移除虚拟终端的分账代码</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="customer.html">客户</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="customer.html#create">创建客户</a></li>
+<li><a class="sidebar__ep" href="customer.html#list">查询客户列表</a></li>
+<li><a class="sidebar__ep" href="customer.html#fetch">查询客户</a></li>
+<li><a class="sidebar__ep" href="customer.html#update">更新客户</a></li>
+<li><a class="sidebar__ep" href="customer.html#validate">校验客户</a></li>
+<li><a class="sidebar__ep" href="customer.html#whitelist-blacklist">将客户加入白名单/黑名单</a></li>
+<li><a class="sidebar__ep" href="customer.html#initialize-authorization">初始化支付授权</a></li>
+<li><a class="sidebar__ep" href="customer.html#verify-authorization">校验支付授权</a></li>
+<li><a class="sidebar__ep" href="customer.html#initialize-direct-debit">初始化直接借记</a></li>
+<li><a class="sidebar__ep" href="customer.html#directdebit-activation-charge">直接借记激活扣款</a></li>
+<li><a class="sidebar__ep" href="customer.html#directdebit-mandate-authorizations">查询授权委托列表</a></li>
+<li><a class="sidebar__ep" href="customer.html#deactivate-authorization">停用支付授权</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="directdebit.html">直接借记</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="directdebit.html#activation-charge">触发激活扣款</a></li>
+<li><a class="sidebar__ep" href="directdebit.html#mandate-authorizations">查询授权委托列表</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="dedicated-virtual-account.html">专属虚拟账户</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#create">创建专属虚拟账户</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#assign">分配专属虚拟账户</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#list">查询专属虚拟账户列表</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#fetch">查询专属虚拟账户</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#requery">Requery Dedicated Account</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#deactivate">停用专属虚拟账户</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#add-split">对专属虚拟账户交易拆分</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#remove-split">移除专属虚拟账户的分账</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#providers">查询银行服务商</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="preauthorization.html">预授权</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="preauthorization.html#initialize">初始化预授权</a></li>
+<li><a class="sidebar__ep" href="preauthorization.html#capture">完成预授权扣款</a></li>
+<li><a class="sidebar__ep" href="preauthorization.html#reserve">预留预授权额度</a></li>
+<li><a class="sidebar__ep" href="preauthorization.html#verify">校验预授权</a></li>
+<li><a class="sidebar__ep" href="preauthorization.html#release">释放预授权</a></li>
+<li><a class="sidebar__ep" href="preauthorization.html#list">查询预授权列表</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="apple-pay.html">Apple Pay</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="apple-pay.html#register-domain">注册域名</a></li>
+<li><a class="sidebar__ep" href="apple-pay.html#list-domains">查询域名列表</a></li>
+<li><a class="sidebar__ep" href="apple-pay.html#unregister-domain">注销域名</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="capitec-pay.html">Capitec Pay</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="capitec-pay.html#requery">重新查询交易</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="subaccount.html">子账户</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="subaccount.html#create">创建子账户</a></li>
+<li><a class="sidebar__ep" href="subaccount.html#list">查询子账户列表</a></li>
+<li><a class="sidebar__ep" href="subaccount.html#fetch">查询子账户</a></li>
+<li><a class="sidebar__ep" href="subaccount.html#update">更新子账户</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="plan.html">订阅计划</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="plan.html#create">创建订阅计划</a></li>
+<li><a class="sidebar__ep" href="plan.html#list">查询订阅计划列表</a></li>
+<li><a class="sidebar__ep" href="plan.html#fetch">查询订阅计划</a></li>
+<li><a class="sidebar__ep" href="plan.html#update">更新订阅计划</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="subscription.html">订阅</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="subscription.html#create">创建订阅</a></li>
+<li><a class="sidebar__ep" href="subscription.html#list">查询订阅列表</a></li>
+<li><a class="sidebar__ep" href="subscription.html#fetch">查询订阅</a></li>
+<li><a class="sidebar__ep" href="subscription.html#enable">启用订阅</a></li>
+<li><a class="sidebar__ep" href="subscription.html#disable">停用订阅</a></li>
+<li><a class="sidebar__ep" href="subscription.html#manage-link">生成订阅更新链接</a></li>
+<li><a class="sidebar__ep" href="subscription.html#manage-email">发送订阅更新链接</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="product.html">商品</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="product.html#create">创建商品</a></li>
+<li><a class="sidebar__ep" href="product.html#list">查询商品列表</a></li>
+<li><a class="sidebar__ep" href="product.html#fetch">查询商品</a></li>
+<li><a class="sidebar__ep" href="product.html#update">更新商品</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="storefront.html">店铺</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="storefront.html#create">创建店铺</a></li>
+<li><a class="sidebar__ep" href="storefront.html#list">查询店铺列表</a></li>
+<li><a class="sidebar__ep" href="storefront.html#fetch">查询店铺</a></li>
+<li><a class="sidebar__ep" href="storefront.html#update">更新店铺</a></li>
+<li><a class="sidebar__ep" href="storefront.html#delete">删除店铺</a></li>
+<li><a class="sidebar__ep" href="storefront.html#verify-slug">校验店铺 Slug</a></li>
+<li><a class="sidebar__ep" href="storefront.html#fetch-orders">查询店铺订单</a></li>
+<li><a class="sidebar__ep" href="storefront.html#add-products">向店铺添加商品</a></li>
+<li><a class="sidebar__ep" href="storefront.html#list-products">查询店铺商品列表</a></li>
+<li><a class="sidebar__ep" href="storefront.html#publish">发布店铺</a></li>
+<li><a class="sidebar__ep" href="storefront.html#duplicate">复制店铺</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="order.html">订单</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="order.html#create">创建订单</a></li>
+<li><a class="sidebar__ep" href="order.html#list">查询订单列表</a></li>
+<li><a class="sidebar__ep" href="order.html#fetch">查询订单</a></li>
+<li><a class="sidebar__ep" href="order.html#fetch-product-orders">查询商品订单</a></li>
+<li><a class="sidebar__ep" href="order.html#validate">校验订单</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="page.html">支付页面</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="page.html#create">创建支付页面</a></li>
+<li><a class="sidebar__ep" href="page.html#list">查询支付页面列表</a></li>
+<li><a class="sidebar__ep" href="page.html#fetch">查询支付页面</a></li>
+<li><a class="sidebar__ep" href="page.html#update">更新支付页面</a></li>
+<li><a class="sidebar__ep" href="page.html#check-slug">检查 Slug 是否可用</a></li>
+<li><a class="sidebar__ep" href="page.html#add-products">添加商品</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="payment-request.html">付款请求</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="payment-request.html#create">创建付款请求</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#list">查询付款请求列表</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#fetch">查询付款请求</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#verify">校验付款请求</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#send-notification">发送通知</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#total">付款请求合计</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#finalize">完成付款请求</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#update">更新付款请求</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#archive">归档付款请求</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="settlement.html">结算</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="settlement.html#list">查询结算列表</a></li>
+<li><a class="sidebar__ep" href="settlement.html#transactions">查询结算交易列表</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="transfer-recipient.html">转账收款人</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="transfer-recipient.html#create">创建转账收款人</a></li>
+<li><a class="sidebar__ep" href="transfer-recipient.html#bulk">批量创建转账收款人</a></li>
+<li><a class="sidebar__ep" href="transfer-recipient.html#list">查询转账收款人列表</a></li>
+<li><a class="sidebar__ep" href="transfer-recipient.html#fetch">查询转账收款人</a></li>
+<li><a class="sidebar__ep" href="transfer-recipient.html#update">更新转账收款人</a></li>
+<li><a class="sidebar__ep" href="transfer-recipient.html#delete">删除转账收款人</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="transfer.html">转账</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="transfer.html#initiate">发起转账</a></li>
+<li><a class="sidebar__ep" href="transfer.html#finalize">完成转账</a></li>
+<li><a class="sidebar__ep" href="transfer.html#bulk">发起批量转账</a></li>
+<li><a class="sidebar__ep" href="transfer.html#list">查询转账列表</a></li>
+<li><a class="sidebar__ep" href="transfer.html#fetch">查询转账</a></li>
+<li><a class="sidebar__ep" href="transfer.html#verify">校验转账</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="transfer-control.html">转账控制</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="transfer-control.html#balance">查询余额</a></li>
+<li><a class="sidebar__ep" href="transfer-control.html#balance-ledger">查询余额流水</a></li>
+<li><a class="sidebar__ep" href="transfer-control.html#resend-otp">重发转账 OTP</a></li>
+<li><a class="sidebar__ep" href="transfer-control.html#disable-otp">关闭转账 OTP</a></li>
+<li><a class="sidebar__ep" href="transfer-control.html#finalize-disable-otp">确认关闭 OTP</a></li>
+<li><a class="sidebar__ep" href="transfer-control.html#enable-otp">开启转账 OTP</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="bulk-charge.html">批量扣款</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="bulk-charge.html#initiate">发起批量扣款</a></li>
+<li><a class="sidebar__ep" href="bulk-charge.html#list">查询批量扣款批次列表</a></li>
+<li><a class="sidebar__ep" href="bulk-charge.html#fetch-batch">查询批量扣款批次</a></li>
+<li><a class="sidebar__ep" href="bulk-charge.html#fetch-charge">查询批次内的扣款</a></li>
+<li><a class="sidebar__ep" href="bulk-charge.html#pause">暂停批量扣款批次</a></li>
+<li><a class="sidebar__ep" href="bulk-charge.html#resume">恢复批量扣款批次</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="integration.html">集成配置</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="integration.html#fetch-timeout">查询支付会话超时</a></li>
+<li><a class="sidebar__ep" href="integration.html#update-timeout">更新支付会话超时</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="charge.html">扣款</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="charge.html#create">创建扣款</a></li>
+<li><a class="sidebar__ep" href="charge.html#submit-pin">提交 PIN</a></li>
+<li><a class="sidebar__ep" href="charge.html#submit-otp">提交 OTP</a></li>
+<li><a class="sidebar__ep" href="charge.html#submit-phone">提交手机号</a></li>
+<li><a class="sidebar__ep" href="charge.html#submit-birthday">提交生日</a></li>
+<li><a class="sidebar__ep" href="charge.html#submit-address">提交地址</a></li>
+<li><a class="sidebar__ep" href="charge.html#check">查询待处理扣款</a></li>
+</ul></div>
+<div class="sidebar__group sidebar__group--active">
+<a class="sidebar__group-title" href="dispute.html">争议</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="dispute.html#list">查询争议列表</a></li>
+<li><a class="sidebar__ep" href="dispute.html#fetch">查询争议</a></li>
+<li><a class="sidebar__ep" href="dispute.html#transaction">查询交易争议列表</a></li>
+<li><a class="sidebar__ep" href="dispute.html#update">更新争议</a></li>
+<li><a class="sidebar__ep" href="dispute.html#evidence">提交证据</a></li>
+<li><a class="sidebar__ep" href="dispute.html#upload-url">获取上传地址</a></li>
+<li><a class="sidebar__ep" href="dispute.html#resolve">处理争议</a></li>
+<li><a class="sidebar__ep" href="dispute.html#export">导出争议</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="refund.html">退款</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="refund.html#create">发起退款</a></li>
+<li><a class="sidebar__ep" href="refund.html#retry">重试退款</a></li>
+<li><a class="sidebar__ep" href="refund.html#list">查询退款列表</a></li>
+<li><a class="sidebar__ep" href="refund.html#fetch">查询退款</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="webhook-events.html">Webhook 事件</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="webhook-events.html#list">List Events</a></li>
+<li><a class="sidebar__ep" href="webhook-events.html#lookup">Look Up an Event</a></li>
+<li><a class="sidebar__ep" href="webhook-events.html#fetch">Fetch Event</a></li>
+<li><a class="sidebar__ep" href="webhook-events.html#resend">Resend Events</a></li>
+<li><a class="sidebar__ep" href="webhook-events.html#resend-matching">Resend Matching Events</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="verification.html">校验</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="verification.html#resolve-account">解析银行账号</a></li>
+<li><a class="sidebar__ep" href="verification.html#validate-account">校验账号</a></li>
+<li><a class="sidebar__ep" href="verification.html#resolve-card">解析卡 BIN</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="miscellaneous.html">其他接口</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="miscellaneous.html#bank">查询银行列表</a></li>
+<li><a class="sidebar__ep" href="miscellaneous.html#country">查询/搜索国家</a></li>
+<li><a class="sidebar__ep" href="miscellaneous.html#avs-states">查询州/省列表（AVS）</a></li>
+</ul></div>
+</aside>
+<main class="content">
+<div class="content__eyebrow">API 参考</div>
+<h1>争议</h1>
+<p class="lead">争议 API 用于在集成中管理交易争议。</p>
+<section class="endpoint" id="list">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">查询争议列表</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--get">GET</span> <span class="endpoint__path">/dispute</span></p>
+<p>查询针对你发起的争议列表</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div></div>
+<h3>查询参数（Query Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">from</span><span class="param__type">Date</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">开始列出争议的起始时间，例如 <code class="inline">2016-09-21</code></p></div><div class="param"><div class="param__head"><span class="param__name">to</span><span class="param__type">Date</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">停止列出争议的结束时间，例如 <code class="inline">2016-09-21</code></p></div><div class="param"><div class="param__head"><span class="param__name">perPage</span><span class="param__type">Integer</span><span class="param__use ">可选</span></div><p class="param__desc">指定每页返回的记录数，未指定时默认 50。</p></div><div class="param"><div class="param__head"><span class="param__name">page</span><span class="param__type">Integer</span><span class="param__use ">可选</span></div><p class="param__desc">指定要查看的争议页码，未指定时默认 1。</p></div><div class="param"><div class="param__head"><span class="param__name">transaction</span><span class="param__type">String</span><span class="param__use ">可选</span></div><p class="param__desc">交易 ID</p></div><div class="param"><div class="param__head"><span class="param__name">status</span><span class="param__type">String</span><span class="param__use ">可选</span></div><p class="param__desc">争议状态，可选值：{ awaiting-merchant-feedback | awaiting-bank-feedback | pending | resolved }</p></div></div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/dispute&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -X GET</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Disputes retrieved&quot;,
+  &quot;data&quot;: [
+    {
+      &quot;id&quot;: 2867,
+      &quot;refund_amount&quot;: null,
+      &quot;currency&quot;: null,
+      &quot;status&quot;: &quot;archived&quot;,
+      &quot;resolution&quot;: null,
+      &quot;domain&quot;: &quot;test&quot;,
+      &quot;transaction&quot;: {
+        &quot;id&quot;: 5991760,
+        &quot;domain&quot;: &quot;test&quot;,
+        &quot;status&quot;: &quot;success&quot;,
+        &quot;reference&quot;: &quot;asjck8gf76zd1dr&quot;,
+        &quot;amount&quot;: 39100,
+        &quot;message&quot;: null,
+        &quot;gateway_response&quot;: &quot;Successful&quot;,
+        &quot;paid_at&quot;: &quot;2017-11-09T00:01:56.000Z&quot;,
+        &quot;created_at&quot;: &quot;2017-11-09T00:01:36.000Z&quot;,
+        &quot;channel&quot;: &quot;card&quot;,
+        &quot;currency&quot;: &quot;NGN&quot;,
+        &quot;ip_address&quot;: null,
+        &quot;metadata&quot;: &quot;&quot;,
+        &quot;log&quot;: null,
+        &quot;fees&quot;: 587,
+        &quot;fees_split&quot;: null,
+        &quot;authorization&quot;: {},
+        &quot;customer&quot;: null,
+        &quot;plan&quot;: {},
+        &quot;subaccount&quot;: {},
+        &quot;split&quot;: {},
+        &quot;order_id&quot;: null,
+        &quot;paidAt&quot;: &quot;2017-11-09T00:01:56.000Z&quot;,
+        &quot;createdAt&quot;: &quot;2017-11-09T00:01:36.000Z&quot;,
+        &quot;pos_transaction_data&quot;: null
+      },
+      &quot;transaction_reference&quot;: null,
+      &quot;category&quot;: null,
+      &quot;customer&quot;: {
+        &quot;id&quot;: 10207,
+        &quot;first_name&quot;: null,
+        &quot;last_name&quot;: null,
+        &quot;email&quot;: &quot;shola@baddest.com&quot;,
+        &quot;customer_code&quot;: &quot;CUS_unz4q52yjsd6064&quot;,
+        &quot;phone&quot;: null,
+        &quot;metadata&quot;: null,
+        &quot;risk_action&quot;: &quot;default&quot;,
+        &quot;international_format_phone&quot;: null
+      },
+      &quot;bin&quot;: null,
+      &quot;last4&quot;: null,
+      &quot;dueAt&quot;: null,
+      &quot;resolvedAt&quot;: null,
+      &quot;evidence&quot;: null,
+      &quot;attachments&quot;: &quot;[]&quot;,
+      &quot;note&quot;: null,
+      &quot;history&quot;: [
+        {
+          &quot;status&quot;: &quot;pending&quot;,
+          &quot;by&quot;: &quot;demo@test.co&quot;,
+          &quot;createdAt&quot;: &quot;2017-11-16T16:12:24.000Z&quot;
+        }
+      ],
+      &quot;messages&quot;: [
+        {
+          &quot;sender&quot;: &quot;demo@test.co&quot;,
+          &quot;body&quot;: &quot;test this&quot;,
+          &quot;createdAt&quot;: &quot;2017-11-16T16:12:24.000Z&quot;
+        }
+      ],
+      &quot;createdAt&quot;: &quot;2017-11-16T16:12:24.000Z&quot;,
+      &quot;updatedAt&quot;: &quot;2019-08-16T08:05:25.000Z&quot;
+    }
+  ],
+  &quot;meta&quot;: {
+    &quot;total&quot;: 1,
+    &quot;skipped&quot;: 0,
+    &quot;perPage&quot;: 50,
+    &quot;page&quot;: 1,
+    &quot;pageCount&quot;: 1
+  }
+}</pre></div>
+</section>
+<section class="endpoint" id="fetch">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">查询争议</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--get">GET</span> <span class="endpoint__path">/dispute/:id</span></p>
+<p>查询争议的更多详情</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div></div>
+<h3>路径参数（Path Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">id</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">争议 <code class="inline">ID</code>（要查询的</p></div></div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/dispute/:id&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -X GET</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Dispute retrieved&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 2867,
+    &quot;refund_amount&quot;: null,
+    &quot;currency&quot;: null,
+    &quot;status&quot;: &quot;archived&quot;,
+    &quot;resolution&quot;: null,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;transaction&quot;: {
+      &quot;id&quot;: 5991760,
+      &quot;domain&quot;: &quot;test&quot;,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;reference&quot;: &quot;asjck8gf76zd1dr&quot;,
+      &quot;amount&quot;: 39100,
+      &quot;message&quot;: null,
+      &quot;gateway_response&quot;: &quot;Successful&quot;,
+      &quot;paid_at&quot;: &quot;2017-11-09T00:01:56.000Z&quot;,
+      &quot;created_at&quot;: &quot;2017-11-09T00:01:36.000Z&quot;,
+      &quot;channel&quot;: &quot;card&quot;,
+      &quot;currency&quot;: &quot;NGN&quot;,
+      &quot;ip_address&quot;: null,
+      &quot;metadata&quot;: &quot;&quot;,
+      &quot;log&quot;: null,
+      &quot;fees&quot;: 587,
+      &quot;fees_split&quot;: null,
+      &quot;authorization&quot;: {},
+      &quot;customer&quot;: {
+        &quot;international_format_phone&quot;: null
+      },
+      &quot;plan&quot;: {},
+      &quot;subaccount&quot;: {},
+      &quot;split&quot;: {},
+      &quot;order_id&quot;: null,
+      &quot;paidAt&quot;: &quot;2017-11-09T00:01:56.000Z&quot;,
+      &quot;createdAt&quot;: &quot;2017-11-09T00:01:36.000Z&quot;,
+      &quot;requested_amount&quot;: null
+    },
+    &quot;transaction_reference&quot;: null,
+    &quot;category&quot;: null,
+    &quot;customer&quot;: {
+      &quot;id&quot;: 10207,
+      &quot;first_name&quot;: null,
+      &quot;last_name&quot;: null,
+      &quot;email&quot;: &quot;shola@baddest.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_unz4q52yjsd6064&quot;,
+      &quot;phone&quot;: null,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;,
+      &quot;international_format_phone&quot;: null
+    },
+    &quot;bin&quot;: null,
+    &quot;last4&quot;: null,
+    &quot;dueAt&quot;: null,
+    &quot;resolvedAt&quot;: null,
+    &quot;evidence&quot;: null,
+    &quot;attachments&quot;: &quot;[]&quot;,
+    &quot;note&quot;: null,
+    &quot;history&quot;: [
+      {
+        &quot;status&quot;: &quot;pending&quot;,
+        &quot;by&quot;: &quot;demo@test.co&quot;,
+        &quot;createdAt&quot;: &quot;2017-11-16T16:12:24.000Z&quot;
+      }
+    ],
+    &quot;messages&quot;: [
+      {
+        &quot;sender&quot;: &quot;demo@test.co&quot;,
+        &quot;body&quot;: &quot;test this&quot;,
+        &quot;createdAt&quot;: &quot;2017-11-16T16:12:24.000Z&quot;
+      }
+    ],
+    &quot;createdAt&quot;: &quot;2017-11-16T16:12:24.000Z&quot;,
+    &quot;updatedAt&quot;: &quot;2019-08-16T08:05:25.000Z&quot;
+  }
+}</pre></div>
+</section>
+<section class="endpoint" id="transaction">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">查询交易争议列表</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--get">GET</span> <span class="endpoint__path">/dispute/transaction/:id</span></p>
+<p>该接口用于查询某笔交易关联的争议</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div></div>
+<h3>路径参数（Path Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">id</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">交易的 <code class="inline">ID</code>（要查询的</p></div></div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/dispute/transaction/:id&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -X GET</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Dispute retrieved successfully&quot;,
+  &quot;data&quot;: {
+    &quot;history&quot;: [
+      {
+        &quot;id&quot;: 6094,
+        &quot;dispute&quot;: 2867,
+        &quot;status&quot;: &quot;pending&quot;,
+        &quot;by&quot;: &quot;demo@test.co&quot;,
+        &quot;createdAt&quot;: &quot;2017-11-16T16:12:24.000Z&quot;,
+        &quot;updatedAt&quot;: &quot;2017-11-16T16:12:24.000Z&quot;
+      }
+    ],
+    &quot;messages&quot;: [
+      {
+        &quot;sender&quot;: &quot;demo@test.co&quot;,
+        &quot;body&quot;: &quot;test this&quot;,
+        &quot;dispute&quot;: 2867,
+        &quot;id&quot;: 148,
+        &quot;is_deleted&quot;: 0,
+        &quot;createdAt&quot;: &quot;2017-11-16T16:12:24.000Z&quot;,
+        &quot;updatedAt&quot;: &quot;2017-11-16T16:12:24.000Z&quot;
+      }
+    ],
+    &quot;currency&quot;: null,
+    &quot;last4&quot;: null,
+    &quot;bin&quot;: null,
+    &quot;transaction_reference&quot;: null,
+    &quot;merchant_transaction_reference&quot;: null,
+    &quot;refund_amount&quot;: null,
+    &quot;status&quot;: &quot;archived&quot;,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;resolution&quot;: null,
+    &quot;category&quot;: null,
+    &quot;note&quot;: null,
+    &quot;attachments&quot;: &quot;[]&quot;,
+    &quot;id&quot;: 2867,
+    &quot;integration&quot;: 100043,
+    &quot;transaction&quot;: {
+      &quot;id&quot;: 5991760,
+      &quot;domain&quot;: &quot;test&quot;,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;reference&quot;: &quot;asjck8gf76zd1dr&quot;,
+      &quot;amount&quot;: 39100,
+      &quot;message&quot;: null,
+      &quot;gateway_response&quot;: &quot;Successful&quot;,
+      &quot;paid_at&quot;: &quot;2017-11-09T00:01:56.000Z&quot;,
+      &quot;created_at&quot;: &quot;2017-11-09T00:01:36.000Z&quot;,
+      &quot;channel&quot;: &quot;card&quot;,
+      &quot;currency&quot;: &quot;NGN&quot;,
+      &quot;ip_address&quot;: null,
+      &quot;metadata&quot;: &quot;&quot;,
+      &quot;log&quot;: null,
+      &quot;fees&quot;: 587,
+      &quot;fees_split&quot;: null,
+      &quot;authorization&quot;: {},
+      &quot;customer&quot;: {
+        &quot;international_format_phone&quot;: null
+      },
+      &quot;plan&quot;: {},
+      &quot;subaccount&quot;: {},
+      &quot;split&quot;: {},
+      &quot;order_id&quot;: null,
+      &quot;paidAt&quot;: &quot;2017-11-09T00:01:56.000Z&quot;,
+      &quot;createdAt&quot;: &quot;2017-11-09T00:01:36.000Z&quot;,
+      &quot;requested_amount&quot;: null
+    },
+    &quot;created_by&quot;: null,
+    &quot;evidence&quot;: null,
+    &quot;resolvedAt&quot;: null,
+    &quot;createdAt&quot;: &quot;2017-11-16T16:12:24.000Z&quot;,
+    &quot;updatedAt&quot;: &quot;2019-08-16T08:05:25.000Z&quot;,
+    &quot;dueAt&quot;: null
+  }
+}</pre></div>
+</section>
+<section class="endpoint" id="update">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">更新争议</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--put">PUT</span> <span class="endpoint__path">/dispute/:id</span></p>
+<p>更新集成中争议的信息</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div><div class="param"><div class="param__head"><span class="param__name">content-type</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">application/json</code></p></div></div>
+<h3>路径参数（Path Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">id</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">争议 ID</p></div></div>
+<h3>请求体参数（Body Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">refund_amount</span><span class="param__type">Integer</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">退款金额，使用 <a href="index.html#currency">支持的货币的最小单位</a></p></div><div class="param"><div class="param__head"><span class="param__name">uploaded_filename</span><span class="param__type">String</span><span class="param__use ">可选</span></div><p class="param__desc">通过上传地址（GET /dispute/:id/upload_url）响应返回的附件文件名</p></div></div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/dispute/:id&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+content_type=&quot;Content-Type: application/json&quot;
+data=&#x27;{ &quot;refund_amount&quot;: 1002 }&#x27;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -H &quot;$content_type&quot; -d &quot;$data&quot; -X PUT</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Dispute updated successfully&quot;,
+  &quot;data&quot;: [
+    {
+      &quot;currency&quot;: &quot;NGN&quot;,
+      &quot;last4&quot;: null,
+      &quot;bin&quot;: null,
+      &quot;transaction_reference&quot;: null,
+      &quot;merchant_transaction_reference&quot;: null,
+      &quot;refund_amount&quot;: 1002,
+      &quot;status&quot;: &quot;resolved&quot;,
+      &quot;domain&quot;: &quot;test&quot;,
+      &quot;resolution&quot;: &quot;merchant-accepted&quot;,
+      &quot;source&quot;: &quot;bank&quot;,
+      &quot;category&quot;: &quot;general&quot;,
+      &quot;note&quot;: null,
+      &quot;attachments&quot;: &quot;attachement&quot;,
+      &quot;id&quot;: 624,
+      &quot;transaction&quot;: {
+        &quot;id&quot;: 5991760,
+        &quot;domain&quot;: &quot;test&quot;,
+        &quot;status&quot;: &quot;success&quot;,
+        &quot;reference&quot;: &quot;asjck8gf76zd1dr&quot;,
+        &quot;amount&quot;: 39100,
+        &quot;message&quot;: null,
+        &quot;gateway_response&quot;: &quot;Successful&quot;,
+        &quot;paid_at&quot;: &quot;2017-11-09T00:01:56.000Z&quot;,
+        &quot;created_at&quot;: &quot;2017-11-09T00:01:36.000Z&quot;,
+        &quot;channel&quot;: &quot;card&quot;,
+        &quot;currency&quot;: &quot;NGN&quot;,
+        &quot;ip_address&quot;: null,
+        &quot;metadata&quot;: &quot;&quot;,
+        &quot;log&quot;: null,
+        &quot;fees&quot;: 587,
+        &quot;fees_split&quot;: null,
+        &quot;authorization&quot;: {},
+        &quot;customer&quot;: {
+          &quot;international_format_phone&quot;: null
+        },
+        &quot;plan&quot;: {},
+        &quot;subaccount&quot;: {},
+        &quot;split&quot;: {},
+        &quot;order_id&quot;: null,
+        &quot;paidAt&quot;: &quot;2017-11-09T00:01:56.000Z&quot;,
+        &quot;createdAt&quot;: &quot;2017-11-09T00:01:36.000Z&quot;,
+        &quot;requested_amount&quot;: null
+      },
+      &quot;customer&quot;: {
+        &quot;id&quot;: 10207,
+        &quot;first_name&quot;: null,
+        &quot;last_name&quot;: null,
+        &quot;email&quot;: &quot;shola@baddest.com&quot;,
+        &quot;customer_code&quot;: &quot;CUS_unz4q52yjsd6064&quot;,
+        &quot;phone&quot;: null,
+        &quot;metadata&quot;: null,
+        &quot;risk_action&quot;: &quot;default&quot;,
+        &quot;international_format_phone&quot;: null
+      },
+      &quot;organization&quot;: 1,
+      &quot;evidence&quot;: null,
+      &quot;resolvedAt&quot;: &quot;2019-08-28T14:14:41.000Z&quot;,
+      &quot;createdAt&quot;: &quot;2019-08-28T14:14:41.000Z&quot;,
+      &quot;updatedAt&quot;: &quot;2019-08-28T14:29:07.000Z&quot;,
+      &quot;dueAt&quot;: null
+    }
+  ]
+}</pre></div>
+</section>
+<section class="endpoint" id="evidence">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">提交证据</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--post">POST</span> <span class="endpoint__path">/dispute/:id/evidence</span></p>
+<p>提交争议举证材料</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div><div class="param"><div class="param__head"><span class="param__name">content-type</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">application/json</code></p></div></div>
+<h3>请求体参数（Body Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">customer_email</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">客户邮箱</p></div><div class="param"><div class="param__head"><span class="param__name">customer_name</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">客户姓名</p></div><div class="param"><div class="param__head"><span class="param__name">customer_phone</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">客户手机号</p></div><div class="param"><div class="param__head"><span class="param__name">service_details</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">涉及的服务详情</p></div><div class="param"><div class="param__head"><span class="param__name">delivery_address</span><span class="param__type">String</span><span class="param__use ">可选</span></div><p class="param__desc">收货地址</p></div><div class="param"><div class="param__head"><span class="param__name">delivery_date</span><span class="param__type">Date</span><span class="param__use ">可选</span></div><p class="param__desc">配送日期的 ISO 8601 表示（YYYY-MM-DD）</p></div></div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/dispute/:id/evidence&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+content_type=&quot;Content-Type: application/json&quot;
+data=&#x27;{ &quot;customer_email&quot;: &quot;cus@gmail.com&quot;,
+&quot;customer_name&quot;: &quot;Mensah King&quot;,
+&quot;customer_phone&quot;: &quot;0802345167&quot;,
+&quot;service_details&quot;: &quot;claim for buying product&quot;,
+&quot;delivery_address&quot;: &quot;3a ladoke street ogbomoso&quot;
+}&#x27;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -H &quot;$content_type&quot; -d &quot;$data&quot; -X POST</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Evidence created&quot;,
+  &quot;data&quot;: {
+    &quot;customer_email&quot;: &quot;cus@gmail.com&quot;,
+    &quot;customer_name&quot;: &quot;Mensah King&quot;,
+    &quot;customer_phone&quot;: &quot;0802345167&quot;,
+    &quot;service_details&quot;: &quot;claim for buying product&quot;,
+    &quot;delivery_address&quot;: &quot;3a ladoke street ogbomoso&quot;,
+    &quot;dispute&quot;: 624,
+    &quot;id&quot;: 21,
+    &quot;createdAt&quot;: &quot;2019-08-28T15:36:13.783Z&quot;,
+    &quot;updatedAt&quot;: &quot;2019-08-28T15:39:39.153Z&quot;
+  }
+}</pre></div>
+</section>
+<section class="endpoint" id="upload-url">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">获取上传地址</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--get">GET</span> <span class="endpoint__path">/dispute/:id/upload_url</span></p>
+<p>该接口用于查询某笔交易关联的争议</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div></div>
+<h3>路径参数（Path Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">id</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">争议 ID</p></div></div>
+<h3>查询参数（Query Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">upload_filename</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">要上传的文件名（含扩展名），例如 <code class="inline">filename.pdf</code></p></div></div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/dispute/:id/upload_url?upload_filename=filename.ext&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -X GET</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Upload url generated&quot;,
+  &quot;data&quot;: {
+    &quot;signedUrl&quot;: &quot;https://s3.eu-west-1.amazonaws.com/files.paystack.co/qesp8a4df1xejihd9x5q?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAI7CL5IZL2DJHOPPA%2F20191009%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20191009T220931Z&amp;X-Amz-Expires=1800&amp;X-Amz-Signature=f5cc387949f3520982886e70ab2e08721a82a9fa9e26b696b91471f36453867a&amp;X-Amz-SignedHeaders=host&quot;,
+    &quot;fileName&quot;: &quot;qesp8a4df1xejihd9x5q&quot;
+  }
+}</pre></div>
+</section>
+<section class="endpoint" id="resolve">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">处理争议</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--put">PUT</span> <span class="endpoint__path">/dispute/:id/resolve</span></p>
+<p>在集成中处理争议</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div><div class="param"><div class="param__head"><span class="param__name">content-type</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">application/json</code></p></div></div>
+<h3>路径参数（Path Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">id</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">争议 ID</p></div></div>
+<h3>请求体参数（Body Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">resolution</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">争议处理结果，可选值：{ merchant-accepted | declined }。</p></div><div class="param"><div class="param__head"><span class="param__name">message</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">处理原因</p></div><div class="param"><div class="param__head"><span class="param__name">refund_amount</span><span class="param__type">Integer</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">退款金额，使用 <a href="index.html#currency">支持的货币的最小单位</a></p></div><div class="param"><div class="param__head"><span class="param__name">uploaded_filename</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">通过上传地址（GET /dispute/:id/upload_url）响应返回的附件文件名</p></div><div class="param"><div class="param__head"><span class="param__name">evidence</span><span class="param__type">Integer</span><span class="param__use ">可选</span></div><p class="param__desc">欺诈申诉的证据 ID</p></div></div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/dispute/:id/resolve&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+content_type=&quot;Content-Type: application/json&quot;
+data=&#x27;{ &quot;resolution&quot;: &quot;merchant-accepted&quot;,
+&quot;message&quot;: &quot;Merchant accepted&quot;,
+&quot;uploaded_filename&quot;: &quot;qesp8a4df1xejihd9x5q&quot;,
+&quot;refund_amount&quot;: 1002
+}&#x27;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -H &quot;$content_type&quot; -d &quot;$data&quot; -X PUT</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Dispute successfully resolved&quot;,
+  &quot;data&quot;: {
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;last4&quot;: null,
+    &quot;bin&quot;: null,
+    &quot;transaction_reference&quot;: null,
+    &quot;merchant_transaction_reference&quot;: null,
+    &quot;refund_amount&quot;: 1002,
+    &quot;status&quot;: &quot;resolved&quot;,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;resolution&quot;: &quot;merchant-accepted&quot;,
+    &quot;category&quot;: &quot;general&quot;,
+    &quot;note&quot;: null,
+    &quot;attachments&quot;: &quot;attachment&quot;,
+    &quot;id&quot;: 624,
+    &quot;transaction&quot;: {
+      &quot;id&quot;: 5991760,
+      &quot;domain&quot;: &quot;test&quot;,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;reference&quot;: &quot;asjck8gf76zd1dr&quot;,
+      &quot;amount&quot;: 39100,
+      &quot;message&quot;: null,
+      &quot;gateway_response&quot;: &quot;Successful&quot;,
+      &quot;paid_at&quot;: &quot;2017-11-09T00:01:56.000Z&quot;,
+      &quot;created_at&quot;: &quot;2017-11-09T00:01:36.000Z&quot;,
+      &quot;channel&quot;: &quot;card&quot;,
+      &quot;currency&quot;: &quot;NGN&quot;,
+      &quot;ip_address&quot;: null,
+      &quot;metadata&quot;: &quot;&quot;,
+      &quot;log&quot;: null,
+      &quot;fees&quot;: 587,
+      &quot;fees_split&quot;: null,
+      &quot;authorization&quot;: {},
+      &quot;customer&quot;: {
+        &quot;international_format_phone&quot;: null
+      },
+      &quot;plan&quot;: {},
+      &quot;subaccount&quot;: {},
+      &quot;split&quot;: {},
+      &quot;order_id&quot;: null,
+      &quot;paidAt&quot;: &quot;2017-11-09T00:01:56.000Z&quot;,
+      &quot;createdAt&quot;: &quot;2017-11-09T00:01:36.000Z&quot;,
+      &quot;requested_amount&quot;: null
+    },
+    &quot;created_by&quot;: 30,
+    &quot;evidence&quot;: null,
+    &quot;resolvedAt&quot;: &quot;2019-08-28T15:23:31.000Z&quot;,
+    &quot;createdAt&quot;: &quot;2019-08-28T14:14:41.000Z&quot;,
+    &quot;updatedAt&quot;: &quot;2019-08-28T15:23:31.000Z&quot;,
+    &quot;dueAt&quot;: null,
+    &quot;message&quot;: {
+      &quot;dispute&quot;: 624,
+      &quot;sender&quot;: &quot;demo@test.co&quot;,
+      &quot;body&quot;: &quot;Merchant accepted&quot;,
+      &quot;id&quot;: 718,
+      &quot;createdAt&quot;: &quot;2019-08-28T15:23:31.418Z&quot;,
+      &quot;updatedAt&quot;: &quot;2019-08-28T15:23:31.418Z&quot;
+    }
+  }
+}</pre></div>
+</section>
+<section class="endpoint" id="export">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">导出争议</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--get">GET</span> <span class="endpoint__path">/dispute/export</span></p>
+<p>导出集成中的争议记录</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div></div>
+<h3>查询参数（Query Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">from</span><span class="param__type">Date</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">开始列出争议的起始时间，例如 <code class="inline">2016-09-21</code></p></div><div class="param"><div class="param__head"><span class="param__name">to</span><span class="param__type">Date</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">停止列出争议的结束时间，例如 <code class="inline">2016-09-21</code></p></div><div class="param"><div class="param__head"><span class="param__name">perPage</span><span class="param__type">Integer</span><span class="param__use ">可选</span></div><p class="param__desc">指定每页返回的记录数，未指定时默认 50。</p></div><div class="param"><div class="param__head"><span class="param__name">page</span><span class="param__type">Integer</span><span class="param__use ">可选</span></div><p class="param__desc">指定要查看的争议页码，未指定时默认 1。</p></div><div class="param"><div class="param__head"><span class="param__name">transaction</span><span class="param__type">String</span><span class="param__use ">可选</span></div><p class="param__desc">交易 ID</p></div><div class="param"><div class="param__head"><span class="param__name">status</span><span class="param__type">String</span><span class="param__use ">可选</span></div><p class="param__desc">争议状态，可选值：{ awaiting-merchant-feedback | awaiting-bank-feedback | pending | resolved }</p></div></div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/dispute/export&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -X GET</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Export successful&quot;,
+  &quot;data&quot;: {
+    &quot;path&quot;: &quot;https://s3.eu-west-1.amazonaws.com/files.paystack.co/exports/100043/disputes/161834548008.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAIFGL5IZL2DJHOPPA%2F20210419%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20210419T115718Z&amp;X-Amz-Expires=60&amp;X-Amz-Signature=8fc02bdf7f12411a6505559b4c35b069a8a478295b98c0587907777ef5e31bda&amp;X-Amz-SignedHeaders=host&quot;,
+    &quot;expiresAt&quot;: &quot;2021-04-19 11:58:18&quot;
+  }
+}</pre></div>
+</section>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/api/" target="_blank" rel="noopener">paystack.com/docs/api</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

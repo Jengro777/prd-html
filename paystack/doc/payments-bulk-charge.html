@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>它是如何运作的 · Paystack 开发文档（中文）</title>
+<meta name="description" content="它是如何运作的 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>建立一个循环系统来接受多个客户的付款。</p>
+<p>在接受客户的首次商品和服务付款后，你可以保存对回头客的付款授权。授权允许你构建自定义定期支付系统，而客户的干预最少。随着客户群的增长，构建定期支付系统的复杂性也会随之增加。</p>
+<p><a href="https://paystack.com/docs/api/bulk-charge">批量充电API</a> 接口抽象了这些复杂性，为你提供了一个简单的交互界面。</p>
+<h2>它是如何运作的</h2>
+<p>当你有多个客户需要定期收费时，建议你针对每个请求发送一组费用，而不是针对每个费用发起一个请求。这是为了避免速率限制，同时确保随着业务的增长你拥有可扩展的系统。</p>
+<p><a href="https://paystack.com/docs/api/bulk-charge">批量充电API</a> 接口适用于批次（批处理）和收费对象。批次由具有以下参数的电荷对象的集合组成：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>参数</th><th>需要吗？</th><th>类型</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">amount</code></td><td>是的</td><td>整数</td><td>向客户收取的金额。</td></tr><tr><td><code class="inline">authorization</code></td><td>是的</td><td>字符串</td><td>之前完成的交易的授权码。</td></tr><tr><td><code class="inline">reference</code></td><td>否</td><td>字符串</td><td>费用的唯一标识符。</td></tr><tr><td><code class="inline">attempt_partial_debit</code></td><td>否</td><td>布尔值</td><td>一个标志，指示你是否希望我们在客户资金不足时尝试收回较低金额。</td></tr><tr><td><code class="inline">at_least</code></td><td>否</td><td>整数</td><td>这与 <code class="inline">attempt_partial_debit parameter</code> 一起使用。它用于设置如果实际金额失败我们应该重试的金额。</td></tr><tr><td><code class="inline">metadata</code></td><td>否</td><td>对象</td><td>这是为了保存付款后流程的自定义数据。</td></tr></tbody></table></div>
+<p>批量中的费用在接收时排队并定期处理。在处理过程中，如果收费失败，我们会将收费添加回队列以进一步重试。</p>
+<p>下表显示了规划批次时需要牢记的指标：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>公制</th><th>价值</th><th>描述</th></tr></thead><tbody><tr><td>最大批量</td><td>1000</td><td>每个请求可以接受的费用总数。</td></tr><tr><td>重试限制</td><td>5</td><td>在标记为失败之前我们尝试处理费用的次数。</td></tr></tbody></table></div>
+<h2>集成清单</h2>
+<p>批次中的费用数量取决于你的用例和规模，因此在规划批次时，请参考以下清单：</p>
+<ul><li>确保你的批次大小在批次限制内。</li><li>始终传递参考信息以轻松跟踪每笔费用。引用有助于实现幂等性，这样，如果你需要再次重试特定费用，就不会面临双重借记的风险。另外，在没有参考的情况下，不能批量使用相同的授权。如果你需要批量多次计费，请为每次计费传递一个参考。</li><li>如果你的企业付款违约率较高，请传递<code class="inline">attempt_partial_debit</code>参数。</li><li>构建重试逻辑时，使用 <a href="https://paystack.com/docs/payments/gateway-responses/">网关响应</a> 解释 <code class="inline">data</code> 对象中的 <code class="inline">gateway_response_code</code>。对于客户错误，你需要联系他们来解决问题，而对于处理错误，你可以使用相同的参考重试。</li></ul>
+<h2>创建批量收费</h2>
+<p>批次和费用设计就位后，你可以向 <a href="https://paystack.com/docs/api/bulk-charge#create">开始批量充电 API</a> 接口发出 <code class="inline">POST</code> 请求，将每个费用对象传递给批次：</p>
+<pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/bulkcharge&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+content_type=&quot;Content-Type: application/json&quot;
+data=&#x27;[
+{
+&quot;amount&quot;: 10000,
+&quot;authorization&quot;: &quot;AUTH_ncx8hews93&quot;,
+&quot;reference&quot;: &quot;my_reference_1&quot;
+},
+{
+&quot;amount&quot;: 15000,
+&quot;authorization&quot;: &quot;AUTH_200nvt70zo&quot;,
+&quot;reference&quot;: &quot;my_reference_2&quot;
+},
+{
+&quot;amount&quot;: 25000,
+&quot;authorization&quot;: &quot;AUTH_84bqxd3rkf&quot;,
+&quot;reference&quot;: &quot;my_reference_3&quot;
+}
+]&#x27;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -H &quot;$content_type&quot; -d &quot;$data&quot; -X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Charges have been queued&quot;,
+  &quot;data&quot;: {
+    &quot;batch_code&quot;: &quot;BCH_ml3zk2hregr1inj&quot;,
+    &quot;reference&quot;: &quot;bulkcharge-1713528671888-29smeabva5&quot;,
+    &quot;id&quot;: 191016934,
+    &quot;integration&quot;: 463433,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;status&quot;: &quot;active&quot;,
+    &quot;total_charges&quot;: 3,
+    &quot;pending_charges&quot;: 3,
+    &quot;createdAt&quot;: &quot;2024-04-19T12:11:11.000Z&quot;,
+    &quot;updatedAt&quot;: &quot;2024-04-19T12:11:11.000Z&quot;
+  }
+}</pre>
+<p>响应的<code class="inline">data</code>对象中的<code class="inline">batch_code</code>允许你跟踪和管理批次，因此建议你保存它以供以后使用。还有另外两个参数可以为你提供有关批次的更多详细信息：</p>
+<ol><li><code class="inline">total_charges</code>：这是批次中可用的收费对象的总数。</li><li><code class="inline">pending_charges</code>：这是剩余待处理的费用金额。</li></ol>
+<h2>收听通知</h2>
+<p>如前所述，费用在处理之前会先排队，因此你需要 <a href="https://paystack.com/docs/payments/webhooks/">实现 Webhook URL</a> 才能获取批次中每个费用的状态。虽然你可能每批次发送了多个费用，但我们会为批次中的每个费用发送一个 Webhook 事件。例如，如果你的批次包含 100 个费用并且所有费用均已成功处理，你将获得 100 个事件。</p>
+<pre class="code">{
+  &quot;event&quot;: &quot;charge.success&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 3725529423,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;reference&quot;: &quot;my_reference_3&quot;,
+    &quot;amount&quot;: 25126,
+    &quot;message&quot;: null,
+    &quot;gateway_response&quot;: &quot;Approved&quot;,
+    &quot;paid_at&quot;: &quot;2024-04-19T12:12:15.000Z&quot;,
+    &quot;created_at&quot;: &quot;2024-04-19T12:12:12.000Z&quot;,
+    &quot;channel&quot;: &quot;card&quot;,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;ip_address&quot;: null,
+    &quot;metadata&quot;: {
+      &quot;custom_fields&quot;: [
+        {
+          &quot;display_name&quot;: &quot;Bulkcharge ID&quot;,
+          &quot;variable_name&quot;: &quot;bulkcharge_id&quot;,
+          &quot;value&quot;: &quot;191016934&quot;
+        },
+        {
+          &quot;display_name&quot;: &quot;Bulkcharge batch code&quot;,
+          &quot;variable_name&quot;: &quot;bulkcharge_batch_code&quot;,
+          &quot;value&quot;: &quot;BCH_ml3zk2hregr1inj&quot;
+        },
+        {
+          &quot;display_name&quot;: &quot;Charged via&quot;,
+          &quot;variable_name&quot;: &quot;charged_via&quot;,
+          &quot;value&quot;: &quot;Bulkcharge&quot;
+        }
+      ]
+    },
+    &quot;fees_breakdown&quot;: null,
+    &quot;log&quot;: null,
+    &quot;fees&quot;: 126,
+    &quot;fees_split&quot;: null,
+    &quot;authorization&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_84bqxd3rkf&quot;,
+      &quot;bin&quot;: &quot;408408&quot;,
+      &quot;last4&quot;: &quot;4081&quot;,
+      &quot;exp_month&quot;: &quot;12&quot;,
+      &quot;exp_year&quot;: &quot;2030&quot;,
+      &quot;channel&quot;: &quot;card&quot;,
+      &quot;card_type&quot;: &quot;visa &quot;,
+      &quot;bank&quot;: &quot;TEST BANK&quot;,
+      &quot;country_code&quot;: &quot;NG&quot;,
+      &quot;brand&quot;: &quot;visa&quot;,
+      &quot;reusable&quot;: true,
+      &quot;signature&quot;: &quot;SIG_yEXu7dLBeqG0kU7g95Ke&quot;,
+      &quot;account_name&quot;: null,
+      &quot;receiver_bank_account_number&quot;: null,
+      &quot;receiver_bank&quot;: null
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 112907911,
+      &quot;first_name&quot;: &quot;Mizz&quot;,
+      &quot;last_name&quot;: &quot;Kaneah&quot;,
+      &quot;email&quot;: &quot;mizz@kaneah.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_lht026y5q7p27o5&quot;,
+      &quot;phone&quot;: &quot;245421361&quot;,
+      &quot;metadata&quot;: {},
+      &quot;risk_action&quot;: &quot;default&quot;,
+      &quot;international_format_phone&quot;: &quot;+245421361&quot;
+    },
+    &quot;plan&quot;: {},
+    &quot;subaccount&quot;: {},
+    &quot;split&quot;: {},
+    &quot;order_id&quot;: null,
+    &quot;paidAt&quot;: &quot;2024-04-19T12:12:15.000Z&quot;,
+    &quot;requested_amount&quot;: 25000,
+    &quot;pos_transaction_data&quot;: null,
+    &quot;source&quot;: {
+      &quot;type&quot;: &quot;api&quot;,
+      &quot;source&quot;: &quot;merchant_api&quot;,
+      &quot;entry_point&quot;: &quot;charge&quot;,
+      &quot;identifier&quot;: null
+    }
+  }
+}</pre>
+<p>目前，我们仅发送 Webhook 事件来成功充值。但是，由于各种原因，处理费用时可能会出现问题，因此我们建议你致电 <a href="https://paystack.com/docs/api/transaction#verify">校验交易API</a> 接口来处理你未收到事件的费用。</p>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/payments/bulk-charge/" target="_blank" rel="noopener">https://paystack.com/docs/payments/bulk-charge/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>开始之前 · Paystack 开发文档（中文）</title>
+<meta name="description" content="开始之前 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>通过我们的API自动化处理和响应争议的过程</p>
+<p>使用争议API时，你需要：</p>
+<ol><li>检索所有未决争议。这些是已向你提出但尚未得到处理的争议。</li><li>检索可用于应对争议的适用收据和其他文件。</li><li>上传争议的所有相关收据和文件</li><li>使用适用的解决方案解决争议</li></ol>
+<p>有关所有接口和参数的列表，请参阅 <a href="https://paystack.com/docs/api/dispute">争议API</a> 接口。</p>
+<h2>开始之前</h2>
+<p>在开始争议 API 集成之前，请确保你：</p>
+<ol><li>了解纠纷的处理流程。</li><li>了解 Paystack 自动代表你处理争议的情况。</li><li>在你的服务端上设置收据存储库。有关可接受收据的更多信息，请参阅<a href="https://support.paystack.com/hc/en-us/articles/360012946200-How-to-resolve-chargebacks">这里</a>。</li><li>了解我们遇到的争议类型。</li><li>拥有 <strong>秘密API密钥</strong> 的副本，因为它将用于 API 调用接口。</li></ol>
+<h2>了解争议流程</h2>
+<p>当持卡人联系发卡银行并要求退还资金时，就会发生争议。争议是卡网络的一项功能，旨在保护持卡人免受欺诈活动的侵害。</p>
+<p>争议可能因多种原因引起，包括：</p>
+<ol><li>与描述不符，持卡人声称从未收到货物（已借记但没有价值），或者货物与他们的期望有重大差异。</li><li>如果持卡人不记得银行对账单中的费用与什么相关，则不予认可。</li><li>欺诈，持卡人声称他们未授权购买（例如他们的卡信息被盗并被欺诈使用）。</li><li>管理错误，例如重复计费、计费金额不正确或承诺退款但从未收到。</li></ol>
+<h2>Paystack auto 代表你处理争议的场景</h2>
+<p>All disputes raised against your integration/business should be handled within 16 hours (please <a href="https://support.paystack.com/hc/en-us/articles/360014290660-New-Chargeback-Deadlines-for-Nigerian-Businesses">看这篇文章</a> for more information)</p>
+<p>如果超过此时间，我们将自动代表你接受这些退款，并从你的 Paystack 余额中触发向受影响客户的退款。</p>
+<h2>在你的服务端上设置收据存储库</h2>
+<p>在你的应用后端，你可以有一个包含内部生成的收据的文件夹（最好采用 <code class="inline">.pdf</code> 格式）。我们建议，这些收据可以在收到 <code class="inline">charge.success</code> Webhook 通知时生成，也可以在使用 <code class="inline">GET /transaction/{reference}</code> 校验交易是否成功时生成。</p>
+<p>这些收据应该（理想情况下）以交易参考作为文件名保存。例如，如果你有一个引用为 <code class="inline">my-demo-transaction-xxx</code> 的交易，则生成的收据的文件名称将为 <code class="inline">my-demo-transaction-xxx.pdf</code>。稍后你将了解这如何影响自动化流程。</p>
+<h2>争议类型</h2>
+<p>争议有两种类型：</p>
+<ol><li>退款</li><li>欺诈索赔</li></ol>
+<p>当客户为产品或服务付款但没有获得该服务的价值，但他的银行账户却被你（商户）因该服务而扣款时，通常会发生退款。</p>
+<p>当不良行为者使用客户的付款信息进行授权交易时，就会发生欺诈。欺诈是客户向银行提出争议的主要原因。</p>
+<h2>自动化争议处理流程</h2>
+<p>你可以决定创建一个后台任务以按一定时间间隔或每天的特定时间运行此任务，或者你可能只需一个按钮即可在你选择的任何时间运行此任务。</p>
+<h3>第 1 步：获取待决争议</h3>
+<p>你可以通过致电我们的 <a href="https://paystack.com/docs/api/dispute#list">列出争议 API</a> 接口来完成此操作。为此有 3 个主要参数：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>参数</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">from</code></td><td>开始搜索争议的日期时间。推荐格式为<code class="inline">yyyy-MM-ddTHH:mm:ss.SSS[Z]</code></td></tr><tr><td><code class="inline">to</code></td><td>结束搜索争议的日期时间。推荐格式为<code class="inline">yyyy-MM-ddTHH:mm:ss.SSS[Z]</code></td></tr><tr><td><code class="inline">status</code></td><td>争议的状态。对于此过程，状态应为<code class="inline">awaiting-merchant-feedback</code></td></tr></tbody></table></div>
+<p>对于日期时间搜索，让开始日期为相关日期的午夜（例如 <code class="inline">2020-01-13T00:00:00.000Z</code>），并让结束日期为第二天午夜之前的一秒（例如 <code class="inline">2020-01-13T23:59:59.999Z</code>）。</p>
+<h3>第二步：上传争议证据</h3>
+<p>还记得我们建议你使用生成收据<a href="https://paystack.com/docs/payments/manage-disputes/#setting-up-a-receipts-repository-on-your-server">在这里</a>的交易参考号保存收据吗？现在我们可以使用它了。</p>
+<p>从上一步获得的争议数组中取出每个争议，我们需要争议<code class="inline">id</code>和交易参考。争议 ID 将用于上传收据，而交易参考将用于从存储库获取收据。</p>
+<p>你需要生成一个 URL 用于上传收据。你可以通过致电我们的 <a href="https://paystack.com/docs/api/dispute#upload-url">获取上传 URL API</a> 接口来完成此操作。</p>
+<p>这将返回可以上传收据的<code class="inline">signedUrl</code>，以及解决争议时用于识别上传的<code class="inline">filename</code>。</p>
+<p>请注意，<code class="inline">signedUrl</code>的有效期仅为30分钟。</p>
+<p>获得此URL后，你可以上传相应的收据作为证据，证明客户已获得所提出争议的费用的价值。</p>
+<p>可接受的文档格式为 <code class="inline">.jpg (image/jpg)</code>、<code class="inline">.jpeg (image/jpeg)</code> 和 <code class="inline">.pdf (application/pdf)</code>。</p>
+<p>要上传收据，请使用 <code class="inline">signedUrl</code> 发出 <code class="inline">PUT</code> 请求，如下面的示例代码所示。</p>
+<pre class="code">var request = require(&quot;request&quot;);
+var fs = require(&quot;fs&quot;);
+
+fs.readFile(&#x27;./transaction_reference.pdf&#x27;, function (err, data) {
+var options = {
+method: &quot;PUT&quot;,
+url: signedUrl,
+&#x27;Content-Type&#x27;: &#x27;application/pdf&#x27;,
+body: data
+}
+
+request(options, function (error, response, body) {
+if (error) throw new Error(error);
+console.log(body);
+console.log(&quot;Status code: &quot;, response.statusCode);
+});
+});</pre>
+<p>如果上传成功，响应中将会有一个<strong>空字符串</strong>，因此最好看到返回的<strong>状态码</strong>。</p>
+<p>你还需要提供有关向客户提供的产品或服务的证据，因为在调查索赔时将使用这些证据。为此，你将调用我们的 <a href="https://paystack.com/docs/api/dispute#evidence">添加证据API</a> 接口。</p>
+<h3>第 3 步：解决争议</h3>
+<p>你可以在此处回应争议，接受或拒绝争议。要接受争议，你发送解决值 <code class="inline">merchant-accepted</code>，而要拒绝，你发送解决值 <code class="inline">declined</code>。如果接受争议，你可以设置要向客户退款的金额（全部或部分）。要拒绝争议，请求中将需要上传的文件名（在上一步中完成）。</p>
+<p>你可以拨打我们的<a href="https://paystack.com/docs/api/dispute#resolve">解决争议API</a>接口解决纠纷。请注意以下事项：</p>
+<ol><li><code class="inline">uploaded_filename</code> 属性与我们为交易收据创建上传 URL 时获得的值相同。</li><li><code class="inline">evidence</code>属性是我们在上一步创建证据时获得的id。如果争议不是欺诈索赔，你可以将其保留为空字符串。</li><li><code class="inline">amount</code> 应位于 <a href="https://paystack.com/api#supported-currency">支持的货币</a> 的子单元中。</li></ol>
+<h3>手柄 Webhook</h3>
+<p>当你的企业记录争议时，Paystack 会发送 <code class="inline">charge.dispute.create</code> 事件。对于未解决的退款，我们还将每隔 <strong>4小时</strong> 发送一个 <code class="inline">charge.dispute.remind</code> 事件。一旦争议解决，就会发送<code class="inline">charge.dispute.resolve</code>事件。了解更多关于<a href="https://paystack.com/docs/payments/webhooks/">Webhook</a>的信息。</p>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/payments/manage-disputes/" target="_blank" rel="noopener">https://paystack.com/docs/payments/manage-disputes/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

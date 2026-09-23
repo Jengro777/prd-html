@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>卡片 · Paystack 开发文档（中文）</title>
+<meta name="description" content="卡片 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>你可以使用以下测试详细信息来测试不同的支付渠道。</p>
+<h2>卡片</h2>
+<p>每张卡的到期日期可以是未来的任何日期。</p>
+<h3>成功打卡</h3>
+<pre class="code">0840 8408 4081</pre>
+<p>到期日 09/27</p>
+<p>CVV 408</p>
+<pre class="code">5078 5078 5078 12</pre>
+<p>到期日 09/27</p>
+<p>CVV081</p>
+<p>引脚 1111</p>
+<pre class="code">6666 6666 6666 666</pre>
+<p>到期日 09/27</p>
+<p>CVV 123</p>
+<p>引脚 1234</p>
+<p>OTP123456</p>
+<pre class="code">5078 5078 5078 04</pre>
+<p>到期日 09/27</p>
+<p>CVV884</p>
+<p>引脚 0000</p>
+<p>OTP123456</p>
+<pre class="code">6027 2058 4796</pre>
+<p>到期日 09/27</p>
+<p>CVV 123</p>
+<h3>失败的卡</h3>
+<pre class="code">0800 0000 5408</pre>
+<p>到期日 09/27</p>
+<p>CVV001</p>
+<pre class="code">5078 5078 5078 53</pre>
+<p>到期日 09/27</p>
+<p>CVV082</p>
+<p>引脚 0000</p>
+<h3>退款</h3>
+<p>要测试某些退款场景，你可以在完成交易时使用这些卡。交易将会成功，但退款请求的响应由所使用的卡决定。</p>
+<pre class="code">0800 0067 1803</pre>
+<p>到期日 09/27</p>
+<p>CVV 180</p>
+<pre class="code">0800 0067 1902</pre>
+<p>到期日 09/27</p>
+<p>CVV 190</p>
+<h3>API 错误</h3>
+<pre class="code">0800 0067 0037</pre>
+<p>到期日 09/27</p>
+<p>CVV787</p>
+<h2>EFT</h2>
+<p>这些账户应该用于测试某些退款场景。然而，由于账户总是会导致交易成功，因此你也可以使用它们来测试交易是否成功。卡片上的标题显示当你发起交易退款时退款状态。</p>
+<pre class="code">220 493 6
+220 493 5</pre>
+<h2>银行账户</h2>
+<p>尼日利亚商户在测试模式下测试时可以使用常规银行账户创建转账收件人。</p>
+<pre class="code">000 000 0</pre>
+<p>生日 2007-09-23</p>
+<p>OTP123456</p>
+<pre class="code">000 000 0</pre>
+<p>代码 057</p>
+<p>+234 810 000 000 0</p>
+<p>代码 50211</p>
+<p>令牌 123456</p>
+<h2>移动货币</h2>
+<pre class="code">123 498 7</pre>
+<p>网络MTN</p>
+<p>+254 710 000 000</p>
+<p>网络 M-佩萨</p>
+<pre class="code">000 000 0</pre>
+<p>网络橙</p>
+<p>OTP 1234</p>
+<h2>专属虚拟账户</h2>
+<p>你可以使用我们创建的 <a href="https://demobank.paystackintegrations.com/">银行申请样本</a> 来发起向你的测试虚拟账户的转账。如果你只是想尝试 <a href="https://paystack.com/docs/payments/dedicated-virtual-accounts/">专属虚拟账户</a> 产品，请使用以下测试账户：</p>
+<pre class="code">000 164 4</pre>
+<p>引脚 0000</p>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/payments/test-payments/" target="_blank" rel="noopener">https://paystack.com/docs/payments/test-payments/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

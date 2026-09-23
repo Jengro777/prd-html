@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简介 · Paystack 开发文档（中文）</title>
+<meta name="description" content="简介 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>使用 Flutter 为终端构建自定义应用程序？在本指南中，我们将探索如何使用 Flutter 的方法通道与 Paystack 应用程序交互以受理支付。</p>
+<h2>简介</h2>
+<p>Paystack Terminal 允许你构建 <a href="https://developer.android.com/guide/components/intents-filters#Building">通过意图进行沟通</a> 与终端应用程序一起受理支付的自定义应用程序。终端应用程序处理有关付款的所有交易，让你可以专注于构建应用程序。在付款时，你只需通过意图将付款详细信息传递给终端应用程序，系统就会处理付款并将响应传回你的应用程序。</p>
+<h2>项目设置</h2>
+<p>本指南假设你有一个现有的 Flutter 应用程序，因此，我们的重点是构建支付流程。</p>
+<p>我们将使用 <a href="https://docs.flutter.dev/platform-integration/platform-channels?tab=type-mappings-kotlin-tab">Flutter的方法通道</a> 来允许 Dart 和 Kotlin 之间的通信。本指南是使用以下设置的指南：</p>
+<ul><li>Flutter (3.13.9)</li><li>飞镖 (3.1.5)</li></ul>
+<p>虽然，并不强制全部按原样使用，但这会使操作更容易，并且几乎没有错误。 Android Studio 特别用于编写和管理所有Kotlin 代码。</p>
+<h2>创建模型</h2>
+<p>To get started, we’ll be creating all the models we need for the payment flow. Before creating our models, we need to <a href="https://github.com/google/gson">安装Gson</a>, a library for serialising and deserialising Java/Kotlin objects.</p>
+<p>要安装 Gson，请在 Android Studio 中打开项目中的 <code class="inline">android</code> 文件夹。打开后：</p>
+<ol><li>确保你的 Android Studio 工作区配置为 <code class="inline">Android</code>。</li><li>打开应用程序<code class="inline">build.gradle</code>。这是具有 <code class="inline">Module: YourAppName.app</code> 的那个。</li><li>添加 <code class="inline">gson</code> 作为依赖项。</li><li>弹出窗口显示到<code class="inline">Sync Now</code>。同步会安装依赖项并使其在你的项目中可供使用。</li></ol>
+<p><a href="https://paystack.com/docs/static/60360dc482a951b326b93dfa834fbf6c/8c557/terminal_flutter_gradle.png">![图 1：Android Studio 的屏幕截图，显示依赖项安装</a>](https://paystack.com/docs/static/60360dc482a951b326b93dfa834fbf6c/9d362/terminal_flutter_gradle.png)</p>
+<p>安装依赖项后，我们可以创建以下模型：</p>
+<pre class="code">
+data class TerminalResponse(
+val statusCode: String,
+val message: String,
+val data: String
+)</pre>
+<h2>创建付款意向</h2>
+<p>模型到位后，我们现在可以创建启动付款的方法，将其传递给 Paystack 应用程序并处理结果。为此，我们需要打开 <code class="inline">MainActivity.kt</code> 文件。你可以在应用程序的 <code class="inline">android → app → java → YourPackageName</code> 中找到此文件：</p>
+<p><a href="https://paystack.com/docs/static/2abf712411f2fba93e405547c0ffbf5b/8c557/terminal_flutter_main_activity.png">![图 2：Android Studio 的屏幕截图，显示依赖项安装</a>](https://paystack.com/docs/static/2abf712411f2fba93e405547c0ffbf5b/18936/terminal_flutter_main_activity.png)</p>
+<p>最初，该文件包含一个空类。我们将添加发起付款和处理响应的方法：</p>
+<ul><li>MainActivity.kt</li></ul>
+<pre class="code">
+import android.content.Intent
+import android.util.Log
+import android.widget.Toast
+import com.example.sample_registration.model.CustomField
+import com.example.sample_registration.model.PaystackIntentResponse
+import com.example.sample_registration.model.TerminalResponse
+import com.example.sample_registration.model.TransactionRequest
+import com.example.sample_registration.model.TransactionResponse
+import com.google.gson.Gson
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity: FlutterActivity() {
+private val gson = Gson()
+private var transactionStatus: String? = &quot;&quot;
+
+private val CHANNEL = &quot;com.example.sample_registration/payment&quot;
+private val PACKAGE_NAME = &quot;com.paystack.pos&quot;
+private val TRANSACTION = &quot;com.paystack.pos.TRANSACT&quot;
+private val TRANSACTION_RESULT_CODE = 14
+
+
+private fun makePayment(amount: Int?) {
+val transactionRequest = amount?.let {
+TransactionRequest(
+amount = it,
+offlineReference = null,
+supplementaryReceiptData = null,
+metadata = mapOf(
+&quot;custom_fields&quot; to listOf(
+CustomField(
+displayName = &quot;App Name&quot;,
+variableName = &quot;app_name&quot;,
+value = &quot;Sample Registration&quot;
+)
+)
+)
+)
+}
+
+val transactionIntent = Intent(Intent.ACTION_VIEW).apply {
+setPackage(PACKAGE_NAME)
+putExtra(TRANSACTION, gson.toJson(transactionRequest))
+}
+
+startActivityForResult(transactionIntent, 1)
+}
+
+override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+super.onActivityResult(requestCode, resultCode, data)
+val paystackIntentResponse: PaystackIntentResponse
+
+if (resultCode == TRANSACTION_RESULT_CODE) {
+paystackIntentResponse = gson.fromJson(
+data?.getStringExtra(TRANSACTION),
+PaystackIntentResponse::class.java
+)
+
+processResponse(paystackIntentResponse)
+}
+else {
+
+}
+}
+
+private fun processResponse(response: PaystackIntentResponse) {
+
+val terminalResponse: TerminalResponse = response.intentResponse
+val transactionResponse = gson.fromJson(
+terminalResponse.data,
+TransactionResponse::class.java
+)
+
+transactionStatus = transactionResponse.reference
+}
+}</pre>
+<p>我们在 <code class="inline">MainActivity.kt</code> 类中添加了三个函数：</p>
+<ol><li><strong>付款</strong>：这是创建交易请求并将其交给 Paystack 应用程序的函数。这就是 <code class="inline">transactionIntent</code> 和 <code class="inline">startActivityForResult</code> 的作用。</li><li><strong>活动结果</strong>：这是一个回调函数。当在<code class="inline">makePayment</code>函数中调用<code class="inline">startActivityForResult</code>方法时，它会自动要求该函数接收来自Paystack应用程序的响应。</li><li><strong>过程响应</strong>：此函数基本上解析 Paystack 应用程序的结果并将其返回给Flutter。</li></ol>
+<h2>创建方法通道</h2>
+<p><code class="inline">MethodChannel</code> 在客户端（UI）和主机（平台）之间创建通信通道。在这种情况下，平台是Android。为了创建用于支付的 <code class="inline">MethodChannel</code>，我们将重写 <code class="inline">configureFlutterEngine</code> 方法并启动对 <code class="inline">makePayment</code> 函数的调用。我们将在 <code class="inline">MainActivity.kt</code> 文件中的 <code class="inline">makePayment</code> 函数上方添加 <code class="inline">configureFlutterEngine</code> 函数：</p>
+<ul><li>MainActivity.kt</li></ul>
+<pre class="code">
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.MethodChannel
+
+class MainActivity: FlutterActivity() {
+private val CHANNEL = &quot;com.example.sample_registration/payment&quot;
+
+override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+super.configureFlutterEngine(flutterEngine)
+
+MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
+call, result -&gt;
+if (call.method == &quot;makePayment&quot;) {
+val amount = call.argument(&quot;amount&quot;) ?: 0
+makePayment(amount)
+
+result.success(transactionStatus)
+} else {
+result.notImplemented()
+}
+}
+}
+
+
+}</pre>
+<p><code class="inline">MethodChannel</code> 基本上保留了从 Flutter 调用的函数的选项卡。如果匹配<code class="inline">makePayment</code>，则会触发该函数。 <code class="inline">MainActivity.kt</code>的完整代码已在GitHub上提供，供你参考。</p>
+<p>你应该记下 <code class="inline">CHANNEL</code> 常量，因为我们将在 Flutter 代码中使用它作为标识符。</p>
+<h2>链接方法通道</h2>
+<p>现在我们回到了 Flutter 代码。我们将通过将<code class="inline">MethodChannel</code>链接到UI来完成<code class="inline">MethodChannel</code>设置。在包含付款按钮的小部件中，你需要添加一个常量来标识你要链接到的频道，并设置一个函数来调用 <code class="inline">makePayment</code> 函数：</p>
+<ul><li>注册.dart</li></ul>
+<pre class="code">static const _methodChannel =
+MethodChannel(&#x27;com.example.sample_registration/payment&#x27;);
+
+Future&lt;void&gt; makePayment() async {
+String reference = &#x27;&#x27;;
+try {
+var options = {
+&#x27;amount&#x27;: 5000,
+&#x27;supplementaryData&#x27;: {
+&#x27;developerSuppliedText&#x27;: null,
+&#x27;developerSuppliedImageUrlPath&#x27;:
+&quot;https://assets.paystack.com/assets/img/press/Terminal-x-Bature-x-World-Cup-Receipt.jpg&quot;,
+&#x27;barcodeOrQrcodeImageText&#x27;: null,
+&#x27;textImageType&#x27;: null
+}
+};
+reference = await _methodChannel.invokeMethod(&#x27;makePayment&#x27;, options);
+print(&quot;Reference: $reference&quot;);
+} on PlatformException catch (e) {
+print(&quot;Error: $e&quot;);
+reference = &#x27;&#x27;;
+}
+
+setState(() {
+_transactionReference = reference;
+});
+}</pre>
+<p><code class="inline">makePayment</code>按钮可以在Button Widget的<code class="inline">onPressed</code>方法中调用。你现在可以测试一切是否正常。</p>
+<h2>结论</h2>
+<p>在本指南中，我们学习了如何使用 <a href="https://docs.flutter.dev/platform-integration/platform-channels?tab=type-mappings-kotlin-tab">Flutter的方法通道</a> 在 Android 和 Flutter 之间进行通信。我们能够使用这种方法将付款推送到 Paystack 应用程序。</p>
+<p>你可以找到<a href="https://github.com/PaystackOSS/sample-registration-flutter">完整代码在Github上</a>作为参考。</p>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/guides/building_terminal_apps_flutter/" target="_blank" rel="noopener">https://paystack.com/docs/guides/building_terminal_apps_flutter/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

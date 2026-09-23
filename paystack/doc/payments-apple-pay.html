@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>激活苹果支付 · Paystack 开发文档（中文）</title>
+<meta name="description" content="激活苹果支付 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>允许客户在 iOS 和 Safari 上使用 Apple Pay 安全地进行付款。</p>
+<h2>激活苹果支付</h2>
+<p>如果使用<a href="https://dashboard.paystack.com/v2">薪资画布</a>，你可以跳过此步骤并继续下一步。</p>
+<p>你可以在 Paystack Dashboard 上为你的 Web 应用程序配置 Apple Pay 通道。要在集成中启用 Apple Pay，请在 Paystack 仪表板上点击 <a href="https://dashboard.paystack.com/#/settings/preferences">转到首选项页面</a> 并选中 <code class="inline">Apple Pay</code> 选项。</p>
+<p><a href="https://paystack.com/docs/static/05c13462f0fdba44bf00e332fb55f493/8c557/activate_apple_pay.png">![图片 1：Paystack 首选项页面的图片，显示激活 Apple Pay 的复选框</a>](https://paystack.com/docs/static/05c13462f0fdba44bf00e332fb55f493/636d3/activate_apple_pay.png)</p>
+<p>选中后，系统将提示你接受 Apple Pay 平台网络商户条款和条件，以启用 Apple Pay。单击 <code class="inline">Enable Apple Pay</code> 按钮表示你已阅读并接受 Apple Pay 条款和条件。</p>
+<p><a href="https://paystack.com/docs/static/370d4300cad1b4debc0f449e5a57e94f/8c557/review_tc.png">![图片 2：激活 Apple Pay 之前查看 Apple Pay 条款和条件的模式图片</a>](https://paystack.com/docs/static/370d4300cad1b4debc0f449e5a57e94f/e431d/review_tc.png)</p>
+<p>如果你使用我们的 Commerce Suite（发票、付款页面或店面）或任何将用户从你的网站重定向到新付款页面的插件，你现在可以开始通过 Apple Pay 受理支付。拥有自定义 Web 应用程序的商户可以继续执行下一部分，为其网站设置 Apple Pay。</p>
+<h2>设置你的网络应用程序</h2>
+<p>每个 Apple Pay 请求都需要与顶级域或子域关联。要开始使用 Apple Pay 受理支付，你需要：</p>
+<ol><li><a href="https://paystack.com/docs/payments/apple-pay/#register-your-domain">注册你的域名</a></li><li><a href="https://paystack.com/docs/payments/apple-pay/#host-your-domain-verification-file">托管你的域校验文件</a></li><li><a href="https://paystack.com/docs/payments/apple-pay/#verify-your-domain">校验你的域名</a></li></ol>
+<h3>注册你的域名</h3>
+<p>根据访问的UI，步骤略有不同。</p>
+<ol><li>单击“设置”页面上的<code class="inline">Apple Pay</code>选项卡</li><li>在 Web 域部分下，单击 <code class="inline">Add new domain</code> 按钮 <a href="https://paystack.com/docs/static/45a79b8fc5a8474c8c71ba04b18d622a/8c557/add_domain.png">![图片 3：Paystack Apple Pay 页面的图片，显示添加域名的位置</a>](https://paystack.com/docs/static/45a79b8fc5a8474c8c71ba04b18d622a/a1ccc/add_domain.png)</li></ol>
+<ol><li>在模式中，添加你的域名并下载域校验文件。下一步将需要校验文件。 <a href="https://paystack.com/docs/static/4117498d4464cec3d1294002728a6363/8c557/filled_domain.png">![图 4：显示正在注册的域名的域校验模式图像</a>](https://paystack.com/docs/static/4117498d4464cec3d1294002728a6363/69d6b/filled_domain.png)</li></ol>
+<ol><li>单击 <a href="https://dashboard.paystack.com/v2/developers">开发者页面</a> 上的 <code class="inline">Apple Pay</code> 链接</li><li>单击<code class="inline">Add domain</code>按钮<a href="https://paystack.com/docs/static/406e270f3107611d4593f1650b2cb42e/8c557/apple_pay_add_domain.png">![图片 5：Paystack Apple Pay 页面的图片，显示添加域名的位置</a>](https://paystack.com/docs/static/406e270f3107611d4593f1650b2cb42e/e671a/apple_pay_add_domain.png)</li></ol>
+<ol><li>在模式中，添加你的域名并下载域校验文件。下一步将需要校验文件。 <a href="https://paystack.com/docs/static/c7500366bdba57725f610ac389e6c3d4/8c557/activate_apple_pay_canvas.png">![图 6：显示正在注册的域名的域校验模式图像</a>](https://paystack.com/docs/static/c7500366bdba57725f610ac389e6c3d4/03bcf/activate_apple_pay_canvas.png)</li></ol>
+<p>如果你想通过 API 注册你的域名，请检查 <a href="https://paystack.com/docs/api/apple-pay">苹果支付API</a> 接口了解更多详细信息。</p>
+<h3>托管你的域校验文件</h3>
+<p>For each top-level domain and/or subdomain registered, you need to host a verification file in the <code class="inline">.well-known</code> folder in your website's root directory.</p>
+<p>例如，如果你注册了<code class="inline">paystack.com</code>，则校验文件应驻留在：<code class="inline">https://paystack.com/.well-known</code>。同样，如果你注册了<code class="inline">music.paystack.com</code>，则校验文件应位于：<code class="inline">https://music.paystack.com/.well-known</code>。</p>
+<p>托管校验文件的过程分为两步：</p>
+<ol><li>在网站根目录中创建一个<code class="inline">.well-known</code>文件夹</li><li>将之前下载的校验文件添加到该文件夹中</li></ol>
+<p><a href="https://paystack.com/docs/static/d4551ff8fd571a49e50162ca7307938b/8c557/create_well_known.png">![图 7：应用程序文件夹的图像，显示用于托管域校验文件的众所周知的文件夹</a>](https://paystack.com/docs/static/d4551ff8fd571a49e50162ca7307938b/72aae/create_well_known.png)</p>
+<p>确保返回的域校验文件的 <code class="inline">content-type</code> 为 <code class="inline">application/text</code>。使用不同的 <code class="inline">content-type</code> 可能会导致客户的付款失败。</p>
+<h3>校验你的域名</h3>
+<p>成功托管域名校验文件后，你可以返回<strong>Dashboard</strong>或<strong>帆布</strong>完成域名校验。</p>
+<p>在<code class="inline">Verify your domain</code>模式中，单击<code class="inline">Verify Domain</code>按钮即可完成域名注册。如果一切顺利，你应该会收到一条经过域校验的消息，如下所示：</p>
+<p><a href="https://paystack.com/docs/static/592c1e7cb01f3947c4256069bf1e01e3/8c557/domain_verified.png">![图片 8：Apple Pay 域名校验成功的图片</a>](https://paystack.com/docs/static/592c1e7cb01f3947c4256069bf1e01e3/21335/domain_verified.png)</p>
+<p>点击<code class="inline">Add Domain</code>按钮完成你的域名校验。如果一切顺利，你应该会收到一条经过域校验的消息，如下所示：</p>
+<p><a href="https://paystack.com/docs/static/1095e0749d69385cecf1f4f36aa146bf/8c557/apple_pay_activated.png">![图 9：Apple Pay 域名校验成功的图片</a>](https://paystack.com/docs/static/1095e0749d69385cecf1f4f36aa146bf/416ee/apple_pay_activated.png)</p>
+<p>在前端应用程序中设置 Apple Pay 有两种方法：</p>
+<ol><li>使用结账模式</li><li>安装付款请求按钮</li></ol>
+<h3>使用结账模式</h3>
+<p>如果你之前集成过 InlineJS 库的版本 2，则可以跳过此部分，因为 Apple Pay 将在 Paystack Checkout 的卡部分中提供。</p>
+<p>通过这种方法，我们可以处理 Apple Pay 按钮的放置和设计。你只需将付款按钮与 <code class="inline">checkout()</code> 方法绑定即可：</p>
+<pre class="code">const paystackPop = new PaystackPop();
+
+async function payWithPaystack() {
+await paystack.checkout({
+key: &#x27;pk_domain_xxxxx&#x27;,
+email: &#x27;example@email.com&#x27;,
+amount: 10000,
+onSuccess: (transaction) =&gt; {
+console.log(&quot;Transaction: &quot;, transaction)
+},
+onCancel: () =&gt; {
+console.log(&quot;Pop up closed!&quot;)
+}
+});
+}</pre>
+<p>如果用户使用的是 Apple 设备或 Safari 浏览器，则结账方法包括 Apple Pay 按钮，如下图所示：</p>
+<p><a href="https://paystack.com/docs/static/e9c279007d0fdf0be4dc301227ba6134/8c557/apple_pay_checkout.png">![图 10：iPhone 上的预结账模式图像</a>](https://paystack.com/docs/static/e9c279007d0fdf0be4dc301227ba6134/72aae/apple_pay_Checkout.png)</p>
+<p>如果你集成了<code class="inline">2.24.0</code>以下的任何版本，用户将首先看到一个预结账模式，其中包含 Apple Pay 按钮和加载其他付款选项的按钮，如下图所示：</p>
+<p><a href="https://paystack.com/docs/static/04dfa1adaa240a382e655b313caad56a/8c557/pre_checkout.png">![图 11：iPhone 上的预结账模式图像</a>](https://paystack.com/docs/static/04dfa1adaa240a382e655b313caad56a/25c1c/pre_Checkout.png)</p>
+<h3>安装付款请求按钮</h3>
+<p>此方法允许你根据你的设计放置 Apple Pay 按钮。这是一种灵活的方法，分为两步：</p>
+<ol><li>创建一个容器</li><li>设置付款请求</li></ol>
+<p>此过程涉及添加 HTML 标签，该标签将容纳 Apple Pay 按钮以及加载其他付款选项的按钮：</p>
+<pre class="code">
+&lt;div id=&quot;paystack-apple-pay&quot;&gt;&lt;/div&gt;
+&lt;button id=&quot;paystack-other-channels&quot;&gt;More payment options&lt;/button&gt;</pre>
+<p>你应该使用带有唯一 <code class="inline">id</code> 的 <code class="inline">div</code> 标签作为 Apple Pay 按钮的容器。上面的代码片段中使用了 <code class="inline">paystack-apple-pay</code>，但是，你可以使用你喜欢的任何名称。这个<code class="inline">id</code>将用于配置和加载Apple Pay按钮。</p>
+<p>要配置Apple Pay按钮，你需要在<code class="inline">paymentRequest()</code>方法中传递容器<code class="inline">id</code>和其他通道的<code class="inline">id</code>：</p>
+<pre class="code">const paystackPop = new PaystackPop();
+
+await paystackPop.paymentRequest({
+key: &#x27;pk_domain_xxxxx&#x27;,
+email: &#x27;CUSTOMER_EMAIL&#x27;,
+amount: amount * 100,
+currency: &#x27;NGN&#x27;,
+ref: &#x27;YOUR_REFERENCE&#x27;,
+container: &#x27;paystack-apple-pay&#x27;,
+loadPaystackCheckoutButton: &#x27;paystack-other-channels&#x27;,
+style: {
+theme: &#x27;dark&#x27;,
+applePay: {
+margin: &#x27;10px&#x27;,
+padding: &#x27;10px&#x27;,
+width: &#x27;100%&#x27;,
+borderRadius: &#x27;5px&#x27;,
+type: &#x27;pay&#x27;,
+locale: &#x27;en&#x27;
+}
+},
+onSuccess(response) {
+
+},
+onError() {
+
+},
+onCancel() {
+
+},
+onElementsMount(elements) {
+
+}
+});
+</pre>
+<h2>故障排除</h2>
+<p>如果你在 Apple Pay 集成方面遇到任何问题，请确保在设置过程中没有疏忽：</p>
+<ul><li>你的服务端必须通过 HTTPS 服务所有请求</li><li>你的仪表板上有 <a href="https://paystack.com/docs/payments/apple-pay/#register-your-domain">注册并校验你的域名</a></li><li>你已将域校验文件托管在网站根目录的 <code class="inline">.well-known</code> 文件夹中</li><li>如果你的服务端需要将外部服务端列入白名单才能启动通信，则你需要<a href="https://developer.apple.com/documentation/apple_pay_on_the_web/setting_up_your_server">将 Apple 的 IP 地址列入白名单</a>。</li></ul>
+<p>如果所有检查均已完成，但你的 Apple Pay 集成仍然存在问题，你可以尝试以下一些可能的错误和解决方案：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>错误</th><th>分辨率</th></tr></thead><tbody><tr><td>Apple Pay 会话无法启动</td><td>我们无法启动付款网络会话。再试一次。</td></tr><tr><td>不允许 Apple Pay 交易，因为商户未启用国际支付。</td><td>你需要检查你的<a href="https://support.paystack.com/hc/en-us/articles/360010744840-Is-my-business-eligible-for-international-payments-">企业有资格获得国际支付</a>。如果你的企业符合条件，<a href="https://support.paystack.com/hc/en-us/articles/360009882000-How-do-I-turn-on-international-payments-on-Paystack-">按照此指南激活国际支付</a>。</td></tr><tr><td>Apple Pay 交易不支持商户类别。</td><td>出于合规原因，仅允许特定业务类别使用 Apple Pay。</td></tr></tbody></table></div>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/payments/apple-pay/" target="_blank" rel="noopener">https://paystack.com/docs/payments/apple-pay/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

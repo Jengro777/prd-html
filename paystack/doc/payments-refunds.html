@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>开始使用 · Paystack 开发文档（中文）</title>
+<meta name="description" content="开始使用 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>你可以通过启动退款并收听通知来部分或全部偿还客户之前的交易。</p>
+<h2>开始使用</h2>
+<p>有时，客户会在交易成功后提出付款请求。有时，付款后无法履行订单。无论哪种情况，你都需要考虑是否应该启动：</p>
+<ol><li>部分退款或，</li><li>全额退款</li></ol>
+<p>我们的<a href="https://paystack.com/docs/api/refund">退款API</a>接口允许你部分或全部偿还你的客户。你只需发起退款请求，我们就会及时向你通报退款状态。</p>
+<h2>创建退款</h2>
+<p>要发起退款，你可以向 <a href="https://paystack.com/docs/api/refund#create">创建退款 API</a> 发出 <code class="inline">POST</code> 请求，并传递交易 ID 或 <code class="inline">transaction</code> 字段中的引用。如果金额未通过，我们将按全额退款处理该请求。</p>
+<p>如果你想进行部分退款，请传递 <code class="inline">amount</code> 参数以及退款金额。退款金额不得超过原交易金额。</p>
+<pre class="code">curl https://api.paystack.co/refund
+-H &#x27;authorization: Bearer YOUR_SECRET_KEY&#x27;
+-H &#x27;cache-control: no-cache&#x27;
+-H &#x27;content-type: application/json&#x27;
+-d &#x27;{ &quot;transaction&quot;:&quot;qufywna9w9a5d8v&quot;, &quot;amount&quot;:&quot;10000&quot; }&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Refund has been queued for processing&quot;,
+  &quot;data&quot;: {
+    &quot;transaction&quot;: {
+      &quot;id&quot;: 1004723697,
+      &quot;domain&quot;: &quot;live&quot;,
+      &quot;reference&quot;: &quot;T685312322670591&quot;,
+      &quot;amount&quot;: 10000,
+      &quot;paid_at&quot;: &quot;2021-08-20T18:34:11.000Z&quot;,
+      &quot;channel&quot;: &quot;apple_pay&quot;,
+      &quot;currency&quot;: &quot;NGN&quot;,
+      &quot;authorization&quot;: {
+        &quot;exp_month&quot;: null,
+        &quot;exp_year&quot;: null,
+        &quot;account_name&quot;: null
+      },
+      &quot;customer&quot;: {
+        &quot;international_format_phone&quot;: null
+      },
+      &quot;plan&quot;: {},
+      &quot;subaccount&quot;: {
+        &quot;currency&quot;: null
+      },
+      &quot;split&quot;: {},
+      &quot;order_id&quot;: null,
+      &quot;paidAt&quot;: &quot;2021-08-20T18:34:11.000Z&quot;,
+      &quot;pos_transaction_data&quot;: null,
+      &quot;source&quot;: null,
+      &quot;fees_breakdown&quot;: null
+    },
+    &quot;integration&quot;: 412829,
+    &quot;deducted_amount&quot;: 0,
+    &quot;channel&quot;: null,
+    &quot;merchant_note&quot;: &quot;Refund for transaction T685312322670591 by test@me.com&quot;,
+    &quot;customer_note&quot;: &quot;Refund for transaction T685312322670591&quot;,
+    &quot;status&quot;: &quot;pending&quot;,
+    &quot;refunded_by&quot;: &quot;test@me.com&quot;,
+    &quot;expected_at&quot;: &quot;2021-12-16T09:21:17.016Z&quot;,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;domain&quot;: &quot;live&quot;,
+    &quot;amount&quot;: 10000,
+    &quot;fully_deducted&quot;: false,
+    &quot;id&quot;: 3018284,
+    &quot;createdAt&quot;: &quot;2021-12-07T09:21:17.122Z&quot;,
+    &quot;updatedAt&quot;: &quot;2021-12-07T09:21:17.122Z&quot;
+  }
+}</pre>
+<p>退款金额不得超过原交易金额。</p>
+<h2>重试退款</h2>
+<p>当你发起退款时，通常会使用成功付款时从处理通道返回的客户银行账户详细信息进行处理。如果客户的银行账户未退回，退款状态将变为<code class="inline">needs-attention</code>。这基本上意味着你需要提供客户的银行账户详细信息才能继续处理退款。你可以通过调用 <a href="https://paystack.com/docs/api/refund#retry">重试退款API</a> 接口来完成此操作：</p>
+<pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/refund/retry_with_customer_details/{id}&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+content_type=&quot;Content-Type: application/json&quot;
+data=&#x27;{
+&quot;refund_account_details&quot;: {
+&quot;currency&quot;: &quot;NGN&quot;,
+&quot;account_number&quot;: &quot;1234567890&quot;,
+&quot;bank_id&quot;: &quot;9&quot;
+}
+}&#x27;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -H &quot;$content_type&quot; -d &quot;$data&quot; -X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Refund retried and has been queued for processing&quot;,
+  &quot;data&quot;: {
+    &quot;integration&quot;: 123456,
+    &quot;transaction&quot;: 3298598423,
+    &quot;dispute&quot;: null,
+    &quot;settlement&quot;: null,
+    &quot;id&quot;: 1234567,
+    &quot;domain&quot;: &quot;live&quot;,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;amount&quot;: 20000,
+    &quot;status&quot;: &quot;processing&quot;,
+    &quot;refunded_at&quot;: null,
+    &quot;expected_at&quot;: &quot;2025-10-13T16:02:18.000Z&quot;,
+    &quot;channel&quot;: &quot;isw_3ds&quot;,
+    &quot;refunded_by&quot;: &quot;paystack@email.com&quot;,
+    &quot;customer_note&quot;: &quot;Refund for transaction T708775813895475&quot;,
+    &quot;merchant_note&quot;: &quot;Refund for transaction T708775813895475 by paystack@email.com&quot;,
+    &quot;deducted_amount&quot;: 20000,
+    &quot;fully_deducted&quot;: true,
+    &quot;bank_reference&quot;: null,
+    &quot;reason&quot;: &quot;PROCESSING&quot;,
+    &quot;customer&quot;: null,
+    &quot;initiated_by&quot;: &quot;paystack@email.com&quot;,
+    &quot;reversed_at&quot;: null,
+    &quot;session_id&quot;: null
+  }
+}</pre>
+<p>账户详细信息可以是属于客户的任何有效银行账户，并且可以与用于进行初始付款的账户不同。</p>
+<p>仅当你收到 <code class="inline">refund.needs-attention</code> Webhook 事件时才使用此接口。否则，接口返回<strong>422 - 无法处理的实体</strong>响应。</p>
+<h2>列出退款</h2>
+<p>要获取退款列表，你可以使用 <a href="https://paystack.com/docs/api/refund#list">列出退款API</a> 获取所有退款。</p>
+<pre class="code">curl https://api.paystack.co/refund
+-H &#x27;authorization: Bearer YOUR_SECRET_KEY&#x27;
+-H &#x27;cache-control: no-cache&#x27;
+-H &#x27;content-type: application/json&#x27;
+-X GET</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Refunds retrieved&quot;,
+  &quot;data&quot;: [
+    {
+      &quot;integration&quot;: 428626,
+      &quot;transaction&quot;: 627178582,
+      &quot;dispute&quot;: null,
+      &quot;settlement&quot;: null,
+      &quot;id&quot;: 747680,
+      &quot;domain&quot;: &quot;test&quot;,
+      &quot;currency&quot;: &quot;NGN&quot;,
+      &quot;amount&quot;: 10000,
+      &quot;status&quot;: &quot;processed&quot;,
+      &quot;refunded_at&quot;: null,
+      &quot;refunded_by&quot;: &quot;jen@smith.com&quot;,
+      &quot;customer_note&quot;: &quot;Refund for transaction qufywna9w9a5d8v&quot;,
+      &quot;merchant_note&quot;: &quot;Refund for transaction qufywna9w9a5d8v by jen@smith.com&quot;,
+      &quot;deducted_amount&quot;: 10000,
+      &quot;fully_deducted&quot;: true,
+      &quot;createdAt&quot;: &quot;2020-05-19T11:12:17.000Z&quot;
+    },
+    {
+      &quot;integration&quot;: 428626,
+      &quot;transaction&quot;: 640672957,
+      &quot;dispute&quot;: null,
+      &quot;settlement&quot;: null,
+      &quot;id&quot;: 742609,
+      &quot;domain&quot;: &quot;test&quot;,
+      &quot;currency&quot;: &quot;NGN&quot;,
+      &quot;amount&quot;: 20000,
+      &quot;status&quot;: &quot;processed&quot;,
+      &quot;refunded_at&quot;: null,
+      &quot;refunded_by&quot;: &quot;jen@smith.com&quot;,
+      &quot;customer_note&quot;: &quot;blah blah&quot;,
+      &quot;merchant_note&quot;: &quot;yada yada&quot;,
+      &quot;deducted_amount&quot;: 20000,
+      &quot;fully_deducted&quot;: true,
+      &quot;createdAt&quot;: &quot;2020-04-30T10:43:47.000Z&quot;
+    }
+  ],
+  &quot;meta&quot;: {
+    &quot;total&quot;: 2,
+    &quot;skipped&quot;: 0,
+    &quot;perPage&quot;: 50,
+    &quot;page&quot;: 1,
+    &quot;pageCount&quot;: 1
+  }
+}</pre>
+<h2>退款状态</h2>
+<p>在退款的生命周期中，其状态根据退款处理者执行的操作而变化。当退款状态发生变化时，关联交易的状态也会随之变化。</p>
+<p>下表显示了退款状态与其关联交易之间的关系：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>状态</th><th>描述</th><th>交易状态</th></tr></thead><tbody><tr><td><code class="inline">pending</code></td><td>退款已启动，正在等待处理者的响应</td><td>撤销待决</td></tr><tr><td><code class="inline">processing</code></td><td>处理者已收到退款。</td><td>撤销待决</td></tr><tr><td><code class="inline">needs-attention</code></td><td>你需要提供客户的银行详细信息才能继续退款。</td><td>撤销待决</td></tr><tr><td><code class="inline">failed</code></td><td>退款处理失败，你的账户现在反映了存入的金额。</td><td>成功</td></tr><tr><td><code class="inline">processed</code></td><td>处理者已成功处理退款。</td><td>反转</td></tr></tbody></table></div>
+<p>当退款标记为<code class="inline">processed</code>时，客户可能仍需要最多 10 个工作日才能收到资金。</p>
+<h2>收听通知</h2>
+<p>我们根据退款状态发送不同的事件。你可以监听以下事件以了解客户退款状态的最新信息：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>活动</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">refund.pending</code></td><td>当发起退款并且我们正在等待处理者的响应时发送此信息。</td></tr><tr><td><code class="inline">refund.processing</code></td><td>当处理者收到退款时发送此信息。</td></tr><tr><td><code class="inline">refund.needs-attention</code></td><td>当我们需要帐号来完成退款时会发送此信息。</td></tr><tr><td><code class="inline">refund.failed</code></td><td>当无法处理退款时发送此信息。退款金额已存入你的账户。</td></tr><tr><td><code class="inline">refund.processed</code></td><td>当处理者成功处理退款时发送此信息。</td></tr></tbody></table></div>
+<pre class="code">{
+  &quot;event&quot;: &quot;refund.pending&quot;,
+  &quot;data&quot;: {
+    &quot;status&quot;: &quot;pending&quot;,
+    &quot;transaction_reference&quot;: &quot;tvunjbbd_412829_4b18075d_c7had&quot;,
+    &quot;refund_reference&quot;: null,
+    &quot;amount&quot;: &quot;10000&quot;,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;processor&quot;: &quot;instant-transfer&quot;,
+    &quot;customer&quot;: {
+      &quot;first_name&quot;: &quot;Drew&quot;,
+      &quot;last_name&quot;: &quot;Berry&quot;,
+      &quot;email&quot;: &quot;demo@email.com&quot;
+    },
+    &quot;integration&quot;: 412829,
+    &quot;domain&quot;: &quot;live&quot;
+  }
+}</pre>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/payments/refunds/" target="_blank" rel="noopener">https://paystack.com/docs/payments/refunds/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

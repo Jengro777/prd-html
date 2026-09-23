@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简介 · Paystack 开发文档（中文）</title>
+<meta name="description" content="简介 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>使用手机接受当面付款并通过 Whatsapp 接收付款通知</p>
+<h2>简介</h2>
+<p>虚拟终端将手机转变为销售点系统，使企业无需专用的POS硬件即可受理支付。通过将支持 WhatsApp 的手机连接到虚拟终端，你可以立即设置支持银行转账和QR代码支付的支付点。</p>
+<p>虚拟终端非常适合：</p>
+<ul><li>希望最大限度降低前期成本的小型企业</li><li>需要灵活支付选项的移动供应商</li><li>希望快速设置额外支付点的企业</li><li>接受货到付款的送货商户</li></ul>
+<h2>创建虚拟终端</h2>
+<p>要创建虚拟终端，请向 <a href="https://paystack.com/docs/api/virtual-terminal">虚拟终端API</a> 发出 <code class="inline">POST</code> 请求，指定名称和最多 5 个支持 WhatsApp 的电话号码。</p>
+<pre class="code">curl &quot;https://api.paystack.co/virtual_terminal&quot;
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{
+&quot;name&quot;: &quot;Sales Point #1&quot;,
+&quot;destinations&quot;: [
+{&quot;target&quot;: &quot;+2347081234567&quot;}
+]
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Virtual Terminal created&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 26677,
+    &quot;name&quot;: &quot;Sales Point #1&quot;,
+    &quot;integration&quot;: 353514,
+    &quot;domain&quot;: &quot;live&quot;,
+    &quot;code&quot;: &quot;VT_L837PT5K&quot;,
+    &quot;paymentMethods&quot;: [
+      {
+        &quot;dedicated_nuban_id&quot;: 26196910,
+        &quot;type&quot;: &quot;dedicated_nuban&quot;,
+        &quot;account_number&quot;: &quot;9964842038&quot;,
+        &quot;account_name&quot;: &quot;Paystack Demo/Sales Point #1&quot;,
+        &quot;bank&quot;: &quot;Paystack-Titan&quot;
+      }
+    ],
+    &quot;active&quot;: true,
+    &quot;metadata&quot;: {
+      &quot;testing&quot;: &quot;metadata&quot;
+    },
+    &quot;destinations&quot;: [
+      {
+        &quot;target&quot;: &quot;2347081234567&quot;,
+        &quot;type&quot;: &quot;whatsapp&quot;,
+        &quot;name&quot;: null
+      }
+    ],
+    &quot;currency&quot;: &quot;NGN&quot;
+  }
+}</pre>
+<p>创建后，终端即可通过其独特的付款页面或专用付款详细信息（如果适用）受理支付。</p>
+<h2>受理支付</h2>
+<p>创建虚拟终端后，你可以根据你的市场通过两种方式与客户共享：</p>
+<h3>使用 Paystack 生成的海报</h3>
+<p>Paystack 会自动为你的虚拟终端生成海报，你可以下载该海报并在你的营业地点显示。海报上包含一个QR代码，客户可以扫描该代码来访问终端的支付页面。</p>
+<p><a href="https://paystack.com/docs/static/311a6d703ab165f1a041e47675cfad46/8c557/vt-poster-ke.png">![图片 1：肯尼亚企业的虚拟终端海报</a>](https://paystack.com/docs/static/311a6d703ab165f1a041e47675cfad46/f7c2d/vt-poster-ke.png)</p>
+<p>肯尼亚企业的虚拟终端海报</p>
+<p><a href="https://paystack.com/docs/static/2c3768291586a49e99ea1b45843a1a0f/8c557/vt-poster-sa.png">![图片 2：一家南非企业的虚拟终端海报</a>](https://paystack.com/docs/static/2c3768291586a49e99ea1b45843a1a0f/f7c2d/vt-poster-sa.png)</p>
+<p>南非企业的虚拟终端海报</p>
+<p><a href="https://paystack.com/docs/static/1186d6895d1eea993037f2f39a468563/8c557/vt-poster-ng.png">![图片 3：肯尼亚企业的虚拟终端海报</a>](https://paystack.com/docs/static/1186d6895d1eea993037f2f39a468563/f7c2d/vt-poster-ng.png)</p>
+<p>尼日利亚企业的虚拟终端海报</p>
+<p><a href="https://paystack.com/docs/static/ca0a1657f534ec268e5cece387e734ab/8c557/vt-poster-civ.png">![图片 4：一家南非企业的虚拟终端海报</a>](https://paystack.com/docs/static/ca0a1657f534ec268e5cece387e734ab/f7c2d/vt-poster-civ.png)</p>
+<p>科特迪瓦企业的虚拟终端海报</p>
+<p>在支付页面，客户可以使用PaystackCheckout完成交易，Paystack支持银行卡、银行转账、手机钱等多种在线支付方式。</p>
+<p>要将海报用于你的虚拟终端：</p>
+<ol><li><strong>导航至终端选项卡</strong>：登录你的<a href="https://dashboard.paystack.com/#/">PaystackDashboard</a>并转到<a href="https://dashboard.paystack.com/#/terminals/virtual">终端</a>选项卡。</li><li><strong>选择虚拟终端</strong>：选择你要下载海报的虚拟终端。</li><li><strong>下载海报</strong>：在终端详情中，点击“海报”选项。选择你想要使用的海报版本并下载。</li><li><strong>展示海报</strong>：将海报放置在客户可以轻松访问的显眼位置。</li></ol>
+<h3>使用专用的付款详细信息</h3>
+<p>在支持的市场中，每个虚拟终端都分配有唯一的付款详细信息，允许客户进行直接转账：</p>
+<ul><li>尼日利亚：专属虚拟账户</li><li>肯尼亚：M-Pesa 工资单</li><li>加纳：USSD代码。</li></ul>
+<p>客户可以使用这些付款详细信息将资金直接转入你的终端。这些详细信息包含在创建终端时的 API 响应中，并且也显示在海报上以方便参考。</p>
+<pre class="code">{
+  &quot;paymentMethods&quot;: [
+    {
+      &quot;dedicated_nuban_id&quot;: 26196910,
+      &quot;type&quot;: &quot;dedicated_nuban&quot;,
+      &quot;account_number&quot;: &quot;9964842038&quot;,
+      &quot;account_name&quot;: &quot;Paystack Demo/Sales Point #1&quot;,
+      &quot;bank&quot;: &quot;Paystack-Titan&quot;
+    }
+  ]
+}</pre>
+<h2>处理通知</h2>
+<p>当向你的虚拟终端付款时，你可以收到实时通知，以便随时了解情况并有效处理交易。 Paystack 提供两种通知选项：</p>
+<h3>Whatsapp 通知</h3>
+<p>成功付款后，每个注册的 Whatsapp 号码都会收到针对终端进行的所有交易的即时付款通知。</p>
+<p><a href="https://paystack.com/docs/static/f301a0c91c02ca5d3ae625c0c0a6e883/8c557/vt-created-notification.png">![图5：虚拟终端创建通知</a>](https://paystack.com/docs/static/f301a0c91c02ca5d3ae625c0c0a6e883/7a18f/vt-created-notification.png)</p>
+<p>虚拟终端创建通知</p>
+<p><a href="https://paystack.com/docs/static/a03395783cc538ff1e10570a445b6b10/8c557/vt-transaction-notification.png">![图6：虚拟终端交易通知</a>](https://paystack.com/docs/static/a03395783cc538ff1e10570a445b6b10/7a18f/vt-transaction-notification.png)</p>
+<p>虚拟终端交易通知</p>
+<h3>Webhook</h3>
+<p>在虚拟终端上付款后，你将使用 Webhook 向服务端收到 <code class="inline">charge.success</code> 事件。 Webhook 有效负载中的 <code class="inline">metadata</code> 对象将包含用于付款的虚拟终端的代码。</p>
+<pre class="code">{
+  &quot;event&quot;: &quot;charge.success&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 4677002219,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;reference&quot;: &quot;T173424527684156&quot;,
+    &quot;amount&quot;: 10000,
+    &quot;message&quot;: null,
+    &quot;gateway_response&quot;: &quot;Successful&quot;,
+    &quot;paid_at&quot;: &quot;2025-02-11T10:42:20.000Z&quot;,
+    &quot;created_at&quot;: &quot;2025-02-11T10:42:03.000Z&quot;,
+    &quot;channel&quot;: &quot;card&quot;,
+    &quot;currency&quot;: &quot;KES&quot;,
+    &quot;ip_address&quot;: &quot;129.222.206.7&quot;,
+    &quot;metadata&quot;: {
+      &quot;virtual_terminal&quot;: {
+        &quot;code&quot;: &quot;VT_68SBY77G&quot;
+      },
+      &quot;referrer&quot;: &quot;https://paystack.shop/pay/vt_68sby77g&quot;
+    },
+    &quot;fees_breakdown&quot;: null,
+    &quot;log&quot;: null,
+    &quot;fees&quot;: 290,
+    &quot;fees_split&quot;: null,
+    &quot;authorization&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_7k5skwmhxu&quot;,
+      &quot;bin&quot;: &quot;408408&quot;,
+      &quot;last4&quot;: &quot;4081&quot;,
+      &quot;exp_month&quot;: &quot;12&quot;,
+      &quot;exp_year&quot;: &quot;2030&quot;,
+      &quot;channel&quot;: &quot;card&quot;,
+      &quot;card_type&quot;: &quot;visa &quot;,
+      &quot;bank&quot;: &quot;TEST BANK&quot;,
+      &quot;country_code&quot;: &quot;KE&quot;,
+      &quot;brand&quot;: &quot;visa&quot;,
+      &quot;reusable&quot;: true,
+      &quot;signature&quot;: &quot;SIG_C9LhIPX2mQ8uckT6In2U&quot;,
+      &quot;account_name&quot;: null,
+      &quot;receiver_bank_account_number&quot;: null,
+      &quot;receiver_bank&quot;: null
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 239551424,
+      &quot;first_name&quot;: &quot;&quot;,
+      &quot;last_name&quot;: &quot;&quot;,
+      &quot;email&quot;: &quot;h0e5lcb0f0tnqrmixoqa@paystackdemoke-vt.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_edn4wbf00pcot1p&quot;,
+      &quot;phone&quot;: &quot;&quot;,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;,
+      &quot;international_format_phone&quot;: null
+    },
+    &quot;plan&quot;: {},
+    &quot;subaccount&quot;: {},
+    &quot;split&quot;: {},
+    &quot;order_id&quot;: null,
+    &quot;paidAt&quot;: &quot;2025-02-11T10:42:20.000Z&quot;,
+    &quot;requested_amount&quot;: 10000,
+    &quot;pos_transaction_data&quot;: null,
+    &quot;source&quot;: {
+      &quot;type&quot;: &quot;offline&quot;,
+      &quot;source&quot;: &quot;virtual_terminal&quot;,
+      &quot;entry_point&quot;: &quot;request_inline&quot;,
+      &quot;identifier&quot;: &quot;VT_68SBY77G&quot;
+    }
+  }
+}</pre>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/terminal/virtual-terminal/" target="_blank" rel="noopener">https://paystack.com/docs/terminal/virtual-terminal/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

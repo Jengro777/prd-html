@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简介 · Paystack 开发文档（中文）</title>
+<meta name="description" content="简介 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>使用 React Native 为终端构建自定义应用程序？在本指南中，我们将探索如何使用 React Native 模块与 Paystack 应用程序交互以受理支付。</p>
+<h2>简介</h2>
+<p>Paystack Terminal 允许你构建 <a href="https://developer.android.com/guide/components/intents-filters#Building">通过意图进行沟通</a> 与终端应用程序一起受理支付的自定义应用程序。终端应用程序处理有关付款的所有交易，让你可以专注于构建应用程序。在付款时，你只需通过意图将付款详细信息传递给终端应用程序，系统就会处理付款并将响应传回你的应用程序。</p>
+<h2>项目设置</h2>
+<p>本指南假设你有一个现有的 React Native 应用程序，因此，我们的重点是构建支付流程。</p>
+<p>We’ll be using <a href="https://reactnative.dev/docs/native-modules-android">React Native 模块</a> to allow JS/TS to communicate with Java. This guide was guide using the following setup:</p>
+<ul><li>React (18.2.0)</li><li>React Native (0.72.6)</li></ul>
+<p>虽然，并不强制全部按原样使用，但这会使操作更容易，并且几乎没有错误。 Android Studio专门用于编写和管理所有Java代码。</p>
+<h2>创建模型</h2>
+<p>首先，我们将创建支付流程所需的所有模型。在创建模型之前，我们需要 <a href="https://github.com/google/gson">安装Gson</a>，一个用于序列化和反序列化 Java 对象的库。</p>
+<p>要安装 Gson，请在 Android Studio 中打开项目中的 <code class="inline">android</code> 文件夹。打开后：</p>
+<ol><li>确保你的 Android Studio 工作区配置为 <code class="inline">Android</code>。</li><li>打开应用程序<code class="inline">build.gradle</code>。这是具有 <code class="inline">Module: YourAppName.app</code> 的那个。</li><li>添加 <code class="inline">gson</code> 作为依赖项。</li><li>弹出窗口显示到<code class="inline">Sync Now</code>。同步会安装依赖项并使其在你的项目中可供使用。</li></ol>
+<p><a href="https://paystack.com/docs/static/d0e22d668bc9f393431f27efe97c6b8d/8c557/terminal_rn_dependency.png">![图 1：Android Studio 的屏幕截图，显示依赖项安装</a>](https://paystack.com/docs/static/d0e22d668bc9f393431f27efe97c6b8d/0244a/terminal_rn_dependency.png)</p>
+<p>安装依赖项后，我们可以创建以下模型：</p>
+<pre class="code">
+public class TerminalResponse {
+private final String statusCode;
+private final String message;
+private final String data;
+
+public TerminalResponse(String statusCode, String message, String data) {
+this.statusCode = statusCode;
+this.message = message;
+this.data = data;
+}
+
+public String getStatusCode() {
+return statusCode;
+}
+
+public String getMessage() {
+return message;
+}
+
+public String getData() {
+return data;
+}
+}</pre>
+<h2>创建一个模块</h2>
+<p>模块类包含触发支付请求的逻辑。它包含通过意图发起支付的功能和接收支付响应的回调。在<code class="inline">java → com.yourappnameand</code>中创建一个模块，添加初始代码来设置该模块：</p>
+<pre class="code">import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+
+public class PaystackModule extends ReactContextBaseJavaModule {
+
+PaystackModule(ReactApplicationContext context) {
+super(context);
+}
+
+@Override
+public String getName() {
+return &quot;PaystackModule&quot;;
+}
+}</pre>
+<p>我们现在可以充实该模块。首先，我们将实现处理支付请求响应的回调：</p>
+<pre class="code">import android.app.Activity;
+import android.content.Intent;
+
+import com.facebook.react.bridge.ActivityEventListener;
+import com.facebook.react.bridge.BaseActivityEventListener;
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.google.gson.Gson;
+
+public class PaystackModule extends ReactContextBaseJavaModule {
+
+private final Gson gson = new Gson();
+private Callback mCallback;
+
+private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
+@Override
+public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+PaystackIntentResponse paystackIntentResponse;
+TerminalResponse terminalResponse;
+
+paystackIntentResponse = gson.fromJson(
+data != null ? data.getStringExtra(&quot;com.paystack.pos.TRANSACT&quot;) : null,
+PaystackIntentResponse.class);
+terminalResponse = paystackIntentResponse.getIntentResponse();
+TransactionResponse transactionResponse = gson.fromJson(
+terminalResponse.getData(),
+TransactionResponse.class);
+mCallback.invoke(transactionResponse.getReference());
+}
+};
+
+
+}</pre>
+<p><code class="inline">ActivityEventListener</code> 监听来自任何返回响应的 Activity 的事件。多个 Activity 可以向其返回响应，因此仅使用以下方式解析来自终端应用程序的交易响应：<code class="inline">data.getStringExtra(&quot;com.paystack.pos.TRANSACT&quot;)</code>。我们还使用 <code class="inline">mCallback</code> 变量通过 <code class="inline">invoke</code> 函数返回交易引用。</p>
+<p>在<code class="inline">ActivityEventListener</code>可以监听事件之前，它需要在应用程序级别注册。我们可以在模块构造函数中注册监听器：</p>
+<pre class="code">PaystackModule(ReactApplicationContext context) {
+super(context);
+
+context.addActivityEventListener(mActivityEventListener);
+}</pre>
+<p>我们模块的最后一部分是发起付款请求的功能。该函数将使用我们在上一节中创建的模型和我们刚刚创建的 <code class="inline">ActivityEventListener</code>：</p>
+<pre class="code">@ReactMethod
+public void makePayment(int amount, Callback callback) {
+TransactionRequest transactionRequest = new TransactionRequest();
+transactionRequest.setAmount(amount);
+
+Activity currentActivity = getCurrentActivity();
+mCallback = callback;
+
+try {
+final Intent transactionIntent = new Intent(Intent.ACTION_VIEW);
+transactionIntent.setPackage(&quot;com.paystack.pos&quot;);
+transactionIntent.putExtra(&quot;com.paystack.pos.TRANSACT&quot;,
+gson.toJson(transactionRequest));
+currentActivity.startActivityForResult(transactionIntent, 1);
+} catch (Exception e) {
+Log.d(&quot;PaystackModule&quot;, &quot;Error: &quot; + e.getMessage());
+}
+}</pre>
+<p>为了使本指南简单，<code class="inline">makePayment</code>函数只有两个参数：<code class="inline">amount</code>和<code class="inline">callback</code>。这在用例上可以<a href="https://paystack.com/docs/terminal/custom-apps/#accept-payment">可以扩展为基础</a>。</p>
+<p>该模块的完整代码应如下所示：</p>
+<pre class="code">import android.app.Activity;
+import android.content.Intent;
+import android.util.Log;
+
+import com.facebook.react.bridge.ActivityEventListener;
+import com.facebook.react.bridge.BaseActivityEventListener;
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.google.gson.Gson;
+
+public class PaystackModule extends ReactContextBaseJavaModule {
+
+private final Gson gson = new Gson();
+private Callback mCallback;
+
+private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
+@Override
+public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+PaystackIntentResponse paystackIntentResponse;
+TerminalResponse terminalResponse;
+
+paystackIntentResponse = gson.fromJson(
+data != null ? data.getStringExtra(&quot;com.paystack.pos.TRANSACT&quot;) : null,
+PaystackIntentResponse.class);
+terminalResponse = paystackIntentResponse.getIntentResponse();
+TransactionResponse transactionResponse = gson.fromJson(
+terminalResponse.getData(),
+TransactionResponse.class);
+mCallback.invoke(transactionResponse.getReference());
+}
+};
+
+PaystackModule(ReactApplicationContext context) {
+super(context);
+
+context.addActivityEventListener(mActivityEventListener);
+}
+
+@Override
+public String getName() {
+return &quot;PaystackModule&quot;;
+}
+
+@ReactMethod
+public void makePayment(int amount, Callback callback) {
+TransactionRequest transactionRequest = new TransactionRequest();
+transactionRequest.setAmount(amount);
+
+Activity currentActivity = getCurrentActivity();
+mCallback = callback;
+
+try {
+final Intent transactionIntent = new Intent(Intent.ACTION_VIEW);
+transactionIntent.setPackage(&quot;com.paystack.pos&quot;);
+transactionIntent.putExtra(&quot;com.paystack.pos.TRANSACT&quot;,
+gson.toJson(transactionRequest));
+currentActivity.startActivityForResult(transactionIntent, 1);
+} catch (Exception e) {
+Log.d(&quot;PaystackModule&quot;, &quot;Error: &quot; + e.getMessage());
+}
+}
+}</pre>
+<h2>创建一个包</h2>
+<p>除此之外，包类用于注册我们创建的所有模块。如果模块未注册，则无法使用。注册我们的模块需要创建一个包并在模块列表中添加我们的模块的实例：</p>
+<pre class="code">import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.uimanager.ViewManager;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class SampleRegistrationPackage implements ReactPackage {
+
+@Override
+public List&lt;ViewManager&gt; createViewManagers(ReactApplicationContext reactApplicationContext) {
+return Collections.emptyList();
+}
+
+@Override
+public List&lt;NativeModule&gt; createNativeModules(ReactApplicationContext reactApplicationContext) {
+List&lt;NativeModule&gt; modules = new ArrayList&lt;&gt;();
+modules.add(new PaystackModule(reactApplicationContext));
+
+return modules;
+}
+}</pre>
+<h2>暴露包</h2>
+<p>需要公开的最后一段代码是我们刚刚创建的包。这可以通过在 <code class="inline">MainApplication.java</code> 类的 <code class="inline">getPackages()</code> 方法中添加以下行来完成：</p>
+<p><a href="https://paystack.com/docs/static/1a94197770b1b02145872a402e7dcd05/8c557/terminal_rn_add_package.png">![图片 2：Android Studio 的屏幕截图，显示如何公开包</a>](https://paystack.com/docs/static/1a94197770b1b02145872a402e7dcd05/d3609/terminal_rn_add_package.png)</p>
+<pre class="code">packages.add(new MyAppPackage());</pre>
+<h2>使用模块</h2>
+<p>To use our module, we need to import the Native Module and extract our module in a JS/TS file:</p>
+<pre class="code">import { NativeModules } from &#x27;react-native&#x27;;
+const { PaystackModule } = NativeModules;</pre>
+<p>Using the module is as simple as invoking the <code class="inline">makePayment</code> method on our module in any JS/TS function:</p>
+<pre class="code">const onPress = async () =&gt; {
+PaystackModule.makePayment(3000, transactionReference =&gt; {
+console.log(&#x27;transaction ref: &#x27;, transactionReference);
+});
+};</pre>
+<h2>结论</h2>
+<p>在本指南中，我们学习了如何使用 <a href="https://reactnative.dev/docs/native-modules-android">React Native 模块</a> 在 Android 和 JavaScript 之间进行通信。我们能够使用这种方法将付款推送到 Paystack 应用程序。</p>
+<p>你可以找到<a href="https://github.com/PaystackOSS/sample-registration-react-native">完整代码在Github上</a>作为参考。</p>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/guides/building_terminal_apps_react_native/" target="_blank" rel="noopener">https://paystack.com/docs/guides/building_terminal_apps_react_native/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

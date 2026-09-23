@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>余额管理 · Paystack 开发文档（中文）</title>
+<meta name="description" content="余额管理 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>将流程集成到你的工作流程中，确保你可以安全高效地汇款</p>
+<p>在向客户汇款之前，你应该制定流程以确保拥有强大的集成。这些流程确保资金可以安全、轻松地发送。</p>
+<h2>余额管理</h2>
+<p>你只能发送你拥有的内容。我们在创建转账请求之前会进行余额检查。如果你没有足够的资金（包括费用），转账请求将失败，并显示<code class="inline">Your balance is not enough to fulfill this request</code>消息。你可以设置一个自动化程序，在发起转账请求之前获取你的 Paystack 余额。要获取 Paystack 余额，请向 <a href="https://paystack.com/docs/api/transfer-control/#balance">检查余额API</a>接口发出 <code class="inline">GET</code> 请求：</p>
+<pre class="code">#!/bin/sh
+curl https://api.paystack.co/balance
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-X GET</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Balances retrieved&quot;,
+  &quot;data&quot;: [
+    {
+      &quot;currency&quot;: &quot;NGN&quot;,
+      &quot;balance&quot;: 2910971757
+    }
+  ]
+}</pre>
+<p>响应对象中的<code class="inline">data</code>参数是一个对象数组。这是因为你的集成中可以有多种货币。</p>
+<p>数据数组中的每个 <code class="inline">balance</code> 参数都是货币的子单位。根据你管理积分金额的方式，你可以将 <code class="inline">balance</code> 除以 100 或直接与子单元中已有的转账金额进行比较。</p>
+<h2>OTP批准</h2>
+<p>作为额外的安全层，Paystack 企业主可能希望使用发送到其设备的一次性密码 (OTP) 来确认转账。</p>
+<p>如果你有 <a href="https://support.paystack.com/hc/en-us/articles/360009973339-Can-I-receive-an-OTP-to-authorise-my-transfers-">在你的 Paystack 上启用OTP Dashboard</a> 并且通过 API <a href="https://paystack.com/docs/transfers/managing-transfers/#initiate-a-transfer">发起转移</a>，你会收到包含 <code class="inline">message: Transfer requires OTP to continue</code> 和 <code class="inline">data.status: otp</code> 的响应</p>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Transfer requires OTP to continue&quot;,
+  &quot;data&quot;: {
+    &quot;reference&quot;: &quot;x8beye1xud&quot;,
+    &quot;integration&quot;: 463433,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;amount&quot;: 20000,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;source&quot;: &quot;balance&quot;,
+    &quot;reason&quot;: &quot;E choke&quot;,
+    &quot;recipient&quot;: 10751086,
+    &quot;status&quot;: &quot;otp&quot;,
+    &quot;transfer_code&quot;: &quot;TRF_1aqrqhoomp0rjro&quot;,
+    &quot;id&quot;: 56506855,
+    &quot;createdAt&quot;: &quot;2021-04-07T12:41:57.763Z&quot;,
+    &quot;updatedAt&quot;: &quot;2021-04-07T12:41:57.763Z&quot;
+  }
+}</pre>
+<p>当企业主提供发送到其手机号码（以及邮箱（如果启用）时）的 OTP 时，可以使用我们的 <a href="https://paystack.com/docs/api/transfer#finalize">完成传输API</a> 接口完成转账：</p>
+<pre class="code">curl https://api.paystack.co/transfer/finalize_transfer
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;transfer_code&quot;: &quot;TRF_vsyqdmlzble3uii&quot;, &quot;otp&quot;: &quot;928783&quot; }&#x27;
+-X POST
+</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Transfer has been queued&quot;,
+  &quot;data&quot;: {
+    &quot;reference&quot;: &quot;on5hyz9poe&quot;,
+    &quot;integration&quot;: 428626,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;amount&quot;: 3794800,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;source&quot;: &quot;balance&quot;,
+    &quot;reason&quot;: &quot;Holiday Flexing&quot;,
+    &quot;recipient&quot;: 6788170,
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;transfer_code&quot;: &quot;TRF_vsyqdmlzble3uii&quot;,
+    &quot;id&quot;: 23070321,
+    &quot;createdAt&quot;: &quot;2020-05-13T14:22:49.687Z&quot;,
+    &quot;updatedAt&quot;: &quot;2020-05-13T14:22:49.687Z&quot;
+  }
+}</pre>
+<h2>服务端审批</h2>
+<p>OTP 批准不允许你构建完全自动化的系统。但是，这不应妨碍你确认转移请求的真实性。这就是服务端批准的用武之地。它允许你创建一个 URL 来检查传输请求是否由你发起。这是一个两步过程：</p>
+<ol><li>创建批准URL</li><li>将 URL 添加到仪表板</li></ol>
+<h3>创建批准URL</h3>
+<p>批准URL是<code class="inline">POST</code>接口，用于检查转账详细信息的真实性。如果转账详细信息是真实的，它应该响应 <code class="inline">200</code>，否则响应 <code class="inline">400</code>：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>响应码</th><th>含义</th><th>状态</th></tr></thead><tbody><tr><td><strong>200</strong></td><td>转让已获批准</td><td><code class="inline">pending</code></td></tr><tr><td><strong>400</strong></td><td>转账被拒绝</td><td><code class="inline">rejected</code></td></tr></tbody></table></div>
+<p>如果商户服务端在几秒钟内没有响应，我们将转账标记为<code class="inline">blocked</code>并停止进一步处理。</p>
+<p>你应该确保你的批准URL不会运行很长的流程。这可能会导致响应时间延迟，从而导致传输被阻止。</p>
+<pre class="code">
+function validateTransferRequest(request) {
+
+}
+
+app.post(&#x27;/approval&#x27;, (req, res) =&gt; {
+const { body } = req
+const isValidTransferRequest = validateTransferRequest(body)
+
+if (!isValidTransferRequest) {
+return res.status(400).json({})
+}
+
+return res.status(200).json({})
+})</pre>
+<p>当我们发送批准请求时，我们添加用于发起传输请求的有效负载。校验请求时，你的校验逻辑应确认有效负载中的传输 <strong>参考</strong> 和 <strong>金额</strong> 与你系统上的内容匹配。</p>
+<h2>将 URL 添加到仪表板</h2>
+<p>当你完成批准URL的实施后，你需要将URL添加到PaystackDashboard。为此，请转到 Paystack Dashboard，然后<a href="https://dashboard.paystack.com/#/settings/preferences">导航至“设置”，然后导航至“首选项”</a> 找到“转账审批”部分：</p>
+<p><a href="https://paystack.com/docs/static/027c9666ffe75694210bab674a8b4eb2/8c557/transfer-approval.png">![图片 1：添加批准的仪表板部分的图片URL</a>](https://paystack.com/docs/static/027c9666ffe75694210bab674a8b4eb2/c65fa/transfer-approval.png)</p>
+<p>不要忘记点击 <strong>保存更改</strong> 按钮来完成设置过程。</p>
+<p>在转移批准部分中，选中你要激活批准的域的复选框，然后为该域添加 URL。拒绝请求时可以执行以下两种操作：</p>
+<ol><li><strong>黑名单收件人</strong>：将收款人列入黑名单后，你将无法再向收款人汇款。你可以通过 Dashboard 通过 <a href="https://dashboard.paystack.com/#/transfer-recipients?use_cursor=true">导航至收件人页面</a> 撤消此操作，单击收件人并切换开关。</li><li><strong>什么也不做</strong>：我们只是不会继续处理该请求。</li></ol>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/transfers/managing-transfers/" target="_blank" rel="noopener">https://paystack.com/docs/transfers/managing-transfers/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>创建交易拆分 · Paystack 开发文档（中文）</title>
+<meta name="description" content="创建交易拆分 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>多重分割使商户能够在其支付账户和一个或多个子账户之间分割交易的结算。</p>
+<p>你可以通过以下方式实现多分割：</p>
+<ol><li><a href="https://paystack.com/docs/payments/multi-split-payments/#creating-a-transaction-split">创建交易拆分</a></li><li><a href="https://paystack.com/docs/payments/multi-split-payments/#using-transaction-splits-with-payments">使用交易拆分进行付款</a></li></ol>
+<p>商户将能够使用 <a href="https://paystack.com/docs/api/split">交易分割API</a> 接口和 <a href="https://dashboard.paystack.com/#/transaction-splits">PaystackDashboard</a> 创建和管理他们的交易拆分。</p>
+<h2>创建交易拆分</h2>
+<p>交易拆分取决于子账户来发挥其魔力。如果你已有子账户，则可以继续。否则，你需要先<a href="https://paystack.com/docs/payments/split-payments/#create-a-subaccount">创建子账户</a>。</p>
+<p>你可以通过向 <a href="https://paystack.com/docs/api/split#create">创建分割API</a> 接口发送包含以下信息的请求来创建交易拆分：</p>
+<ul><li>分割类型（<code class="inline">flat</code>或<code class="inline">percentage</code>）</li><li>一系列子账户及其各自的份额</li></ul>
+<pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/split&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+content_type=&quot;Content-Type: application/json&quot;
+data=&#x27;{
+&quot;name&quot;:&quot;Halfsies&quot;,
+&quot;type&quot;:&quot;percentage&quot;,
+&quot;currency&quot;: &quot;NGN&quot;,
+&quot;subaccounts&quot;:[{
+&quot;subaccount&quot;: &quot;ACCT_6uujpqtzmnufzkw&quot;,
+&quot;share&quot;: 50
+}]
+}&#x27;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -H &quot;$content_type&quot; -d &quot;$data&quot; -X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Split created&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 2703655,
+    &quot;name&quot;: &quot;Halfsies&quot;,
+    &quot;type&quot;: &quot;percentage&quot;,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;integration&quot;: 463433,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;split_code&quot;: &quot;SPL_RcScyW5jp2&quot;,
+    &quot;active&quot;: true,
+    &quot;bearer_type&quot;: &quot;all&quot;,
+    &quot;createdAt&quot;: &quot;2024-08-26T11:38:47.506Z&quot;,
+    &quot;updatedAt&quot;: &quot;2024-08-26T11:38:47.506Z&quot;,
+    &quot;is_dynamic&quot;: false,
+    &quot;subaccounts&quot;: [
+      {
+        &quot;subaccount&quot;: {
+          &quot;id&quot;: 1151727,
+          &quot;subaccount_code&quot;: &quot;ACCT_6uujpqtzmnufzkw&quot;,
+          &quot;business_name&quot;: &quot;Oasis Global&quot;,
+          &quot;description&quot;: &quot;Oasis Global&quot;,
+          &quot;primary_contact_name&quot;: null,
+          &quot;primary_contact_email&quot;: null,
+          &quot;primary_contact_phone&quot;: null,
+          &quot;metadata&quot;: null,
+          &quot;settlement_bank&quot;: &quot;Guaranty Trust Bank&quot;,
+          &quot;currency&quot;: &quot;NGN&quot;,
+          &quot;account_number&quot;: &quot;0123456047&quot;
+        },
+        &quot;share&quot;: 50
+      }
+    ],
+    &quot;total_subaccounts&quot;: 1
+  }
+}</pre>
+<ol><li>如果拆分类型为 <code class="inline">percentage</code>，我们不接受子账户份额的小数数字</li><li><code class="inline">percentage</code> 分割的总和不应超过 100%</li><li><code class="inline">flat</code> 分割的份额金额应位于 <a href="https://paystack.com/api#supported-currency">支持的货币</a> 的子单位中</li><li><code class="inline">flat</code>分割的总和不应大于交易金额</li><li>分割可以是 <code class="inline">flat</code> 或 <code class="inline">percentage</code> 类型，但不能同时是两者</li></ol>
+<p>通过APIs，你可以添加、删除和更新Split中的子账户，以及更改Split的活动状态。</p>
+<p>你无法更改拆分的类型。相反，你可以停用拆分并创建具有不同拆分类型的新拆分。</p>
+<h2>使用交易拆分进行付款</h2>
+<p>创建交易拆分后，你可以在以下情况下使用它：</p>
+<ol><li><a href="https://paystack.com/docs/payments/multi-split-payments/#initializing-a-transaction">初始化交易</a></li><li><a href="https://paystack.com/docs/payments/multi-split-payments/#charging-an-authorization">收费授权</a></li></ol>
+<h3>初始化交易</h3>
+<p>你可以通过将 <code class="inline">split_code</code> 添加到发送到 <a href="https://paystack.com/docs/api/transaction#initialize">交易初始化API</a> 接口的有效负载来初始化交易拆分。</p>
+<pre class="code">curl https://api.paystack.co/transaction/initialize
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;email&quot;: &quot;customer@email.com&quot;,
+&quot;amount&quot;: &quot;20000&quot;,
+&quot;split_code&quot;: &quot;SPL_98WF13Eekw&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Authorization URL created&quot;,
+  &quot;data&quot;: {
+    &quot;authorization_url&quot;: &quot;https://checkout.paystack.com/nkdks46nymizns7&quot;,
+    &quot;access_code&quot;: &quot;nkdks46nymizns7&quot;,
+    &quot;reference&quot;: &quot;nms6uvr1pl&quot;
+  }
+}</pre>
+<p>要通过交易拆分收取授权费用，请将 <code class="inline">split_code</code> 添加到发送到 <a href="https://paystack.com/docs/api/transaction#charge-authorization">收费授权API</a> 接口的有效负载中。</p>
+<pre class="code">curl https://api.paystack.co/transaction/charge_authorization
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;authorization_code&quot; : &quot;AUTH_12abc345de&quot;, &quot;email&quot;: &quot;mail@mail.com&quot;,
+&quot;amount&quot;: &quot;300000&quot;, &quot;split_code&quot;: &quot;SPL_UO2vBzEqHW&quot; }&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Charge attempted&quot;,
+  &quot;data&quot;: {
+    &quot;amount&quot;: 300000,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;transaction_date&quot;: &quot;2020-05-27T11:45:03.000Z&quot;,
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;reference&quot;: &quot;cn65lf4ixmkzvda&quot;,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;metadata&quot;: &quot;&quot;,
+    &quot;gateway_response&quot;: &quot;Approved&quot;,
+    &quot;message&quot;: null,
+    &quot;channel&quot;: &quot;card&quot;,
+    &quot;ip_address&quot;: null,
+    &quot;log&quot;: null,
+    &quot;fees&quot;: 14500,
+    &quot;authorization&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_12abc345de&quot;,
+      &quot;bin&quot;: &quot;408408&quot;,
+      &quot;last4&quot;: &quot;4081&quot;,
+      &quot;exp_month&quot;: &quot;12&quot;,
+      &quot;exp_year&quot;: &quot;2020&quot;,
+      &quot;channel&quot;: &quot;card&quot;,
+      &quot;card_type&quot;: &quot;visa DEBIT&quot;,
+      &quot;bank&quot;: &quot;Test Bank&quot;,
+      &quot;country_code&quot;: &quot;NG&quot;,
+      &quot;brand&quot;: &quot;visa&quot;,
+      &quot;reusable&quot;: true,
+      &quot;signature&quot;: &quot;SIG_2Gvc6pNuzJmj4TCchXfp&quot;,
+      &quot;account_name&quot;: null
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 23215815,
+      &quot;first_name&quot;: null,
+      &quot;last_name&quot;: null,
+      &quot;email&quot;: &quot;mail@mail.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_wt0zmhzb0xqd4nr&quot;,
+      &quot;phone&quot;: null,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;
+    },
+    &quot;plan&quot;: null,
+    &quot;id&quot;: 696105928
+  }
+}</pre>
+<h2>动态分裂</h2>
+<p>有时，你直到购买流程后期才能确定拆分配置。通过动态拆分，你可以动态创建拆分。这可以通过将 <code class="inline">split</code> 对象传递给 <a href="https://paystack.com/docs/api/transaction#initialize">交易初始化API</a> 接口或<a href="https://paystack.com/docs/payments/accept-payments/#popup">弹出窗口</a> 来实现。 <code class="inline">split</code> 对象可以具有以下属性：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>参数</th><th>需要吗？</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">type</code></td><td>是的</td><td>值可以是 <code class="inline">flat</code> 或 <code class="inline">percentage</code></td></tr><tr><td><code class="inline">bearer_type</code></td><td>是的</td><td>值可以是 <code class="inline">all</code>、<code class="inline">all-proportional</code>、<code class="inline">account</code> 或 <code class="inline">subaccount</code></td></tr><tr><td><code class="inline">subaccounts</code></td><td>是的</td><td>子账户对象的数组。例如<code class="inline">{&quot;subaccount&quot;: &#x27;ACCT_&#x27;, &quot;share&quot;: 60}</code></td></tr><tr><td><code class="inline">bearer_subaccount</code></td><td>否</td><td>持有者的子账户代码。如果<code class="inline">bearer_type</code>是<code class="inline">subaccount</code>则需要指定</td></tr><tr><td><code class="inline">reference</code></td><td>否</td><td>分割的唯一参考</td></tr></tbody></table></div>
+<pre class="code">curl https://api.paystack.co/transaction/initialize
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;email&quot;: &quot;customer@email.com&quot;,
+&quot;amount&quot;: &quot;20000&quot;,
+&quot;split&quot;: {
+&quot;type&quot;: &quot;flat&quot;,
+&quot;bearer_type&quot;: &quot;account&quot;,
+&quot;subaccounts&quot;: [
+{
+&quot;subaccount&quot;: &quot;ACCT_pwwualwty4nhq9d&quot;,
+&quot;share&quot;: 6000
+},
+{
+&quot;subaccount&quot;: &quot;ACCT_hdl8abxl8drhrl3&quot;,
+&quot;share&quot;: 4000
+},
+]
+}
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Authorization URL created&quot;,
+  &quot;data&quot;: {
+    &quot;authorization_url&quot;: &quot;https://checkout.paystack.com/nkdks46nymizns7&quot;,
+    &quot;access_code&quot;: &quot;nkdks46nymizns7&quot;,
+    &quot;reference&quot;: &quot;nms6uvr1pl&quot;
+  }
+}</pre>
+<h2>Webhook</h2>
+<p>对于成功的交易，我们将使用拆分信息填充 <code class="inline">charge.success</code> Webhook 中的 <code class="inline">split</code> 参数：</p>
+<pre class="code">{
+  &quot;event&quot;: &quot;charge.success&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 697123356,
+    &quot;domain&quot;: &quot;live&quot;,
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;reference&quot;: &quot;12k81tq3my&quot;,
+    &quot;amount&quot;: 10000,
+    &quot;message&quot;: null,
+    &quot;gateway_response&quot;: &quot;Approved&quot;,
+    &quot;paid_at&quot;: &quot;2020-05-28T13:54:57.000Z&quot;,
+    &quot;split&quot;: {
+      &quot;id&quot;: 10,
+      &quot;name&quot;: &quot;Example Split&quot;,
+      &quot;split_code&quot;: &quot;SPL_98WF13Eekw&quot;,
+      &quot;formula&quot;: {
+        &quot;type&quot;: &quot;percentage&quot;,
+        &quot;subaccounts&quot;: [
+          {
+            &quot;share&quot;: 20,
+            &quot;subaccount_code&quot;: &quot;ACCT_zpu16k4uhxycmxu&quot;,
+            &quot;id&quot;: 12850,
+            &quot;name&quot;: &quot;Ayobami UBA&quot;
+          }
+        ],
+        &quot;integration&quot;: 80
+      },
+      &quot;shares&quot;: {
+        &quot;paystack&quot;: 140,
+        &quot;subaccounts&quot;: [
+          {
+            &quot;amount&quot;: 2000,
+            &quot;subaccount_code&quot;: &quot;ACCT_zpu16k4uhxycmxu&quot;,
+            &quot;id&quot;: 12850
+          }
+        ],
+        &quot;integration&quot;: 7860
+      }
+    }
+  }
+}</pre>
+<h2>多分割费用</h2>
+<p>默认情况下，主账户承担 Paystack 交易费用。但是，你可以通过将 <code class="inline">bearer_type</code> 设置为 <code class="inline">account</code>、<code class="inline">all</code> 或 <code class="inline">subaccount</code> 来更改此设置。</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>承载类型</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">all</code></td><td>费用将由主账户和所有子账户平摊。</td></tr><tr><td><code class="inline">all-proportional</code></td><td>根据主账户和子账户的份额收取费用。</td></tr><tr><td><code class="inline">account</code></td><td>费用将仅向主账户收取。</td></tr><tr><td><code class="inline">subaccount</code></td><td>仅对<code class="inline">bearer_subaccount</code>中设置的子账户进行扣费</td></tr></tbody></table></div>
+<p>当<code class="inline">bearer_type</code>设置为<code class="inline">subaccount</code>时，必选参数。 <code class="inline">bearer_subaccount</code> 的值必须是拆分组中的子账户代码。</p>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/payments/multi-split-payments/" target="_blank" rel="noopener">https://paystack.com/docs/payments/multi-split-payments/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

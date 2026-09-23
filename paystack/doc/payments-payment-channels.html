@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>卡片 · Paystack 开发文档（中文）</title>
+<meta name="description" content="卡片 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>Paystack 使你能够接受使用不同支付渠道的客户的付款，例如：银行卡、移动货币账户、QR代码、直接从他们的银行账户或USSD。</p>
+<p>如果你使用<a href="https://paystack.com/docs/payments/accept-payments/#popup">Popup</a>或<a href="https://paystack.com/docs/payments/accept-payments/#redirect">重定向</a>方法，付款客户将看到你在<a href="https://dashboard.paystack.com/#/settings/preferences">仪表板</a>上选择的所有付款方式。但如果你不想使用任何一个选项，你可以使用 <a href="https://paystack.com/docs/payments/accept-payments/#charge-api">充电API</a> 直接从你的服务端启动所有不同的支付渠道。</p>
+<p>银行银行卡支付渠道适用于所有 Paystack 账户，而其他支付渠道仅适用于受支持的国家/地区。</p>
+<h2>卡片</h2>
+<p>卡是许多国家常见的支付渠道之一。我们在各个市场支持以下卡：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>卡</th><th>市场</th></tr></thead><tbody><tr><td>签证</td><td>全部</td></tr><tr><td>万事达卡</td><td>全部</td></tr><tr><td>神韵</td><td>尼日利亚</td></tr><tr><td>美国运通卡</td><td>尼日利亚、南非和肯尼亚</td></tr></tbody></table></div>
+<p>API 卡适用于我们所有市场中<a href="https://www.pcisecuritystandards.org/">PCI 符合</a> 的企业。如果你打算使用此API，你应该检查下面概述的合规性要求并联系我们。</p>
+<p>卡片 API 允许你通过自定义结账安全、合规地将卡片详细信息发送到我们的服务端。有了这个，PCI-DSS投诉企业可以在不影响安全性的情况下构建定制的结账体验。</p>
+<p>卡详细信息的敏感性要求企业遵守<strong>支付卡行业数据安全标准 (PCI-DSS)</strong>，以确保它们得到安全处理。 Paystack 遵循<a href="https://paystack.com/compliance">PCI 1 级服务提供商</a>，允许非投诉企业使用我们的<a href="https://paystack.com/docs/payments/accept-payments/#redirect">Checkout</a> 和<a href="https://paystack.com/docs/developer-tools/">手机SDK</a> 进行银行银行卡支付</p>
+<h3>合规要求</h3>
+<p>PCI-DSS认证文件只能由经认可的<a href="https://listings.pcisecuritystandards.org/assessors_and_solutions/qualified_security_assessors">合格的安全评估员</a>（QSA）审核后代表PCI理事会签发。</p>
+<p>理事会颁发的文件为<strong>合规证明</strong>（AOC）和<strong>合规报告。</strong>，这些文件自签署之日起仅一年内有效。我们要求你先提交这些文件，然后才能使用此API。</p>
+<p>对于 Paystack，有效的 AOC 需要显示以下内容：</p>
+<ol><li>经QSA审核后签发</li><li>由 QSA 签署</li><li>自发行之日起一年内</li><li>封面上有 PCI SSC 标志</li><li>至少遵循 PCI-DSS 版本 3.2.1</li></ol>
+<p>如果你满足上述条件，请将你的文件提交给<a href="mailto:support@paystack.com">support@paystack.com</a>或通过你的Paystack关系经理，我们将授予对APIs的访问权限。</p>
+<h2>银行账户</h2>
+<p>此功能目前可供尼日利亚的企业使用。</p>
+<p>通过银行付款功能，客户可以通过网上银行门户或提供银行帐号并使用发送到手机或邮箱的OTP进行身份校验来付款。</p>
+<p>这与银行转账不同，银行转账是客户将资金转入银行账户。</p>
+<h3>收集银行详细信息</h3>
+<p>要收集银行详细信息，你需要提示用户选择银行并输入帐号。要获取支持的银行列表，请使用附加过滤器 <code class="inline">pay_with_bank=true</code> 向 <a href="https://paystack.com/docs/api/miscellaneous#bank">列出银行API</a> 接口发出 <code class="inline">GET</code> 请求。</p>
+<p>银行可以以下拉列表或任何其他格式列出，允许用户轻松选择他们选择的银行。</p>
+<h3>创建费用</h3>
+<p>将<code class="inline">email</code>、<code class="inline">amount</code>、<code class="inline">metadata</code>、<code class="inline">bank</code>（包含银行的<code class="inline">code</code>和客户提供的<code class="inline">account_number</code>的对象）和<code class="inline">birthday</code>发送到我们的Chargeendpoint开始。</p>
+<pre class="code">curl https://api.paystack.co/charge
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;email&quot;: &quot;customer@email.com&quot;,
+&quot;amount&quot;: &quot;10000&quot;,
+&quot;bank&quot;: {
+&quot;code&quot;: &quot;057&quot;,
+&quot;account_number&quot;: &quot;0000000000&quot;
+}
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Charge attempted&quot;,
+  &quot;data&quot;: {
+    &quot;reference&quot;: &quot;z8q981z5kp7sfde&quot;,
+    &quot;status&quot;: &quot;send_birthday&quot;,
+    &quot;display_text&quot;: &quot;Please enter your birthday&quot;
+  }
+}</pre>
+<p>如果选择的银行是Kuda，则需要在<code class="inline">bank</code>对象中使用<code class="inline">phone</code>和<code class="inline">token</code>代替<code class="inline">account_number</code>：</p>
+<pre class="code">curl https://api.paystack.co/charge
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;email&quot;: &quot;customer@email.com&quot;,
+&quot;amount&quot;: &quot;10000&quot;,
+&quot;bank&quot;: {
+&quot;code&quot;: &quot;50211&quot;,
+&quot;phone&quot;: &quot;+2348100000000&quot;,
+&quot;token&quot;: &quot;123456&quot;
+}
+}&#x27;
+-X POST
+</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Charge attempted&quot;,
+  &quot;data&quot;: {
+    &quot;reference&quot;: &quot;z8q981z5kp7sfde&quot;,
+    &quot;status&quot;: &quot;pending&quot;,
+    &quot;display_text&quot;: &quot;Processing transaction&quot;
+  }
+}</pre>
+<p>当调用API时，<code class="inline">data.status</code>键的值为<code class="inline">pending</code>，因为支付正在后台处理。然后，根据交易是否成功，<code class="inline">data.status</code>更新为<code class="inline">success</code>或<code class="inline">failed</code>。</p>
+<h2>通过转账支付</h2>
+<p>此功能目前仅适用于尼日利亚和加纳的企业。</p>
+<p>转账付款 (PwT) 是一项功能，允许商户或企业创建临时银行账户，客户可以使用该账户来支付商品或服务费用。帐号已生成并与当前客户的交易相关联。客户交易后或超过有效期后，帐号将失效。</p>
+<h3>创建 PwT 费用</h3>
+<p>在付款时，你向 <a href="https://paystack.com/docs/api/charge#create">创建电荷 API</a> 接口发起请求，并传递 <code class="inline">email</code>、<code class="inline">amount</code> 和 <code class="inline">bank_transfer</code> 对象。 <code class="inline">bank_transfer</code>对象采用<code class="inline">account_expires_at</code>，用于设置交易帐号的到期时间：</p>
+<pre class="code">#!/bin/sh
+
+url=&quot;https://api.paystack.co/charge&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+content_type=&quot;Content-Type: application/json&quot;
+data=&#x27;{
+&quot;email&quot;: &quot;another@one.com&quot;,
+&quot;amount&quot;: &quot;10000&quot;,
+&quot;bank_transfer&quot;: {
+&quot;account_expires_at&quot;: &quot;2025-04-24T16:40:57.954Z&quot;
+}
+}&#x27;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -H &quot;$content_type&quot; -d &quot;$data&quot; -X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Charge attempted&quot;,
+  &quot;data&quot;: {
+    &quot;reference&quot;: &quot;kcvu0t3kzs&quot;,
+    &quot;status&quot;: &quot;pending_bank_transfer&quot;,
+    &quot;display_text&quot;: &quot;Please make a transfer to the account specified&quot;,
+    &quot;account_name&quot;: &quot;TEST-MANAGED-ACCOUNT&quot;,
+    &quot;account_number&quot;: &quot;1260257501&quot;,
+    &quot;bank&quot;: {
+      &quot;slug&quot;: &quot;test-bank&quot;,
+      &quot;name&quot;: &quot;Test Bank&quot;,
+      &quot;id&quot;: 24
+    },
+    &quot;account_expires_at&quot;: &quot;2025-04-24T16:40:57.954Z&quot;
+  }
+}</pre>
+<div class="table-wrap"><table class="data"><thead><tr><th>银行转账参数</th><th>类型</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">account_expires_at</code></td><td>字符串</td><td>账户有效期，格式为ISO 8601 (<code class="inline">YYYY-MM-DDThh:mm:ssZ</code>)。最短时间为距当前时间 15 分钟，最长时间为距当前时间 8 小时。你还可以将其设置为 <code class="inline">null</code>，以便我们自动将其设置为距离当前时间 8 小时。</td></tr></tbody></table></div>
+<p>如果 <code class="inline">account_expires_at</code> 与当前时间之间的差异为 <strong>不到15分钟</strong>，我们将默认为 <strong>15分钟</strong>。如果<code class="inline">account_expires_at</code>和当前时间<strong>超过8小时</strong>之间存在差异，我们将默认为<strong>8小时</strong>。</p>
+<p>如果你需要控制你的企业收到的转账，你应该实施<a href="https://paystack.com/docs/payments/dedicated-virtual-accounts/#inbound-transfer-approval">入境转账审批</a>。这使你能够根据你的各种业务需求拒绝或接受转账。</p>
+<h3>校验转移</h3>
+<p>银行转账由客户发起并由其银行处理。要确认付款，你需要实现Webhook并监听以下事件：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>活动</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">charge.success</code></td><td>当客户转账成功时发送此信息。</td></tr><tr><td><code class="inline">bank.transfer.rejected</code></td><td>当客户发送的金额不正确或客户被我们的欺诈系统标记时，就会发送此信息。</td></tr></tbody></table></div>
+<pre class="code">{
+  &quot;event&quot;: &quot;charge.success&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 3104021987,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;reference&quot;: &quot;zuz8ggd1ro&quot;,
+    &quot;amount&quot;: 25000,
+    &quot;message&quot;: null,
+    &quot;gateway_response&quot;: &quot;Approved&quot;,
+    &quot;paid_at&quot;: &quot;2023-09-12T13:29:09.000Z&quot;,
+    &quot;created_at&quot;: &quot;2023-09-12T13:27:50.000Z&quot;,
+    &quot;channel&quot;: &quot;bank_transfer&quot;,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;ip_address&quot;: &quot;172.91.42.100&quot;,
+    &quot;metadata&quot;: &quot;&quot;,
+    &quot;fees_breakdown&quot;: null,
+    &quot;log&quot;: null,
+    &quot;fees&quot;: 375,
+    &quot;fees_split&quot;: null,
+    &quot;authorization&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_q5nfynycgm&quot;,
+      &quot;bin&quot;: &quot;008XXX&quot;,
+      &quot;last4&quot;: &quot;X553&quot;,
+      &quot;exp_month&quot;: &quot;09&quot;,
+      &quot;exp_year&quot;: &quot;2023&quot;,
+      &quot;channel&quot;: &quot;bank_transfer&quot;,
+      &quot;card_type&quot;: &quot;transfer&quot;,
+      &quot;bank&quot;: null,
+      &quot;country_code&quot;: &quot;NG&quot;,
+      &quot;brand&quot;: &quot;Managed Account&quot;,
+      &quot;reusable&quot;: false,
+      &quot;signature&quot;: null,
+      &quot;account_name&quot;: null,
+      &quot;sender_country&quot;: &quot;NG&quot;,
+      &quot;sender_bank&quot;: null,
+      &quot;sender_bank_account_number&quot;: &quot;XXXXXXX553&quot;,
+      &quot;sender_name&quot;: &quot;Jadesola Oluwashina&quot;,
+      &quot;narration&quot;: &quot;Channel Tests&quot;
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 138496675,
+      &quot;first_name&quot;: null,
+      &quot;last_name&quot;: null,
+      &quot;email&quot;: &quot;another@one.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_1eq06yu8efl8u63&quot;,
+      &quot;phone&quot;: null,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;,
+      &quot;international_format_phone&quot;: null
+    },
+    &quot;plan&quot;: {},
+    &quot;subaccount&quot;: {},
+    &quot;split&quot;: {},
+    &quot;order_id&quot;: null,
+    &quot;paidAt&quot;: &quot;2023-09-12T13:29:09.000Z&quot;,
+    &quot;requested_amount&quot;: 25000,
+    &quot;pos_transaction_data&quot;: null,
+    &quot;source&quot;: {
+      &quot;type&quot;: &quot;api&quot;,
+      &quot;source&quot;: &quot;merchant_api&quot;,
+      &quot;entry_point&quot;: &quot;charge&quot;,
+      &quot;identifier&quot;: null
+    }
+  }
+}</pre>
+<p>或者，你可以使用 <a href="https://paystack.com/docs/api/charge#check">检查待处理费用 API</a> 接口手动校验交易状态。</p>
+<h2>USSD</h2>
+<p>此付款方式专门针对尼日利亚客户。尼日利亚银行提供客户用来执行交易的USSD服务，我们已与其中一些银行集成以帮助客户完成支付。</p>
+<p>通过 USSD 支付渠道允许你的尼日利亚客户通过在移动设备上拨打 USSD 代码向你付款。该代码通常采用<code class="inline">* followed by some code and ending with #</code>的形式。系统会提示用户使用 PIN 校验交易，然后确认交易。</p>
+<p>发起 USSD 收费所需的只是客户邮箱和收费金额。</p>
+<p>当用户付款时，回复将发送至你的Webhook。因此，为了使其按预期正常工作，必须在 Paystack Dashboard 上设置Webhook。</p>
+<h3>创建费用</h3>
+<p>将邮箱和金额发送至<a href="https://paystack.com/docs/api/charge">充电API</a> 接口，并使用你要收费的 USSD 类型。下表显示了支持的类型。</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>银行</th><th>类型</th></tr></thead><tbody><tr><td>担保信托银行</td><td>737</td></tr></tbody></table></div>
+<pre class="code">curl https://api.paystack.co/charge
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;email&quot;: &quot;some@body.nice&quot;,
+&quot;amount&quot;:&quot;10000&quot;,
+&quot;ussd&quot;: {
+&quot;type&quot;: &quot;737&quot;
+},
+&quot;metadata&quot;: {
+&quot;custom_fields&quot;:[{
+&quot;value&quot;: &quot;makurdi&quot;,
+&quot;display_name&quot;: &quot;Donation for&quot;,
+&quot;variable_name&quot;: &quot;donation_for&quot;
+}]
+}
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Charge attempted&quot;,
+  &quot;data&quot;: {
+    &quot;reference&quot;: &quot;yjr1r8rwhedara4&quot;,
+    &quot;status&quot;: &quot;pay_offline&quot;,
+    &quot;display_text&quot;: &quot;Please dial *737*33*4*18791# on your mobile phone to complete the transaction&quot;,
+    &quot;ussd_code&quot;: &quot;*737*33*4*18791#&quot;
+  }
+}</pre>
+<p>付款时，默认响应会提供USSD代码，供客户拨打以完成支付。</p>
+<h3>处理响应</h3>
+<p>当用户完成支付时，将向商户的Webhook发送响应。因此，为了使其按预期正常工作，必须为商户设置Webhook。</p>
+<p>付款成功后会引发<code class="inline">charge.success</code>事件。发送到用户的 Webhook 的示例响应如下所示：</p>
+<pre class="code">{
+  &quot;event&quot;: &quot;charge.success&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 53561,
+    &quot;domain&quot;: &quot;live&quot;,
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;reference&quot;: &quot;2ofkbk0yie6dvzb&quot;,
+    &quot;amount&quot;: 150000,
+    &quot;message&quot;: &quot;madePayment&quot;,
+    &quot;gateway_response&quot;: &quot;Payment successful&quot;,
+    &quot;paid_at&quot;: &quot;2018-06-25T12:42:58.000Z&quot;,
+    &quot;created_at&quot;: &quot;2018-06-25T12:38:59.000Z&quot;,
+    &quot;channel&quot;: &quot;ussd&quot;,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;ip_address&quot;: &quot;54.246.237.22, 162.158.38.185, 172.31.15.210&quot;,
+    &quot;metadata&quot;: &quot;&quot;,
+    &quot;log&quot;: null,
+    &quot;fees&quot;: null,
+    &quot;fees_split&quot;: null,
+    &quot;authorization&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_4c6mhnmmeusp4yd&quot;,
+      &quot;bin&quot;: &quot;XXXXXX&quot;,
+      &quot;last4&quot;: &quot;XXXX&quot;,
+      &quot;exp_month&quot;: &quot;05&quot;,
+      &quot;exp_year&quot;: &quot;2018&quot;,
+      &quot;channel&quot;: &quot;ussd&quot;,
+      &quot;card_type&quot;: &quot;offline&quot;,
+      &quot;bank&quot;: &quot;Guaranty Trust Bank&quot;,
+      &quot;country_code&quot;: &quot;NG&quot;,
+      &quot;brand&quot;: &quot;offline&quot;,
+      &quot;reusable&quot;: false,
+      &quot;signature&quot;: null,
+      &quot;account_name&quot;: null
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 16200,
+      &quot;first_name&quot;: &quot;John&quot;,
+      &quot;last_name&quot;: &quot;Doe&quot;,
+      &quot;email&quot;: &quot;customer@email.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_bpy9ciomcstg55y&quot;,
+      &quot;phone&quot;: &quot;&quot;,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;
+    },
+    &quot;plan&quot;: {},
+    &quot;subaccount&quot;: {},
+    &quot;paidAt&quot;: &quot;2018-06-25T12:42:58.000Z&quot;
+  }
+}</pre>
+<p>目前无法直接向回头客收费。只需调用接口即可开始新交易。</p>
+<h2>移动货币</h2>
+<p>此功能仅适用于加纳、肯尼亚和科特迪瓦的企业。</p>
+<p>移动货币渠道允许你的客户使用支持移动货币的电话号码向你付款。付款时，客户需要在手机上授权付款。</p>
+<p>由于付款是离线完成的，因此你需要有一个<a href="https://paystack.com/docs/payments/webhooks/">Webhook URL</a>，我们将使用它来将付款的最终状态发送到你的服务端。</p>
+<h3>创建费用</h3>
+<p>要发起移动货币收费，你需要向 <a href="https://paystack.com/docs/api/charge">充电API</a> 发出 <code class="inline">POST</code> 请求，并传递客户的 <code class="inline">email</code>、<code class="inline">amount</code> 和 <code class="inline">mobile_money</code> 对象：</p>
+<pre class="code">curl https://api.paystack.co/charge
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;amount&quot;: 100,
+&quot;email&quot;: &quot;customer@email.com&quot;,
+&quot;currency&quot;: &quot;GHS&quot;,
+&quot;mobile_money&quot;: {
+&quot;phone&quot; : &quot;0551234987&quot;,
+&quot;provider&quot; : &quot;mtn&quot;
+}
+}&#x27;
+-X POST</pre>
+<p>上面的示例代码展示了如何向任何 MoMo 提供商收费。你只需 <a href="https://paystack.com/docs/api/#supported-currency">更改货币</a> 并将 <code class="inline">mobile_money</code> 对象中的 <code class="inline">mtn</code> 替换为下表中所示的任何其他提供程序代码。</p>
+<p>以下是受支持的移动货币提供商的字符代码：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>提供商</th><th>代码</th><th>国家</th></tr></thead><tbody><tr><td>MTN</td><td><code class="inline">mtn</code></td><td>加纳和CIV</td></tr><tr><td>ATMoney 和 Airtel Money</td><td><code class="inline">atl</code></td><td>加纳和肯尼亚</td></tr><tr><td>电信公司</td><td><code class="inline">vod</code></td><td>加纳</td></tr><tr><td>M-PESA</td><td><code class="inline">mpesa</code></td><td>肯尼亚</td></tr><tr><td>橙色</td><td><code class="inline">orange</code></td><td>CIV</td></tr><tr><td>波</td><td><code class="inline">wave</code></td><td>CIV</td></tr></tbody></table></div>
+<p>当你发起请求时，响应包含一个值为 <code class="inline">pay_offline</code> 的 <code class="inline">data.status</code> 字段。系统还会提示客户在手机上授权交易。你应该向客户显示 <code class="inline">data.display_text</code>，然后监听 <code class="inline">charge.success</code> Webhook 事件。客户需要在<strong>180秒</strong>内完成交易，超过后交易失败。这是网络提供商设置的限制。</p>
+<p>以下是要求客户离线完成该流程的示例响应：</p>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Charge attempted&quot;,
+  &quot;data&quot;: {
+    &quot;reference&quot;: &quot;8nn5fqljd0suybr&quot;,
+    &quot;status&quot;: &quot;pay_offline&quot;,
+    &quot;display_text&quot;: &quot;Please complete authorization process on your mobile phone&quot;
+  }
+}</pre>
+<p>如果 180 秒后没有收到 <code class="inline">charge.success</code> Webhook 事件，则应调用 <a href="https://paystack.com/docs/api/transaction#verify">校验交易API</a> 接口来获取交易失败的状态和原因，可在响应中的 <code class="inline">data.message</code> 参数中找到。</p>
+<h3>M-PESA</h3>
+<p>M-PESA 允许肯尼亚企业向个人客户和 M-PESA Till 号码收费。</p>
+<p>使用M-PESA，商户可以通过向提供的号码发送STK推送来向个人用户收费。我们建议你在电话号码中包含国家/地区代码。例如，<code class="inline">0722000000</code> 应作为 <code class="inline">+254722000000</code> 发送到 <a href="https://paystack.com/docs/api/charge">充电API</a> 接口。系统将提示客户输入PIN以完成交易。</p>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Charge attempted&quot;,
+  &quot;data&quot;: {
+    &quot;reference&quot;: &quot;8nn5fqljd0suybr&quot;,
+    &quot;status&quot;: &quot;pay_offline&quot;,
+    &quot;display_text&quot;: &quot;Please complete authorization process on your mobile phone&quot;
+  }
+}</pre>
+<p>离线选项允许企业创建稍后完成的<a href="https://paystack.com/docs/api/charge">充电API</a>。这对于在服务完成后提供付款的企业非常有用，例如：餐馆、电子商务商店、送货和物流服务。客户将向 Paystack 的 Paybill 付款，生成的 <code class="inline">account_reference</code> 将识别该交易。对企业的另一个好处是交易不会以错误的金额完成。它会失败，客户将不得不重新开始。</p>
+<pre class="code">curl https://api.paystack.co/charge
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;amount&quot;: 100,
+&quot;email&quot;: &quot;customer@email.com&quot;,
+&quot;currency&quot;: &quot;KES&quot;,
+&quot;mobile_money&quot;: {
+&quot;phone&quot;: &quot;254700000000&quot;,
+&quot;provider&quot; : &quot;mpesa_offline&quot;
+}
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Charge attempted&quot;,
+  &quot;data&quot;: {
+    &quot;reference&quot;: &quot;e6i9ak3rbq982wh&quot;,
+    &quot;status&quot;: &quot;pay_offline&quot;,
+    &quot;display_text&quot;: &quot;Please complete authorization process on your mobile phone&quot;,
+    &quot;account_number&quot;: &quot;4084333&quot;,
+    &quot;account_reference&quot;: 1234567
+  }
+}</pre>
+<p><code class="inline">acount_number</code> 是付款单编号，而 <code class="inline">account_reference</code> 唯一标识交易。如果你需要更改金额，你应该创建新的费用并与客户分享新的详细信息。错误的金额将导致交易失败。</p>
+<p>你还可以通过其他企业的 M-PESA Till 号码获得付款。 <code class="inline">mobile_money</code> 对象应将 <code class="inline">provider</code> 设置为 <code class="inline">mptill</code>，并将 <code class="inline">account</code> 设置为其他业务的 M-PESA 提单编号。他们将在分配收银台的电话上收到授权提示。</p>
+<pre class="code">curl https://api.paystack.co/charge
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;amount&quot;: 100,
+&quot;email&quot;: &quot;customer@email.com&quot;,
+&quot;currency&quot;: &quot;KES&quot;,
+&quot;mobile_money&quot;: {
+&quot;account&quot; : &quot;1234567&quot;,
+&quot;provider&quot; : &quot;mptill&quot;
+}
+}&#x27;
+-X POST</pre>
+<p>M-PESA Till 和个人都要求客户在手机上授权交易。因此，在构建自定义体验时，你应该向他们展示 <code class="inline">display_text</code> 值。</p>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Charge attempted&quot;,
+  &quot;data&quot;: {
+    &quot;reference&quot;: &quot;jq3psd5n96sprwl&quot;,
+    &quot;status&quot;: &quot;pay_offline&quot;,
+    &quot;display_text&quot;: &quot;Please complete authorization process on your mobile phone&quot;
+  }
+}</pre>
+<p>由于 M-PESA 交易是异步发生的，因此不容易捕获由于客户错误而导致的故障。当需要很长时间才能完成时，我们建议你实施<a href="https://paystack.com/docs/payments/verify-payments/">校验交易</a>。</p>
+<h3>处理响应</h3>
+<p>当用户完成支付时，将向商户的Webhook发送响应。因此，为了使其按预期正常工作，必须为商户设置Webhook。</p>
+<p>付款成功后会引发<code class="inline">charge.success</code>事件。发送到用户的 Webhook 的示例响应如下所示：</p>
+<pre class="code">{
+  &quot;event&quot;: &quot;charge.success&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 59214,
+    &quot;domain&quot;: &quot;live&quot;,
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;reference&quot;: &quot;gf4n3ykzj6a7u89&quot;,
+    &quot;amount&quot;: 100,
+    &quot;message&quot;: &quot;madePayment&quot;,
+    &quot;gateway_response&quot;: &quot;Approved&quot;,
+    &quot;paid_at&quot;: &quot;2018-11-15T06:10:54.000Z&quot;,
+    &quot;created_at&quot;: &quot;2018-11-15T06:10:32.000Z&quot;,
+    &quot;channel&quot;: &quot;mobile_money&quot;,
+    &quot;currency&quot;: &quot;GHS&quot;,
+    &quot;ip_address&quot;: &quot;18.130.236.148, 141.101.99.73&quot;,
+    &quot;metadata&quot;: &quot;&quot;,
+    &quot;log&quot;: null,
+    &quot;fees&quot;: 153,
+    &quot;fees_split&quot;: null,
+    &quot;authorization&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_0aqm8ddx6s&quot;,
+      &quot;bin&quot;: &quot;055XXX&quot;,
+      &quot;last4&quot;: &quot;X149&quot;,
+      &quot;exp_month&quot;: &quot;12&quot;,
+      &quot;exp_year&quot;: &quot;9999&quot;,
+      &quot;channel&quot;: &quot;mobile_money&quot;,
+      &quot;card_type&quot;: &quot;&quot;,
+      &quot;bank&quot;: &quot;MTN Mobile Money&quot;,
+      &quot;country_code&quot;: &quot;GH&quot;,
+      &quot;brand&quot;: &quot;Mtn mobile money&quot;,
+      &quot;reusable&quot;: false,
+      &quot;signature&quot;: null,
+      &quot;account_name&quot;: &quot;BoJack Horseman&quot;
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 16678,
+      &quot;first_name&quot;: &quot;Babafemi&quot;,
+      &quot;last_name&quot;: &quot;Aluko&quot;,
+      &quot;email&quot;: &quot;customer@email.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_2jk1i8ezoam49br&quot;,
+      &quot;phone&quot;: &quot;&quot;,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;allow&quot;
+    },
+    &quot;plan&quot;: {},
+    &quot;subaccount&quot;: {},
+    &quot;subaccount_group&quot;: {},
+    &quot;paidAt&quot;: &quot;2018-11-15T06:10:54.000Z&quot;
+  }
+}</pre>
+<p>目前无法直接向回头客收费。只需调用接口即可开始新交易。我们有一些 <a href="https://paystack.com/docs/payments/test-payments/#mobile-money">测试凭证</a> 可用于运行一些测试。</p>
+<h2>EFT</h2>
+<p>EFT支付是一种即时银行转账支付方式，客户通过网上银行界面向商户付款。当开发人员指定 EFT 提供商时，我们会重定向到提供商平台，客户在其中提供其付款详细信息，然后授权付款。</p>
+<p>此功能仅适用于南非客户。</p>
+<h3>创建费用</h3>
+<p>你需要将<code class="inline">email</code>、<code class="inline">amount</code>、<code class="inline">currency</code>和EFT提供者发送到<a href="https://paystack.com/docs/api/charge">充电API</a>接口：</p>
+<pre class="code">curl https://api.paystack.co/charge
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{
+&quot;amount&quot;: 5000,
+&quot;currency&quot;: &quot;ZAR&quot;,
+&quot;email&quot;: &quot;customer@email.com&quot;,
+&quot;eft&quot;: {
+&quot;provider&quot;: &quot;ozow&quot;
+}
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Charge attempted&quot;,
+  &quot;data&quot;: {
+    &quot;reference&quot;: &quot;18c0ywb63zutno0&quot;,
+    &quot;status&quot;: &quot;open_url&quot;,
+    &quot;url&quot;: &quot;https://crayon.paystack.co/eft/EFT_OZOW/121502&quot;
+  }
+}</pre>
+<p>Ozow 是目前唯一可用的提供商。</p>
+<h3>处理响应</h3>
+<p>当用户完成支付时，将向商户的Webhook发送响应。商户需要设置Webhook来获取支付状态。付款成功后会引发 <code class="inline">charge.success</code> 事件。</p>
+<h2>使用 Pesalink 支付</h2>
+<p>此功能适用于注册的肯尼亚企业。你需要联系 <a href="mailto:support@paystack.com">support@paystack.com</a> 进行启用。</p>
+<p>Pesalink 通道使客户能够从其银行平台进行即时转账。每笔交易都有一个帐号和说明或原因，供你的客户在完成支付时使用。</p>
+<p>帐号有效期为25分钟。你需要将此超时传达给客户以避免任何对帐问题。 <strong>钻石信托银行 (DTB)</strong>账户的客户无法通过此渠道进行转账。</p>
+<h3>创建费用</h3>
+<p>在付款时，你向 <a href="https://paystack.com/docs/api/charge">充电API</a> 接口发起请求，并传递 <code class="inline">email</code>、<code class="inline">amount</code> 和 <code class="inline">bank_transfer</code> 对象。 <code class="inline">bank_transfer</code> 对象采用 <code class="inline">account_expires_at</code> 参数，该参数可以是 <code class="inline">null</code> 或距离 UTC 中的当前时间小于 25 分钟。</p>
+<p>如果 <code class="inline">account_expires_at</code> 与当前时间 <strong>超过25分钟</strong> 之间存在差异，则默认变为 <strong>25分钟</strong>。</p>
+<pre class="code">#!/bin/sh
+
+url=&quot;https://api.paystack.co/charge&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+content_type=&quot;Content-Type: application/json&quot;
+data=&#x27;{
+&quot;email&quot;: &quot;user@example.com&quot;,
+&quot;amount&quot;: &quot;10000&quot;,
+&quot;bank_transfer&quot;: {
+&quot;account_expires_at&quot;: &quot;2025-04-24T16:40:57.954Z&quot;
+}
+}&#x27;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -H &quot;$content_type&quot; -d &quot;$data&quot; -X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Charge attempted&quot;,
+  &quot;data&quot;: {
+    &quot;reference&quot;: &quot;kcvu0t3kzs&quot;,
+    &quot;status&quot;: &quot;pending_bank_transfer&quot;,
+    &quot;display_text&quot;: &quot;Please make a transfer to the account specified&quot;,
+    &quot;account_name&quot;: &quot;Paystack Payments Kenya Limited&quot;,
+    &quot;account_number&quot;: &quot;1234567891&quot;,
+    &quot;bank&quot;: {
+      &quot;slug&quot;: &quot;dtbk-bank&quot;,
+      &quot;name&quot;: &quot;Diamond Trust Bank Kenya Ltd&quot;,
+      &quot;id&quot;: 225
+    },
+    &quot;account_expires_at&quot;: &quot;2025-04-24T16:55:57.954Z&quot;,
+    &quot;amount&quot;: 10000,
+    &quot;transaction_reference&quot;: &quot;1234567&quot;
+  }
+}</pre>
+<p>始终确保向客户展示 <code class="inline">transaction_reference</code>。客户在转账时将其作为叙述或理由。这是正确识别交易所必需的。</p>
+<h3>处理响应</h3>
+<p>当客户完成支付后，回复将发送至你的 Webhook URL。这是<code class="inline">charge.success</code>事件，表示支付成功。如果客户发送的金额不正确，我们会发送 <code class="inline">bank.transfer.rejected</code> 事件。你应通知客户以正确的金额重试付款。如果客户发送的金额无效，则会自动处理退款。</p>
+<pre class="code">{
+  &quot;event&quot;: &quot;charge.success&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 519558290,
+    &quot;domain&quot;: &quot;live&quot;,
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;reference&quot;: &quot;uybxnzf71231&quot;,
+    &quot;amount&quot;: 1000,
+    &quot;message&quot;: null,
+    &quot;gateway_response&quot;: &quot;Approved&quot;,
+    &quot;paid_at&quot;: &quot;2025-06-21T11:11:27.000Z&quot;,
+    &quot;created_at&quot;: &quot;2025-06-21T11:02:57.000Z&quot;,
+    &quot;channel&quot;: &quot;bank_transfer&quot;,
+    &quot;currency&quot;: &quot;KES&quot;,
+    &quot;ip_address&quot;: &quot;172.68.67.162, 172.31.63.81&quot;,
+    &quot;metadata&quot;: 0,
+    &quot;fees_breakdown&quot;: {
+      &quot;amount&quot;: &quot;15&quot;,
+      &quot;formula&quot;: null,
+      &quot;type&quot;: &quot;paystack&quot;
+    },
+    &quot;log&quot;: null,
+    &quot;fees&quot;: 15,
+    &quot;fees_split&quot;: null,
+    &quot;authorization&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_9q100f8qle&quot;,
+      &quot;bin&quot;: &quot;010XXX&quot;,
+      &quot;last4&quot;: &quot;X607&quot;,
+      &quot;exp_month&quot;: &quot;06&quot;,
+      &quot;exp_year&quot;: &quot;2025&quot;,
+      &quot;channel&quot;: &quot;bank_transfer&quot;,
+      &quot;card_type&quot;: &quot;transfer&quot;,
+      &quot;bank&quot;: &quot;Diamond Trust Bank Limited&quot;,
+      &quot;country_code&quot;: &quot;KE&quot;,
+      &quot;brand&quot;: &quot;Managed Account&quot;,
+      &quot;reusable&quot;: false,
+      &quot;signature&quot;: null,
+      &quot;account_name&quot;: null,
+      &quot;sender_country&quot;: &quot;KE&quot;,
+      &quot;sender_bank&quot;: &quot;Diamond Trust Bank Kenya Limited&quot;,
+      &quot;sender_bank_account_number&quot;: &quot;XXXXXXX607&quot;,
+      &quot;sender_name&quot;: &quot;ANN ABELL&quot;,
+      &quot;narration&quot;: null,
+      &quot;receiver_bank_account_number&quot;: &quot;0123456789&quot;,
+      &quot;receiver_bank&quot;: &quot;Diamond Trust Bank Kenya Ltd&quot;
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 181595312,
+      &quot;first_name&quot;: &quot;Ann&quot;,
+      &quot;last_name&quot;: &quot;Abell&quot;,
+      &quot;email&quot;: &quot;user@example.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_174rg4huaih38hk&quot;,
+      &quot;phone&quot;: null,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;,
+      &quot;international_format_phone&quot;: null
+    },
+    &quot;plan&quot;: {},
+    &quot;subaccount&quot;: {},
+    &quot;split&quot;: {},
+    &quot;order_id&quot;: null,
+    &quot;paidAt&quot;: &quot;2025-04-24T16:55:57.954Z&quot;,
+    &quot;requested_amount&quot;: 1000,
+    &quot;pos_transaction_data&quot;: null,
+    &quot;source&quot;: {
+      &quot;type&quot;: &quot;api&quot;,
+      &quot;source&quot;: &quot;merchant_api&quot;,
+      &quot;entry_point&quot;: &quot;charge&quot;,
+      &quot;identifier&quot;: null
+    }
+  }
+}</pre>
+<h2>QR代码</h2>
+<p>QR 代码付款仅适用于南非的企业。它适用于 <strong>快照扫描</strong> 和 <strong>扫码支付</strong><a href="https://paystack.com/docs/payments/payment-channels/#scan-to-pay">支持的应用程序</a></p>
+<p>QR渠道生成QR代码，允许客户在其移动应用程序上完成支付。当客户扫描代码时，他们会在<a href="https://paystack.com/docs/payments/payment-channels/#supported-apps">支持的应用程序</a>上进行身份校验以完成支付。</p>
+<p>当他们完成交易时，<code class="inline">charge.success</code> 事件将发送到你的 Webhook URL。你需要在服务端上实现<a href="https://paystack.com/docs/payments/webhooks/">Webhook</a>来接收事件并更新你的客户。</p>
+<h3>创建费用</h3>
+<p>将邮箱和金额以及<code class="inline">qr</code>对象发送到<a href="https://paystack.com/docs/api/charge">充电API</a>接口。 <code class="inline">qr</code> 对象应将 <code class="inline">provider</code> 参数设置为 <code class="inline">scan-to-pay</code>。</p>
+<pre class="code">curl https://api.paystack.co/charge
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;amount&quot;: 1000,
+&quot;email&quot;: &quot;customer@email.com&quot;,
+&quot;currency&quot;: &quot;ZAR&quot;,
+&quot;qr&quot;: {
+&quot;provider&quot; : &quot;scan-to-pay&quot;
+}
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Charge attempted&quot;,
+  &quot;data&quot;: {
+    &quot;reference&quot;: &quot;48rx32f1womvcr4&quot;,
+    &quot;status&quot;: &quot;pay_offline&quot;,
+    &quot;qr_code&quot;: &quot;0002010216421527000104176552045499530356654031005802NG5920Babafemi enterprises6005Lagos62230519PSTK_104176000926|16304713a&quot;,
+    &quot;url&quot;: &quot;https://files.paystack.co/qr/visa/104176/Babafemi_enterprises_visaqr_1544025482956.png&quot;
+  }
+}</pre>
+<h3>处理响应</h3>
+<p>当用户完成支付后，<code class="inline">charge.success</code>事件会发送到你的Webhook URL。下面的示例显示了该事件的外观：</p>
+<pre class="code">{
+  &quot;event&quot;: &quot;charge.success&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 59565,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;reference&quot;: &quot;48rx32f1womvcr4&quot;,
+    &quot;amount&quot;: 186677,
+    &quot;message&quot;: &quot;madePayment&quot;,
+    &quot;gateway_response&quot;: &quot;Payment successful&quot;,
+    &quot;paid_at&quot;: &quot;2024-08-20T12:41:12.000Z&quot;,
+    &quot;created_at&quot;: &quot;2024-08-20T12:39:22.000Z&quot;,
+    &quot;channel&quot;: &quot;qr&quot;,
+    &quot;currency&quot;: &quot;ZAR&quot;,
+    &quot;ip_address&quot;: &quot;18.130.45.28, 141.101.107.157&quot;,
+    &quot;fees_breakdown&quot;: {
+      &quot;amount&quot;: &quot;5514&quot;,
+      &quot;formula&quot;: null,
+      &quot;type&quot;: &quot;paystack&quot;
+    },
+    &quot;metadata&quot;: &quot;&quot;,
+    &quot;log&quot;: null,
+    &quot;fees&quot;: 6342,
+    &quot;fees_split&quot;: null,
+    &quot;authorization&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_2b4zs69fgy7qflh&quot;,
+      &quot;bin&quot;: &quot;483953&quot;,
+      &quot;last4&quot;: &quot;6208&quot;,
+      &quot;exp_month&quot;: &quot;12&quot;,
+      &quot;exp_year&quot;: &quot;2025&quot;,
+      &quot;channel&quot;: &quot;qr&quot;,
+      &quot;card_type&quot;: &quot;CREDIT&quot;,
+      &quot;bank&quot;: &quot;ABSA BANK LIMITED, SOUTH AFRICA&quot;,
+      &quot;country_code&quot;: &quot;ZA&quot;,
+      &quot;brand&quot;: &quot;VISA&quot;,
+      &quot;reusable&quot;: false,
+      &quot;signature&quot;: null,
+      &quot;account_name&quot;: null,
+      &quot;receiver_bank_account_number&quot;: null,
+      &quot;receiver_bank&quot;: null
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 16787,
+      &quot;first_name&quot;: &quot;Ian&quot;,
+      &quot;last_name&quot;: &quot;SURRENDER&quot;,
+      &quot;email&quot;: &quot;customer@email.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_ehg851zbxon0bvx&quot;,
+      &quot;phone&quot;: &quot;&quot;,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;
+    },
+    &quot;plan&quot;: {},
+    &quot;subaccount&quot;: {},
+    &quot;subaccount_group&quot;: {},
+    &quot;paidAt&quot;: &quot;2024-08-20T12:41:12.000Z&quot;
+  }
+}</pre>
+<p>目前不支持向回头客收费。你需要调用接口来开始新的交易。</p>
+<h3>支持的应用程序</h3>
+<p>要完成支付，你的客户可以在下面列出的支持的应用程序中扫描或输入代码：</p>
+<p>客户可以使用 SnapScan iOS 或 Android 应用程序扫描 QR 代码，快速完成支付。</p>
+<p>客户可以使用下面列出的任何移动应用程序中的扫描支付QR代码：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>银行应用程序</th><th>钱包</th><th>独立扫描支付</th></tr></thead><tbody><tr><td>标准银行</td><td>乌克谢</td><td>莱利银行扫描支付</td></tr><tr><td>FNB 银行业</td><td>现货（维珍货币）</td><td>标准银行扫码支付</td></tr><tr><td>莱利银行货币</td><td>沃达支付</td><td>Absa 扫码支付</td></tr><tr><td>卡皮泰克银行</td><td>电信支付</td><td></td></tr><tr><td>阿布萨</td><td>即时支付</td><td></td></tr><tr><td>RMB</td><td>莱利银行阿沃</td><td></td></tr></tbody></table></div>
+<h2>卡皮泰克支付</h2>
+<p>Capitec Pay 仅适用于南非的企业。</p>
+<p>Capitec Pay 是一种开放式银行支付方式，允许客户使用手机号码、ID 或帐号安全支付。当 Capitec Pay 交易启动时，客户会在 Capitec 银行应用程序中收到推送通知以授权付款，从而无需共享敏感的卡详细信息或网上银行登录凭据。</p>
+<h3>创建费用</h3>
+<p>将邮箱和金额以及<code class="inline">qr</code>对象发送到<a href="https://paystack.com/docs/api/charge">充电API</a>接口。 <code class="inline">qr</code> 对象应将 <code class="inline">provider</code> 参数设置为 <code class="inline">scan-to-pay</code>。</p>
+<pre class="code">curl https://api.paystack.co/charge
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;amount&quot;: 1000,
+&quot;email&quot;: &quot;drew.john@email.com&quot;,
+&quot;currency&quot;: &quot;ZAR&quot;,
+&quot;capitec_pay&quot;: {
+&quot;identifier_key&quot; : &quot;CELLPHONE&quot;,
+&quot;identifier_value&quot; : &quot;0812345678&quot;
+}
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;type&quot;: &quot;success&quot;,
+  &quot;code&quot;: &quot;ok&quot;,
+  &quot;data&quot;: {
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;timeToLive&quot;: 120,
+    &quot;expiryDate&quot;: &quot;2026-02-17T11:29:37.000Z&quot;,
+    &quot;transaction&quot;: {
+      &quot;id&quot;: 5805764100,
+      &quot;reference&quot;: &quot;nvh8o4pwtivwkx4&quot;,
+      &quot;domain&quot;: &quot;live&quot;,
+      &quot;amount&quot;: 1000,
+      &quot;currency&quot;: &quot;ZAR&quot;,
+      &quot;metadata&quot;: &quot;&quot;,
+      &quot;createdAt&quot;: &quot;2026-02-17T11:27:36.000Z&quot;,
+      &quot;customer&quot;: {
+        &quot;id&quot;: 180101459,
+        &quot;first_name&quot;: &quot;Drew&quot;,
+        &quot;last_name&quot;: &quot;John&quot;,
+        &quot;email&quot;: &quot;drew.john@email.com&quot;,
+        &quot;customer_code&quot;: &quot;CUS_xy1ofyzvnhagniv&quot;,
+        &quot;phone&quot;: &quot;&quot;,
+        &quot;metadata&quot;: null,
+        &quot;risk_action&quot;: &quot;default&quot;,
+        &quot;international_format_phone&quot;: null
+      }
+    }
+  },
+  &quot;message&quot;: &quot;Charge pending&quot;
+}</pre>
+<p>你需要存储交易参考，以便通过<a href="https://paystack.com/docs/api/capitec-pay#requery">重新查询交易API</a>接口检查费用状态。</p>
+<h3>处理错误</h3>
+<p>下表显示了常见错误以及解决方法：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>留言</th><th>错误代码</th><th>原因</th></tr></thead><tbody><tr><td>账户已停用，请联系 Capitec 寻求帮助。</td><td><code class="inline">not_found</code></td><td>客户停用了他们的账户。</td></tr><tr><td>未找到客户详细信息，请重试或联系 Capitec。</td><td><code class="inline">not_found</code></td><td>Capitec 上不存在该客户。</td></tr><tr><td>未检测到 Capitec 应用程序，请检查它是否已安装且是最新的。</td><td><code class="inline">not_found</code></td><td>客户未安装 Capitec 应用程序。</td></tr><tr><td>你已屏蔽该业务，请联系 Capitec 寻求帮助。</td><td><code class="inline">charge_restricted</code></td><td>顾客屏蔽了商户。</td></tr><tr><td>充电失败</td><td><code class="inline">amount_exceed_limit</code></td><td>这是在短时间内重复收取相同金额的费用。</td></tr></tbody></table></div>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/payments/payment-channels/" target="_blank" rel="noopener">https://paystack.com/docs/payments/payment-channels/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customers · Paystack API 参考（中文）</title>
+<meta name="description" content="客户 API 中文文档">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab" href="../doc/index.html">开发文档</a>
+    <a class="topbar__tab topbar__tab--active" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section">
+<div class="sidebar__caption">概览</div>
+<a class="sidebar__ep" href="index.html">API 简介与约定</a>
+<a class="sidebar__ep" href="index.html#authentication">认证鉴权</a>
+<a class="sidebar__ep" href="index.html#rate-limits">请求速率限制</a>
+<a class="sidebar__ep" href="index.html#pagination">分页与遍历</a>
+<a class="sidebar__ep" href="index.html#errors">错误处理</a>
+<a class="sidebar__ep" href="index.html#currency">支持的货币</a>
+</div>
+<div class="sidebar__caption">接口分组</div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="transaction.html">交易</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="transaction.html#initialize">初始化交易</a></li>
+<li><a class="sidebar__ep" href="transaction.html#verify">校验交易</a></li>
+<li><a class="sidebar__ep" href="transaction.html#list">查询交易列表</a></li>
+<li><a class="sidebar__ep" href="transaction.html#fetch">查询交易</a></li>
+<li><a class="sidebar__ep" href="transaction.html#charge-authorization">授权扣款</a></li>
+<li><a class="sidebar__ep" href="transaction.html#view-timeline">查看交易时间线</a></li>
+<li><a class="sidebar__ep" href="transaction.html#totals">交易汇总</a></li>
+<li><a class="sidebar__ep" href="transaction.html#export">导出交易</a></li>
+<li><a class="sidebar__ep" href="transaction.html#partial-debit">部分扣款</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="split.html">分账</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="split.html#create">创建分账</a></li>
+<li><a class="sidebar__ep" href="split.html#list">查询/搜索分账</a></li>
+<li><a class="sidebar__ep" href="split.html#fetch">查询分账</a></li>
+<li><a class="sidebar__ep" href="split.html#update">更新分账</a></li>
+<li><a class="sidebar__ep" href="split.html#add-subaccount">添加/更新分账子账户</a></li>
+<li><a class="sidebar__ep" href="split.html#remove-subaccount">从分账中移除子账户</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="terminal.html">终端</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="terminal.html#send-event">发送事件</a></li>
+<li><a class="sidebar__ep" href="terminal.html#fetch-event-status">查询事件状态</a></li>
+<li><a class="sidebar__ep" href="terminal.html#fetch-terminal-status">查询终端状态</a></li>
+<li><a class="sidebar__ep" href="terminal.html#list">查询终端列表</a></li>
+<li><a class="sidebar__ep" href="terminal.html#fetch">查询终端</a></li>
+<li><a class="sidebar__ep" href="terminal.html#update">更新终端</a></li>
+<li><a class="sidebar__ep" href="terminal.html#commission">启用终端</a></li>
+<li><a class="sidebar__ep" href="terminal.html#decommission">停用终端</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="virtual-terminal.html">虚拟终端</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="virtual-terminal.html#create">创建虚拟终端</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#list">查询虚拟终端列表</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#fetch">查询虚拟终端</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#update">更新虚拟终端</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#deactivate">停用虚拟终端</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#assign-destination">分配虚拟终端收款账户</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#unassign-destination">取消虚拟终端收款账户</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#add-split-code">为虚拟终端添加分账代码</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#remove-split-code">移除虚拟终端的分账代码</a></li>
+</ul></div>
+<div class="sidebar__group sidebar__group--active">
+<a class="sidebar__group-title" href="customer.html">客户</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="customer.html#create">创建客户</a></li>
+<li><a class="sidebar__ep" href="customer.html#list">查询客户列表</a></li>
+<li><a class="sidebar__ep" href="customer.html#fetch">查询客户</a></li>
+<li><a class="sidebar__ep" href="customer.html#update">更新客户</a></li>
+<li><a class="sidebar__ep" href="customer.html#validate">校验客户</a></li>
+<li><a class="sidebar__ep" href="customer.html#whitelist-blacklist">将客户加入白名单/黑名单</a></li>
+<li><a class="sidebar__ep" href="customer.html#initialize-authorization">初始化支付授权</a></li>
+<li><a class="sidebar__ep" href="customer.html#verify-authorization">校验支付授权</a></li>
+<li><a class="sidebar__ep" href="customer.html#initialize-direct-debit">初始化直接借记</a></li>
+<li><a class="sidebar__ep" href="customer.html#directdebit-activation-charge">直接借记激活扣款</a></li>
+<li><a class="sidebar__ep" href="customer.html#directdebit-mandate-authorizations">查询授权委托列表</a></li>
+<li><a class="sidebar__ep" href="customer.html#deactivate-authorization">停用支付授权</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="directdebit.html">直接借记</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="directdebit.html#activation-charge">触发激活扣款</a></li>
+<li><a class="sidebar__ep" href="directdebit.html#mandate-authorizations">查询授权委托列表</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="dedicated-virtual-account.html">专属虚拟账户</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#create">创建专属虚拟账户</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#assign">分配专属虚拟账户</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#list">查询专属虚拟账户列表</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#fetch">查询专属虚拟账户</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#requery">Requery Dedicated Account</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#deactivate">停用专属虚拟账户</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#add-split">对专属虚拟账户交易拆分</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#remove-split">移除专属虚拟账户的分账</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#providers">查询银行服务商</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="preauthorization.html">预授权</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="preauthorization.html#initialize">初始化预授权</a></li>
+<li><a class="sidebar__ep" href="preauthorization.html#capture">完成预授权扣款</a></li>
+<li><a class="sidebar__ep" href="preauthorization.html#reserve">预留预授权额度</a></li>
+<li><a class="sidebar__ep" href="preauthorization.html#verify">校验预授权</a></li>
+<li><a class="sidebar__ep" href="preauthorization.html#release">释放预授权</a></li>
+<li><a class="sidebar__ep" href="preauthorization.html#list">查询预授权列表</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="apple-pay.html">Apple Pay</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="apple-pay.html#register-domain">注册域名</a></li>
+<li><a class="sidebar__ep" href="apple-pay.html#list-domains">查询域名列表</a></li>
+<li><a class="sidebar__ep" href="apple-pay.html#unregister-domain">注销域名</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="capitec-pay.html">Capitec Pay</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="capitec-pay.html#requery">重新查询交易</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="subaccount.html">子账户</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="subaccount.html#create">创建子账户</a></li>
+<li><a class="sidebar__ep" href="subaccount.html#list">查询子账户列表</a></li>
+<li><a class="sidebar__ep" href="subaccount.html#fetch">查询子账户</a></li>
+<li><a class="sidebar__ep" href="subaccount.html#update">更新子账户</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="plan.html">订阅计划</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="plan.html#create">创建订阅计划</a></li>
+<li><a class="sidebar__ep" href="plan.html#list">查询订阅计划列表</a></li>
+<li><a class="sidebar__ep" href="plan.html#fetch">查询订阅计划</a></li>
+<li><a class="sidebar__ep" href="plan.html#update">更新订阅计划</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="subscription.html">订阅</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="subscription.html#create">创建订阅</a></li>
+<li><a class="sidebar__ep" href="subscription.html#list">查询订阅列表</a></li>
+<li><a class="sidebar__ep" href="subscription.html#fetch">查询订阅</a></li>
+<li><a class="sidebar__ep" href="subscription.html#enable">启用订阅</a></li>
+<li><a class="sidebar__ep" href="subscription.html#disable">停用订阅</a></li>
+<li><a class="sidebar__ep" href="subscription.html#manage-link">生成订阅更新链接</a></li>
+<li><a class="sidebar__ep" href="subscription.html#manage-email">发送订阅更新链接</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="product.html">商品</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="product.html#create">创建商品</a></li>
+<li><a class="sidebar__ep" href="product.html#list">查询商品列表</a></li>
+<li><a class="sidebar__ep" href="product.html#fetch">查询商品</a></li>
+<li><a class="sidebar__ep" href="product.html#update">更新商品</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="storefront.html">店铺</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="storefront.html#create">创建店铺</a></li>
+<li><a class="sidebar__ep" href="storefront.html#list">查询店铺列表</a></li>
+<li><a class="sidebar__ep" href="storefront.html#fetch">查询店铺</a></li>
+<li><a class="sidebar__ep" href="storefront.html#update">更新店铺</a></li>
+<li><a class="sidebar__ep" href="storefront.html#delete">删除店铺</a></li>
+<li><a class="sidebar__ep" href="storefront.html#verify-slug">校验店铺 Slug</a></li>
+<li><a class="sidebar__ep" href="storefront.html#fetch-orders">查询店铺订单</a></li>
+<li><a class="sidebar__ep" href="storefront.html#add-products">向店铺添加商品</a></li>
+<li><a class="sidebar__ep" href="storefront.html#list-products">查询店铺商品列表</a></li>
+<li><a class="sidebar__ep" href="storefront.html#publish">发布店铺</a></li>
+<li><a class="sidebar__ep" href="storefront.html#duplicate">复制店铺</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="order.html">订单</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="order.html#create">创建订单</a></li>
+<li><a class="sidebar__ep" href="order.html#list">查询订单列表</a></li>
+<li><a class="sidebar__ep" href="order.html#fetch">查询订单</a></li>
+<li><a class="sidebar__ep" href="order.html#fetch-product-orders">查询商品订单</a></li>
+<li><a class="sidebar__ep" href="order.html#validate">校验订单</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="page.html">支付页面</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="page.html#create">创建支付页面</a></li>
+<li><a class="sidebar__ep" href="page.html#list">查询支付页面列表</a></li>
+<li><a class="sidebar__ep" href="page.html#fetch">查询支付页面</a></li>
+<li><a class="sidebar__ep" href="page.html#update">更新支付页面</a></li>
+<li><a class="sidebar__ep" href="page.html#check-slug">检查 Slug 是否可用</a></li>
+<li><a class="sidebar__ep" href="page.html#add-products">添加商品</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="payment-request.html">付款请求</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="payment-request.html#create">创建付款请求</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#list">查询付款请求列表</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#fetch">查询付款请求</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#verify">校验付款请求</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#send-notification">发送通知</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#total">付款请求合计</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#finalize">完成付款请求</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#update">更新付款请求</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#archive">归档付款请求</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="settlement.html">结算</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="settlement.html#list">查询结算列表</a></li>
+<li><a class="sidebar__ep" href="settlement.html#transactions">查询结算交易列表</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="transfer-recipient.html">转账收款人</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="transfer-recipient.html#create">创建转账收款人</a></li>
+<li><a class="sidebar__ep" href="transfer-recipient.html#bulk">批量创建转账收款人</a></li>
+<li><a class="sidebar__ep" href="transfer-recipient.html#list">查询转账收款人列表</a></li>
+<li><a class="sidebar__ep" href="transfer-recipient.html#fetch">查询转账收款人</a></li>
+<li><a class="sidebar__ep" href="transfer-recipient.html#update">更新转账收款人</a></li>
+<li><a class="sidebar__ep" href="transfer-recipient.html#delete">删除转账收款人</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="transfer.html">转账</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="transfer.html#initiate">发起转账</a></li>
+<li><a class="sidebar__ep" href="transfer.html#finalize">完成转账</a></li>
+<li><a class="sidebar__ep" href="transfer.html#bulk">发起批量转账</a></li>
+<li><a class="sidebar__ep" href="transfer.html#list">查询转账列表</a></li>
+<li><a class="sidebar__ep" href="transfer.html#fetch">查询转账</a></li>
+<li><a class="sidebar__ep" href="transfer.html#verify">校验转账</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="transfer-control.html">转账控制</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="transfer-control.html#balance">查询余额</a></li>
+<li><a class="sidebar__ep" href="transfer-control.html#balance-ledger">查询余额流水</a></li>
+<li><a class="sidebar__ep" href="transfer-control.html#resend-otp">重发转账 OTP</a></li>
+<li><a class="sidebar__ep" href="transfer-control.html#disable-otp">关闭转账 OTP</a></li>
+<li><a class="sidebar__ep" href="transfer-control.html#finalize-disable-otp">确认关闭 OTP</a></li>
+<li><a class="sidebar__ep" href="transfer-control.html#enable-otp">开启转账 OTP</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="bulk-charge.html">批量扣款</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="bulk-charge.html#initiate">发起批量扣款</a></li>
+<li><a class="sidebar__ep" href="bulk-charge.html#list">查询批量扣款批次列表</a></li>
+<li><a class="sidebar__ep" href="bulk-charge.html#fetch-batch">查询批量扣款批次</a></li>
+<li><a class="sidebar__ep" href="bulk-charge.html#fetch-charge">查询批次内的扣款</a></li>
+<li><a class="sidebar__ep" href="bulk-charge.html#pause">暂停批量扣款批次</a></li>
+<li><a class="sidebar__ep" href="bulk-charge.html#resume">恢复批量扣款批次</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="integration.html">集成配置</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="integration.html#fetch-timeout">查询支付会话超时</a></li>
+<li><a class="sidebar__ep" href="integration.html#update-timeout">更新支付会话超时</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="charge.html">扣款</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="charge.html#create">创建扣款</a></li>
+<li><a class="sidebar__ep" href="charge.html#submit-pin">提交 PIN</a></li>
+<li><a class="sidebar__ep" href="charge.html#submit-otp">提交 OTP</a></li>
+<li><a class="sidebar__ep" href="charge.html#submit-phone">提交手机号</a></li>
+<li><a class="sidebar__ep" href="charge.html#submit-birthday">提交生日</a></li>
+<li><a class="sidebar__ep" href="charge.html#submit-address">提交地址</a></li>
+<li><a class="sidebar__ep" href="charge.html#check">查询待处理扣款</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="dispute.html">争议</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="dispute.html#list">查询争议列表</a></li>
+<li><a class="sidebar__ep" href="dispute.html#fetch">查询争议</a></li>
+<li><a class="sidebar__ep" href="dispute.html#transaction">查询交易争议列表</a></li>
+<li><a class="sidebar__ep" href="dispute.html#update">更新争议</a></li>
+<li><a class="sidebar__ep" href="dispute.html#evidence">提交证据</a></li>
+<li><a class="sidebar__ep" href="dispute.html#upload-url">获取上传地址</a></li>
+<li><a class="sidebar__ep" href="dispute.html#resolve">处理争议</a></li>
+<li><a class="sidebar__ep" href="dispute.html#export">导出争议</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="refund.html">退款</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="refund.html#create">发起退款</a></li>
+<li><a class="sidebar__ep" href="refund.html#retry">重试退款</a></li>
+<li><a class="sidebar__ep" href="refund.html#list">查询退款列表</a></li>
+<li><a class="sidebar__ep" href="refund.html#fetch">查询退款</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="webhook-events.html">Webhook 事件</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="webhook-events.html#list">List Events</a></li>
+<li><a class="sidebar__ep" href="webhook-events.html#lookup">Look Up an Event</a></li>
+<li><a class="sidebar__ep" href="webhook-events.html#fetch">Fetch Event</a></li>
+<li><a class="sidebar__ep" href="webhook-events.html#resend">Resend Events</a></li>
+<li><a class="sidebar__ep" href="webhook-events.html#resend-matching">Resend Matching Events</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="verification.html">校验</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="verification.html#resolve-account">解析银行账号</a></li>
+<li><a class="sidebar__ep" href="verification.html#validate-account">校验账号</a></li>
+<li><a class="sidebar__ep" href="verification.html#resolve-card">解析卡 BIN</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="miscellaneous.html">其他接口</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="miscellaneous.html#bank">查询银行列表</a></li>
+<li><a class="sidebar__ep" href="miscellaneous.html#country">查询/搜索国家</a></li>
+<li><a class="sidebar__ep" href="miscellaneous.html#avs-states">查询州/省列表（AVS）</a></li>
+</ul></div>
+</aside>
+<main class="content">
+<div class="content__eyebrow">API 参考</div>
+<h1>客户</h1>
+<p class="lead">客户 API 用于在你的集成中创建和管理客户。</p>
+<section class="endpoint" id="create">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">创建客户</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--post">POST</span> <span class="endpoint__path">/customer</span></p>
+<p>在你的集成中创建客户</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div><div class="param"><div class="param__head"><span class="param__name">content-type</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">application/json</code></p></div></div>
+<h3>请求体参数（Body Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">email</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">客户的邮箱地址</p></div><div class="param"><div class="param__head"><span class="param__name">first_name</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">客户的名</p></div><div class="param"><div class="param__head"><span class="param__name">last_name</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">客户的姓</p></div><div class="param"><div class="param__head"><span class="param__name">phone</span><span class="param__type">String</span><span class="param__use ">可选</span></div><p class="param__desc">客户的手机号</p></div><div class="param"><div class="param__head"><span class="param__name">metadata</span><span class="param__type">Object</span><span class="param__use ">可选</span></div><p class="param__desc">可附加到客户的一组键值对，用于以结构化方式存储附加信息。</p></div></div>
+<div class="callout"><code class="inline">first_name</code>、<code class="inline">last_name</code> 和 <code class="inline">phone</code> 是可选参数。但如果创建的客户需要分配专属虚拟账户，且你的业务类型属于 <strong>Betting</strong>、<strong>Financial services</strong> 或 <strong>General Service</strong>，则这些参数为必填。</div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/customer&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+content_type=&quot;Content-Type: application/json&quot;
+data=&#x27;{
+&quot;email&quot;: &quot;customer@example.com&quot;,
+&quot;first_name&quot;: &quot;Zero&quot;,
+&quot;last_name&quot;: &quot;Sum&quot;,
+&quot;phone&quot;: &quot;+2348123456789&quot;
+}&#x27;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -H &quot;$content_type&quot; -d &quot;$data&quot; -X POST</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Customer created&quot;,
+  &quot;data&quot;: {
+    &quot;email&quot;: &quot;customer@email.com&quot;,
+    &quot;integration&quot;: 100032,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;customer_code&quot;: &quot;CUS_xnxdt6s1zg1f4nx&quot;,
+    &quot;id&quot;: 1173,
+    &quot;identified&quot;: false,
+    &quot;identifications&quot;: null,
+    &quot;createdAt&quot;: &quot;2016-03-29T20:03:09.584Z&quot;,
+    &quot;updatedAt&quot;: &quot;2016-03-29T20:03:09.584Z&quot;
+  }
+}</pre></div>
+</section>
+<section class="endpoint" id="list">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">查询客户列表</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--get">GET</span> <span class="endpoint__path">/customer</span></p>
+<p>查询集成中的客户列表</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div></div>
+<h3>查询参数（Query Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">perPage</span><span class="param__type">Integer</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">指定每页返回的记录数，未指定时默认 50。</p></div><div class="param"><div class="param__head"><span class="param__name">page</span><span class="param__type">Integer</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">指定要查看的页码，未指定时默认 1。</p></div><div class="param"><div class="param__head"><span class="param__name">from</span><span class="param__type">Datetime</span><span class="param__use ">可选</span></div><p class="param__desc">开始列出客户的起始时间，例如 <code class="inline">2016-09-24T00:00:05.000Z</code>，<code class="inline">2016-09-21</code></p></div><div class="param"><div class="param__head"><span class="param__name">to</span><span class="param__type">Datetime</span><span class="param__use ">可选</span></div><p class="param__desc">停止列出客户的结束时间，例如 <code class="inline">2016-09-24T00:00:05.000Z</code>，<code class="inline">2016-09-21</code></p></div></div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/customer&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -X GET</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Customers retrieved&quot;,
+  &quot;data&quot;: [
+    {
+      &quot;integration&quot;: 463433,
+      &quot;first_name&quot;: null,
+      &quot;last_name&quot;: null,
+      &quot;email&quot;: &quot;dom@gmail.com&quot;,
+      &quot;phone&quot;: null,
+      &quot;metadata&quot;: null,
+      &quot;domain&quot;: &quot;test&quot;,
+      &quot;customer_code&quot;: &quot;CUS_c6wqvwmvwopw4ms&quot;,
+      &quot;risk_action&quot;: &quot;default&quot;,
+      &quot;id&quot;: 90758908,
+      &quot;createdAt&quot;: &quot;2022-08-15T13:46:39.000Z&quot;,
+      &quot;updatedAt&quot;: &quot;2022-08-15T13:46:39.000Z&quot;
+    },
+    {
+      &quot;integration&quot;: 463433,
+      &quot;first_name&quot;: &quot;Okiki&quot;,
+      &quot;last_name&quot;: &quot;Sample&quot;,
+      &quot;email&quot;: &quot;okiki@sample.com&quot;,
+      &quot;phone&quot;: &quot;09048829123&quot;,
+      &quot;metadata&quot;: {},
+      &quot;domain&quot;: &quot;test&quot;,
+      &quot;customer_code&quot;: &quot;CUS_rki2ccocw7g8lsj&quot;,
+      &quot;risk_action&quot;: &quot;default&quot;,
+      &quot;id&quot;: 90758301,
+      &quot;createdAt&quot;: &quot;2022-08-15T13:42:52.000Z&quot;,
+      &quot;updatedAt&quot;: &quot;2022-08-15T13:42:52.000Z&quot;
+    },
+    {
+      &quot;integration&quot;: 463433,
+      &quot;first_name&quot;: &quot;lukman&quot;,
+      &quot;last_name&quot;: &quot;calle&quot;,
+      &quot;email&quot;: &quot;lukman@calle.co&quot;,
+      &quot;phone&quot;: &quot;08922383034&quot;,
+      &quot;metadata&quot;: {},
+      &quot;domain&quot;: &quot;test&quot;,
+      &quot;customer_code&quot;: &quot;CUS_hpxsz8c1if90quo&quot;,
+      &quot;risk_action&quot;: &quot;default&quot;,
+      &quot;id&quot;: 90747194,
+      &quot;createdAt&quot;: &quot;2022-08-15T12:31:13.000Z&quot;,
+      &quot;updatedAt&quot;: &quot;2022-08-15T12:31:13.000Z&quot;
+    }
+  ],
+  &quot;meta&quot;: {
+    &quot;next&quot;: &quot;Y3VzdG9tZXI6OTAyMjU4MDk=&quot;,
+    &quot;previous&quot;: null,
+    &quot;perPage&quot;: 3
+  }
+}</pre></div>
+</section>
+<section class="endpoint" id="fetch">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">查询客户</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--get">GET</span> <span class="endpoint__path">/customer/:email_or_code</span></p>
+<p>查询集成中客户的详情</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div></div>
+<h3>路径参数（Path Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">email_or_code</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">一个 <code class="inline">email</code>或 <code class="inline">customer code</code>（要查询的客户）</p></div></div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/customer/{email_or_code}&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -X GET</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Customer retrieved&quot;,
+  &quot;data&quot;: {
+    &quot;transactions&quot;: [],
+    &quot;subscriptions&quot;: [],
+    &quot;authorizations&quot;: [
+      {
+        &quot;authorization_code&quot;: &quot;AUTH_ekk8t49ogj&quot;,
+        &quot;bin&quot;: &quot;408408&quot;,
+        &quot;last4&quot;: &quot;4081&quot;,
+        &quot;exp_month&quot;: &quot;12&quot;,
+        &quot;exp_year&quot;: &quot;2030&quot;,
+        &quot;channel&quot;: &quot;card&quot;,
+        &quot;card_type&quot;: &quot;visa &quot;,
+        &quot;bank&quot;: &quot;TEST BANK&quot;,
+        &quot;country_code&quot;: &quot;NG&quot;,
+        &quot;brand&quot;: &quot;visa&quot;,
+        &quot;reusable&quot;: true,
+        &quot;signature&quot;: &quot;SIG_yEXu7dLBeqG0kU7g95Ke&quot;,
+        &quot;account_name&quot;: null
+      }
+    ],
+    &quot;first_name&quot;: null,
+    &quot;last_name&quot;: null,
+    &quot;email&quot;: &quot;dom@gmail.com&quot;,
+    &quot;phone&quot;: null,
+    &quot;metadata&quot;: null,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;customer_code&quot;: &quot;CUS_c6wqvwmvwopw4ms&quot;,
+    &quot;risk_action&quot;: &quot;default&quot;,
+    &quot;id&quot;: 90758908,
+    &quot;integration&quot;: 463433,
+    &quot;createdAt&quot;: &quot;2022-08-15T13:46:39.000Z&quot;,
+    &quot;updatedAt&quot;: &quot;2022-08-15T13:46:39.000Z&quot;,
+    &quot;created_at&quot;: &quot;2022-08-15T13:46:39.000Z&quot;,
+    &quot;updated_at&quot;: &quot;2022-08-15T13:46:39.000Z&quot;,
+    &quot;total_transactions&quot;: 0,
+    &quot;total_transaction_value&quot;: [],
+    &quot;dedicated_account&quot;: null,
+    &quot;identified&quot;: false,
+    &quot;identifications&quot;: null
+  }
+}</pre></div>
+</section>
+<section class="endpoint" id="update">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">更新客户</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--put">PUT</span> <span class="endpoint__path">/customer/:code</span></p>
+<p>更新集成中客户的资料</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div><div class="param"><div class="param__head"><span class="param__name">content-type</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">application/json</code></p></div></div>
+<h3>路径参数（Path Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">code</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">客户代码</p></div></div>
+<h3>请求体参数（Body Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">first_name</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">客户的名</p></div><div class="param"><div class="param__head"><span class="param__name">last_name</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">客户的姓</p></div><div class="param"><div class="param__head"><span class="param__name">phone</span><span class="param__type">String</span><span class="param__use ">可选</span></div><p class="param__desc">客户的手机号</p></div><div class="param"><div class="param__head"><span class="param__name">metadata</span><span class="param__type">Object</span><span class="param__use ">可选</span></div><p class="param__desc">可附加到客户的一组键值对，用于以结构化方式存储附加信息。</p></div></div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/customer/{code}&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+content_type=&quot;Content-Type: application/json&quot;
+data=&#x27;{
+&quot;first_name&quot;: &quot;BoJack&quot;
+}&#x27;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -H &quot;$content_type&quot; -d &quot;$data&quot; -X PUT</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Customer updated&quot;,
+  &quot;data&quot;: {
+    &quot;integration&quot;: 100032,
+    &quot;first_name&quot;: &quot;BoJack&quot;,
+    &quot;last_name&quot;: &quot;Horseman&quot;,
+    &quot;email&quot;: &quot;bojack@horsinaround.com&quot;,
+    &quot;phone&quot;: null,
+    &quot;metadata&quot;: {
+      &quot;photos&quot;: [
+        {
+          &quot;type&quot;: &quot;twitter&quot;,
+          &quot;typeId&quot;: &quot;twitter&quot;,
+          &quot;typeName&quot;: &quot;Twitter&quot;,
+          &quot;url&quot;: &quot;https://d2ojpxxtu63wzl.cloudfront.net/static/61b1a0a1d4dda2c9fe9e165fed07f812_a722ae7148870cc2e33465d1807dfdc6efca33ad2c4e1f8943a79eead3c21311&quot;,
+          &quot;isPrimary&quot;: true
+        }
+      ]
+    },
+    &quot;identified&quot;: false,
+    &quot;identifications&quot;: null,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;customer_code&quot;: &quot;CUS_xnxdt6s1zg1f4nx&quot;,
+    &quot;id&quot;: 1173,
+    &quot;transactions&quot;: [],
+    &quot;subscriptions&quot;: [],
+    &quot;authorizations&quot;: [],
+    &quot;createdAt&quot;: &quot;2016-03-29T20:03:09.000Z&quot;,
+    &quot;updatedAt&quot;: &quot;2016-03-29T20:03:10.000Z&quot;
+  }
+}</pre></div>
+</section>
+<section class="endpoint" id="validate">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">校验客户</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--post">POST</span> <span class="endpoint__path">/customer/:code/identification</span></p>
+<p>校验客户身份</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div><div class="param"><div class="param__head"><span class="param__name">content-type</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">application/json</code></p></div></div>
+<h3>路径参数（Path Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">code</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">待校验客户的邮箱或客户代码</p></div></div>
+<h3>请求体参数（Body Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">first_name</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">客户的名</p></div><div class="param"><div class="param__head"><span class="param__name">middle_name</span><span class="param__type">String</span><span class="param__use ">可选</span></div><p class="param__desc">客户的中间名</p></div><div class="param"><div class="param__head"><span class="param__name">last_name</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">客户的姓</p></div><div class="param"><div class="param__head"><span class="param__name">type</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">预定义的证件类型。仅 <code class="inline">bank_account</code>是目前支持的</p></div><div class="param"><div class="param__head"><span class="param__name">value</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">客户的证件号码</p></div><div class="param"><div class="param__head"><span class="param__name">country</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">证件签发机构的 2 位国家代码</p></div><div class="param"><div class="param__head"><span class="param__name">bvn</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">客户的银行验证号（BVN）</p></div><div class="param"><div class="param__head"><span class="param__name">bank_code</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">你可以调用 <a href="miscellaneous.html">查询银行列表</a>接口。（在以下情况为必填：<code class="inline">type</code>为 <code class="inline">bank_account</code>）</p></div><div class="param"><div class="param__head"><span class="param__name">account_number</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">客户的银行账号。（当 <code class="inline">type</code>为 <code class="inline">bank_account</code>）</p></div></div>
+<div class="callout">你可以调用[查询银行列表]接口获取银行代码列表。（当 <code class="inline">type</code> 为 <code class="inline">bank_account</code> 时为必填）</div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">letter country code of identification issuer</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/customer/{customer_code}/identification&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+content_type=&quot;Content-Type: application/json&quot;
+data=&#x27;{
+&quot;country&quot;: &quot;NG&quot;,
+&quot;type&quot;: &quot;bank_account&quot;,
+&quot;account_number&quot;: &quot;0123456789&quot;,
+&quot;bvn&quot;: &quot;20012345677&quot;,
+&quot;bank_code&quot;: &quot;007&quot;,
+&quot;first_name&quot;: &quot;Asta&quot;,
+&quot;last_name&quot;: &quot;Lavista&quot;
+}&#x27;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -H &quot;$content_type&quot; -d &quot;$data&quot; -X POST
+{
+&quot;status&quot;: true,
+&quot;message&quot;: &quot;Customer Identification in progress&quot;
+}</pre></div>
+</section>
+<section class="endpoint" id="whitelist-blacklist">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">将客户加入白名单/黑名单</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--post">POST</span> <span class="endpoint__path">/customer/set_risk_action</span></p>
+<p>将集成中的客户加入白名单或黑名单</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div><div class="param"><div class="param__head"><span class="param__name">content-type</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">application/json</code></p></div></div>
+<h3>请求体参数（Body Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">customer</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">客户代码或邮箱地址</p></div><div class="param"><div class="param__head"><span class="param__name">risk_action</span><span class="param__type">String</span><span class="param__use ">可选</span></div><p class="param__desc">可选的风险操作之一：[ <code class="inline">default</code>，<code class="inline">allow</code>，<code class="inline">deny</code>]。<code class="inline">allow</code>（加入白名单）。<code class="inline">deny</code>（加入黑名单）。客户默认风险状态为 <code class="inline">default</code>风险操作。</p></div></div>
+<div class="callout">发起请求以创建用于周期性交易的可复用支付授权码。</div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/customer/set_risk_action&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+content_type=&quot;Content-Type: application/json&quot;
+data=&#x27;{
+&quot;customer&quot;: &quot;CUS_xr58yrr2ujlft9k&quot;,
+&quot;risk_action&quot;: &quot;allow&quot;
+}&#x27;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -H &quot;$content_type&quot; -d &quot;$data&quot; -X POST</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">{
+&quot;status&quot;: true,
+&quot;message&quot;: &quot;Customer updated&quot;,
+&quot;data&quot;: {
+&quot;first_name&quot;: &quot;Peter&quot;,
+&quot;last_name&quot;: &quot;Griffin&quot;,
+&quot;email&quot;: &quot;peter@grif.com&quot;,
+&quot;phone&quot;: null,
+&quot;metadata&quot;: {},
+&quot;domain&quot;: &quot;test&quot;,
+&quot;identified&quot;: false,
+&quot;identifications&quot;: null,
+&quot;customer_code&quot;: &quot;CUS_xr58yrr2ujlft9k&quot;,
+&quot;risk_action&quot;: &quot;allow&quot;,
+&quot;id&quot;: 2109,
+&quot;integration&quot;: 100032,
+&quot;createdAt&quot;: &quot;2016-01-26T13:43:38.000Z&quot;,
+&quot;updatedAt&quot;: &quot;2016-08-23T03:56:43.000Z&quot;
+}
+}
+#!/bin/sh
+url=&quot;https://api.paystack.co/customer/authorization/initialize&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+content_type=&quot;Content-Type: application/json&quot;
+data=&#x27;{
+&quot;email&quot;: &quot;ravi@demo.com&quot;,
+&quot;channel&quot;: &quot;direct_debit&quot;,
+&quot;callback_url&quot;: &quot;http://test.url.com&quot;
+}&#x27;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -H &quot;$content_type&quot; -d &quot;$data&quot; -X POST
+{
+&quot;status&quot;: true,
+&quot;message&quot;: &quot;Authorization initialized&quot;,
+&quot;data&quot;: {
+&quot;redirect_url&quot;: &quot;https://checkout.paystack.com/82t4mp5b5mfn51h&quot;,
+&quot;access_code&quot;: &quot;82t4mp5b5mfn51h&quot;,
+&quot;reference&quot;: &quot;dfbzfotsrbv4n5s82t4mp5b5mfn51h&quot;
+}
+}</pre></div>
+</section>
+<section class="endpoint" id="initialize-authorization">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">初始化支付授权</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--post">POST</span> <span class="endpoint__path">/customer/authorization/initialize</span></p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div><div class="param"><div class="param__head"><span class="param__name">content-type</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">application/json</code></p></div></div>
+<h3>请求体参数（Body Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">email</span><span class="param__type">string</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">客户的邮箱地址</p></div><div class="param"><div class="param__head"><span class="param__name">channel</span><span class="param__type">string</span><span class="param__use param__use--required">必填</span></div><p class="param__desc"><code class="inline">direct-debit</code>是目前唯一支持的选项</p></div><div class="param"><div class="param__head"><span class="param__name">callback_url</span><span class="param__type">string</span><span class="param__use ">可选</span></div><p class="param__desc">用于跳转客户的完整 URL（例如 https://example.com/）。</p></div><div class="param"><div class="param__head"><span class="param__name">account</span><span class="param__type">object</span><span class="param__use ">可选</span></div><p class="param__desc">包含客户的账户信息。</p></div><div class="param"><div class="param__head"><span class="param__name">address</span><span class="param__type">object</span><span class="param__use ">可选</span></div><p class="param__desc">表示客户的地址。</p></div></div>
+</section>
+<section class="endpoint" id="verify-authorization">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">校验支付授权</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--get">GET</span> <span class="endpoint__path">/customer/authorization/verify/:reference</span></p>
+<p>查询支付授权请求的状态</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div></div>
+<h3>路径参数（Path Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">reference</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">初始化响应中返回的 reference</p></div></div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/customer/authorization/verify/{reference}&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -X GET</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Authorization retrieved successfully&quot;,
+  &quot;data&quot;: {
+    &quot;authorization_code&quot;: &quot;AUTH_JV4T9Wawdj&quot;,
+    &quot;channel&quot;: &quot;direct_debit&quot;,
+    &quot;bank&quot;: &quot;Guaranty Trust Bank&quot;,
+    &quot;active&quot;: true,
+    &quot;customer&quot;: {
+      &quot;code&quot;: &quot;CUS_24lze1c8i2zl76y&quot;,
+      &quot;email&quot;: &quot;ravi@demo.com&quot;
+    }
+  }
+}</pre></div>
+</section>
+<section class="endpoint" id="initialize-direct-debit">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">初始化直接借记</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--post">POST</span> <span class="endpoint__path">/customer/:id/initialize-direct-debit</span></p>
+<p>初始化将银行账户关联到客户的流程，用于直接借记交易</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div><div class="param"><div class="param__head"><span class="param__name">content-type</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">application/json</code></p></div></div>
+<h3>请求体参数（Body Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">account</span><span class="param__type">object</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">包含客户账户信息的对象</p></div><div class="param"><div class="param__head"><span class="param__name">address</span><span class="param__type">object</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">包含客户地址信息的对象</p></div></div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/customer/{id}/initialize-direct-debit&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+content_type=&quot;Content-Type: application/json&quot;
+data=&#x27;{
+&quot;account&quot;: {
+&quot;number&quot;: &quot;0123456789&quot;,
+&quot;bank_code&quot;: &quot;058&quot;
+},
+&quot;address&quot;: {
+&quot;street&quot;: &quot;Some Where&quot;,
+&quot;city&quot;: &quot;Ikeja&quot;,
+&quot;state&quot;: &quot;Lagos&quot;
+}
+}&#x27;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -H &quot;$content_type&quot; -d &quot;$data&quot; -X POST</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Authorization initialized&quot;,
+  &quot;data&quot;: {
+    &quot;redirect_url&quot;: &quot;https://link.paystack.com/ll6b0szngj1f27k&quot;,
+    &quot;access_code&quot;: &quot;ll6b0szngj1f27k&quot;,
+    &quot;reference&quot;: &quot;1er945lpy4txyki&quot;
+  }
+}</pre></div>
+</section>
+<section class="endpoint" id="directdebit-activation-charge">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">直接借记激活扣款</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--put">PUT</span> <span class="endpoint__path">/customer/:id/directdebit-activation-charge</span></p>
+<p>代客户对未激活的授权委托发起激活扣款</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div><div class="param"><div class="param__head"><span class="param__name">content-type</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">application/json</code></p></div></div>
+<h3>路径参数（Path Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">id</span><span class="param__type">integer</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">支付授权关联的客户 ID</p></div></div>
+<h3>请求体参数（Body Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization_id</span><span class="param__type">integer</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">从初始化响应中获取的支付授权 ID</p></div></div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">#!/bin/sh
+curl https://api.paystack.co/customer/{id}/directdebit-activation-charge
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{
+&quot;authorization_id&quot; : 1069309917
+}&#x27;
+-X PUT</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Mandate is queued for retry&quot;
+}</pre></div>
+</section>
+<section class="endpoint" id="directdebit-mandate-authorizations">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">查询授权委托列表</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--get">GET</span> <span class="endpoint__path">/customer/:id/directdebit-mandate-authorizations</span></p>
+<p>获取某个客户关联的直接借记授权委托列表</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div></div>
+<h3>路径参数（Path Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">id</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">要获取支付授权的客户 ID</p></div></div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/customer/{id}/directdebit-mandate-authorizations&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -X GET</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Mandate authorizations retrieved successfully&quot;,
+  &quot;data&quot;: [
+    {
+      &quot;id&quot;: 164098,
+      &quot;status&quot;: &quot;active&quot;,
+      &quot;mandate_id&quot;: 512003,
+      &quot;authorization_id&quot;: 110049014,
+      &quot;authorization_code&quot;: &quot;AUTH_8Lol0pNt14&quot;,
+      &quot;integration_id&quot;: 463433,
+      &quot;account_number&quot;: &quot;0123456789&quot;,
+      &quot;bank_code&quot;: &quot;032&quot;,
+      &quot;bank_name&quot;: null,
+      &quot;customer&quot;: {
+        &quot;id&quot;: 43975700,
+        &quot;customer_code&quot;: &quot;CUS_2eusy8uwe34s23fy&quot;,
+        &quot;email&quot;: &quot;customer@email.com&quot;,
+        &quot;first_name&quot;: &quot;Smith&quot;,
+        &quot;last_name&quot;: &quot;Bel&quot;
+      },
+      &quot;authorized_at&quot;: &quot;2024-09-27T10:57:53.824Z&quot;
+    }
+  ],
+  &quot;meta&quot;: {
+    &quot;per_page&quot;: 50,
+    &quot;next&quot;: null,
+    &quot;count&quot;: 1,
+    &quot;total&quot;: 1
+  }
+}</pre></div>
+</section>
+<section class="endpoint" id="deactivate-authorization">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">停用支付授权</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--post">POST</span> <span class="endpoint__path">/customer/authorization/deactivate</span></p>
+<p>停用任一支付渠道的支付授权</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div><div class="param"><div class="param__head"><span class="param__name">content-type</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">application/json</code></p></div></div>
+<h3>请求体参数（Body Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization_code</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">要停用的支付授权码</p></div></div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/customer/authorization/deactivate&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+content_type=&quot;Content-Type: application/json&quot;
+data=&#x27;{
+&quot;authorization_code&quot;: &quot;AUTH_xxxIjkZVj5&quot;
+}&#x27;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -H &quot;$content_type&quot; -d &quot;$data&quot; -X POST</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Authorization has been deactivated&quot;
+}</pre></div>
+</section>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/api/" target="_blank" rel="noopener">paystack.com/docs/api</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

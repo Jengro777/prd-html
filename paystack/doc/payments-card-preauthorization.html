@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简介 · Paystack 开发文档（中文）</title>
+<meta name="description" content="简介 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>了解企业如何在服务交付后收取最终金额之前在卡上保留金额。</p>
+<p>此功能仅适用于已成功完成<a href="https://support.paystack.com/hc/en-us/articles/360009881220-How-do-I-activate-my-Paystack-Registered-Business-">上线流程</a>的南非注册企业。</p>
+<h2>简介</h2>
+<p>预授权允许你在收取最终金额之前保留客户账户中的金额。这分两步发生：</p>
+<ol><li>初始化预授权交易</li><li>收取最终金额</li></ol>
+<p>在保留期内，资金仍在客户的账户中，但他们无法访问。这保证了服务交付后资金可用。提供服务后付款的企业利用这一点来最大限度地降低不付款的风险。例如，网约车服务、货到付款的电子商务服务以及在线酒店预订平台。</p>
+<p>默认保持时间为 <strong>五 (5) 天</strong>，但是，你可以使用 <code class="inline">expire_after_days</code> 参数将其延长至<strong>七 (7) 天</strong>。你可以使用 <code class="inline">expire_action</code> 参数指定在到期日采取的操作。这可以是 <code class="inline">capture</code> 或 <code class="inline">release</code>。</p>
+<p><a href="https://paystack.com/docs/static/723256bb55ba730ffefc6ca312b867f8/8c557/preauth_flow.png">![图片 1：显示预授权流程图的图片</a>](https://paystack.com/docs/static/723256bb55ba730ffefc6ca312b867f8/4e6ec/preauth_flow.png)</p>
+<p>通过预授权向现有客户收费仅需要两个接口：</p>
+<ol><li><strong>初始化预授权</strong>：此接口启动首次客户的预授权流程。它会保留要收取的金额，但尚未处理该费用。</li></ol>
+<ol><li><strong>捕获预授权</strong>：此接口向客户收取最终金额。如果金额低于初始预授权金额，余额将自动释放给客户。</li></ol>
+<p>预授权需要 Webhook，因为它是异步流程。设置 Webhook 接口以接收状态更改的更新。了解更多关于<a href="https://paystack.com/docs/payments/webhooks/">设置Webhook</a>的信息。</p>
+<h2>首次预授权</h2>
+<p>要预授权交易，你将使用 <a href="https://paystack.com/docs/api/preauthorization/#initialize">初始化预授权API</a> 接口。这会将 URL 返回到 Paystack Checkout，客户在其中输入他们的卡详细信息。这与重定向流程类似，但是资金仍保留在客户的账户中。在你致电 <a href="https://paystack.com/docs/api/preauthorization/#capture">捕获预授权API</a> 接口之前，他们不会收取费用。</p>
+<p>要初始化预授权，你需要传递<code class="inline">email</code>、<code class="inline">amount</code>和<code class="inline">currency</code>。</p>
+<pre class="code">curl https://api.paystack.co/preauthorization/initialize
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;email&quot;: &quot;customer@email.com&quot;,
+&quot;amount&quot;: &quot;500000&quot;,
+&quot;currency&quot;: &quot;ZAR&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Authorization URL created&quot;,
+  &quot;data&quot;: {
+    &quot;authorization_url&quot;: &quot;https://checkout.paystack.com/preauthorization/NDEyOTIyOmxpdmU6ZWloZ2VodTNyczZjanJj&quot;,
+    &quot;access_code&quot;: &quot;NDEyOTIyOmxpdmU6ZWloZ2VodTNyczZjanJj&quot;,
+    &quot;reference&quot;: &quot;eihgehu3rs6cjrc&quot;
+  }
+}</pre>
+<p>下表显示了初始化预授权时可以传递的其他可选参数。</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>参数</th><th>需要吗？</th><th>描述</th></tr></thead><tbody><tr><td>邮箱</td><td>是的</td><td>客户的邮箱地址</td></tr><tr><td>金额</td><td>是的</td><td>金额应以美分为单位，因为货币为<code class="inline">ZAR</code>。最低金额为 100。</td></tr><tr><td>货币</td><td>是的</td><td>货币应该是<code class="inline">ZAR</code></td></tr><tr><td>split_code</td><td>否</td><td>交易拆分的拆分代码。例如<code class="inline">SPL_98WF13Eb3w</code></td></tr><tr><td>分裂</td><td>否</td><td>动态分割对象</td></tr><tr><td>参考</td><td>否</td><td>唯一区分大小写的交易参考。仅允许使用 <code class="inline">-</code>、<code class="inline">.</code>、<code class="inline">=</code> 和字母数字字符。如果你不传递此参数，Paystack 会为你生成一个唯一的引用</td></tr><tr><td>expire_after_days</td><td>否</td><td>执行<code class="inline">expire_action</code>之前的天数。最短时间为 1 天。默认为 5 天。</td></tr><tr><td>expire_action</td><td>否</td><td>指定在到期日要采取的操作。要么捕获，要么释放。默认为释放。</td></tr><tr><td>元数据</td><td>否</td><td>JSON 自定义数据对象。 Checkout我们的<a href="https://paystack.com/docs/payments/metadata/">元数据文档</a>了解更多信息。</td></tr><tr><td>回调_url</td><td>否</td><td>完全限定 URL（例如 https://example.com/）。使用它来覆盖仪表板上为每个交易提供的回调 URL</td></tr></tbody></table></div>
+<p>将客户重定向到 <code class="inline">authorization_url</code> 并且他们完成授权后，你将收到确认预授权的 <code class="inline">preauthorization.reserve.success</code> 事件。</p>
+<pre class="code">{
+  &quot;event&quot;: &quot;preauthorization.reserve.success&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 543,
+    &quot;domain&quot;: &quot;live&quot;,
+    &quot;status&quot;: &quot;authorized&quot;,
+    &quot;reference&quot;: &quot;pre_9gjnu6dc&quot;,
+    &quot;amount&quot;: 1000,
+    &quot;message&quot;: &quot;Approved&quot;,
+    &quot;currency&quot;: &quot;ZAR&quot;,
+    &quot;metadata&quot;: null,
+    &quot;fees&quot;: 100,
+    &quot;authorization&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_vbvd4qti3m&quot;,
+      &quot;bin&quot;: &quot;455027&quot;,
+      &quot;last4&quot;: &quot;8016&quot;,
+      &quot;exp_month&quot;: &quot;11&quot;,
+      &quot;exp_year&quot;: &quot;2026&quot;,
+      &quot;channel&quot;: &quot;card&quot;,
+      &quot;card_type&quot;: &quot;visa credit&quot;,
+      &quot;bank&quot;: &quot;ABSA BANK LIMITED, SOUTH AFRICA&quot;,
+      &quot;country_code&quot;: &quot;ZA&quot;,
+      &quot;brand&quot;: &quot;visa&quot;,
+      &quot;reusable&quot;: true,
+      &quot;signature&quot;: &quot;SIG_1zl7r116ONxGlRFXKn0C&quot;,
+      &quot;account_name&quot;: null
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 1,
+      &quot;first_name&quot;: &quot;John&quot;,
+      &quot;last_name&quot;: &quot;Doe&quot;,
+      &quot;email&quot;: &quot;john@test.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_yqcuukj44ype5u1&quot;,
+      &quot;phone&quot;: &quot;&quot;,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;,
+      &quot;international_format_phone&quot;: null
+    },
+    &quot;merchant_id&quot;: 1077497,
+    &quot;merchant_name&quot;: &quot;Test Business&quot;,
+    &quot;transaction_id&quot;: null,
+    &quot;captured_at&quot;: null,
+    &quot;captured_amount&quot;: null,
+    &quot;expiry_date&quot;: &quot;2023-11-19T23:28:52.000Z&quot;,
+    &quot;expire_action&quot;: &quot;release&quot;
+  }
+}</pre>
+<h2>完成预授权</h2>
+<p>成功交付服务后，你需要在保留期结束前完成交易。你可以使用 <a href="https://paystack.com/docs/api/preauthorization/#capture">捕获预授权API</a> 接口来执行此操作。此接口需要<code class="inline">reference</code>、<code class="inline">amount</code>、<code class="inline">currency</code>进行充电。该金额应小于或等于初始金额。</p>
+<p>捕获时，如果 Paystack 没有得到明确的响应，预授权将进入持续状态，并轮询处理器以获得最终响应。如果收到响应，则异步更新预授权。如果没有收到响应，则进入<code class="inline">capture_failed</code>状态。</p>
+<pre class="code">curl https://api.paystack.co/preauthorization/capture
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;reference&quot;: &quot;123-abc&quot;,
+&quot;currency&quot;: &quot;ZAR&quot;,
+&quot;amount&quot;: &quot;1000&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Capture attempted&quot;,
+  &quot;data&quot;: {
+    &quot;amount&quot;: 1000,
+    &quot;currency&quot;: &quot;ZAR&quot;,
+    &quot;transaction_date&quot;: &quot;2023-08-24T11:38:32.000Z&quot;,
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;reference&quot;: &quot;123-abc&quot;,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;metadata&quot;: {
+      &quot;custom_fields&quot;: [
+        {
+          &quot;display_name&quot;: &quot;Cart Number&quot;,
+          &quot;variable_name&quot;: &quot;cart_number&quot;,
+          &quot;value&quot;: &quot;123443&quot;
+        }
+      ]
+    },
+    &quot;gateway_response&quot;: &quot;Approved&quot;,
+    &quot;message&quot;: null,
+    &quot;channel&quot;: &quot;preauth&quot;,
+    &quot;ip_address&quot;: null,
+    &quot;log&quot;: null,
+    &quot;fees&quot;: 373,
+    &quot;authorization&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_5h7ifp9x1h&quot;,
+      &quot;bin&quot;: &quot;541541&quot;,
+      &quot;last4&quot;: &quot;0051&quot;,
+      &quot;exp_month&quot;: &quot;12&quot;,
+      &quot;exp_year&quot;: &quot;2028&quot;,
+      &quot;channel&quot;: &quot;card&quot;,
+      &quot;card_type&quot;: &quot;mastercard&quot;,
+      &quot;bank&quot;: &quot;Absa Bank Limited, South Africa &quot;,
+      &quot;country_code&quot;: &quot;ZA&quot;,
+      &quot;brand&quot;: &quot;mastercard&quot;,
+      &quot;reusable&quot;: true,
+      &quot;signature&quot;: &quot;SIG_6bCAS8p20rANfmuYgQ4a&quot;,
+      &quot;account_name&quot;: null
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 180063193,
+      &quot;first_name&quot;: null,
+      &quot;last_name&quot;: null,
+      &quot;email&quot;: &quot;customer@email.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_zi5os4fs31qxao0&quot;,
+      &quot;phone&quot;: null,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;,
+      &quot;international_format_phone&quot;: null
+    },
+    &quot;plan&quot;: null,
+    &quot;id&quot;: 1504173002
+  }
+}</pre>
+<p>一旦成功执行捕获，Paystack 就会发送一个 <code class="inline">preauthorization.capture.success</code> 事件来确认成功。如果捕获失败，则会发送 <code class="inline">preauthorization.capture.failed</code> 事件。</p>
+<pre class="code">{
+  &quot;event&quot;: &quot;preauthorization.capture.success&quot;,
+  &quot;data&quot;: {
+    &quot;amount&quot;: 1000,
+    &quot;authorization&quot;: {
+      &quot;account_name&quot;: null,
+      &quot;authorization_code&quot;: &quot;AUTH_ove5p6reju&quot;,
+      &quot;bank&quot;: &quot;NEDBANK&quot;,
+      &quot;bin&quot;: &quot;492213&quot;,
+      &quot;brand&quot;: &quot;visa&quot;,
+      &quot;card_type&quot;: &quot;visa credit&quot;,
+      &quot;channel&quot;: &quot;card&quot;,
+      &quot;country_code&quot;: &quot;ZA&quot;,
+      &quot;exp_month&quot;: &quot;03&quot;,
+      &quot;exp_year&quot;: &quot;2025&quot;,
+      &quot;last4&quot;: &quot;6658&quot;,
+      &quot;reusable&quot;: true,
+      &quot;signature&quot;: &quot;SIG_9bg7BgE0xiRxNVsil7Yo&quot;
+    },
+    &quot;captured_amount&quot;: &quot;1000&quot;,
+    &quot;captured_at&quot;: &quot;2023-11-10T11:58:44.000Z&quot;,
+    &quot;currency&quot;: &quot;ZAR&quot;,
+    &quot;customer&quot;: {
+      &quot;id&quot;: 1,
+      &quot;first_name&quot;: &quot;John&quot;,
+      &quot;last_name&quot;: &quot;Doe&quot;,
+      &quot;email&quot;: &quot;john@test.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_yqcuukj44ype5u1&quot;,
+      &quot;phone&quot;: &quot;01142272921&quot;,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;,
+      &quot;international_format_phone&quot;: null
+    },
+    &quot;domain&quot;: &quot;live&quot;,
+    &quot;fees&quot;: 0,
+    &quot;message&quot;: &quot;Approved&quot;,
+    &quot;id&quot;: 3099,
+    &quot;merchant_id&quot;: 412922,
+    &quot;merchant_name&quot;: &quot;Test Business&quot;,
+    &quot;metadata&quot;: null,
+    &quot;reference&quot;: &quot;atyntuup5bec03e&quot;,
+    &quot;status&quot;: &quot;captured&quot;,
+    &quot;transaction&quot;: {
+      &quot;currency&quot;: &quot;ZAR&quot;,
+      &quot;transaction_date&quot;: &quot;2023-11-10T11:58:44.000Z&quot;,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;reference&quot;: &quot;atyntuup5bec03e&quot;,
+      &quot;domain&quot;: &quot;live&quot;,
+      &quot;metadata&quot;: null,
+      &quot;gateway_response&quot;: &quot;Approved&quot;,
+      &quot;message&quot;: null,
+      &quot;channel&quot;: &quot;preauth&quot;,
+      &quot;fees&quot;: 26,
+      &quot;id&quot;: &quot;1504264401&quot;,
+      &quot;split&quot;: {}
+    },
+    &quot;transaction_id&quot;: &quot;1504264401&quot;,
+    &quot;expiry_date&quot;: null,
+    &quot;expire_action&quot;: &quot;capture&quot;,
+    &quot;split_code&quot;: null,
+    &quot;split&quot;: null
+  }
+}</pre>
+<h2>解除预授权</h2>
+<p>如果你决定不向客户收费或他们取消了收费，你将使用 <a href="https://paystack.com/docs/api/preauthorization/#release">释放预授权API</a> 接口释放资金。这个接口只需要在请求正文中传递引用。客户在提出请求后几分钟内即可获得资金。</p>
+<pre class="code">curl https://api.paystack.co/preauthorization/release
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{
+&quot;reference&quot;: &quot;123-abc&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Successfully released&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 507,
+    &quot;status&quot;: &quot;released&quot;,
+    &quot;reference&quot;: &quot;123-abc&quot;
+  }
+}</pre>
+<p>释放成功后Paystack发送<code class="inline">preauthorization.release.success</code>事件。</p>
+<pre class="code">{
+  &quot;event&quot;: &quot;preauthorization.release.success&quot;,
+  &quot;data&quot;: {
+    &quot;amount&quot;: 1000,
+    &quot;authorization&quot;: {
+      &quot;account_name&quot;: null,
+      &quot;authorization_code&quot;: &quot;AUTH_ove5p6reju&quot;,
+      &quot;bank&quot;: &quot;NEDBANK&quot;,
+      &quot;bin&quot;: &quot;492213&quot;,
+      &quot;brand&quot;: &quot;visa&quot;,
+      &quot;card_type&quot;: &quot;visa credit&quot;,
+      &quot;channel&quot;: &quot;card&quot;,
+      &quot;country_code&quot;: &quot;ZA&quot;,
+      &quot;exp_month&quot;: &quot;03&quot;,
+      &quot;exp_year&quot;: &quot;2025&quot;,
+      &quot;last4&quot;: &quot;6658&quot;,
+      &quot;reusable&quot;: true,
+      &quot;signature&quot;: &quot;SIG_9bg7BgE0xiRxNVsil7Yo&quot;
+    },
+    &quot;captured_amount&quot;: null,
+    &quot;captured_at&quot;: null,
+    &quot;currency&quot;: &quot;ZAR&quot;,
+    &quot;customer&quot;: {
+      &quot;id&quot;: 1,
+      &quot;first_name&quot;: &quot;John&quot;,
+      &quot;last_name&quot;: &quot;Doe&quot;,
+      &quot;email&quot;: &quot;john@test.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_yqcuukj44ype5u1&quot;,
+      &quot;phone&quot;: &quot;01142272921&quot;,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;,
+      &quot;international_format_phone&quot;: null
+    },
+    &quot;domain&quot;: &quot;live&quot;,
+    &quot;expired_at&quot;: &quot;2023-11-17T12:46:58.000Z&quot;,
+    &quot;fees&quot;: 100,
+    &quot;message&quot;: &quot;Release success&quot;,
+    &quot;id&quot;: 3101,
+    &quot;merchant_id&quot;: 412922,
+    &quot;merchant_name&quot;: &quot;Test Business&quot;,
+    &quot;metadata&quot;: null,
+    &quot;reference&quot;: &quot;pre_11b0qw12&quot;,
+    &quot;status&quot;: &quot;released&quot;,
+    &quot;transaction_id&quot;: null,
+    &quot;expiry_date&quot;: &quot;2024-11-19T23:28:52.000Z&quot;,
+    &quot;expire_action&quot;: &quot;release&quot;
+  }
+}</pre>
+<p>在极少数情况下，发布失败，你将收到 <code class="inline">preauthorization.release.failed</code> 事件。如果你遇到此问题，请发送邮箱至 <a href="mailto:techsupport@paystack.com">techsupport@paystack.com</a>，我们的团队将很乐意帮助解决此问题。</p>
+<h2>现有客户预授权</h2>
+<p>所有可重用参数为 true 的活动卡授权均可用于预授权。你应该确保<code class="inline">authorization_code</code>和<code class="inline">email</code>与第一次交易时使用的相同，否则预授权将不会成功。这与我们的定期付款收费授权类似。</p>
+<p>在 Paystack 上，当客户向企业付款时，我们会创建一个与该客户关联的授权对象。授权对象是卡的标记化版本。</p>
+<p>因此，如果现有客户已经在你的 Paystack 业务上通过卡付款，你可以跳过初始化预授权步骤，直接使用 <a href="https://paystack.com/docs/api/preauthorization/#reserve">预留预授权API</a> 接口。客户无需再次输入银行卡详细信息。</p>
+<p>保留授权接口接受与初始化预授权接口相同的参数，只是它需要<code class="inline">authorization_code</code>。</p>
+<pre class="code">curl https://api.paystack.co/preauthorization/reserve_authorization
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{
+&quot;email&quot; : &quot;test@paystack.com&quot;,
+&quot;currency&quot;: &quot;ZAR&quot;,
+&quot;amount&quot;: 1000,
+&quot;authorization_code&quot;: &quot;AUTH_dalhwqi5vw&quot;,
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Preauthorization successful&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 523,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;status&quot;: &quot;authorized&quot;,
+    &quot;reference&quot;: &quot;pre_p0xpfge2&quot;,
+    &quot;amount&quot;: 1600,
+    &quot;gateway_response&quot;: {
+      &quot;authorizeResponse&quot;: &quot;Approved&quot;,
+      &quot;rrn&quot;: &quot;KdeasineK&quot;
+    },
+    &quot;created_at&quot;: &quot;2023-08-24T19:00:18.000Z&quot;,
+    &quot;released_at&quot;: null,
+    &quot;expiry_date&quot;: &quot;2023-08-25T19:00:26.000Z&quot;,
+    &quot;currency&quot;: &quot;ZAR&quot;,
+    &quot;metadata&quot;: null,
+    &quot;fees&quot;: 0,
+    &quot;authorization&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_dalhwqi5vw&quot;,
+      &quot;bin&quot;: &quot;454545&quot;,
+      &quot;last4&quot;: &quot;4545&quot;,
+      &quot;exp_month&quot;: &quot;08&quot;,
+      &quot;exp_year&quot;: &quot;2028&quot;,
+      &quot;channel&quot;: &quot;card&quot;,
+      &quot;card_type&quot;: &quot;visa credit&quot;,
+      &quot;bank&quot;: &quot;NEDBANK&quot;,
+      &quot;country_code&quot;: &quot;ZA&quot;,
+      &quot;brand&quot;: &quot;visa&quot;,
+      &quot;reusable&quot;: true,
+      &quot;signature&quot;: &quot;SIG_BAJR7TwTw5TwKOYCro5c&quot;,
+      &quot;account_name&quot;: null
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 180063193,
+      &quot;first_name&quot;: null,
+      &quot;last_name&quot;: null,
+      &quot;email&quot;: &quot;test@paystack.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_zi5os4fs31qxao0&quot;,
+      &quot;phone&quot;: null,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;,
+      &quot;international_format_phone&quot;: null
+    },
+    &quot;merchant_id&quot;: 210002,
+    &quot;merchant_name&quot;: &quot;ABC merchant&quot;,
+    &quot;expire_action&quot;: &quot;release&quot;,
+    &quot;split_code&quot;: null,
+    &quot;split&quot;: null
+  }
+}</pre>
+<p>你还可以查看我们的 <a href="https://paystack.com/docs/api/preauthorization/#card-preauthorization">预授权API参考API</a>，了解更多可用于你的业务流程的接口。</p>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/payments/card-preauthorization/" target="_blank" rel="noopener">https://paystack.com/docs/payments/card-preauthorization/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

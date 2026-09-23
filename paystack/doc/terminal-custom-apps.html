@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简介 · Paystack 开发文档（中文）</title>
+<meta name="description" content="简介 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>你可以构建自定义 Android 应用程序以在 Paystack 终端上受理支付</p>
+<h2>简介</h2>
+<p>Paystack 终端由 Android 操作系统 (OS) 提供支持，允许开发人员在终端上构建 Android 应用程序。 Android OS 使应用程序能够<a href="https://developer.android.com/guide/components/intents-filters">通过 Intent 相互通信</a>。使用 Intents，你可以构建一个在 Paystack Terminal 上运行并受理支付的应用程序。</p>
+<p>我们目前有两个终端设备，分别运行在 Android 5.1 和 Android 10 上。如果你要为两种设备进行构建，则应记下两个 OS 版本之间的 <a href="https://developer.android.com/about/versions/10/privacy/changes#top-changes">隐私变更</a>。</p>
+<h2>建立意图</h2>
+<p>This document highlights how to build using the Java/Kotlin. If you are building with Flutter or React Native, check out the <a href="https://paystack.com/docs/guides/building_terminal_apps_flutter/">Flutter</a> or <a href="https://paystack.com/docs/guides/building_terminal_apps_react_native/">React Native</a> guide.</p>
+<p>在为你的自定义应用程序实现支付流程时，你需要 <a href="https://developer.android.com/guide/components/intents-filters#Building">利用意图</a> 与 Paystack 终端应用程序进行通信。意图允许你指定应处理你的请求的特定应用程序。在这种情况下，你将指定 Paystack 终端应用程序来处理你的应用程序的付款。</p>
+<p>在为 Paystack 终端应用程序创建意图时，你可以传递以下参数：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>参数</th><th>描述</th><th>价值</th></tr></thead><tbody><tr><td>元件名称</td><td>Paystack 终端应用程序的包名称</td><td><code class="inline">com.paystack.pos</code></td></tr><tr><td>行动</td><td>捕获要执行的操作的通用字符串</td><td><code class="inline">Intent.ACTION_VIEW</code></td></tr><tr><td>附加功能</td><td>执行所需操作所需的键值对。键将包含应用程序的包名称作为前缀。例如，<code class="inline">com.paystack.pos.SETTINGS</code></td><td>检查下面支持的操作表</td></tr></tbody></table></div>
+<h3>支持的操作</h3>
+<p>这些是终端上当前可用的操作：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>操作</th><th>额外钥匙</th><th>结果代码</th></tr></thead><tbody><tr><td>获取终端详细信息</td><td><code class="inline">com.paystack.pos.PARAMETERS</code></td><td>12</td></tr><tr><td>发起交易</td><td><code class="inline">com.paystack.pos.TRANSACT</code></td><td>14</td></tr><tr><td>打开终端设置</td><td><code class="inline">com.paystack.pos.SETTINGS</code></td><td>-</td></tr></tbody></table></div>
+<h3>意图响应</h3>
+<p>除终端设置外，所有支持的操作都会返回具有以下结构的响应：</p>
+<pre class="code">data class PaystackIntentResponse (
+val intentKey: String,
+val intentResponseCode: Int,
+val intentResponse: TerminalResponse
+)
+</pre>
+<div class="table-wrap"><table class="data"><thead><tr><th>参数</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">intentKey</code></td><td>这是初始化意图时传递到 <code class="inline">putExtra</code> 方法的密钥。支持的操作表的 <strong>额外钥匙</strong> 列中列出了可能的值</td></tr><tr><td><code class="inline">intentResponseCode</code></td><td>这是意图结果代码。可能的值列在 <a href="https://paystack.com/docs/terminal/custom-apps/#supported-operations">支持的操作</a> 表的结果代码列中</td></tr><tr><td><code class="inline">intentResponse</code></td><td>这是执行操作的响应</td></tr></tbody></table></div>
+<pre class="code">data class TerminalResponse(
+val statusCode: String,
+val message: String,
+val data: String
+)
+</pre>
+<div class="table-wrap"><table class="data"><thead><tr><th>参数</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">statusCode</code></td><td>我们使用<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">HTTP 状态码</a>来表示响应的状态</td></tr><tr><td><code class="inline">message</code></td><td>响应的简短摘要</td></tr><tr><td><code class="inline">data</code></td><td>这是一个包含请求结果的序列化对象（JSON 字符串）。可以根据正在执行的操作将其反序列化为相应的对象</td></tr></tbody></table></div>
+<h2>受理支付</h2>
+<p>要发起付款，你需要创建 <code class="inline">TransactionRequest</code> 对象的实例：</p>
+<pre class="code">data class TransactionRequest(
+val amount: Int,
+val offlineReference: String?,
+val supplementaryReceiptData: SupplementaryReceiptData?,
+val metadata: Map&lt;String, Any&gt;?
+)
+</pre>
+<div class="table-wrap"><table class="data"><thead><tr><th>参数</th><th>需要吗？</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">amount</code></td><td>是的</td><td>向客户收取的金额。金额应为 kobo</td></tr><tr><td><code class="inline">offlineReference</code></td><td>否</td><td>这是发票的唯一标识符。如果你想接受先前创建的发票的付款，则可以设置此值</td></tr><tr><td><code class="inline">supplementaryReceiptData</code></td><td>否</td><td>成功付款后添加到收据的额外详细信息</td></tr><tr><td><code class="inline">metadata</code></td><td>否</td><td>附加到交易的额外数据</td></tr></tbody></table></div>
+<pre class="code">data class SupplementaryReceiptData(
+val developerSuppliedText: String?,
+val developerSuppliedImageUrlPath: String?,
+val barcodeOrQrcodeImageText: String?,
+val textImageType: TextImageFormat?
+)
+</pre>
+<div class="table-wrap"><table class="data"><thead><tr><th>参数</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">developerSuppliedText</code></td><td>添加到打印收据的额外文本</td></tr><tr><td><code class="inline">developerSuppliedImageUrlPath</code></td><td>可公开访问的URL，用于将图像添加到收据中</td></tr><tr><td><code class="inline">barcodeOrQrcodeImageText</code></td><td>用于生成条形码或QR代码的文本</td></tr><tr><td><code class="inline">textImageType</code></td><td>指定图像文本的编码类型</td></tr></tbody></table></div>
+<pre class="code">enum class TextImageFormat {
+QR_CODE,
+AZTEC_BARCODE
+}
+</pre>
+<p>然后 <code class="inline">TransactionRequest</code> 的实例作为额外的内容传递到你的意图对象中：</p>
+<pre class="code">val gson = Gson()
+
+private fun makePayment() {
+val transactionRequest = TransactionRequest(
+amount = 2000,
+offlineReference = null,
+supplementaryReceiptData = null,
+metadata = mapOf(
+&quot;custom_fields&quot; to listOf(
+CustomField(
+display_name = &quot;Extra Detail&quot;,
+variable_name = &quot;extra_detail&quot;,
+value = &quot;1234&quot;
+)
+)
+)
+)
+
+val transactionIntent = Intent(Intent.ACTION_VIEW).apply {
+setPackage(&quot;com.paystack.pos&quot;)
+putExtra(&quot;com.paystack.pos.TRANSACT&quot;, gson.toJson(transactionRequest))
+}
+
+
+startActivityForResult.launch(transactionIntent)
+}
+</pre>
+<p>使用<a href="https://developer.android.com/training/basics/intents/result">开始活动获取结果</a>合约，结果可以解析如下：</p>
+<pre class="code">val TRANSACTION_RESULT_CODE = 14
+val TRANSACTION = &quot;com.paystack.pos.TRANSACT&quot;
+val startActivityForResult: ActivityResultLauncher&lt;Intent&gt; = registerForActivityResult(StartActivityForResult(), intentResultCallback())
+
+private fun intentResultCallback(): ActivityResultCallback&lt;ActivityResult&gt; {
+
+return ActivityResultCallback { result: ActivityResult -&gt;
+val resultCode = result.resultCode
+val intent = result.data
+val paystackIntentResponse: PaystackIntentResponse
+val terminalResponse: TerminalResponse
+
+if (resultCode == TRANSACTION_RESULT_CODE) {
+paystackIntentResponse = gson.fromJson(
+intent?.getStringExtra(TRANSACTION),
+PaystackIntentResponse::class.java
+)
+terminalResponse = paystackIntentResponse.intentResponse
+val transactionResponse: TransactionResponse = gson.fromJson(
+terminalResponse.data,
+TransactionResponse::class.java
+)
+
+Toast.makeText(
+applicationContext,
+&quot;Transaction ref: &quot; + transactionResponse.reference,
+Toast.LENGTH_SHORT
+).show()
+}
+else {
+
+}
+}
+}</pre>
+<p>支付完成后，返回的响应是<code class="inline">TransactionResponse</code>对象的实例：</p>
+<pre class="code">import com.google.gson.annotations.SerializedName
+
+data class TransactionResponse(
+val id: String?,
+val amount: Int?,
+val reference: String?,
+val status: String?,
+val currency: String?,
+@SerializedName(&quot;country_code&quot;)
+val countryCode: String?,
+@SerializedName(&quot;paid_at&quot;)
+val paidAt: String?,
+val terminal: String?
+)</pre>
+<h2>获取终端详细信息</h2>
+<p>每个终端都有一个唯一的标识符和序列号。要获取这些详细信息，你可以构造一个意图，如下所示：</p>
+<pre class="code">private fun fetchParameters(){
+val parametersIntent = Intent(Intent.ACTION_VIEW).apply {
+setPackage(&quot;com.paystack.pos&quot;)
+putExtra(&quot;com.paystack.pos.PARAMETERS&quot;, &quot;true&quot;)
+}
+
+
+startActivityForResult.launch(parametersIntent)
+}
+</pre>
+<p>使用<code class="inline">StartActivityForResult</code>合约，结果可以解析如下：</p>
+<pre class="code">val PARAMETERS_RESULT_CODE = 12
+val PARAMETERS = &quot;com.paystack.pos.PARAMETERS&quot;
+val startActivityForResult: ActivityResultLauncher&lt;Intent&gt; = registerForActivityResult(StartActivityForResult(), intentResultCallback())
+
+private fun intentResultCallback(): ActivityResultCallback&lt;ActivityResult&gt; {
+
+return ActivityResultCallback { result: ActivityResult -&gt;
+val resultCode = result.resultCode
+val intent = result.data
+val paystackIntentResponse: PaystackIntentResponse
+val terminalResponse: TerminalResponse
+
+if (resultCode == PARAMETERS_RESULT_CODE) {
+paystackIntentResponse = gson.fromJson(
+intent?.getStringExtra(PARAMETERS),
+PaystackIntentResponse::class.java
+)
+terminalResponse = paystackIntentResponse.intentResponse
+val parameters: ParameterResponse = gson.fromJson(
+terminalResponse.data,
+ParameterResponse::class.java
+)
+Toast.makeText(
+applicationContext,
+&quot;Terminal ID: &quot; + parameters.terminalId,
+Toast.LENGTH_SHORT
+).show()
+
+Toast.makeText(
+applicationContext,
+&quot;Terminal Serial Number: &quot; + parameters.serialNumber,
+Toast.LENGTH_SHORT
+).show()
+}
+else {
+
+}
+}
+}</pre>
+<p>结果是 <code class="inline">PaystackIntentResponse</code> 类的实例。解析结果可以访问终端详细信息，它是 <code class="inline">ParametersResponse</code> 类的实例：</p>
+<pre class="code">import com.google.gson.annotations.SerializedName
+
+data class ParametersResponse(
+@SerializedName(&quot;terminal_id&quot;)
+val terminalId: String,
+@SerializedName(&quot;serial_number&quot;)
+val serialNumber: String
+)
+</pre>
+<h2>打开终端设置</h2>
+<p>终端设置活动允许你执行管理操作。你可以通过在 Intent 中传递 <code class="inline">com.paystack.pos.SETTINGS</code> extra，以编程方式从你的应用程序打开终端应用程序的设置页面。此操作不会返回结果，因此你将使用 <code class="inline">startActivity</code> 方法来触发意图：</p>
+<pre class="code">private fun openSettings() {
+val settingsIntent = Intent(Intent.ACTION_VIEW).apply {
+setPackage(&quot;com.paystack.pos&quot;)
+putExtra(&quot;com.paystack.pos.SETTINGS&quot;, &quot;true&quot;)
+}
+
+startActivity(settingsIntent)
+}
+</pre>
+<h2>集成清单</h2>
+<ul><li>确保你的应用程序上有<a href="https://developer.android.com/training/articles/security-ssl">HTTPS 已启用</a></li><li>Android OS 对一个应用程序可以发送到另一个应用程序的有效负载大小进行了限制。你应该 <a href="https://developer.android.com/guide/components/activities/parcelables-and-bundles#sdbp">检查限制</a> 并确保不超过它。</li></ul>
+<h2>发布你的应用程序</h2>
+<p>完成应用程序的开发和测试后，你希望使其在所有终端设备上可用。我们管理一个应用程序商店，允许我们将你的应用程序仅提供给你的设备。将应用程序部署到所有设备上需要执行四个步骤：</p>
+<ol><li>生成你的应用程序APK</li><li>表示有兴趣部署自定义应用程序<a href="https://airtable.com/shrYM4gBRvgLakQOg">通过此表格</a>，我们将向你发送详细的部署指南</li><li>按照上述步骤 2 完成初步扫描</li><li>将你的 APK 发送给我们</li></ol>
+<p>当我们收到你提交的内容时，我们将进行安全审查，以确保该应用程序可供公众安全使用。一旦应用程序被认证为安全，我们会将你的应用程序部署到你的所有终端。但是，如果应用程序未通过安全审核，我们将共享包含修复反馈的文档。</p>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/terminal/custom-apps/" target="_blank" rel="noopener">https://paystack.com/docs/terminal/custom-apps/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

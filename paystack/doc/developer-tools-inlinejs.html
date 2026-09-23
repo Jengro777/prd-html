@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简介 · Paystack 开发文档（中文）</title>
+<meta name="description" content="简介 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>InlineJS 库提供了一系列方法，允许你在 Web 应用程序中受理支付。</p>
+<h2>简介</h2>
+<p>InlineJS 是 Paystack 的 JavaScript 库，为 Web 应用程序提供简单、安全且方便的支付流程。它提供了启动不同类型支付的方法，例如一次性、循环、拆分等，并处理支付状态，所有这些都只需几行代码。</p>
+<h2>浏览器支持</h2>
+<p>Paystack InlineJS 旨在支持所有最新版本的主要浏览器。该库被编译为 ES5 并进行了polyfilled，以确保它可以在尽可能多的设备上运行。</p>
+<p>我们不支持 IE9 等过时的浏览器，也不支持 Opera mini 等禁用 JavaScript 的浏览器。</p>
+<ul><li>我们要求浏览器支持TLS 1.2</li><li>我们在所有平台上支持 Chrome 和 Safari</li><li>我们在 Android 4.4 及更高版本上支持 Android 本机浏览器</li></ul>
+<p>我们不支持 Opera Mini，因为其中禁用了 JavaScript。但是，我们支持 Opera 浏览器，但在超级保护模式下，JavaScript 也被禁用。</p>
+<h2>安装</h2>
+<p>Paystack InlineJS 可以通过 <code class="inline">CDN</code>、<code class="inline">NPM</code> 或 <code class="inline">Yarn</code> 包含在你的应用程序中：</p>
+<pre class="code">&lt;script src=&quot;https://js.paystack.co/v2/inline.js&quot;&gt;</pre>
+<p>如果你通过NPM或Yarn安装，请先导入库。类名也从 <code class="inline">PaystackPop</code>(CDN) 更改为 <code class="inline">Paystack</code>（NPM 或 Yarn）：</p>
+<pre class="code">
+const popup = new PaystackPop();
+</pre>
+<h2>薪资对象</h2>
+<p><code class="inline">Paystack</code> 对象提供对 InlineJS 中可用方法和接口的访问。它公开了方法以及配置选项，可以帮助你在 Web 应用程序中无缝受理支付。 <code class="inline">Paystack</code>对象暴露的方法包括：</p>
+<ol><li><code class="inline">checkout(options)</code>：这是一个用于创建交易的异步方法。</li><li><code class="inline">newTransaction(options)</code>：这是用于创建交易的同步方法。</li><li><code class="inline">resumeTransaction(accessCode)</code>：使用此方法，你可以使用初始化接口从后端发起交易，然后在前端完成交易而无需重定向。</li><li><code class="inline">cancelTransaction(id)</code>：有时，加载交易可能需要一段时间。在这种情况下，可以使用此方法取消交易。</li><li><code class="inline">preloadTransaction(options)</code>：此方法用于在后台加载交易，以便当用户即将结账时，Popup立即加载。</li><li><code class="inline">paymentRequest(options)</code>：当用户可以通过钱包（例如 Apple Pay）进行付款时，这最适合处理自定义用户体验</li></ol>
+<p><code class="inline">paymentRequest()</code>目前仅支持Apple Pay。除非另有说明，本文档中所有提及钱包的内容均指 Apple Pay。 Paystack 还通过 <code class="inline">checkout()</code> 自动支持 Google Pay。</p>
+<h2>回调</h2>
+<p><code class="inline">Paystack</code>对象还公开了回调，可用于在交易生命周期期间监视某些状态。</p>
+<h3>加载时</h3>
+<p>当交易成功加载并且客户可以看到Popup时调用此方法。它返回一个具有以下参数的对象：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>选项</th><th>类型</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">id</code></td><td>字符串</td><td>这是交易ID</td></tr><tr><td><code class="inline">accessCode</code></td><td>字符串</td><td>这是一个唯一的支付代码，用于创建支付链接并加载Popup</td></tr><tr><td><code class="inline">customer</code></td><td>对象</td><td>客户付款的详细信息</td></tr></tbody></table></div>
+<ul><li>加载（响应）</li></ul>
+<pre class="code">onLoad: (response) =&gt; {
+
+
+}</pre>
+<h3>成功时</h3>
+<p>当客户成功完成交易时调用此函数。它返回交易对象的实例：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>选项</th><th>类型</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">reference</code></td><td>字符串</td><td>这是可用于对账的唯一付款参考</td></tr><tr><td><code class="inline">trans</code></td><td>字符串</td><td>这是交易 ID（为了向后兼容）</td></tr><tr><td><code class="inline">status</code></td><td>字符串</td><td>交易的最终状态</td></tr><tr><td><code class="inline">message</code></td><td>字符串</td><td>交易状态的免费说明</td></tr><tr><td><code class="inline">transaction</code></td><td>字符串</td><td>这是交易ID</td></tr><tr><td><code class="inline">trxref</code></td><td>字符串</td><td>这是可用于对账的唯一付款参考（为了向后兼容）</td></tr></tbody></table></div>
+<ul><li>onSuccess(交易)</li></ul>
+<pre class="code">onSuccess: (transaction) =&gt; {
+
+}</pre>
+<h3>在ElementsMount上</h3>
+<p>当安装 Apple Pay 按钮时调用此方法。如果用户的设备不支持 Apple Pay，它会返回 <code class="inline">null</code>。</p>
+<ul><li>onElementsMount（元素）</li></ul>
+<pre class="code">onElementsMount: (elements) =&gt;{
+if (elements) {
+console.log(&quot;Successfully mounted elements: &quot;, JSON.stringify(elements));
+} else {
+console.log(&#x27;Could not load elements&#x27;);
+}
+}</pre>
+<h3>取消时</h3>
+<p>当交易被取消时调用此方法。它不返回任何响应。</p>
+<ul><li>onCancel()</li></ul>
+<pre class="code">onCancel: () =&gt; {
+console.log(&quot;User cancelled&quot;)
+}</pre>
+<h3>错误时</h3>
+<p>当加载交易出现问题时会调用此方法。</p>
+<ul><li>错误（错误）</li></ul>
+<pre class="code">onError: (error) =&gt; {
+console.log(&quot;Error: &quot;, error.message);
+}</pre>
+<h2>交易请求</h2>
+<p>使用Paystack，可以针对不同场景发起交易，例如：</p>
+<ul><li>一次性付款</li><li>多笔分割支付</li></ul>
+<p>InlineJS提供参数和方法来创建不同类型的交易。下表显示了创建交易时使用的常规选项：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>选项</th><th>类型</th><th>必填</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">key</code></td><td>字符串</td><td>真实</td><td>你的公钥，从 <code class="inline">Settings &gt; API Keys &amp; Webhook</code> 中的 Paystack 仪表板获取</td></tr><tr><td><code class="inline">amount</code></td><td>数量</td><td>真实</td><td>以你的货币的最低面额计算的交易金额</td></tr><tr><td><code class="inline">email</code></td><td>字符串</td><td>真实</td><td>客户的邮箱地址</td></tr><tr><td><code class="inline">currency</code></td><td>数量</td><td>错误</td><td>交易的货币。你可以查看所有<a href="https://paystack.com/docs/api/#supported-currency">支持的货币</a>的API参考</td></tr><tr><td><code class="inline">firstName</code></td><td>字符串</td><td>错误</td><td>客户的名字</td></tr><tr><td><code class="inline">lastName</code></td><td>字符串</td><td>错误</td><td>客户的姓氏</td></tr><tr><td><code class="inline">phone</code></td><td>字符串</td><td>错误</td><td>客户的电话号码</td></tr><tr><td><code class="inline">customerCode</code></td><td>字符串</td><td>错误</td><td>有效的 Paystack 客户代码。如果提供，这将覆盖上面的所有客户信息</td></tr><tr><td><code class="inline">channels</code></td><td>数组</td><td>错误</td><td>一系列可供使用的支付渠道。可用频道有<code class="inline">[&#x27;card&#x27;, &#x27;bank&#x27;, &#x27;ussd&#x27;, &#x27;qr&#x27;, &#x27;eft&#x27;, &#x27;mobile_money&#x27;, &#x27;bank_transfer&#x27;, ‘apple_pay’]</code></td></tr><tr><td><code class="inline">metadata</code></td><td>对象</td><td>错误</td><td>你想要保存到交易中的额外信息的有效对象。</td></tr><tr><td><code class="inline">reference</code></td><td>字符串</td><td>错误</td><td>唯一区分大小写的交易参考。仅允许使用 <code class="inline">-</code>、<code class="inline">.</code>、<code class="inline">=</code> 和字母数字字符。</td></tr></tbody></table></div>
+<h2>一次性交易</h2>
+<p>使用InlineJS最基本的方式是接受一次性交易的付款。一般来说，付款是非循环性的，不需要特殊配置。我们提供两种接受一次性付款的方法：</p>
+<ol><li>新交易（选项）</li><li>结账（选项）</li></ol>
+<h3>新交易（选项）</h3>
+<p>这是用于创建交易的同步方法。它最适合不需要使用异步流的情况。它采用所有常规交易请求选项，并且可以如下所示使用：</p>
+<ul><li>新交易（选项）</li></ul>
+<pre class="code">const popup = new Paystack()
+
+popup.newTransaction({
+key: &#x27;pk_domain_xxxxxx&#x27;,
+email: &#x27;sample@email.com&#x27;,
+amount: 23400,
+onSuccess: (transaction) =&gt; {
+console.log(transaction);
+},
+onLoad: (response) =&gt; {
+console.log(&quot;onLoad: &quot;, response);
+},
+onCancel: () =&gt; {
+console.log(&quot;onCancel&quot;);
+},
+onError: (error) =&gt; {
+console.log(&quot;Error: &quot;, error.message);
+}
+})</pre>
+<h3>结账（选项）</h3>
+<p>与其对应部分类似，但用于异步流程。它采用所有常规交易请求选项，并且可以如下所示使用：</p>
+<ul><li>结账（选项）</li></ul>
+<pre class="code">const popup = new Paystack()
+
+popup.checkout({
+key: &#x27;pk_domain_xxxxxx&#x27;,
+email: &#x27;sample@email.com&#x27;,
+amount: 23400,
+onSuccess: (transaction) =&gt; {
+console.log(transaction);
+},
+onLoad: (response) =&gt; {
+console.log(&quot;onLoad: &quot;, response);
+},
+onCancel: () =&gt; {
+console.log(&quot;onCancel&quot;);
+},
+onError: (error) =&gt; {
+console.log(&quot;Error: &quot;, error.message);
+}
+})</pre>
+<h2>付款请求</h2>
+<p>付款请求用于处理 Apple Pay 等钱包付款。它用于通过使钱包选项在你的网站上更加突出来创建自定义体验。例如，你可以有一个 Apple Pay 按钮和另一个用于加载结账的按钮。</p>
+<h3>付款请求（选项）</h3>
+<p><code class="inline">paymentRequest</code> 方法除常规选项外还具有以下选项：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>选项</th><th>类型</th><th>必填</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">container</code></td><td>字符串</td><td>真实</td><td>div的ID挂载支付请求按钮</td></tr><tr><td><code class="inline">loadPaystackCheckoutButton</code></td><td>字符串</td><td>错误</td><td>打开结账表单按钮的ID</td></tr><tr><td><code class="inline">styles</code></td><td>对象</td><td>错误</td><td>钱包按钮的CSS样式</td></tr></tbody></table></div>
+<p><code class="inline">styles</code> 对象采用以下选项：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>选项</th><th>类型</th><th>必填</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">theme</code></td><td>字符串</td><td>错误</td><td>自定义按钮背景和文本颜色的选项。可用选项有 <code class="inline">dark</code></td><td><code class="inline">light</code></td></tr><tr><td><code class="inline">applePay</code></td><td>对象</td><td>错误</td><td>Apple Pay 按钮的样式</td></tr></tbody></table></div>
+<p><code class="inline">applePay</code> 对象采用以下选项：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>选项</th><th>类型</th><th>必填</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">width</code></td><td>字符串</td><td>错误</td><td>指定按钮的宽度</td></tr><tr><td><code class="inline">height</code></td><td>字符串</td><td>错误</td><td>指定按钮的高度</td></tr><tr><td><code class="inline">borderRadius</code></td><td>字符串</td><td>错误</td><td>指定按钮边缘的半径</td></tr><tr><td><code class="inline">type</code></td><td>字符串</td><td>错误</td><td>这决定了按钮上显示的文本</td></tr><tr><td><code class="inline">locale</code></td><td>字符串</td><td>错误</td><td>设置按钮的语言</td></tr></tbody></table></div>
+<pre class="code">
+&lt;div id=&quot;paystack-apple-pay&quot;&gt;&lt;/div&gt;
+&lt;button id=&quot;paystack-other-channels&quot;&gt;More payment options&lt;/button&gt;</pre>
+<ul><li>付款请求（选项）</li></ul>
+<pre class="code">const popup = new Paystack()
+
+const onElementsMount = (elements) =&gt; {
+if (elements &amp;&amp; elements.applePay) {
+document.querySelector(&quot;#pay-button&quot;).innerText = &quot;More Payment Options&quot;;
+}
+}
+
+try {
+await popup.paymentRequest({
+key: &#x27;pk_domain_xxxxxx&#x27;,
+email: &#x27;testuser@paystack.com&#x27;,
+amount: 10000,
+currency: &quot;NGN&quot;,
+container: &#x27;payment-request-buttons&#x27;,
+loadPaystackCheckoutButton: &#x27;pay-button&#x27;,
+styles: {
+theme: &#x27;dark&#x27;,
+applePay: {
+width: &#x27;100%&#x27;,
+height: &#x27;50px&#x27;,
+borderRadius: &#x27;3px&#x27;,
+type: &#x27;plain&#x27;,
+locale: &#x27;en&#x27;
+}
+},
+onElementsMount,
+});
+} catch (error) {
+
+}</pre>
+<h2>恢复交易</h2>
+<p>恢复交易流程允许你在服务端上发起交易并在浏览器中完成它。此流程既提供了服务端初始化的安全性，又提供了浏览器中用户体验的便利性。首先，从后端向 <a href="https://paystack.com/docs/api/transaction#initialize">初始化交易API</a> 接口发出 <code class="inline">POST</code> 请求：</p>
+<pre class="code">curl https://api.paystack.co/transaction/initialize
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;email&quot;: &quot;customer@email.com&quot;,
+&quot;amount&quot;: &quot;500000&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Authorization URL created&quot;,
+  &quot;data&quot;: {
+    &quot;authorization_url&quot;: &quot;https://checkout.paystack.com/nkdks46nymizns7&quot;,
+    &quot;access_code&quot;: &quot;nkdks46nymizns7&quot;,
+    &quot;reference&quot;: &quot;nms6uvr1pl&quot;
+  }
+}</pre>
+<p>在返回的响应的<code class="inline">data</code>对象中，你需要保存<code class="inline">access_code</code>并将其发送到前端。</p>
+<p>不要直接在你的移动应用程序上向初始化交易接口发出 API 请求，因为它需要你的密钥。你的密钥只能在可以采取更强安全措施的服务端上使用。</p>
+<h3>恢复交易（访问代码）</h3>
+<p>在你的前端，你可以使用这个<code class="inline">access_code</code>来完成支付而无需离开你的网站。</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>选项</th><th>类型</th><th>必填</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">accessCode</code></td><td>字符串</td><td>真实</td><td>交易初始化返回的访问代码</td></tr></tbody></table></div>
+<ul><li>恢复交易（访问代码）</li></ul>
+<pre class="code">const popup = new Paystack()
+
+popup.resumeTransaction(access_code)</pre>
+<p><code class="inline">resumeTransaction</code>方法触发浏览器中的结账，允许用户选择自己喜欢的支付渠道来完成交易。</p>
+<h2>分割交易</h2>
+<p>有时你需要与其他企业或实体共享交易。为此，你可以在设置付款时从响应中传递<a href="https://paystack.com/docs/payments/split-payments/">创建子账户</a>并传递<code class="inline">subaccoutCode</code>：</p>
+<pre class="code">const popup = new Paystack()
+
+popup.newTransaction({
+key: &#x27;pk_domain_xxxxxx&#x27;,
+email: &#x27;sample@email.com&#x27;,
+amount: 45000,
+subaccountCode: &#x27;ACCT_dskvlw3y3dsvkmt&#x27;,
+onSuccess: (transaction) =&gt; {
+console.log(transaction);
+},
+onLoad: (response) =&gt; {
+console.log(&quot;onLoad: &quot;, response);
+},
+onCancel: () =&gt; {
+console.log(&quot;onCancel&quot;);
+},
+onError: (error) =&gt; {
+console.log(&quot;Error: &quot;, error.message);
+}
+})</pre>
+<p>下表显示了可用于配置拆分付款的参数：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>选项</th><th>类型</th><th>必填</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">subaccountCode</code></td><td>字符串</td><td>真实</td><td>有效的 Paystack 子账户代码，例如 <code class="inline">ACCT_8f4s1eq7ml6rlzj</code></td></tr><tr><td><code class="inline">bearer</code></td><td>字符串</td><td>错误</td><td>这用于指定承担 Paystack 费用的账户。值可以是 <code class="inline">account</code> 或 <code class="inline">subaccount</code>（默认为 <code class="inline">account</code>）。</td></tr><tr><td><code class="inline">transactionCharge</code></td><td>数量</td><td>错误</td><td>主账户应收取固定费用（以你货币的最小面额计算）。这会覆盖创建子账户时设置的分割百分比。</td></tr></tbody></table></div>
+<h2>多分割交易</h2>
+<p>多分割支付用于与多个合作伙伴共享单一交易。根据你的用例，可以通过 API 提前创建拆分，也可以在交易启动期间动态创建拆分。</p>
+<p>如果你提前确定了你的分割配置，你可以在设置交易时<a href="https://paystack.com/docs/payments/multi-split-payments/#creating-a-transaction-split">创建分割</a>并传递<code class="inline">split_code</code>：</p>
+<ul><li>多分割交易</li></ul>
+<pre class="code">const popup = new Paystack()
+
+popup.newTransaction({
+key: &#x27;pk_domain_xxxxxx&#x27;,
+email: &#x27;split@dynamic.com&#x27;,
+amount: 35650,
+currency: &#x27;NGN&#x27;,
+split: {
+type: &#x27;percentage&#x27;,
+bearer_type: &#x27;account&#x27;,
+subaccounts: [
+{
+subaccount: &#x27;ACCT_dskvlw3y3dsvkmt&#x27;,
+share: 30
+},
+{
+subaccount: &#x27;ACCT_eg4sob4590pq9vb&#x27;,
+share: 20
+}
+]
+},
+onSuccess: (transaction) =&gt; {
+console.log(transaction);
+},
+onLoad: (response) =&gt; {
+console.log(&quot;onLoad: &quot;, response);
+},
+onCancel: () =&gt; {
+console.log(&quot;onCancel&quot;);
+},
+onError: (error) =&gt; {
+console.log(&quot;Error: &quot;, error.message);
+}
+})</pre>
+<div class="table-wrap"><table class="data"><thead><tr><th>选项</th><th>类型</th><th>必填</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">split_code</code></td><td>字符串</td><td>真实</td><td>有效的 Paystack 拆分代码，其中包含如何与合作伙伴拆分付款的配置</td></tr></tbody></table></div>
+<p>否则，你可能希望通过在交易请求中传递 <code class="inline">split</code> 对象来动态创建分割：</p>
+<ul><li>多分片动态交易</li></ul>
+<pre class="code">const popup = new Paystack()
+
+popup.newTransaction({
+key: &#x27;pk_domain_xxxxxx&#x27;,
+email: &#x27;multi@split.com&#x27;,
+amount: 98540,
+split_code: &#x27;SPL_RYUUL4u1hP&#x27;,
+onSuccess: (transaction) =&gt; {
+console.log(transaction);
+},
+onLoad: (response) =&gt; {
+console.log(&quot;onLoad: &quot;, response);
+},
+onCancel: () =&gt; {
+console.log(&quot;onCancel&quot;);
+},
+onError: (error) =&gt; {
+console.log(&quot;Error: &quot;, error.message);
+}
+})</pre>
+<div class="table-wrap"><table class="data"><thead><tr><th>选项</th><th>类型</th><th>必填</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">type</code></td><td>字符串</td><td>真实</td><td>采用 <code class="inline">flat</code> 或 <code class="inline">percentage</code> 来指示你想要固定份额还是可变份额</td></tr><tr><td><code class="inline">bearer_type</code></td><td>字符串</td><td>真实</td><td>用于指示交易费用的承担者。它采用以下值之一：<code class="inline">all</code>、<code class="inline">all-proportional</code>、<code class="inline">account</code>或<code class="inline">subaccount</code></td></tr><tr><td><code class="inline">subaccounts</code></td><td>数组</td><td>真实</td><td>获取用于指定账户和每个账户的份额的子账户对象数组</td></tr><tr><td><code class="inline">bearer_subaccount</code></td><td>字符串</td><td>错误</td><td>持有者的子账户代码。如果<code class="inline">bearer_type</code>是<code class="inline">subaccount</code>则应指定</td></tr><tr><td><code class="inline">reference</code></td><td>字符串</td><td>错误</td><td>拆分的唯一参考</td></tr></tbody></table></div>
+<h2>订阅</h2>
+<p>订阅允许你为客户处理定期计费。第一次设置付款时，你可以添加以下参数，告诉我们持续向客户收费：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>选项</th><th>类型</th><th>必填</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">planInterval</code></td><td>字符串</td><td>真实</td><td>计划的间隔。有效间隔为 <code class="inline">daily</code>、<code class="inline">weekly</code>、<code class="inline">monthly</code>、<code class="inline">annually</code></td></tr><tr><td><code class="inline">subscriptionLimit</code></td><td>数量</td><td>错误</td><td>本次订阅的收费次数</td></tr><tr><td><code class="inline">subscriptionStartDate</code></td><td>字符串</td><td>错误</td><td>订阅的开始日期（第一次收费后）</td></tr></tbody></table></div>
+<pre class="code">const popup = new Paystack()
+
+popup.newTransaction({
+key: &#x27;pk_domain_xxxxxx&#x27;,
+email: &#x27;sub@main.com&#x27;,
+amount: 20000,
+planInterval: &#x27;weekly&#x27;,
+onSuccess: (transaction) =&gt; {
+console.log(transaction);
+},
+onLoad: (response) =&gt; {
+console.log(&quot;onLoad: &quot;, response);
+},
+onCancel: () =&gt; {
+console.log(&quot;onCancel&quot;);
+},
+onError: (error) =&gt; {
+console.log(&quot;Error: &quot;, error.message);
+}
+})</pre>
+<p>请求中指定的金额将随后用于订阅。</p>
+<p>或者，你可以创建计划<a href="https://paystack.com/docs/payments/subscriptions/#create-a-plan">通过 API</a>或仪表板并在交易请求中传递<code class="inline">planCode</code>：</p>
+<pre class="code">const popup = new Paystack()
+
+popup.newTransaction({
+key: &#x27;pk_domain_xxxxxx&#x27;,
+email: &#x27;plan@email.com&#x27;,
+amount: 40000,
+planCode: &#x27;PLN_l6aglbqzebn32c6&#x27;,
+onSuccess: (transaction) =&gt; {
+console.log(transaction);
+},
+onLoad: (response) =&gt; {
+console.log(&quot;onLoad: &quot;, response);
+},
+onCancel: () =&gt; {
+console.log(&quot;onCancel&quot;);
+},
+onError: (error) =&gt; {
+console.log(&quot;Error: &quot;, error.message);
+}
+})</pre>
+<div class="table-wrap"><table class="data"><thead><tr><th>选项</th><th>类型</th><th>必填</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">planCode</code></td><td>字符串</td><td>真实</td><td>有效的 Paystack 计划代码，例如 <code class="inline">PLN_cujsmvoyq2209ws</code></td></tr><tr><td><code class="inline">subscriptionCount</code></td><td>数量</td><td>错误</td><td>为此计划创建的订阅数量</td></tr></tbody></table></div>
+<p>虽然金额是必需参数，但订阅计划时用于创建计划的金额优先。</p>
+<h2>预加载交易</h2>
+<p>预加载交易与创建新交易类似，但有一点不同。你可以提前加载交易，而不是等到最后一刻才发出交易请求。</p>
+<p>此方法在 Popup 上加载交易，而无需打开它。它返回一个可用于稍后打开 Popup 的函数。这使得 Popup 在用户准备付款时立即加载。</p>
+<h3>预加载交易（选项）</h3>
+<p>此方法采用交易请求的所有常规选项：</p>
+<pre class="code">&lt;button id=&quot;make-payment&quot;&gt;Make Payment&lt;/button&gt;</pre>
+<pre class="code">const popup = new Paystack()
+
+const loadPopup = popup.preloadTransaction({
+key: &#x27;pk_domain_xxxxxx&#x27;,
+email: &#x27;testuser@paystack.com&#x27;,
+amount: 10000,
+currency: &quot;NGN&quot;
+});
+
+document.querySelector(&quot;#make-payment&quot;).onclick = loadPopup;</pre>
+<h2>取消交易</h2>
+<p>在某些情况下，你想要构建取消交易的逻辑。 <code class="inline">cancelTransaction</code> 方法允许你取消交易并隐藏结账 iFrame。</p>
+<h3>取消交易（id）</h3>
+<div class="table-wrap"><table class="data"><thead><tr><th>选项</th><th>类型</th><th>必填</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">id</code></td><td>字符串</td><td>真实</td><td>要取消的付款交易ID</td></tr></tbody></table></div>
+<pre class="code">const popup = new Paystack()
+
+const transaction = popup.newTransaction({
+key: &#x27;pk_domain_xxxxx&#x27;,
+email: &quot;demo@example.com&quot;,
+amount: 10000,
+onLoad: (transaction) =&gt; {
+window.clearInterval(redirectTimer);
+}
+});
+
+let timeElapsed = 0;
+const timeLimit = 2;
+const redirectURL = &#x27;https://your.redirecturl.com&#x27;;
+const redirectTimer = setInterval(() =&gt; {
+timeElapsed += 1;
+if (timeElapsed === timeLimit) {
+popup.cancelTransaction(transaction.id);
+window.location.href = redirectURL;
+}
+}, 1000);</pre>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/developer/tools-inlinejs/" target="_blank" rel="noopener">https://paystack.com/docs/developer/tools-inlinejs/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

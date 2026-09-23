@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>即将发生的变化 · Paystack 开发文档（中文）</title>
+<meta name="description" content="即将发生的变化 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>随时了解我们的 APIs 的最新变化</p>
+<h2>即将发生的变化</h2>
+<p>我们正在开发令人兴奋的功能。当我们工作时，<a href="https://paystack.com/docs/api/">继续建设</a>！</p>
+<h2>2026 年 9 月</h2>
+<p>添加了<a href="https://paystack.com/docs/api/webhook-events">Webhook 事件 API</a>API。使用它来查找你的 Webhook 事件历史记录，查看事件的完整负载和响应，并将事件重新发送到你当前的 <a href="https://paystack.com/docs/payments/webhooks/">Webhook URL。</a></p>
+<h2>2026 年 8 月</h2>
+<p>将 <code class="inline">redirect_url</code> 字段添加到 <a href="https://paystack.com/docs/api/payment-request/#create">创建付款请求 API</a> 接口。使用此字段指定我们应在成功付款后将你的客户重定向到的URL。</p>
+<h2>2026年6月</h2>
+<ul><li>我们为交易响应添加了 ISO 8583 标准 <a href="https://paystack.com/docs/payments/gateway-responses/">网关响应</a>。你现在可以使用<code class="inline">gateway_response_code</code>和<code class="inline">response_code</code>来管理交易后流程。</li></ul>
+<ul><li>我们现在在所有接口上都有 <a href="https://paystack.com/docs/api/rate-limits/">标准费率限制</a>，具有单独的实时和测试配额以及对关键交易和校验流程的更高限制。</li></ul>
+<h2>2026 年 2 月</h2>
+<p>将 <a href="https://paystack.com/docs/api/storefront">店面API</a> 和 <a href="https://paystack.com/docs/api/order">订单API</a> APIs 添加到 API 参考中。使用店面 API 创建和管理数字商店来展示和销售你的产品。使用订单 API 创建和管理产品订单。</p>
+<h2>2025 年 10 月</h2>
+<p>添加了<a href="https://paystack.com/docs/api/refund#retry">重试退款API</a>接口。使用此接口通过提供客户的银行账户详细信息来重试状态为 <code class="inline">needs-attention</code> 的退款。</p>
+<h2>2025 年 9 月</h2>
+<ul><li>将 PayAttitude 作为支付通道添加到 <code class="inline">channels</code> 数组中。这使得尼日利亚商户可以在结账时通过<a href="https://support.paystack.com/en/articles/2131266">薪酬态度</a>受理支付。</li></ul>
+<ul><li>在 Charge API 中添加了 Pay with Pesalink 通道。这使得肯尼亚商户可以通过 Pesalink 接受银行转账。 Checkout <a href="https://paystack.com/docs/payments/payment-channels/#pay-with-pesalink">使用 Pesalink 支付</a> 部分了解更多信息。</li></ul>
+<h2>2025 年 8 月</h2>
+<ul><li>在针对南非商户的 <a href="https://paystack.com/docs/api/verification#validate-account">校验账户API</a> 响应中添加了字段 <code class="inline">accountAcceptsDebits</code>、<code class="inline">accountAcceptsCredits</code>、<code class="inline">accountOpenForMoreThanThreeMonths</code>、<code class="inline">accountHolderMatch</code> 和 <code class="inline">accountOpen</code>。这些参数为你提供有关账户状态的更多信息，使你能够根据校验结果做出更好的决策。</li></ul>
+<ul><li>尼日利亚不再支持 Visa QR 代码作为支付渠道。不过南非仍然可以使用<a href="https://paystack.com/docs/payments/payment-channels/#qr-code">QR 代码</a>付款。</li></ul>
+<h2>2025年6月</h2>
+<ul><li>添加加纳为<a href="https://paystack.com/docs/payments/payment-channels/#qr-code">专属虚拟账户 (DVA)</a>支付渠道支持的国家。</li></ul>
+<ul><li>新增科特迪瓦<a href="https://paystack.com/docs/payments/payment-channels/#mobile-money">移动货币</a>支付渠道。科特迪瓦的商户现在可以通过银行卡、MTN Mobile Money、Orange Money 和 Wave 进行付款。</li></ul>
+<h2>2025 年 4 月</h2>
+<p>将新的 <a href="https://paystack.com/docs/developer-tools/flutter-sdk/">Flutter SDK</a> 发布到开发人员工具部分。新的 SDK 允许你在 Flutter 应用程序上安全地收取卡付款。</p>
+<h2>2025 年 3 月</h2>
+<p>尼日利亚商户现在拥有 <a href="https://paystack.com/docs/transfers/virtual-account/#inbound-transfer-approvals">入境转账审批</a>，这可以帮助他们批准或拒绝 Paystack-Titan 虚拟账户的入站转账。这适用于转账付款 (PwT) 和专属虚拟账户 (DVA) 交易。</p>
+<h2>2025 年 2 月</h2>
+<p>将 <a href="https://paystack.com/docs/terminal/virtual-terminal/">虚拟终端</a> 添加到文档，并将 <a href="https://paystack.com/docs/api/virtual-terminal">虚拟终端API</a> 添加到 API 参考。</p>
+<h2>2024 年 12 月</h2>
+<p>在肯尼亚添加了用于移动货币 <a href="https://paystack.com/docs/transfers/creating-transfer-recipients/#mobile-money">接送服务</a> 的 M-Pesa Paybill (<code class="inline">MPPAYBILL</code>) 和 M-Pesa Till (<code class="inline">MPTILL</code>)。这是对 M-Pesa 移动号码的现有支持的补充。</p>
+<h2>2024 年 11 月</h2>
+<ul><li>向 <a href="https://paystack.com/docs/api/plan#update">更新计划API</a> 接口添加了新参数 <code class="inline">update_existing_subscription</code>。此参数允许你确定是更改现有订阅还是保持原样。将此参数设置为 <code class="inline">true</code> 会使用新详细信息更新所有现有订阅。</li></ul>
+<ul><li>添加了 <code class="inline">supported_bank_providers</code> 参数，允许你在 <a href="https://paystack.com/docs/payments/payment-channels/#bank-accounts">通过银行支付</a> 通道中指定所需的库。</li></ul>
+<h2>2024年5月</h2>
+<p>发布了新的 <a href="https://paystack.com/docs/developer-tools/android-sdk/">Android</a> 和 <a href="https://paystack.com/docs/developer-tools/ios-sdk/">iOS</a> SDK 及其指南。新的 SDK 具有改进的性能并支持 3D Secure 2.0。 SDK 允许你在移动应用程序上安全地收取卡付款。</p>
+<h2>2024 年 2 月</h2>
+<p>为南非商户的 <a href="https://paystack.com/docs/api/miscellaneous/#bank">列出银行API</a> 接口添加了新的请求和响应参数。</p>
+<ul><li>你现在可以将 <code class="inline">enabled_for_verification</code> 查询参数添加到 <a href="https://paystack.com/docs/api/miscellaneous/#bank">列出银行API</a> 接口来过滤南非支持账户校验的银行。你需要将其与 <code class="inline">currency</code> 或 <code class="inline">country</code> 过滤器结合使用。</li></ul>
+<ul><li>返回的响应中包含一个<code class="inline">supported_types</code>参数，表示可以校验的账户类型。</li></ul>
+<h2>2024 年 1 月</h2>
+<ul><li>我们为费用接口添加了 <code class="inline">scan-to-pay</code> 作为 <a href="https://paystack.com/docs/payments/payment-channels/#qr-code">QR 提供商</a>。这与<a href="https://www.ukheshe.com/post/from-masterpass-to-scan-to-pay-new-look-same-secure-contactless-payment-service">MasterPass 更名为“扫描支付”</a>一致。我们仍然支持<code class="inline">masterpass</code>，但我们建议使用<code class="inline">scan-to-pay</code>，特别是对于目前使用<code class="inline">masterpass</code>的商户。</li></ul>
+<ul><li>我们添加了一个新的接口用于停用授权。此前，<a href="https://paystack.com/docs/api/customer#deactivate-authorization">停用授权API</a> 接口的路径指向<code class="inline">/customer/deactivate_authorization</code>。新的接口现在指向 <code class="inline">/customer/authorization/deactivate</code>。</li></ul>
+<p>两个接口都实现相同的目的，但如果你之前集成过 <code class="inline">/customer/deactivate_authorization</code>，我们建议切换到 <code class="inline">/customer/authorization/deactivate</code>。</p>
+<h2>2023 年 11 月</h2>
+<p>我们将两个接口添加到<a href="https://paystack.com/docs/api/customer">客户API</a>接口。</p>
+<ul><li><strong>初始化授权</strong>：<a href="https://paystack.com/docs/api/customer#initialize-authorization">初始化授权API</a> 接口允许你创建可重复使用的定期付款授权。目前接口仅支持直接借记。</li></ul>
+<ul><li><strong>校验授权</strong>：<a href="https://paystack.com/docs/api/customer#verify-authorization">校验授权API</a> 接口允许你校验使用 <a href="https://paystack.com/docs/api/customer#initialize-authorization">初始化授权API</a> 接口创建的授权的状态。</li></ul>
+<h2>2023 年 10 月</h2>
+<p><a href="https://paystack.com/docs/api/bulk-charge#initiate">开始批量充电 API</a> 接口现在允许你多次使用相同的授权代码，只要每个代码都带有唯一的引用即可。如果你传递重复的授权代码而没有唯一引用，我们仍然会返回 <code class="inline">400</code> 错误。</p>
+<h2>2023 年 9 月</h2>
+<p>我们在<a href="https://paystack.com/docs/api/charge#create">创建电荷 API</a>接口添加了转账支付（PwT）通道。现在，你可以在有限的时间内将帐号与交易绑定，从而允许你的客户通过其银行应用程序完成交易。所做的更改是：</p>
+<ul><li><a href="https://paystack.com/docs/api/charge#create">创建电荷 API</a> 接口现在采用 <code class="inline">bank_transfer</code> 对象，该对象允许你设置要创建的账户的配置。你可以在<a href="https://paystack.com/docs/payments/payment-channels/#pay-with-transfer">通过转账支付</a>部分了解更多信息。</li></ul>
+<ul><li>我们添加了一个 <code class="inline">bank.transfer.rejected</code> 事件，当客户发送的金额不正确或客户被我们的欺诈系统标记时，就会发送该事件</li></ul>
+<h2>2023 年 8 月</h2>
+<p>我们将 <code class="inline">ghipss</code> 作为受支持的收件人类型添加到 <a href="https://paystack.com/docs/api/transfer-recipient#create">转账接收者API</a> 接口。通过此功能，加纳商户现在可以在 <a href="https://paystack.com/docs/transfers/creating-transfer-recipients/#bank-account">创建收件人</a> 之前使用客户的银行详细信息将资金汇入银行账户。</p>
+<h2>2023 年 4 月</h2>
+<p>我们现在返回批量转账的转账参考。以前，<a href="https://paystack.com/docs/api/transfer#bulk">批量传输API</a> 请求的响应未附带你的自定义或我们生成的 <code class="inline">reference</code>。我们已经解决了这个问题，让你可以更轻松地跟踪你的转账。</p>
+<h2>2023 年 3 月</h2>
+<p>为了保持与我们产品的兼容性，我们取消了一项不支持 3DS 2.0 的传统集成轨道。检查授权接口由该导轨供电，因此，我们弃用了接口。</p>
+<h2>2022 年 6 月</h2>
+<p>我们现在使用 <strong>无符号 64 位整数</strong> 来表示交易 ID。存储或使用交易 ID 的商户需要确保其表示为 <strong>无符号 64 位整数</strong>。以下是一些常见技术堆栈的建议：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>技术堆栈</th><th>数据类型</th><th>参考</th></tr></thead><tbody><tr><td>MySQL</td><td>无符号bigint</td><td><a href="https://dev.mysql.com/doc/refman/8.0/en/numeric-type-syntax.html">MySQL 文档</a></td></tr><tr><td>PostgreSQL</td><td>大整数</td><td><a href="https://www.postgresql.org/docs/current/datatype-numeric.html">PostgreSQL 文档</a></td></tr><tr><td>Java</td><td>长</td><td><a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html">甲骨文文档</a></td></tr><tr><td>C#</td><td>无符号长</td><td><a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/integral-numeric-types#characteristics-of-the-integral-types">微软文档</a></td></tr><tr><td>C/C++</td><td>无符号长长</td><td><a href="https://docs.microsoft.com/en-us/cpp/c-language/cpp-integer-limits?view=msvc-170">微软文档</a></td></tr><tr><td>戈兰</td><td>uint64</td><td><a href="https://go.dev/ref/spec#Numeric_types">Go语言文档</a></td></tr><tr><td>Kotlin</td><td>乌龙</td><td><a href="https://kotlinlang.org/docs/basic-types.html#unsigned-integers">Kotlin文档</a></td></tr><tr><td>Swift</td><td>uint64</td><td><a href="https://docs.swift.org/swift-book/LanguageGuide/TheBasics.html">Swift文档</a></td></tr></tbody></table></div>
+<p>我们还对 <a href="https://paystack.com/docs/api/customer#validate">客户校验API</a> 进行了一些更改：</p>
+<ul><li>我们向 <code class="inline">customeridentification.failed</code> Webhook 事件添加了 <code class="inline">reason</code> 参数。商户可以通过该参数来查找<a href="https://paystack.com/docs/identity-verification/validate-customer/#listen-for-verification-status">客户校验失败</a>的原因。</li></ul>
+<ul><li>我们将 <code class="inline">middle_name</code> 作为可选参数添加到 <a href="https://paystack.com/docs/api/customer#validate">客户校验API</a> 中。你可以在校验客户详细信息时将其添加为额外参数。</li></ul>
+<h2>2022年5月</h2>
+<p>我们向 <a href="https://paystack.com/docs/api/dedicated-virtual-account#requery">重新查询专属虚拟账户API</a> 添加了接口。商户可以使用此接口检查虚拟账户中是否有尚未处理的新交易。调用此接口将触发后台重新查询过程，如果发现任何待处理的交易，则会创建该交易，并将Webhook通知发送到你的服务端。</p>
+<h2>2022 年 2 月</h2>
+<p>我们将<code class="inline">first_name</code>、<code class="inline">last_name</code>和<code class="inline">phone</code>添加到<a href="https://paystack.com/docs/api/dedicated-virtual-account#create">创建专属虚拟账户API</a>的请求正文中。商户可以使用这些参数更新现有客户的记录，并通过一次 API 调用创建专属虚拟账户。</p>
+<h2>2021 年 12 月</h2>
+<p>我们更新了退款状态以更好地捕获退款状态：</p>
+<ul><li><code class="inline">pending</code>：退款已启动，等待处理者响应。</li></ul>
+<ul><li><code class="inline">processing</code>：处理者已收到退款。</li></ul>
+<ul><li><code class="inline">processed</code>：退款已由处理者成功处理。</li></ul>
+<ul><li><code class="inline">failed</code>：无法退款。退款金额已存入你的账户。</li></ul>
+<p>当交易发起退款时，无论退款是否已处理，交易状态之前都会显示<code class="inline">reversed</code>。我们现在可以通过以下内容更好地反映交易的状态：</p>
+<ul><li><code class="inline">reversal pending</code>：退款待处理或仍在处理中。</li></ul>
+<ul><li><code class="inline">reversed</code>：退款已成功处理。</li></ul>
+<ul><li><code class="inline">success</code>：退款失败，退款金额已存入你的账户。</li></ul>
+<p>我们现在发送 Webhook 事件来监控退款状态：</p>
+<ul><li>退款待处理</li><li>退款处理</li><li>退款已处理</li><li>退款失败</li></ul>
+<p>查看 <a href="https://paystack.com/docs/payments/refunds/">退款文件</a> 了解有关退款以及如何自动退款的更多信息。</p>
+<h2>2021 年 11 月</h2>
+<p>我们向 <a href="https://paystack.com/docs/api/subscription">订阅API</a> 添加了三个新状态：</p>
+<ul><li><code class="inline">non-renewing</code>：订阅仍然有效，但不会在下一个付款日期扣费，并将标记为已完成。</li></ul>
+<ul><li><code class="inline">attention</code>：订阅仍然有效，但尝试向客户的卡收费时出现问题。问题可能是卡过期、资金不足等。我们将尝试在下一个付款日期再次向该卡收费。</li></ul>
+<ul><li><code class="inline">cancelled</code>：订阅已取消。</li></ul>
+<p>检查<a href="https://paystack.com/docs/payments/subscriptions/#subscription-statuses">订阅状态列表</a>以了解更多信息。</p>
+<h2>2021 年 10 月</h2>
+<p>我们不再支持 <a href="https://paystack.com/docs/api/customer#validate">客户校验API</a> 上的 BVN 类型。展望未来，我们建议不要在请求正文中使用 <code class="inline">type: &quot;bvn&quot;</code> 和 <code class="inline">value</code> 参数，而对现有和新客户使用 <a href="https://paystack.com/docs/identity-verification/validate-customer/#bank-account-validation">银行账户校验</a>。</p>
+<h2>2021 年 9 月</h2>
+<p>我们将<code class="inline">account_number</code>添加到<a href="https://paystack.com/docs/api/customer#validate">客户校验API</a>的请求正文中。这将要求商户为现有和新客户使用<a href="https://paystack.com/docs/identity-verification/validate-customer/#bank-account-validation">银行账户校验</a>。</p>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/changelog/api/" target="_blank" rel="noopener">https://paystack.com/docs/changelog/api/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

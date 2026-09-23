@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简介 · Paystack 开发文档（中文）</title>
+<meta name="description" content="简介 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>了解如何校验客户的身份详细信息</p>
+<p>仅当你使用 <a href="https://paystack.com/docs/payments/dedicated-virtual-accounts/">专属虚拟账户</a> 功能并且你的业务属于以下任何类别 - 博彩、金融服务和一般服务时，才需要这样做。</p>
+<h2>简介</h2>
+<p>客户校验接口用于校验客户提供的身份详细信息。你可以通过向 <a href="https://paystack.com/docs/api/customer#validate">校验客户API</a> 接口发送 <code class="inline">POST</code> 请求来校验客户。</p>
+<h2>银行账户校验</h2>
+<p>银行账户校验要求你提供客户的 BVN 以及与该 BVN 连接的银行账户。</p>
+<pre class="code">curl https://api.paystack.co/customer/{customer_code}/identification
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{
+&quot;country&quot;: &quot;NG&quot;,
+&quot;type&quot;: &quot;bank_account&quot;,
+&quot;account_number&quot;: &quot;0123456789&quot;,
+&quot;bvn&quot;: &quot;200123456677&quot;,
+&quot;bank_code&quot;: &quot;007&quot;,
+&quot;first_name&quot;: &quot;Asta&quot;,
+&quot;last_name&quot;: &quot;Lavista&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Customer Identification in progress&quot;
+}</pre>
+<h3>测试</h3>
+<p>客户只能使用实时密钥进行校验。但是，为了在集成期间进行测试，你可以将此凭据与测试密钥一起使用：</p>
+<pre class="code">{
+  &quot;country&quot;: &quot;NG&quot;,
+  &quot;type&quot;: &quot;bank_account&quot;,
+  &quot;account_number&quot;: &quot;0111111111&quot;,
+  &quot;bvn&quot;: &quot;222222222221&quot;,
+  &quot;bank_code&quot;: &quot;007&quot;,
+  &quot;first_name&quot;: &quot;Uchenna&quot;,
+  &quot;last_name&quot;: &quot;Okoro&quot;
+}</pre>
+<h2>监听校验状态</h2>
+<p>对所提供详细信息的校验是异步进行的，校验完成后，我们将向你的 Webhook URL 发送 <code class="inline">customeridentification.success</code> 或 <code class="inline">customeridentification.failed</code> 事件。</p>
+<p>在继续本节之前，你需要了解 <a href="https://paystack.com/docs/payments/webhooks/">Webhook</a> 的基本知识。</p>
+<pre class="code">{
+  &quot;event&quot;: &quot;customeridentification.success&quot;,
+  &quot;data&quot;: {
+    &quot;customer_id&quot;: &quot;9387490384&quot;,
+    &quot;customer_code&quot;: &quot;CUS_xnxdt6s1zg1f4nx&quot;,
+    &quot;email&quot;: &quot;bojack@horsinaround.com&quot;,
+    &quot;identification&quot;: {
+      &quot;country&quot;: &quot;NG&quot;,
+      &quot;type&quot;: &quot;bank_account&quot;,
+      &quot;bvn&quot;: &quot;200*****677&quot;,
+      &quot;account_number&quot;: &quot;012****789&quot;,
+      &quot;bank_code&quot;: &quot;007&quot;
+    }
+  }
+}</pre>
+<p>当客户校验失败时，我们会在 <code class="inline">data.reason</code> 参数中返回失败原因。对于客户校验失败，我们会返回以下原因：</p>
+<ol><li>账户无法解决。请重试</li><li>账户名或BVN不正确</li><li>帐号或BVN不正确</li></ol>
+<p>成功校验客户后，客户的 <code class="inline">first_name</code> 和 <code class="inline">last_name</code> 将自动更新以与其 BVN 上的姓名相对应。设置完成后，你将无法再使用 <a href="https://paystack.com/docs/api/customer#update">更新客户API</a> 更新客户的姓名，并且只能通过重新校验来更新客户的姓名。</p>
+<h2>校验客户的原因</h2>
+<ol><li>当地法规要求在代表客户创建帐号之前先校验客户信息。</li><li>它允许我们使用注册到所提供的BVN的名称来命名银行账户。</li></ol>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/identity/verification-validate-customer/" target="_blank" rel="noopener">https://paystack.com/docs/identity/verification-validate-customer/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

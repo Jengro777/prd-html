@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>为什么使用 WebView？ · Paystack 开发文档（中文）</title>
+<meta name="description" content="为什么使用 WebView？ · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>当你在移动应用程序中使用 Paystack 受理支付时，有两种方法可以实现：</p>
+<ol><li><strong>使用为你选择的技术堆栈构建的 Paystack 库</strong> - 你可以使用我们的移动设备 SDK 将 Paystack 直接集成到你的 Android 或 iOS 应用程序中。对于 Ionic 或 React Native 等移动框架，请查找库 <a href="https://paystack.com/docs/libraries-and-plugins/libraries/#community-maintained">这里</a>。</li><li><strong>使用网络视图</strong> - 你还可以生成结账 URL 并将其嵌入到移动应用程序的 WebView 中。我们将在本指南中介绍此选项。</li></ol>
+<p>出于本指南的目的，我们将包含使用 Flutter、React Native、本机 Android 和 iOS 构建的移动应用程序的示例代码，但所描述的流程适用于所有移动应用程序开发堆栈</p>
+<h2>为什么使用 WebView？</h2>
+<p>考虑在 WebView 中使用托管结账而不是直接与移动设备 SDK 集成有不同的原因。无论你选择哪种方式，付款仍然由相同的底层APIs处理。唯一的区别是你将为客户提供的支付体验。使用 WebView 的一些优点是：</p>
+<ol><li>通过使用我们的托管结账，整个支付体验均由 Paystack 控制。这意味着你不必在移动应用程序中构建结账UI来受理支付，因此在你的应用程序中集成付款所需的代码更少。</li><li>虽然手机SDK上只能使用银行银行银行卡支付，但所有其他非银行银行银行卡支付类型（例如银行转账、USSD、Visa QR、移动货币和银行支付）都可以在结账时使用，因此可供客户使用。</li></ol>
+<p>如果你不使用 WebView，你仍然可以在移动设备上通过卡受理支付。所有频道均可直接在 <a href="https://paystack.com/docs/payments/payment-channels/">API</a> 上使用，并且可以集成到你的应用程序中。</p>
+<h2>生成结账URL</h2>
+<p>集成的第一步是初始化交易以获取结账URL。</p>
+<p>当客户单击付款操作按钮时，通过从你的服务端向我们的 API 发出 POST 请求来初始化交易。将邮箱、金额和任何其他可选参数传递给<a href="https://paystack.com/docs/api/transaction#initialize">初始化交易API</a> 接口。</p>
+<pre class="code">curl https://api.paystack.co/transaction/initialize
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;email&quot;: &quot;customer@email.com&quot;, &quot;amount&quot;: &quot;20000&quot;,
+&quot;callback_url&quot;:&quot;https://hello.pstk.xyz/callback&quot;,
+&quot;metadata&quot;:{&quot;cancel_action&quot;: &quot;https://your-cancel-url.com&quot;}
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Authorization URL created&quot;,
+  &quot;data&quot;: {
+    &quot;authorization_url&quot;: &quot;https://checkout.paystack.com/nkdks46nymizns7&quot;,
+    &quot;access_code&quot;: &quot;nkdks46nymizns7&quot;,
+    &quot;reference&quot;: &quot;nms6uvr1pl&quot;
+  }
+}</pre>
+<div class="table-wrap"><table class="data"><thead><tr><th>参数</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">amount</code></td><td>金额应采用支持货币的子单位</td></tr><tr><td><code class="inline">email</code></td><td>客户的邮箱地址</td></tr><tr><td><code class="inline">callback_url</code></td><td>可选的URL，客户在成功付款后将被重定向到。如果你不添加，客户将被重定向到 Paystack 仪表板中设置的回调 URL。</td></tr><tr><td><code class="inline">metadata</code></td><td>自定义数据的字符串化 JSON 对象。</td></tr><tr><td><code class="inline">metadata.cancel_action</code></td><td>可选的URL，当客户点击结账页面上的取消按钮时，将被重定向到该页面。如果你不添加该小部件，客户将保留在结账 Web 视图中，直到你关闭该小部件。</td></tr></tbody></table></div>
+<p>有关可以传递的参数的完整列表，请参阅<a href="https://paystack.com/docs/api/transaction#initialize">初始化交易API</a> 接口。</p>
+<h2>在 WebView 中显示结账</h2>
+<p>如果API调用成功，Paystack会在响应中返回授权URL。将这个 URL 返回到前端应用程序，并将其加载到 Webview 小部件中。请参阅下面的示例代码：</p>
+<pre class="code">@override
+Widget build(BuildContext context) {
+return Scaffold(
+body: WebView(
+initialUrl: &#x27;https://checkout.paystack.com/7zu1ot06d0qn9h6&#x27;,
+javascriptMode: JavascriptMode.unrestricted,
+userAgent: &#x27;Flutter;Webview&#x27;,
+),
+);
+}</pre>
+<p>需要在 WebView 中启用 JavaScript 才能正确加载结账。</p>
+<p>UIWebView 在 iOS 12.0 中已被弃用，因此在本指南中我们将使用 WKWebView。</p>
+<p>我们假设你想要在其中显示结账的视图控制器的故事板中有 WKWebView。</p>
+<p>在 WebView 中加载结账后，你需要监听客户操作。换句话说，你需要知道客户何时完成支付或关闭结账页面。这可以通过在 WebView 小部件中侦听 URL 重定向来完成。</p>
+<h2>处理 WebView 重定向</h2>
+<p>WebView 小部件中应允许重定向，以允许银行和 3DS 授权。如果 WebView 阻止重定向，客户将无法完成交易。</p>
+<p>当客户成功完成支付后，他们将被重定向到 Paystack 仪表板中设置的回调 URL。但是，你可以通过在初始化交易时传递 <code class="inline">callback_url</code> 来覆盖这一点。这将覆盖仪表板上设置的回调 URL，并且客户将被重定向到那里。 WebView 小部件现在应该如下所示</p>
+<pre class="code">@override
+Widget build(BuildContext context) {
+return Scaffold(
+body: WebView(
+initialUrl: &#x27;https://checkout.paystack.com/7zu1ot06d0qn9h6&#x27;,
+javascriptMode: JavascriptMode.unrestricted,
+userAgent: &#x27;Flutter;Webview&#x27;,
+navigationDelegate: (navigation) {
+
+if (navigation.url == &quot;https://hello.pstk.xyz/callback&quot;) {
+verifyTransaction(reference);
+Navigator.of(context).pop();
+}
+if (navigation.url == &quot;https://your-cancel-url.com&quot;) {
+
+Navigator.of(context).pop();
+
+}
+return NavigationDecision.navigate;
+},
+),
+);
+}
+</pre>
+<p>如果你实现了 Webhook，<code class="inline">charge.success</code> 事件将发送到你的 Webhook URL，建议你使用它来为后端的客户提供价值。</p>
+<p>在你的前端中，检测到 WebView 重定向到回调 URL 后，这意味着交易成功。你可以通过调用 <a href="https://paystack.com/docs/api/transaction#verify">校验交易API</a> 来确认状态，然后你可以以编程方式关闭 WebView 小部件并在应用程序中向客户显示交易确认页面。这是在 <code class="inline">verifyTransaction()</code> 方法中处理的。</p>
+<h2>正确处理 3DS</h2>
+<p>对于需要3DS身份校验的卡交易，当客户完成授权后，他们将被重定向到<code class="inline">https://standard.paystack.co/close</code>。当URL点击<code class="inline">https://standard.paystack.co/close</code>时，它应该自动关闭页面。这就是网络浏览器上发生的情况。</p>
+<p>但是，使用 WebView 时，页面不会自动关闭。这是因为在浏览器窗口中关闭页面的 JavaScript 函数 <code class="inline">window.close()</code> 无法在 WebView 上运行。 WebView 是原生小部件，<code class="inline">window.close()</code> 方法只能关闭使用 <code class="inline">window.open()</code> 方法打开的窗口。解决方法是让你的 WebView 监听 URL 何时被重定向到 <code class="inline">https://standard.paystack.co/close</code>，然后通过检查回调函数和任何其他进程继续照常处理。</p>
+<pre class="code">@override
+Widget build(BuildContext context) {
+return Scaffold(
+body: WebView(
+initialUrl: &#x27;https://checkout.paystack.com/7zu1ot06d0qn9h6&#x27;,
+javascriptMode: JavascriptMode.unrestricted,
+userAgent: &#x27;Flutter;Webview&#x27;,
+navigationDelegate: (navigation){
+if(navigation.url == &#x27;https://standard.paystack.co/close&#x27;){
+Navigator.of(context).pop();
+}
+if(navigation.url == &quot;https://hello.pstk.xyz/callback&quot;){
+Navigator.of(context).pop();
+}
+return NavigationDecision.navigate;
+},
+),
+);
+}</pre>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/guides/using_the_paystack_checkout_in_a_mobile_webview/" target="_blank" rel="noopener">https://paystack.com/docs/guides/using_the_paystack_checkout_in_a_mobile_webview/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

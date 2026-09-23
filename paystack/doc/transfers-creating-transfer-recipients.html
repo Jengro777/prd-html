@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>银行账户 · Paystack 开发文档（中文）</title>
+<meta name="description" content="银行账户 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>要通过集成汇款，你需要收集客户的详细信息以创建受益人。</p>
+<p>转账收款人是在你的集成中创建的受益人，允许你汇款。在通过集成汇款之前，你需要收集客户的详细信息并使用他们的详细信息创建转账收件人。</p>
+<p>我们支持以下收件人类型：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>类型</th><th>描述</th><th>货币</th></tr></thead><tbody><tr><td><code class="inline">ghipss</code></td><td>这意味着加纳银行间支付和结算系统。它代表加纳的银行账户。</td><td><strong>GHS</strong></td></tr><tr><td><code class="inline">mobile_money</code></td><td>Mobile Money 或 MoMo 是与手机号码绑定的账户。</td><td><strong>GHS/KES</strong></td></tr><tr><td><code class="inline">kepss</code></td><td>这是肯尼亚电子支付和结算系统。它代表肯尼亚的KES和USD银行账户。</td><td><strong>KES/USD</strong></td></tr><tr><td><code class="inline">nuban</code></td><td>这意味着尼日利亚统一银行帐号。它代表尼日利亚的银行账户。</td><td><strong>NGN</strong></td></tr><tr><td><code class="inline">basa</code></td><td>这指的是南非银行业协会。它代表南非的银行账户。</td><td><strong>ZAR</strong></td></tr><tr><td><code class="inline">authorization</code></td><td>这是代表客户卡的唯一代码。用户使用卡付款后，我们会返回授权码。</td><td><strong>全部</strong></td></tr></tbody></table></div>
+<p>要创建转账收件人，请向 <a href="https://paystack.com/docs/api/transfer-recipient#create">转账接收者API</a> 发出 <code class="inline">POST</code> 请求，并传递以下客户详细信息之一：</p>
+<ol><li>银行账户</li><li>移动货币</li><li>授权码</li></ol>
+<h2>银行账户</h2>
+<p>创建具有银行账户的转账收件人时，你需要收集客户的银行详细信息。通常，帐号和关联银行就足够了，但有些国家/地区需要更多详细信息，特别是用于账户校验。你应该设计你的界面，以允许收集运营所在国家/地区的必要详细信息。</p>
+<h3>列出银行</h3>
+<p>创建界面 (UI) 来收集用户的银行详细信息时，你需要使用银行列表填充 UI。我们提供了 <a href="https://paystack.com/docs/api/miscellaneous#bank">列出银行API</a> 接口，你可以使用它在你所在国家/地区的可用银行中填充你的 UI。</p>
+<p>要获取某个国家/地区的银行列表，请发出 <code class="inline">GET</code> 请求，并在查询参数中传递 <code class="inline">currency</code>：</p>
+<pre class="code">curl https://api.paystack.co/bank?currency=NGN
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-X GET</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Banks retrieved&quot;,
+  &quot;data&quot;: [
+    {
+      &quot;name&quot;: &quot;Abbey Mortgage Bank&quot;,
+      &quot;slug&quot;: &quot;abbey-mortgage-bank&quot;,
+      &quot;code&quot;: &quot;801&quot;,
+      &quot;longcode&quot;: &quot;&quot;,
+      &quot;gateway&quot;: null,
+      &quot;pay_with_bank&quot;: false,
+      &quot;active&quot;: true,
+      &quot;is_deleted&quot;: false,
+      &quot;country&quot;: &quot;Nigeria&quot;,
+      &quot;currency&quot;: &quot;NGN&quot;,
+      &quot;type&quot;: &quot;nuban&quot;,
+      &quot;id&quot;: 174,
+      &quot;createdAt&quot;: &quot;2020-12-07T16:19:09.000Z&quot;,
+      &quot;updatedAt&quot;: &quot;2020-12-07T16:19:19.000Z&quot;
+    }
+  ]
+}</pre>
+<p>目前无法转账至<strong>加纳银行</strong>。我们建议你将其从银行列表中排除，因为我们正在努力支持向其转账。</p>
+<h3>校验帐号</h3>
+<p>你需要收集目的地账号并确认其有效。这是为了确保你不会将资金发送到错误或无效的账户。</p>
+<p>如前所述，账户校验在不同国家/地区需要不同的详细信息。你可以按照下表中的操作所在国家/地区的账户校验流程进行操作：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>货币</th><th>校验</th></tr></thead><tbody><tr><td><strong>NGN/GHS</strong></td><td><a href="https://paystack.com/docs/identity-verification/verify-account-number/#resolve-account-number">解析帐号</a></td></tr><tr><td><strong>ZAR</strong></td><td><a href="https://paystack.com/docs/identity-verification/verify-account-number/#account-validation">校验账户</a></td></tr></tbody></table></div>
+<h3>创建收件人</h3>
+<p>校验完成后，你可以将客户的银行详细信息和收款人<code class="inline">type</code>传递给<a href="https://paystack.com/docs/api/transfer-recipient#create">创建转账收件人 API</a>接口：</p>
+<pre class="code">curl https://api.paystack.co/transferrecipient
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;type&quot;: &quot;nuban&quot;,
+&quot;name&quot;: &quot;John Doe&quot;,
+&quot;account_number&quot;: &quot;0001234567&quot;,
+&quot;bank_code&quot;: &quot;058&quot;,
+&quot;currency&quot;: &quot;NGN&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Transfer recipient created successfully&quot;,
+  &quot;data&quot;: {
+    &quot;active&quot;: true,
+    &quot;createdAt&quot;: &quot;2020-05-13T13:59:07.741Z&quot;,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;id&quot;: 6788170,
+    &quot;integration&quot;: 428626,
+    &quot;name&quot;: &quot;John Doe&quot;,
+    &quot;recipient_code&quot;: &quot;RCP_t0ya41mp35flk40&quot;,
+    &quot;type&quot;: &quot;nuban&quot;,
+    &quot;updatedAt&quot;: &quot;2020-05-13T13:59:07.741Z&quot;,
+    &quot;is_deleted&quot;: false,
+    &quot;details&quot;: {
+      &quot;authorization_code&quot;: null,
+      &quot;account_number&quot;: &quot;0001234567&quot;,
+      &quot;account_name&quot;: null,
+      &quot;bank_code&quot;: &quot;058&quot;,
+      &quot;bank_name&quot;: &quot;Guaranty Trust Bank&quot;
+    }
+  }
+}</pre>
+<h2>移动货币</h2>
+<p>此功能目前可供加纳和肯尼亚的企业使用。</p>
+<p>移动货币允许商户将钱发送到客户的手机号码。首先，你需要收集客户的电话号码和电信公司。要获取移动货币支持的电信公司列表，你可以在 <a href="https://paystack.com/docs/api/miscellaneous#bank">列出银行API</a> 接口的查询参数中添加 <code class="inline">currency</code>（<code class="inline">KES</code> 或 <code class="inline">GHS</code>）和 <code class="inline">type</code>：</p>
+<pre class="code">curl https://api.paystack.co/bank?currency=GHS&amp;type=mobile_money
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-X GET
+</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Banks retrieved&quot;,
+  &quot;data&quot;: [
+    {
+      &quot;name&quot;: &quot;AirtelTigo&quot;,
+      &quot;slug&quot;: &quot;atl-mobile-money&quot;,
+      &quot;code&quot;: &quot;ATL&quot;,
+      &quot;longcode&quot;: &quot;&quot;,
+      &quot;gateway&quot;: null,
+      &quot;pay_with_bank&quot;: false,
+      &quot;active&quot;: true,
+      &quot;is_deleted&quot;: null,
+      &quot;country&quot;: &quot;Ghana&quot;,
+      &quot;currency&quot;: &quot;GHS&quot;,
+      &quot;type&quot;: &quot;mobile_money&quot;,
+      &quot;id&quot;: 29,
+      &quot;createdAt&quot;: &quot;2018-03-29T12:54:59.000Z&quot;,
+      &quot;updatedAt&quot;: &quot;2020-01-24T10:01:06.000Z&quot;
+    },
+    {
+      &quot;name&quot;: &quot;MTN&quot;,
+      &quot;slug&quot;: &quot;mtn-mobile-money&quot;,
+      &quot;code&quot;: &quot;MTN&quot;,
+      &quot;longcode&quot;: &quot;&quot;,
+      &quot;gateway&quot;: null,
+      &quot;pay_with_bank&quot;: false,
+      &quot;active&quot;: true,
+      &quot;is_deleted&quot;: null,
+      &quot;country&quot;: &quot;Ghana&quot;,
+      &quot;currency&quot;: &quot;GHS&quot;,
+      &quot;type&quot;: &quot;mobile_money&quot;,
+      &quot;id&quot;: 28,
+      &quot;createdAt&quot;: &quot;2018-03-29T12:54:59.000Z&quot;,
+      &quot;updatedAt&quot;: &quot;2019-10-22T11:04:46.000Z&quot;
+    },
+    {
+      &quot;name&quot;: &quot;Vodafone&quot;,
+      &quot;slug&quot;: &quot;vod-mobile-money&quot;,
+      &quot;code&quot;: &quot;VOD&quot;,
+      &quot;longcode&quot;: &quot;&quot;,
+      &quot;gateway&quot;: null,
+      &quot;pay_with_bank&quot;: false,
+      &quot;active&quot;: true,
+      &quot;is_deleted&quot;: null,
+      &quot;country&quot;: &quot;Ghana&quot;,
+      &quot;currency&quot;: &quot;GHS&quot;,
+      &quot;type&quot;: &quot;mobile_money&quot;,
+      &quot;id&quot;: 66,
+      &quot;createdAt&quot;: &quot;2018-03-29T12:54:59.000Z&quot;,
+      &quot;updatedAt&quot;: &quot;2019-10-22T11:05:08.000Z&quot;
+    }
+  ]
+}</pre>
+<p>有了客户的手机号码，你就可以使用电信代码作为 <code class="inline">bank_code</code>、手机号码作为 <code class="inline">account_number</code> 创建收件人：</p>
+<pre class="code">curl https://api.paystack.co/transferrecipient
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;type&quot;: &quot;mobile_money&quot;,
+&quot;name&quot;: &quot;Abina Nana&quot;,
+&quot;account_number&quot;: &quot;0551234987&quot;,
+&quot;bank_code&quot;: &quot;MTN&quot;,
+&quot;currency&quot;: &quot;GHS&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Transfer recipient created successfully&quot;,
+  &quot;data&quot;: {
+    &quot;active&quot;: true,
+    &quot;createdAt&quot;: &quot;2022-02-21T12:57:02.156Z&quot;,
+    &quot;currency&quot;: &quot;GHS&quot;,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;id&quot;: 25753454,
+    &quot;integration&quot;: 519035,
+    &quot;name&quot;: &quot;Abina Nana&quot;,
+    &quot;recipient_code&quot;: &quot;RCP_u2tnoyjjvh95pzm&quot;,
+    &quot;type&quot;: &quot;mobile_money&quot;,
+    &quot;updatedAt&quot;: &quot;2022-02-21T12:57:02.156Z&quot;,
+    &quot;is_deleted&quot;: false,
+    &quot;isDeleted&quot;: false,
+    &quot;details&quot;: {
+      &quot;authorization_code&quot;: null,
+      &quot;account_number&quot;: &quot;0551234987&quot;,
+      &quot;account_name&quot;: null,
+      &quot;bank_code&quot;: &quot;MTN&quot;,
+      &quot;bank_name&quot;: &quot;MTN&quot;
+    }
+  }
+}</pre>
+<p>肯尼亚企业有多种针对 <code class="inline">bank_code</code> 的移动货币选择：</p>
+<ol><li><code class="inline">MPESA</code> 对于个人 Mpesa 用户</li><li><code class="inline">MPPAYBILL</code> 用于付款单编号，并在付款期间需要其他信息</li><li><code class="inline">MPTILL</code> 商业 Till 号码</li></ol>
+<p>Paybill 和 Till 号码的收件人类型为 <code class="inline">mobile_money_business</code>。</p>
+<pre class="code">#!/bin/sh
+curl https://api.paystack.co/transferrecipient
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;type&quot;: &quot;mobile_money_business&quot;,
+&quot;name&quot;: &quot;Till Transfer&quot;,
+&quot;bank_code&quot;: &quot;MPTILL&quot;,
+&quot;account_number&quot;: &quot;247247&quot;,
+&quot;currency&quot;: &quot;KES&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Transfer recipient created successfully&quot;,
+  &quot;data&quot;: {
+    &quot;active&quot;: true,
+    &quot;createdAt&quot;: &quot;2024-11-28T09:28:50.000Z&quot;,
+    &quot;currency&quot;: &quot;KES&quot;,
+    &quot;description&quot;: null,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;email&quot;: null,
+    &quot;id&quot;: 92176030,
+    &quot;integration&quot;: 845995,
+    &quot;metadata&quot;: null,
+    &quot;name&quot;: &quot;Till Transfer Example&quot;,
+    &quot;recipient_code&quot;: &quot;RCP_5vl8b2yma7xdnjp&quot;,
+    &quot;type&quot;: &quot;mobile_money_business&quot;,
+    &quot;updatedAt&quot;: &quot;2024-11-28T09:28:50.000Z&quot;,
+    &quot;is_deleted&quot;: false,
+    &quot;isDeleted&quot;: false,
+    &quot;details&quot;: {
+      &quot;authorization_code&quot;: null,
+      &quot;account_number&quot;: &quot;247247&quot;,
+      &quot;account_name&quot;: null,
+      &quot;bank_code&quot;: &quot;MPTILL&quot;,
+      &quot;bank_name&quot;: &quot;M-PESA Till&quot;
+    }
+  }
+}</pre>
+<p>客户刷银行银行卡支付成功后返回授权码。结合授权码和用于付款的邮箱地址，你可以创建转账收件人：</p>
+<pre class="code">curl https://api.paystack.co/transferrecipient
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;type&quot;: &quot;authorization&quot;,
+&quot;name&quot;: &quot;Revs Ore&quot;,
+&quot;email&quot;: &quot;revs@ore.com&quot;,
+&quot;authorization_code&quot;: &quot;AUTH_ncx8hews93&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Transfer recipient created successfully&quot;,
+  &quot;data&quot;: {
+    &quot;active&quot;: true,
+    &quot;createdAt&quot;: &quot;2022-02-21T11:35:59.302Z&quot;,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;email&quot;: &quot;revs@ore.com&quot;,
+    &quot;id&quot;: 25747878,
+    &quot;integration&quot;: 463433,
+    &quot;name&quot;: &quot;Revs Ore&quot;,
+    &quot;recipient_code&quot;: &quot;RCP_wql6bj95bll7m6h&quot;,
+    &quot;type&quot;: &quot;authorization&quot;,
+    &quot;updatedAt&quot;: &quot;2022-02-21T11:35:59.302Z&quot;,
+    &quot;is_deleted&quot;: false,
+    &quot;isDeleted&quot;: false,
+    &quot;details&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_ncx8hews93&quot;,
+      &quot;account_number&quot;: null,
+      &quot;account_name&quot;: null,
+      &quot;bank_code&quot;: &quot;057&quot;,
+      &quot;bank_name&quot;: &quot;Zenith Bank&quot;
+    }
+  }
+}</pre>
+<p>如果帐号未与授权代码关联，我们将返回一条包含消息的响应：<code class="inline">Account details not found for this authorization</code>。如果你收到此错误，请请求客户提供账户详细信息，并按照流程使用银行账户创建转帐收件人。</p>
+<h2>保存收件人代码</h2>
+<p>响应的<code class="inline">data</code>对象中的<code class="inline">recipient_code</code>是客户的唯一标识符，将用于向指定账户进行转账。此代码应与客户记录一起保存在数据库中。</p>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Transfer recipient created successfully&quot;,
+  &quot;data&quot;: {
+    &quot;active&quot;: true,
+    &quot;createdAt&quot;: &quot;2022-02-21T11:35:59.302Z&quot;,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;email&quot;: &quot;revs@ore.com&quot;,
+    &quot;id&quot;: 25747878,
+    &quot;integration&quot;: 463433,
+    &quot;name&quot;: &quot;Revs Ore&quot;,
+    &quot;recipient_code&quot;: &quot;RCP_wql6bj95bll7m6h&quot;,
+    &quot;type&quot;: &quot;authorization&quot;,
+    &quot;updatedAt&quot;: &quot;2022-02-21T11:35:59.302Z&quot;,
+    &quot;is_deleted&quot;: false,
+    &quot;isDeleted&quot;: false,
+    &quot;details&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_ncx8hews93&quot;,
+      &quot;account_number&quot;: null,
+      &quot;account_name&quot;: null,
+      &quot;bank_code&quot;: &quot;057&quot;,
+      &quot;bank_name&quot;: &quot;Zenith Bank&quot;
+    }
+  }
+}</pre>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/transfers/creating-transfer-recipients/" target="_blank" rel="noopener">https://paystack.com/docs/transfers/creating-transfer-recipients/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

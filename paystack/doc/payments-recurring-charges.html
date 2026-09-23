@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>收取第一笔交易费用 · Paystack 开发文档（中文）</title>
+<meta name="description" content="收取第一笔交易费用 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>客户使用其银行卡或直接借记账户首次成功付款后，你可以存储客户的授权并将其用于后续交易。 <strong>目前，这适用于我们所有市场的银行卡，以及尼日利亚企业的直接借记卡。</strong></p>
+<h2>收取第一笔交易费用</h2>
+<p><a href="https://paystack.com/docs/payments/direct-debit/">直接借记</a> 费用不需要此步骤。相反，你将通过 <a href="https://paystack.com/docs/api/customer#initialize-authorization">初始化授权API</a> 接口发起授权请求。一旦客户批准，你将保存通过 Webhook 返回的授权。</p>
+<p>你可以通过网络或移动应用程序初始化首次充电。查看 <a href="https://paystack.com/docs/developer-tools/">网络和移动设备</a> 的不同积分方法。</p>
+<h3>为什么我需要向用户收取添加卡费用？</h3>
+<ol><li>当地法规要求用户在初始交易中通过<code class="inline">2FA</code>校验卡，然后我们才能对卡进行后续收费。</li><li>它使我们能够确保该卡有效并可以对后续交易进行收费。</li></ol>
+<p>建议首次充电的最低电量为 <strong>NGN 50.00</strong>、<strong>GHS 0.10</strong>、<strong>ZAR 1.00</strong>、<strong>KES 3.00</strong> 或 <strong>USD 2.00</strong>。较低的金额并不保证适用于所有卡品牌或银行。</p>
+<p>标准做法是向用户返还相当于代币化金额的价值（在你的应用程序中），或者干脆退还钱。</p>
+<p>如果第一笔交易成功，你可以监听<a href="https://paystack.com/docs/payments/webhooks/">你的webhookendpoint</a>上的事件。或者，你可以使用 <a href="https://paystack.com/docs/api/transaction#verify">校验交易API</a> 接口确认交易状态。无论哪种情况，响应都类似于以下示例：</p>
+<pre class="code">{
+  &quot;data&quot;: {
+    &quot;authorization&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_8dfhjjdt&quot;,
+      &quot;card_type&quot;: &quot;visa&quot;,
+      &quot;last4&quot;: &quot;1381&quot;,
+      &quot;exp_month&quot;: &quot;08&quot;,
+      &quot;exp_year&quot;: &quot;2018&quot;,
+      &quot;bin&quot;: &quot;412345&quot;,
+      &quot;bank&quot;: &quot;TEST BANK&quot;,
+      &quot;channel&quot;: &quot;card&quot;,
+      &quot;signature&quot;: &quot;SIG_idyuhgd87dUYSHO92D&quot;,
+      &quot;reusable&quot;: true,
+      &quot;country_code&quot;: &quot;NG&quot;,
+      &quot;account_name&quot;: &quot;BoJack Horseman&quot;
+    }
+  }
+}</pre>
+<p>你会注意到响应中的 <code class="inline">data</code> 对象包含一个 <code class="inline">authorization</code> 对象，其中包含用户支付所用的支付工具（在本例中为卡）的详细信息。</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>财产</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">authorization_code</code></td><td>这是随后用于向卡收费的代码</td></tr><tr><td><code class="inline">card_type</code></td><td>这会告诉你卡品牌 - Visa、Mastercard 等</td></tr><tr><td><code class="inline">last4</code></td><td>卡的最后 4 位数字。这是可用于帮助用户识别卡的详细信息之一</td></tr><tr><td><code class="inline">exp_month</code></td><td>卡的到期月份（以数字表示）。例如。 “01”表示一月</td></tr><tr><td><code class="inline">exp_year</code></td><td>卡的有效期</td></tr><tr><td><code class="inline">bin</code></td><td>卡的前 6 位数字。这和最后 4 位数字构成 <strong>蒙面锅</strong></td></tr><tr><td><code class="inline">bank</code></td><td>客户的银行，发卡银行</td></tr><tr><td><code class="inline">channel</code></td><td>这是什么支付渠道。在本例中，这是卡付款</td></tr><tr><td><code class="inline">signature</code></td><td>所使用卡的唯一标识符。虽然每次使用卡时都会创建新的授权码，但卡的签名将保持不变。</td></tr><tr><td><code class="inline">reusable</code></td><td>一个布尔标志，告诉你授权是否可用于定期收费。仅当此标志返回为 <code class="inline">true</code> 时，你才应尝试使用 <code class="inline">authorization_code</code>。</td></tr><tr><td><code class="inline">country_code</code></td><td>两个字母的国家/地区代码 (<a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2">ISO 3166-1 阿尔法-2</a>) 代表发卡银行所在的国家/地区</td></tr></tbody></table></div>
+<h2>存储授权</h2>
+<p>Next, you need to store the <code class="inline">authorization</code> and the <code class="inline">email</code> used for the transaction. These details can be used to charge the card subsequently. Every payment instrument that's used on your site/app has a unique <code class="inline">signature</code> . The <code class="inline">signature</code> can be used to ensure that you don't save an authorization multiple times.</p>
+<p>存储整个 <code class="inline">authorization</code> 对象非常重要，以免丢失有关卡片的任何上下文。</p>
+<p>存储用于创建授权的邮箱也很重要，因为只有用于创建授权的邮箱才能用于收费。如果你依赖系统上存储的用户邮箱并且用户更改了该邮箱，则无法再收取授权费用。</p>
+<p>当你保存了整个授权对象后，你可以在付款时显示客户付款详细信息以进行循环收费。例如，当用户想要再次付款时，你可以为用户显示该卡为<strong>访问以 1234 结尾的银行 Visa 卡</strong>。</p>
+<h2>收取授权费</h2>
+<p>当用户选择卡或直接借记账户进行新交易或你想随后对其进行收费时，你将<code class="inline">authorization_code</code>、用户的<code class="inline">email</code>和你想要收费的<code class="inline">amount</code>发送到<a href="https://paystack.com/docs/api/transaction#charge-authorization">充电授权API</a>。</p>
+<pre class="code">curl https://api.paystack.co/transaction/charge_authorization
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;authorization_code&quot; : &quot;AUTH_pmx3mgawyd&quot;,
+email: &quot;mail@mail.com&quot;,
+amount: &quot;300000&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Charge attempted&quot;,
+  &quot;data&quot;: {
+    &quot;amount&quot;: 35247,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;transaction_date&quot;: &quot;2024-08-22T10:53:49.000Z&quot;,
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;reference&quot;: &quot;0m7frfnr47ezyxl&quot;,
+    &quot;domain&quot;: &quot;test&quot;,
+    &quot;metadata&quot;: &quot;&quot;,
+    &quot;gateway_response&quot;: &quot;Approved&quot;,
+    &quot;message&quot;: null,
+    &quot;channel&quot;: &quot;card&quot;,
+    &quot;ip_address&quot;: null,
+    &quot;log&quot;: null,
+    &quot;fees&quot;: 10247,
+    &quot;authorization&quot;: {
+      &quot;authorization_code&quot;: &quot;AUTH_pmx3mgawyd&quot;,
+      &quot;bin&quot;: &quot;408408&quot;,
+      &quot;last4&quot;: &quot;4081&quot;,
+      &quot;exp_month&quot;: &quot;12&quot;,
+      &quot;exp_year&quot;: &quot;2030&quot;,
+      &quot;channel&quot;: &quot;card&quot;,
+      &quot;card_type&quot;: &quot;visa &quot;,
+      &quot;bank&quot;: &quot;TEST BANK&quot;,
+      &quot;country_code&quot;: &quot;NG&quot;,
+      &quot;brand&quot;: &quot;visa&quot;,
+      &quot;reusable&quot;: true,
+      &quot;signature&quot;: &quot;SIG_yEXu7dLBeqG0kU7g95Ke&quot;,
+      &quot;account_name&quot;: null
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 181873746,
+      &quot;first_name&quot;: null,
+      &quot;last_name&quot;: null,
+      &quot;email&quot;: &quot;demo@test.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_1rkzaqsv4rrhqo6&quot;,
+      &quot;phone&quot;: null,
+      &quot;metadata&quot;: {
+        &quot;custom_fields&quot;: [
+          {
+            &quot;display_name&quot;: &quot;Customer email&quot;,
+            &quot;variable_name&quot;: &quot;customer_email&quot;,
+            &quot;value&quot;: &quot;new@email.com&quot;
+          }
+        ]
+      },
+      &quot;risk_action&quot;: &quot;default&quot;,
+      &quot;international_format_phone&quot;: null
+    },
+    &quot;plan&quot;: null,
+    &quot;id&quot;: 4099490251
+  }
+}</pre>
+<p>如果你的应用程序需要按特定时间间隔收取授权费用，则意味着你的服务端需要有一个按特定时间间隔运行的 cron 作业，并选择所有需要收取费用的授权。</p>
+<h2>两因素身份校验</h2>
+<p>默认情况下，此功能适用于与尼日利亚集成的投注商户，并且特定于 Guaranty Trust Bank (GTB)、Access Bank、United Bank for Africa (UBA)、Zenith Bank 和 First Bank of Bulgaria 发行的卡。如果你有尼日利亚语集成并希望获得此功能，请发送邮箱至 <strong>support@paystack.com</strong></p>
+<p>双因素身份校验 (2FA) 是一项额外的安全步骤，用于确认你没有处理恶意行为者的请求。发出请求的用户通常会被要求提供某种形式的对他们来说是唯一的信息。</p>
+<p>为了确保用户的卡不被恶意行为者使用，我们通过要求用户授权交易来挑战用户。可以使用硬件令牌、OTP、PIN + OTP 或 3DS 来完成授权。</p>
+<p>对卡充值的请求保持不变。然而，对于将被质疑的卡，响应是不同的：</p>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Please, redirect your customer to the authorization url provided&quot;,
+  &quot;data&quot;: {
+    &quot;authorization_url&quot;: &quot;https://checkout.paystack.com/resume/0744ub5o065nwyz&quot;,
+    &quot;reference&quot;: &quot;jvx2o36ghlvrgtt&quot;,
+    &quot;access_code&quot;: &quot;0744ub5o065nwyz&quot;,
+    &quot;paused&quot;: true
+  }
+}</pre>
+<p>当卡受到质询时，响应将包含两个不同的参数：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>参数</th><th>类型</th><th>描述</th></tr></thead><tbody><tr><td>暂停</td><td>布尔值</td><td>当卡被质疑时返回 true</td></tr><tr><td><code class="inline">authorization_url</code></td><td>字符串</td><td>用于交易授权的结账URL</td></tr></tbody></table></div>
+<p>你应该检查 <code class="inline">data.paused</code> 参数的值来确认卡是否受到质疑。如果受到质疑，你应该将用户重定向到<code class="inline">data.authorization_url</code>以完成授权。</p>
+<p><a href="https://paystack.com/docs/static/eed204e2b886573a978ea0ba240452e8/8c557/two_fa.png">![图1：用户授权结账页面图片</a>](https://paystack.com/docs/static/eed204e2b886573a978ea0ba240452e8/87cc4/two_fa.png)</p>
+<p>授权完成后，我们将向用户的卡收费。你应该保存 <code class="inline">data.reference</code> 值，以通过 <a href="https://paystack.com/docs/payments/webhooks/">Webhook</a> 或 <a href="https://paystack.com/docs/api/transaction#verify">校验交易API</a> 校验交易的状态。</p>
+<h3>处理重定向</h3>
+<p>当用户完成授权过程时，我们通常会将用户重定向回你在 Paystack <a href="https://dashboard.paystack.co/#/settings/developer">仪表板</a> 或 <a href="https://dashboard.paystack.com/v2/developers">画布</a> 上设置的回调 URL。如果你希望我们重定向到不同的 URL，你可以将 URL 添加到请求的 <code class="inline">callback_url</code> 参数中：</p>
+<pre class="code">{
+  &quot;authorization_code&quot;: &quot;AUTH_ibegucp8kk&quot;,
+  &quot;email&quot;: &quot;dami@2fa.com&quot;,
+  &quot;amount&quot;: 3000,
+  &quot;callback_url&quot;: &quot;https://yourcallbackurl.com&quot;
+}</pre>
+<p>用户还可以取消授权过程。你可以添加一个 URL，当用户在 <code class="inline">metadata</code> 对象中取消时应将其重定向到：</p>
+<pre class="code">{
+  &quot;authorization_code&quot;: &quot;AUTH_ibegucp8kk&quot;,
+  &quot;email&quot;: &quot;dami@2fa.com&quot;,
+  &quot;amount&quot;: 3000,
+  &quot;metadata&quot;: {
+    &quot;cancel_action&quot;: &quot;https://yourcancelurl.com&quot;
+  }
+}</pre>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/payments/recurring-charges/" target="_blank" rel="noopener">https://paystack.com/docs/payments/recurring-charges/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

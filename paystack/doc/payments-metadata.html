@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>取消操作 · Paystack 开发文档（中文）</title>
+<meta name="description" content="取消操作 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>将自定义数据添加到你的请求负载</p>
+<p>使用元数据，你可以添加接口自然不接受的其他参数。制作元数据将取决于你的语言对 JSON 的处理。常见的元数据有：</p>
+<ul><li>Payment medium (site/app)</li></ul>
+<p>向元数据对象添加参数有两种方法：</p>
+<ol><li><strong>Key/value pair</strong>：你将参数作为键和值对传递，如下所示：<code class="inline">cart_id: IU929</code>。通过这种方式传递的参数不会显示在仪表板上，但是，它们会随 API 响应返回。</li><li><strong>自定义字段</strong>：<code class="inline">custom_fields</code> 键是为一组自定义字段保留的，当你单击交易时，这些字段应显示在仪表板上。</li></ol>
+<p>自定义字段有 3 个键：<code class="inline">display_name</code>、<code class="inline">variable_name</code> 和 <code class="inline">value</code>。显示名称将是显示时值的标签。</p>
+<pre class="code">{
+  &quot;metadata&quot;: {
+    &quot;cart_id&quot;: 398,
+    &quot;custom_fields&quot;: [
+      {
+        &quot;display_name&quot;: &quot;Invoice ID&quot;,
+        &quot;variable_name&quot;: &quot;Invoice ID&quot;,
+        &quot;value&quot;: 209
+      },
+      {
+        &quot;display_name&quot;: &quot;Cart Items&quot;,
+        &quot;variable_name&quot;: &quot;cart_items&quot;,
+        &quot;value&quot;: &quot;3 bananas, 12 mangoes&quot;
+      }
+    ]
+  }
+}</pre>
+<h2>取消操作</h2>
+<p>当用户取消付款时，你可以将他们重定向到所选的 URL。这是通过在元数据中设置 <code class="inline">cancel_action</code> 来完成的：</p>
+<pre class="code">&quot;metadata&quot;: {
+&quot;cancel_action&quot;: &quot;https://your-cancel-url.com&quot;
+}</pre>
+<h2>定制过滤器</h2>
+<p>自定义过滤器允许你通过使用 <code class="inline">metadata</code> 对象中的 <code class="inline">custom_filters</code> 对象来控制交易的完成方式。</p>
+<h3>定期付款</h3>
+<p>如果你将来需要向客户借记，请在 <code class="inline">custom_filters</code> 对象中指定 <code class="inline">recurring=true</code>。</p>
+<pre class="code">&quot;metadata&quot;: {
+&quot;custom_filters&quot;: {
+&quot;recurring&quot;: true
+}
+}</pre>
+<p>卡和银行支付 (PwB) 通道支持此功能，每个通道具有不同的行为。</p>
+<p>通过 <code class="inline">card</code> 渠道，我们仅接受支持定期计费并强制对 MasterCard 和 VISA 进行银行身份校验的 Verve 卡。</p>
+<p>通过<code class="inline">pwb</code>渠道，我们只会向客户提供支持的银行进行付款。不支持定期付款的银行将被过滤掉。</p>
+<h3>精选银行卡</h3>
+<p>当你只想接受特定银行卡进行交易时，可以使用 <code class="inline">banks</code> 参数指定银行代码。你可以使用 <a href="https://paystack.com/docs/api/miscellaneous#bank">列出银行 API</a> 获取支持的银行代码列表。</p>
+<pre class="code">&quot;metadata&quot;: {
+&quot;custom_filters&quot;: {
+&quot;banks&quot;: [&quot;057&quot;, &quot;100&quot;]
+}
+}</pre>
+<h3>精选卡品牌</h3>
+<p>如果你只希望交易接受某些卡品牌，请在 <code class="inline">card_brands</code> 数组中指定品牌：</p>
+<pre class="code">&quot;metadata&quot;: {
+&quot;custom_filters&quot;: {
+&quot;card_brands&quot;: [&quot;visa&quot;]
+}
+}</pre>
+<p>我们目前支持以下卡品牌：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>品牌</th><th>代码</th><th>国家</th></tr></thead><tbody><tr><td>神韵</td><td><code class="inline">verve</code></td><td>尼日利亚</td></tr><tr><td>签证</td><td><code class="inline">visa</code></td><td>所有地区</td></tr><tr><td>美国运通</td><td><code class="inline">amex</code></td><td>尼日利亚、肯尼亚、南非</td></tr><tr><td>万事达卡</td><td><code class="inline">mastercard</code></td><td>所有地区</td></tr></tbody></table></div>
+<p>过滤器也可以组合起来形成综合规则。在下面的代码片段中，过滤器告诉我们客户应该注册定期计费，并且我们应该只接受来自 <strong>真力时 (057)</strong> 或 <strong>阳光信托银行 (100)</strong> 的 Visa 卡。</p>
+<pre class="code">{
+  &quot;metadata&quot;: {
+    &quot;custom_filters&quot;: {
+      &quot;recurring&quot;: true,
+      &quot;banks&quot;: [
+        &quot;057&quot;,
+        &quot;100&quot;
+      ],
+      &quot;card_brands&quot;: [
+        &quot;visa&quot;
+      ]
+    }
+  }
+}</pre>
+<h3>选定的银行账户</h3>
+<p><code class="inline">supported_bank_providers</code> 参数允许你在 <a href="https://paystack.com/docs/payments/payment-channels/#bank-accounts">通过银行支付</a> 通道上指定所需的库。设置后，客户将只能看到你指定的银行。你应该使用 <a href="https://paystack.com/docs/api/miscellaneous#bank">列出银行 API</a> 接口来获取银行代码。</p>
+<pre class="code">&quot;metadata&quot;: {
+&quot;custom_filters&quot;: {
+&quot;supported_bank_providers&quot;: [
+&quot;033&quot;,
+&quot;215&quot;,
+&quot;102&quot;
+]
+}
+}</pre>
+<h3>选定的 MoMo 提供商</h3>
+<p>有时，你只想优先考虑某些移动货币提供商。例如，你可能希望开展一项活动以仅允许某个提供商。为此，你可以在 <code class="inline">supported_mobile_money_providers</code> 参数中指定提供程序：</p>
+<pre class="code">&quot;metadata&quot;: {
+&quot;custom_filters&quot;: {
+&quot;supported_mobile_money_providers&quot;: [&quot;vod&quot;]
+}
+}</pre>
+<div class="table-wrap"><table class="data"><thead><tr><th>提供商</th><th>代码</th><th>国家</th></tr></thead><tbody><tr><td>MTN</td><td><code class="inline">mtn</code></td><td>加纳</td></tr><tr><td>阿尔泰电信蒂戈</td><td><code class="inline">atl</code></td><td>加纳</td></tr><tr><td>沃达丰</td><td><code class="inline">vod</code></td><td>加纳</td></tr></tbody></table></div>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/payments/metadata/" target="_blank" rel="noopener">https://paystack.com/docs/payments/metadata/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API 参考 · Paystack 中文文档</title>
+<meta name="description" content="Paystack API 参考中文版：API 基础、认证、请求与响应格式、限流、分页、错误处理与支持的货币。">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab" href="../doc/index.html">开发文档</a>
+    <a class="topbar__tab topbar__tab--active" href="index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs/api · 仅供内部参考</div>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar__section">
+    <div class="sidebar__caption">概览</div>
+    <a class="sidebar__ep" href="index.html">API 简介与约定</a>
+    <a class="sidebar__ep" href="index.html#authentication">认证鉴权</a>
+    <a class="sidebar__ep" href="index.html#rate-limits">请求速率限制</a>
+    <a class="sidebar__ep" href="index.html#pagination">分页与遍历</a>
+    <a class="sidebar__ep" href="index.html#errors">错误处理</a>
+    <a class="sidebar__ep" href="index.html#currency">支持的货币</a>
+  </div>
+  <div class="sidebar__section">
+    <div class="sidebar__caption">项目</div>
+    <a class="sidebar__ep" href="../doc/index.html">开发文档首页</a>
+    <a class="sidebar__ep" href="../index.html">全部文档目录</a>
+  </div>
+</aside>
+
+<main class="content">
+  <div class="content__eyebrow">API 参考</div>
+  <h1>API 简介</h1>
+  <p class="lead">了解如何将 Paystack 的 API 集成到你的应用中。</p>
+
+  <h2 id="api-basics">API 基础</h2>
+  <p>通过 Paystack API，你可以用代码完成收款、管理交易，以及在其他场景中通过 Paystack Dashboard 完成的操作。它是一套 RESTful、基于 JSON 的 API，使用标准 HTTP 方法，多数请求都需要鉴权。</p>
+  <p>所有请求必须通过 HTTPS 发起，不支持未加密的 HTTP 请求。</p>
+
+  <h3 id="base-url">基础地址（Base URL）</h3>
+  <p>所有 API 请求的基础地址为：</p>
+  <pre class="code">https://api.paystack.co</pre>
+  <p>测试环境与生产环境使用同一个基础地址，具体环境由你使用的 API Key 决定。</p>
+
+  <h3 id="environments">环境与 API Key</h3>
+  <p>Paystack 提供测试（Test）与生产（Live）两套环境，各自拥有独立的 API Key。开发与测试阶段使用测试 Key，正式上线使用生产 Key。</p>
+  <p>关于如何获取与管理 API Key，请参阅下方的<a href="#authentication">认证鉴权</a>章节。</p>
+
+  <h3 id="http-methods">HTTP 方法</h3>
+  <p>Paystack API 遵循标准 HTTP 语义：</p>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>方法</th><th>类型</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>POST</td><td>String</td><td>在服务端创建一个新资源。</td></tr>
+        <tr><td>GET</td><td>String</td><td>获取某个资源的表示。</td></tr>
+        <tr><td>PUT</td><td>String</td><td>更新已有资源；若资源不存在则创建。</td></tr>
+        <tr><td>DELETE</td><td>String</td><td>删除指定的资源。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="making-requests">发起请求</h2>
+  <p>所有请求都发往上述基础地址，并必须在 <code class="inline">Authorization</code> 请求头中携带你的私钥（Secret Key）。</p>
+  <p>请求头格式为：<code class="inline">Authorization: Bearer YOUR_SECRET_KEY</code>。</p>
+  <p>API 参考中为每个接口提供了请求示例，你可以直接复制到自己的代码中，或通过命令行使用 cURL 运行。你也可以使用 Postman 和 <a href="https://www.postman.com/paystack-developers/workspace/paystack-api/overview" target="_blank" rel="noopener">Paystack Postman Collection</a> 来<a href="https://www.postman.com/downloads/" target="_blank" rel="noopener">探索 API</a>。</p>
+
+  <h2 id="requests-and-responses">请求与响应</h2>
+  <p>请求体与响应数据均为 JSON 格式，响应的 <code class="inline">Content-Type</code> 始终是 <code class="inline">application/json</code>。总体而言，所有响应都采用如下结构：</p>
+  <div class="params">
+    <div class="param">
+      <div class="param__head"><span class="param__name">status</span><span class="param__type">Boolean</span></div>
+      <p class="param__desc">表示你的请求是否成功。建议结合 HTTP 状态码一起判断接口调用结果。</p>
+    </div>
+    <div class="param">
+      <div class="param__head"><span class="param__name">message</span><span class="param__type">String</span></div>
+      <p class="param__desc">本次响应及其状态的摘要说明。例如获取客户列表时，message 可能是 “Customers retrieved”。请求出错时，message 会包含具体的错误描述。这个字段在任何请求中都会返回。</p>
+    </div>
+    <div class="param">
+      <div class="param__head"><span class="param__name">data</span><span class="param__type">Object</span></div>
+      <p class="param__desc">请求的结果。根据请求类型不同，可能是对象，也可能是数组。例如查询单个客户时，data 中返回一个 customer 对象；查询列表时，data 则是客户数组。</p>
+    </div>
+  </div>
+  <div class="snippet">
+    <div class="snippet__label"><span class="title">响应格式</span><span>JSON</span></div>
+    <pre class="code">{
+  "status": "[boolean]",
+  "message": "[string]",
+  "data": "[object]"
+}</pre>
+  </div>
+
+  <h3 id="meta-object">meta 对象</h3>
+  <p>许多 Paystack API 响应会包含一个 <code class="inline">meta</code> 对象，用于承载接口特有的附加信息。其内容取决于：</p>
+  <ul>
+    <li>请求是成功还是失败；</li>
+    <li>返回响应的具体接口。</li>
+  </ul>
+  <p>请求成功时，<code class="inline">meta</code> 通常包含返回数据的补充信息，这在列表接口中最常见 —— Paystack 会返回额外字段，帮助你在海量数据中翻页遍历。</p>
+  <p>列表接口中 <code class="inline">meta</code> 返回的字段与所使用的分页方式有关。各字段的完整说明，以及何时使用游标分页、何时使用偏移分页，请参阅<a href="#pagination">分页</a>章节。</p>
+  <p>请求失败时，<code class="inline">meta</code> 会包含有助于定位问题的诊断信息。关于错误响应以及如何借助 <code class="inline">meta</code> 排查错误，请参阅<a href="#errors">错误处理</a>章节。</p>
+  <div class="snippet">
+    <div class="snippet__label"><span class="title">meta 结构</span><span>JSON</span></div>
+    <pre class="code">{
+  "meta": {
+    "total": 2,
+    "skipped": 0,
+    "perPage": 50,
+    "page": 1,
+    "pageCount": 1
+  }
+}</pre>
+  </div>
+
+  <h2 id="currency">支持的货币</h2>
+  <p>Paystack 遵循 <a href="https://www.iso.org/iso-4217-currency-codes.html" target="_blank" rel="noopener">ISO 4217</a> 标准表示货币代码。传递金额时，必须使用该货币的最小单位（subunit）。</p>
+  <p>以最小单位传递，意味着把基础金额乘以 <strong>100</strong>。例如客户需要支付 <strong>NGN 100</strong>，请求中应传 <strong>10000 = 100 * 100</strong>。</p>
+  <p>部分市场支持多种货币，每种货币有各自的交易手续费与最低金额。你可以在下表中了解支持的货币，也可以参考《Enabling International Payments》一文。</p>
+  <p><strong>XOF 没有最小单位</strong>，但开发者<strong>仍必须</strong>将金额乘以 <strong>100</strong>。这并不表示金额可以有小数部分 —— 如果在处理过程中发现小数部分，我们会忽略它。</p>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>货币代码</th><th>最小单位</th><th>说明</th><th>交易最低金额</th><th>可用地区</th></tr></thead>
+      <tbody>
+        <tr><td>NGN</td><td>Kobo</td><td>尼日利亚奈拉</td><td>₦ 50.00</td><td>尼日利亚</td></tr>
+        <tr><td>USD</td><td>Cent</td><td>美元</td><td>$ 2.00</td><td>肯尼亚、尼日利亚</td></tr>
+        <tr><td>GHS</td><td>Pesewa</td><td>加纳塞地</td><td>₵ 0.10</td><td>加纳</td></tr>
+        <tr><td>ZAR</td><td>Cent</td><td>南非兰特</td><td>R 1.00</td><td>南非</td></tr>
+        <tr><td>KES</td><td>Cent</td><td>肯尼亚先令</td><td>Ksh. 3.00</td><td>肯尼亚</td></tr>
+        <tr><td>XOF</td><td>-</td><td>西非法郎</td><td>XOF 1.00</td><td>科特迪瓦</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="snippet">
+    <div class="snippet__label"><span class="title">金额示例</span><span>JSON</span></div>
+    <pre class="code">{
+  "amount": 5000,
+  "currency": "NGN"
+}</pre>
+  </div>
+
+  <h2 id="authentication">认证鉴权</h2>
+  <p>所有发往 Paystack API 的请求都必须经过认证。认证用于识别请求属于哪个 Paystack 集成，并决定它是否有权执行所请求的操作。</p>
+  <p>Paystack API 使用 <strong>API Key</strong> 对请求进行认证。每个请求都必须在 <code class="inline">Authorization</code> 请求头中携带你的<strong>私钥</strong>，并使用 <strong>Bearer</strong> 方案。</p>
+
+  <h3 id="api-keys">API Key</h3>
+  <p>每个 Paystack 集成都为每种<a href="#test-and-live-modes">环境</a>提供两类 API Key：</p>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>类型</th><th>前缀</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>公钥 Public Key</td><td>pk_</td><td>仅用于前端集成 Paystack Inline 以及我们的移动端 SDK。根据设计，公钥只能向你的账户发起交易。</td></tr>
+        <tr><td>私钥 Secret Key</td><td>sk_</td><td>用于后端发起 API 请求。私钥必须安全保存。</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>你可以在 <strong>Paystack Dashboard</strong> 的 “API Keys &amp; Webhooks” 页面，或 <strong>Paystack Canvas</strong> 的 Developers 概览页中找到 API Key。</p>
+  <p>建议定期轮换 API Key；如果你怀疑私钥已泄露，应立即轮换。轮换时在与查看相同的 Dashboard / Canvas 页面生成新 Key 即可。</p>
+  <p>不要把私钥提交到 Git 仓库，也不要在前端代码中使用私钥。</p>
+  <p>Authorization 请求头格式：<code class="inline">Authorization: Bearer SECRET_KEY</code></p>
+  <pre class="code">Authorization: Bearer sk_test_r3m3mb3r2pu70nasm1l3</pre>
+  <p>未认证的 API 请求会返回状态码 <code class="inline">401: Unauthorized</code>。所有 API 请求都必须通过 HTTPS 发起。</p>
+  <div class="callout callout--warn">不要将 <code class="inline">VERIFY_PEER</code> 设置为 <code class="inline">FALSE</code>。请确保服务器会校验与 Paystack 之间的 SSL 连接。</div>
+
+  <h3 id="test-and-live-modes">测试模式与生产模式</h3>
+  <p>Paystack 为集成提供两套相互独立的环境：</p>
+  <ol>
+    <li><strong>测试模式（Test mode）</strong>：用于开发与质量验证，此处的交易和 API 调用不涉及真实资金。</li>
+    <li><strong>生产模式（Live mode）</strong>：用于正式环境，交易与结算都是真实发生的，并通过你的生产 Paystack 账户处理。</li>
+  </ol>
+  <p>每套环境都有自己的公钥与私钥。测试 Key 的前缀为 <code class="inline">pk_test_</code> 和 <code class="inline">sk_test_</code>，生产 Key 的前缀为 <code class="inline">pk_live_</code> 和 <code class="inline">sk_live_</code>。</p>
+  <p>测试环境力求贴近生产环境的表现，但并非所有功能都可用。例如测试模式不会执行结算，部分支付渠道也不可用。</p>
+
+  <h3 id="ip-whitelisting">IP 白名单</h3>
+  <p>IP 白名单是一项安全功能，只允许特定 IP 地址使用你的私钥发起 API 请求。它通过阻止来自未知 IP 的私钥调用，为账户增加一层保护。</p>
+  <p>启用后，Paystack 会针对每个使用私钥的请求校验来源 IP，并拦截不在白名单中的请求。</p>
+  <p>你可以为每套环境配置最多 <strong>10 个 IP 地址</strong>，入口位于 Paystack Dashboard 或 Paystack Canvas。只有管理员，或拥有 “管理 API Keys 与 Webhooks” 权限的用户才能配置白名单。当有人更新生产私钥的白名单时，我们会向该集成的主要负责人发送邮件通知。</p>
+  <p>仅支持合法的<strong>公网 IPv4 地址</strong>，不支持 IPv6 地址、IP 段以及内网地址。</p>
+
+  <h3 id="key-management">密钥管理最佳实践</h3>
+  <ol>
+    <li>永远不要把私钥写入前端代码、移动端应用或公开仓库。</li>
+    <li>通过环境变量或密钥管理服务安全地保存密钥。</li>
+    <li>定期轮换密钥，尤其是在怀疑密钥已泄露时。</li>
+    <li>限制 Dashboard 中可以查看或管理 API Key 的人员范围。</li>
+  </ol>
+
+  <h2 id="rate-limits">请求速率限制</h2>
+  <p>速率限制是我们基础设施中用于保障 API 稳定性的机制之一，用来避免 API 请求量突增。每个接口在每个时间窗口内可发起的请求数是有限的，超过该限制会返回 <code class="inline">429</code> 错误，表示需要降低请求频率。</p>
+  <p>收到 <code class="inline">429</code> 时，请解析响应头以决定后续处理方式：</p>
+  <div class="params">
+    <div class="param">
+      <div class="param__head"><span class="param__name">x-ratelimit-reset</span><span class="param__type">Number</span></div>
+      <p class="param__desc">以秒为单位的时间，表示当前限流窗口何时结束，也就是你可以重试请求的时间。</p>
+    </div>
+    <div class="param">
+      <div class="param__head"><span class="param__name">x-ratelimit-remaining</span><span class="param__type">Number</span></div>
+      <p class="param__desc">当前限流窗口内剩余的可用请求次数。</p>
+    </div>
+    <div class="param">
+      <div class="param__head"><span class="param__name">x-ratelimit-limit</span><span class="param__type">Number</span></div>
+      <p class="param__desc">每个限流窗口允许的最大请求次数。</p>
+    </div>
+  </div>
+  <div class="snippet">
+    <div class="snippet__label"><span class="title">限流响应</span><span>JSON</span></div>
+    <pre class="code">{
+  "status": false,
+  "message": "Rate limit exceeded!",
+  "meta": {
+    "nextStep": "Wait a few minutes and try the API call again"
+  },
+  "type": "api_error",
+  "code": "rate_limited"
+}</pre>
+  </div>
+
+  <h3 id="standard-limits">默认限额</h3>
+  <p>大多数接口共用同一默认限额。限额按集成维度计算，生产与测试模式各自独立计数。</p>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>模式</th><th>限额</th></tr></thead>
+      <tbody>
+        <tr><td>生产 Live</td><td>每 60 秒 600 次请求</td></tr>
+        <tr><td>测试 Test</td><td>每 60 秒 100 次请求</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>测试模式用于开发与集成联调，不适合做压力测试。</p>
+
+  <h3 id="extended-limits">扩展限额</h3>
+  <p>部分基础接口拥有更高的专属限额，以保障关键业务流程顺畅运行，包括：</p>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>接口</th><th>限额</th></tr></thead>
+      <tbody>
+        <tr><td><a href="transaction.html#verify">交易校验 Verify Transaction</a></td><td>每 60 秒 3,000 次请求</td></tr>
+        <tr><td><a href="verification.html#resolve-account">解析账号 Resolve Account Number</a></td><td>每 60 秒 1,500 次请求</td></tr>
+        <tr><td><a href="transaction.html#initialize">初始化交易 Initialize Transaction</a></td><td>每 60 秒 1,200 次请求</td></tr>
+        <tr><td><a href="transaction.html#charge-authorization">授权扣款 Charge Authorization</a></td><td>每 60 秒 1,200 次请求</td></tr>
+        <tr><td><a href="charge.html#create">创建扣款 Create Charge</a></td><td>每 60 秒 1,200 次请求</td></tr>
+        <tr><td><a href="charge.html#check">查询待处理扣款 Check Pending Charge</a></td><td>每 60 秒 1,200 次请求</td></tr>
+        <tr><td><a href="transfer.html#initiate">发起转账 Initiate Transfer</a></td><td>每 60 秒 900 次请求</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>扩展限额仅适用于生产模式；测试模式下所有接口都使用默认限额。</p>
+
+  <h3 id="handling-a-429">处理 429</h3>
+  <p>当接口返回 <code class="inline">429</code> 时，你的集成应当：</p>
+  <ol>
+    <li>从响应头中读取 <code class="inline">x-ratelimit-reset</code> 的值（单位：秒）。</li>
+    <li>在该窗口结束前暂停对该接口的请求。</li>
+    <li>如果多个接口持续返回 <code class="inline">429</code>，请先暂停并排查 —— 通常原因是未受控的循环调用。</li>
+  </ol>
+  <p>限额按接口计算，而不是按整个集成计算。当某个接口被限流时，其他接口仍会正常返回，直到它们各自触达限额。</p>
+
+  <h3 id="staying-within-limit">如何避免触达限额</h3>
+  <p>实践中，多数限流问题都来自几种可避免的调用模式。为避免触达限额：</p>
+  <ol>
+    <li><strong>用 Webhook 代替轮询。</strong>最常见的 <code class="inline">429</code> 来源，是在发起异步请求后立即轮询。例如在等待最终交易状态时循环调用 <code class="inline">/transaction/verify/:reference</code>。对于异步请求我们会发送 Webhook 事件。如果必须主动校验，请控制为每次请求一次。</li>
+    <li><strong>缓存稳定的查询结果。</strong>对于相同的账号与银行代码，<code class="inline">/bank/resolve</code> 除客户在银行侧变更了信息外，返回的户名始终一致。缓存这类数据同时也能提升应用性能。</li>
+    <li><strong>对账时批量拉取。</strong>对账时使用 <code class="inline">/transaction</code> 列表接口配合时间范围，而不是逐个 reference 调用校验接口。列表请求默认返回 50 条。</li>
+    <li><strong>高频场景使用批量接口。</strong>如果需要发起大量转账或扣款，请使用<a href="transfer.html#bulk">批量转账</a>和<a href="bulk-charge.html#initiate">批量扣款</a>接口，而不是在循环中调用单笔接口。每次批量请求只计一次限额，却能处理一批数据。</li>
+  </ol>
+
+  <h3 id="custom-limits">自定义限额</h3>
+  <p>部分业务具有较高的吞吐量且调用模式难以预测。如果你需要更高的限额，请发送邮件至 <a href="mailto:support@paystack.com">support@paystack.com</a>，说明涉及的接口、预期的稳定与峰值请求速率，以及你的集成用途简介，我们会与你一起配置合适的限额。</p>
+
+  <h2 id="pagination">分页与遍历</h2>
+  <p>分页让你可以高效地从 Paystack API 获取大规模数据。一次性返回全部结果会较慢且消耗资源，分页会先把数据切成较小的批次再返回，从而提升性能、降低网络负载，并改善处理大数据集时的整体体验。</p>
+  <p>Paystack API 支持两种分页方式：</p>
+  <ol>
+    <li>偏移分页（Offset Pagination）</li>
+    <li>游标分页（Cursor Pagination）</li>
+  </ol>
+  <p>两种方式各有适用场景与实现细节。</p>
+
+  <h3 id="offset-pagination">偏移分页</h3>
+  <p>偏移分页允许你在获取记录时指定具体的 <code class="inline">page</code> 与 <code class="inline">perPage</code> 值。<code class="inline">page</code> 指定要获取第几页记录，<code class="inline">perPage</code> 指定每页返回多少条记录。</p>
+  <p>使用时，把 <code class="inline">page</code> 和 <code class="inline">perPage</code> 作为查询参数放入请求：</p>
+  <div class="params">
+    <div class="param">
+      <div class="param__head"><span class="param__name">page</span><span class="param__type">Number</span></div>
+      <p class="param__desc">要获取的页码。</p>
+    </div>
+    <div class="param">
+      <div class="param__head"><span class="param__name">perPage</span><span class="param__type">Number</span></div>
+      <p class="param__desc">每次请求返回的记录数。<strong>默认值：50</strong></p>
+    </div>
+  </div>
+  <p><code class="inline">GET /transaction</code> 返回的 JSON 中，<code class="inline">meta</code> 对象包含 <code class="inline">total_volume</code> 参数，表示已获取交易金额的总和。</p>
+  <div class="snippet">
+    <div class="snippet__label"><span class="title">偏移分页请求</span><span>cURL</span></div>
+    <pre class="code">#!/bin/sh
+url="https://api.paystack.co/transaction?page=1&perPage=50"
+authorization="Authorization: Bearer YOUR_SECRET_KEY"
+
+curl "$url" -H "$authorization" -X GET</pre>
+  </div>
+  <div class="snippet">
+    <div class="snippet__label"><span class="title">偏移分页 meta</span><span>JSON</span></div>
+    <pre class="code">{
+  "meta": {
+    "total": 7316,
+    "total_volume": 397800,
+    "skipped": 0,
+    "perPage": 50,
+    "page": 1,
+    "pageCount": 147
+  }
+}</pre>
+  </div>
+
+  <h3 id="cursor-pagination">游标分页</h3>
+  <p>游标分页使用一个称为游标（cursor）的唯一标识，记录在数据集中继续读取的位置。它更适合获取大规模数据集，并且在数据频繁新增或删除时结果更稳定。</p>
+  <p>使用时，在首次请求中加入查询参数 <code class="inline">use_cursor</code> 并设为 <code class="inline">true</code>。响应中的 <code class="inline">meta</code> 对象会包含 <code class="inline">next</code>（下一页记录的游标）和 <code class="inline">previous</code>（上一页游标）。把它们作为查询参数带入后续请求，即可获取上/下一页数据。</p>
+  <div class="params">
+    <div class="param">
+      <div class="param__head"><span class="param__name">use_cursor</span><span class="param__type">Boolean</span></div>
+      <p class="param__desc">设为 <code class="inline">true</code> 时使用游标分页获取结果。</p>
+    </div>
+    <div class="param">
+      <div class="param__head"><span class="param__name">next</span><span class="param__type">String</span></div>
+      <p class="param__desc">分页游标，指向数据集的下一页。填入上一次请求 <code class="inline">meta</code> 中返回的 <code class="inline">next</code> 游标。</p>
+    </div>
+    <div class="param">
+      <div class="param__head"><span class="param__name">previous</span><span class="param__type">String</span></div>
+      <p class="param__desc">分页游标，指向数据集的上一页。填入上一次请求 <code class="inline">meta</code> 中返回的 <code class="inline">previous</code> 游标。</p>
+    </div>
+    <div class="param">
+      <div class="param__head"><span class="param__name">perPage</span><span class="param__type">Number</span></div>
+      <p class="param__desc">每次请求返回的记录数。<strong>默认值：50</strong></p>
+    </div>
+  </div>
+  <p>基于游标的分页目前仅在以下接口可用：</p>
+  <ul>
+    <li>交易 Transactions</li>
+    <li>客户 Customers</li>
+    <li>专属虚拟账户 Dedicated Accounts</li>
+    <li>转账收款人 Transfer Recipient</li>
+    <li>转账 Transfers</li>
+    <li>争议 Disputes</li>
+  </ul>
+  <div class="snippet">
+    <div class="snippet__label"><span class="title">游标分页请求</span><span>cURL</span></div>
+    <pre class="code">#!/bin/sh
+url="https://api.paystack.co/transaction?use_cursor=true&perPage=50"
+authorization="Authorization: Bearer YOUR_SECRET_KEY"
+
+curl "$url" -H "$authorization" -X GET</pre>
+  </div>
+  <div class="snippet">
+    <div class="snippet__label"><span class="title">游标分页 meta</span><span>JSON</span></div>
+    <pre class="code">{
+  "meta": {
+    "next": "dW5kZWZpbmVkOjQwOTczNTgxNTg=",
+    "previous": "null",
+    "perPage": 49
+  }
+}</pre>
+  </div>
+  <h3 id="pagination-best-practices">最佳实践</h3>
+  <ol>
+    <li><strong>选择合适的分页方式</strong>：数据量较小且相对静态时使用偏移分页；数据量大或更新频繁时优先使用游标分页。</li>
+    <li><strong>设置合理的每页条数</strong>：从默认的每页 50 条开始，按实际需要调整，但不要一次性请求超过 1000 条，以免出现性能问题。</li>
+    <li><strong>处理边界情况</strong>：始终判断是否还有下一页。偏移分页建议持续翻页直到没有结果返回；游标分页在 <code class="inline">next</code> 游标缺失时表示已到末尾。</li>
+    <li><strong>做好错误处理</strong>：准备好处理与分页相关的错误，例如无效的页码或游标。</li>
+    <li><strong>关注限流</strong>：实现分页时注意 Paystack 的速率限制，尤其是需要拉取大量数据时；必要时在请求之间加入适当的延迟。</li>
+    <li><strong>合理使用缓存</strong>：如果缓存了分页结果，请确保缓存失效策略能应对数据集的变化。</li>
+  </ol>
+  <p>遵循这些实践，你就能在 Paystack API 上高效处理大数据集，同时为你的用户提供流畅体验。</p>
+
+  <h2 id="errors">错误处理</h2>
+  <p>当请求 Paystack API 失败时，响应总会明确说明出了什么问题以及如何修正。每个错误都遵循一致的结构，包含人类可读的 message、机器可读的 code，以及可选的诊断信息，帮助你快速定位问题。</p>
+  <p>Paystack API 是 RESTful 的，因此使用常规 HTTP 响应码表示请求成功或失败。</p>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>状态码</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>200</td><td>请求成功并完成了预期操作。注意：扣款或校验请求总会返回 200，请检查 <code class="inline">data</code> 对象以确认扣款结果（成功或失败）。</td></tr>
+        <tr><td>201</td><td>资源创建成功。</td></tr>
+        <tr><td>400</td><td>发生校验错误或客户端错误，请求未被处理。</td></tr>
+        <tr><td>401</td><td>请求未通过鉴权。可能是 authorization 头中传入了无效私钥，或未传私钥。</td></tr>
+        <tr><td>404</td><td>请求的资源不存在，无法完成请求。</td></tr>
+        <tr><td>5xx</td><td>因 Paystack 侧错误导致请求无法完成。这不应发生，如遇到请尽快反馈给我们。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="error-response-format">错误响应结构</h3>
+  <p>每个错误响应都包含相同的顶层字段：</p>
+  <div class="params">
+    <div class="param">
+      <div class="param__head"><span class="param__name">status</span><span class="param__type">Boolean</span></div>
+      <p class="param__desc">表示发往 API 的请求是否被成功接收并处理。建议结合 HTTP 状态码一起判断接口调用结果。</p>
+    </div>
+    <div class="param">
+      <div class="param__head"><span class="param__name">message</span><span class="param__type">String</span></div>
+      <p class="param__desc">对所发生错误的简要描述。</p>
+    </div>
+    <div class="param">
+      <div class="param__head"><span class="param__name">meta</span><span class="param__type">Object</span></div>
+      <p class="param__desc">错误相关的附加信息，其中 <code class="inline">next_step</code> 建议了你应采取的下一步操作，也可能包含其他诊断信息，帮助你排查问题。</p>
+    </div>
+    <div class="param">
+      <div class="param__head"><span class="param__name">type</span><span class="param__type">String</span></div>
+      <p class="param__desc">错误类型，可能为 <code class="inline">api_error</code>、<code class="inline">validation_error</code> 或 <code class="inline">processor_error</code>。</p>
+    </div>
+    <div class="param">
+      <div class="param__head"><span class="param__name">code</span><span class="param__type">String</span></div>
+      <p class="param__desc">Paystack 定义的错误码，用于对错误分类，帮助你快速识别错误类型。</p>
+    </div>
+    <div class="param">
+      <div class="param__head"><span class="param__name">data</span><span class="param__type">Object</span></div>
+      <p class="param__desc">错误响应通常不返回该字段；但当错误与被处理的数据相关时，某些场景会返回。</p>
+    </div>
+  </div>
+  <p><code class="inline">meta</code> 对象包含有助于解决该错误的附加信息，一般会提供 <code class="inline">next_step</code>（建议的下一步操作），也可能包含其他用于排障的诊断信息。</p>
+  <p>例如当批量转账被拒绝时，<code class="inline">meta</code> 对象会指出是否存在无效或被列入黑名单的收款人。</p>
+  <div class="snippet">
+    <div class="snippet__label"><span class="title">校验错误示例</span><span>JSON</span></div>
+    <pre class="code">{
+  "status": false,
+  "message": "Email Address is required",
+  "meta": {
+    "nextStep": "Provide all required params"
+  },
+  "type": "validation_error",
+  "code": "missing_params"
+}</pre>
+  </div>
+  <div class="callout">不知道该查哪里？把错误信息或关键词输入页面顶部的搜索框。如果仍未找到需要的答案，欢迎<a href="mailto:techsupport@paystack.com">联系我们</a>。</div>
+
+  <h3 id="error-categories">错误分类</h3>
+  <p>错误按类别分组，便于理解以及在代码中分支处理。</p>
+  <div class="params">
+    <div class="param">
+      <div class="param__head"><span class="param__name">api_error</span><span class="param__type">String</span></div>
+      <p class="param__desc">表示错误发生在 Paystack API 侧，例如集成了访问未获授权的资源，或其他 API 层面的问题。</p>
+    </div>
+    <div class="param">
+      <div class="param__head"><span class="param__name">validation_error</span><span class="param__type">String</span></div>
+      <p class="param__desc">表示错误与请求中的数据无效有关，例如传入的参数缺失或非法。</p>
+    </div>
+    <div class="param">
+      <div class="param__head"><span class="param__name">processor_error</span><span class="param__type">String</span></div>
+      <p class="param__desc">表示错误与支付处理方或网关有关，例如余额不足、卡片被冻结或过期，以及支付处理方反馈的其他问题。</p>
+    </div>
+  </div>
+
+  <h2 id="groups">接口分组一览</h2>
+  <p>下表为 Paystack API 的全部分组，点击进入各分组的中文文档（含接口参数、请求与响应示例）。</p>
+  <div class="grid-links">
+    <a class="chip" href="transaction.html">交易 Transactions</a>
+    <a class="chip" href="charge.html">扣款 Charge</a>
+    <a class="chip" href="customer.html">客户 Customers</a>
+    <a class="chip" href="dedicated-virtual-account.html">专属虚拟账户</a>
+    <a class="chip" href="directdebit.html">直接借记</a>
+    <a class="chip" href="preauthorization.html">预授权</a>
+    <a class="chip" href="apple-pay.html">Apple Pay</a>
+    <a class="chip" href="capitec-pay.html">Capitec Pay</a>
+    <a class="chip" href="split.html">分账</a>
+    <a class="chip" href="subaccount.html">子账户</a>
+    <a class="chip" href="plan.html">订阅计划</a>
+    <a class="chip" href="subscription.html">订阅</a>
+    <a class="chip" href="product.html">商品</a>
+    <a class="chip" href="storefront.html">店铺</a>
+    <a class="chip" href="order.html">订单</a>
+    <a class="chip" href="page.html">支付页面</a>
+    <a class="chip" href="payment-request.html">付款请求</a>
+    <a class="chip" href="settlement.html">结算</a>
+    <a class="chip" href="transfer-recipient.html">转账收款人</a>
+    <a class="chip" href="transfer.html">转账</a>
+    <a class="chip" href="transfer-control.html">转账控制</a>
+    <a class="chip" href="bulk-charge.html">批量扣款</a>
+    <a class="chip" href="integration.html">集成配置</a>
+    <a class="chip" href="dispute.html">争议</a>
+    <a class="chip" href="refund.html">退款</a>
+    <a class="chip" href="webhook-events.html">Webhook 事件</a>
+    <a class="chip" href="terminal.html">终端 Terminal</a>
+    <a class="chip" href="virtual-terminal.html">虚拟终端</a>
+    <a class="chip" href="verification.html">校验 Verification</a>
+    <a class="chip" href="miscellaneous.html">其他 Miscellaneous</a>
+  </div>
+</main>
+</div>
+
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/api/" target="_blank" rel="noopener">paystack.com/docs/api</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

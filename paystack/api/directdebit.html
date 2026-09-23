@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Direct Debit · Paystack API 参考（中文）</title>
+<meta name="description" content="直接借记 API 中文文档">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab" href="../doc/index.html">开发文档</a>
+    <a class="topbar__tab topbar__tab--active" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section">
+<div class="sidebar__caption">概览</div>
+<a class="sidebar__ep" href="index.html">API 简介与约定</a>
+<a class="sidebar__ep" href="index.html#authentication">认证鉴权</a>
+<a class="sidebar__ep" href="index.html#rate-limits">请求速率限制</a>
+<a class="sidebar__ep" href="index.html#pagination">分页与遍历</a>
+<a class="sidebar__ep" href="index.html#errors">错误处理</a>
+<a class="sidebar__ep" href="index.html#currency">支持的货币</a>
+</div>
+<div class="sidebar__caption">接口分组</div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="transaction.html">交易</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="transaction.html#initialize">初始化交易</a></li>
+<li><a class="sidebar__ep" href="transaction.html#verify">校验交易</a></li>
+<li><a class="sidebar__ep" href="transaction.html#list">查询交易列表</a></li>
+<li><a class="sidebar__ep" href="transaction.html#fetch">查询交易</a></li>
+<li><a class="sidebar__ep" href="transaction.html#charge-authorization">授权扣款</a></li>
+<li><a class="sidebar__ep" href="transaction.html#view-timeline">查看交易时间线</a></li>
+<li><a class="sidebar__ep" href="transaction.html#totals">交易汇总</a></li>
+<li><a class="sidebar__ep" href="transaction.html#export">导出交易</a></li>
+<li><a class="sidebar__ep" href="transaction.html#partial-debit">部分扣款</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="split.html">分账</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="split.html#create">创建分账</a></li>
+<li><a class="sidebar__ep" href="split.html#list">查询/搜索分账</a></li>
+<li><a class="sidebar__ep" href="split.html#fetch">查询分账</a></li>
+<li><a class="sidebar__ep" href="split.html#update">更新分账</a></li>
+<li><a class="sidebar__ep" href="split.html#add-subaccount">添加/更新分账子账户</a></li>
+<li><a class="sidebar__ep" href="split.html#remove-subaccount">从分账中移除子账户</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="terminal.html">终端</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="terminal.html#send-event">发送事件</a></li>
+<li><a class="sidebar__ep" href="terminal.html#fetch-event-status">查询事件状态</a></li>
+<li><a class="sidebar__ep" href="terminal.html#fetch-terminal-status">查询终端状态</a></li>
+<li><a class="sidebar__ep" href="terminal.html#list">查询终端列表</a></li>
+<li><a class="sidebar__ep" href="terminal.html#fetch">查询终端</a></li>
+<li><a class="sidebar__ep" href="terminal.html#update">更新终端</a></li>
+<li><a class="sidebar__ep" href="terminal.html#commission">启用终端</a></li>
+<li><a class="sidebar__ep" href="terminal.html#decommission">停用终端</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="virtual-terminal.html">虚拟终端</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="virtual-terminal.html#create">创建虚拟终端</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#list">查询虚拟终端列表</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#fetch">查询虚拟终端</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#update">更新虚拟终端</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#deactivate">停用虚拟终端</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#assign-destination">分配虚拟终端收款账户</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#unassign-destination">取消虚拟终端收款账户</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#add-split-code">为虚拟终端添加分账代码</a></li>
+<li><a class="sidebar__ep" href="virtual-terminal.html#remove-split-code">移除虚拟终端的分账代码</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="customer.html">客户</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="customer.html#create">创建客户</a></li>
+<li><a class="sidebar__ep" href="customer.html#list">查询客户列表</a></li>
+<li><a class="sidebar__ep" href="customer.html#fetch">查询客户</a></li>
+<li><a class="sidebar__ep" href="customer.html#update">更新客户</a></li>
+<li><a class="sidebar__ep" href="customer.html#validate">校验客户</a></li>
+<li><a class="sidebar__ep" href="customer.html#whitelist-blacklist">将客户加入白名单/黑名单</a></li>
+<li><a class="sidebar__ep" href="customer.html#initialize-authorization">初始化支付授权</a></li>
+<li><a class="sidebar__ep" href="customer.html#verify-authorization">校验支付授权</a></li>
+<li><a class="sidebar__ep" href="customer.html#initialize-direct-debit">初始化直接借记</a></li>
+<li><a class="sidebar__ep" href="customer.html#directdebit-activation-charge">直接借记激活扣款</a></li>
+<li><a class="sidebar__ep" href="customer.html#directdebit-mandate-authorizations">查询授权委托列表</a></li>
+<li><a class="sidebar__ep" href="customer.html#deactivate-authorization">停用支付授权</a></li>
+</ul></div>
+<div class="sidebar__group sidebar__group--active">
+<a class="sidebar__group-title" href="directdebit.html">直接借记</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="directdebit.html#activation-charge">触发激活扣款</a></li>
+<li><a class="sidebar__ep" href="directdebit.html#mandate-authorizations">查询授权委托列表</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="dedicated-virtual-account.html">专属虚拟账户</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#create">创建专属虚拟账户</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#assign">分配专属虚拟账户</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#list">查询专属虚拟账户列表</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#fetch">查询专属虚拟账户</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#requery">Requery Dedicated Account</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#deactivate">停用专属虚拟账户</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#add-split">对专属虚拟账户交易拆分</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#remove-split">移除专属虚拟账户的分账</a></li>
+<li><a class="sidebar__ep" href="dedicated-virtual-account.html#providers">查询银行服务商</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="preauthorization.html">预授权</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="preauthorization.html#initialize">初始化预授权</a></li>
+<li><a class="sidebar__ep" href="preauthorization.html#capture">完成预授权扣款</a></li>
+<li><a class="sidebar__ep" href="preauthorization.html#reserve">预留预授权额度</a></li>
+<li><a class="sidebar__ep" href="preauthorization.html#verify">校验预授权</a></li>
+<li><a class="sidebar__ep" href="preauthorization.html#release">释放预授权</a></li>
+<li><a class="sidebar__ep" href="preauthorization.html#list">查询预授权列表</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="apple-pay.html">Apple Pay</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="apple-pay.html#register-domain">注册域名</a></li>
+<li><a class="sidebar__ep" href="apple-pay.html#list-domains">查询域名列表</a></li>
+<li><a class="sidebar__ep" href="apple-pay.html#unregister-domain">注销域名</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="capitec-pay.html">Capitec Pay</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="capitec-pay.html#requery">重新查询交易</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="subaccount.html">子账户</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="subaccount.html#create">创建子账户</a></li>
+<li><a class="sidebar__ep" href="subaccount.html#list">查询子账户列表</a></li>
+<li><a class="sidebar__ep" href="subaccount.html#fetch">查询子账户</a></li>
+<li><a class="sidebar__ep" href="subaccount.html#update">更新子账户</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="plan.html">订阅计划</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="plan.html#create">创建订阅计划</a></li>
+<li><a class="sidebar__ep" href="plan.html#list">查询订阅计划列表</a></li>
+<li><a class="sidebar__ep" href="plan.html#fetch">查询订阅计划</a></li>
+<li><a class="sidebar__ep" href="plan.html#update">更新订阅计划</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="subscription.html">订阅</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="subscription.html#create">创建订阅</a></li>
+<li><a class="sidebar__ep" href="subscription.html#list">查询订阅列表</a></li>
+<li><a class="sidebar__ep" href="subscription.html#fetch">查询订阅</a></li>
+<li><a class="sidebar__ep" href="subscription.html#enable">启用订阅</a></li>
+<li><a class="sidebar__ep" href="subscription.html#disable">停用订阅</a></li>
+<li><a class="sidebar__ep" href="subscription.html#manage-link">生成订阅更新链接</a></li>
+<li><a class="sidebar__ep" href="subscription.html#manage-email">发送订阅更新链接</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="product.html">商品</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="product.html#create">创建商品</a></li>
+<li><a class="sidebar__ep" href="product.html#list">查询商品列表</a></li>
+<li><a class="sidebar__ep" href="product.html#fetch">查询商品</a></li>
+<li><a class="sidebar__ep" href="product.html#update">更新商品</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="storefront.html">店铺</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="storefront.html#create">创建店铺</a></li>
+<li><a class="sidebar__ep" href="storefront.html#list">查询店铺列表</a></li>
+<li><a class="sidebar__ep" href="storefront.html#fetch">查询店铺</a></li>
+<li><a class="sidebar__ep" href="storefront.html#update">更新店铺</a></li>
+<li><a class="sidebar__ep" href="storefront.html#delete">删除店铺</a></li>
+<li><a class="sidebar__ep" href="storefront.html#verify-slug">校验店铺 Slug</a></li>
+<li><a class="sidebar__ep" href="storefront.html#fetch-orders">查询店铺订单</a></li>
+<li><a class="sidebar__ep" href="storefront.html#add-products">向店铺添加商品</a></li>
+<li><a class="sidebar__ep" href="storefront.html#list-products">查询店铺商品列表</a></li>
+<li><a class="sidebar__ep" href="storefront.html#publish">发布店铺</a></li>
+<li><a class="sidebar__ep" href="storefront.html#duplicate">复制店铺</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="order.html">订单</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="order.html#create">创建订单</a></li>
+<li><a class="sidebar__ep" href="order.html#list">查询订单列表</a></li>
+<li><a class="sidebar__ep" href="order.html#fetch">查询订单</a></li>
+<li><a class="sidebar__ep" href="order.html#fetch-product-orders">查询商品订单</a></li>
+<li><a class="sidebar__ep" href="order.html#validate">校验订单</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="page.html">支付页面</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="page.html#create">创建支付页面</a></li>
+<li><a class="sidebar__ep" href="page.html#list">查询支付页面列表</a></li>
+<li><a class="sidebar__ep" href="page.html#fetch">查询支付页面</a></li>
+<li><a class="sidebar__ep" href="page.html#update">更新支付页面</a></li>
+<li><a class="sidebar__ep" href="page.html#check-slug">检查 Slug 是否可用</a></li>
+<li><a class="sidebar__ep" href="page.html#add-products">添加商品</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="payment-request.html">付款请求</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="payment-request.html#create">创建付款请求</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#list">查询付款请求列表</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#fetch">查询付款请求</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#verify">校验付款请求</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#send-notification">发送通知</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#total">付款请求合计</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#finalize">完成付款请求</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#update">更新付款请求</a></li>
+<li><a class="sidebar__ep" href="payment-request.html#archive">归档付款请求</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="settlement.html">结算</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="settlement.html#list">查询结算列表</a></li>
+<li><a class="sidebar__ep" href="settlement.html#transactions">查询结算交易列表</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="transfer-recipient.html">转账收款人</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="transfer-recipient.html#create">创建转账收款人</a></li>
+<li><a class="sidebar__ep" href="transfer-recipient.html#bulk">批量创建转账收款人</a></li>
+<li><a class="sidebar__ep" href="transfer-recipient.html#list">查询转账收款人列表</a></li>
+<li><a class="sidebar__ep" href="transfer-recipient.html#fetch">查询转账收款人</a></li>
+<li><a class="sidebar__ep" href="transfer-recipient.html#update">更新转账收款人</a></li>
+<li><a class="sidebar__ep" href="transfer-recipient.html#delete">删除转账收款人</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="transfer.html">转账</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="transfer.html#initiate">发起转账</a></li>
+<li><a class="sidebar__ep" href="transfer.html#finalize">完成转账</a></li>
+<li><a class="sidebar__ep" href="transfer.html#bulk">发起批量转账</a></li>
+<li><a class="sidebar__ep" href="transfer.html#list">查询转账列表</a></li>
+<li><a class="sidebar__ep" href="transfer.html#fetch">查询转账</a></li>
+<li><a class="sidebar__ep" href="transfer.html#verify">校验转账</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="transfer-control.html">转账控制</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="transfer-control.html#balance">查询余额</a></li>
+<li><a class="sidebar__ep" href="transfer-control.html#balance-ledger">查询余额流水</a></li>
+<li><a class="sidebar__ep" href="transfer-control.html#resend-otp">重发转账 OTP</a></li>
+<li><a class="sidebar__ep" href="transfer-control.html#disable-otp">关闭转账 OTP</a></li>
+<li><a class="sidebar__ep" href="transfer-control.html#finalize-disable-otp">确认关闭 OTP</a></li>
+<li><a class="sidebar__ep" href="transfer-control.html#enable-otp">开启转账 OTP</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="bulk-charge.html">批量扣款</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="bulk-charge.html#initiate">发起批量扣款</a></li>
+<li><a class="sidebar__ep" href="bulk-charge.html#list">查询批量扣款批次列表</a></li>
+<li><a class="sidebar__ep" href="bulk-charge.html#fetch-batch">查询批量扣款批次</a></li>
+<li><a class="sidebar__ep" href="bulk-charge.html#fetch-charge">查询批次内的扣款</a></li>
+<li><a class="sidebar__ep" href="bulk-charge.html#pause">暂停批量扣款批次</a></li>
+<li><a class="sidebar__ep" href="bulk-charge.html#resume">恢复批量扣款批次</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="integration.html">集成配置</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="integration.html#fetch-timeout">查询支付会话超时</a></li>
+<li><a class="sidebar__ep" href="integration.html#update-timeout">更新支付会话超时</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="charge.html">扣款</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="charge.html#create">创建扣款</a></li>
+<li><a class="sidebar__ep" href="charge.html#submit-pin">提交 PIN</a></li>
+<li><a class="sidebar__ep" href="charge.html#submit-otp">提交 OTP</a></li>
+<li><a class="sidebar__ep" href="charge.html#submit-phone">提交手机号</a></li>
+<li><a class="sidebar__ep" href="charge.html#submit-birthday">提交生日</a></li>
+<li><a class="sidebar__ep" href="charge.html#submit-address">提交地址</a></li>
+<li><a class="sidebar__ep" href="charge.html#check">查询待处理扣款</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="dispute.html">争议</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="dispute.html#list">查询争议列表</a></li>
+<li><a class="sidebar__ep" href="dispute.html#fetch">查询争议</a></li>
+<li><a class="sidebar__ep" href="dispute.html#transaction">查询交易争议列表</a></li>
+<li><a class="sidebar__ep" href="dispute.html#update">更新争议</a></li>
+<li><a class="sidebar__ep" href="dispute.html#evidence">提交证据</a></li>
+<li><a class="sidebar__ep" href="dispute.html#upload-url">获取上传地址</a></li>
+<li><a class="sidebar__ep" href="dispute.html#resolve">处理争议</a></li>
+<li><a class="sidebar__ep" href="dispute.html#export">导出争议</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="refund.html">退款</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="refund.html#create">发起退款</a></li>
+<li><a class="sidebar__ep" href="refund.html#retry">重试退款</a></li>
+<li><a class="sidebar__ep" href="refund.html#list">查询退款列表</a></li>
+<li><a class="sidebar__ep" href="refund.html#fetch">查询退款</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="webhook-events.html">Webhook 事件</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="webhook-events.html#list">List Events</a></li>
+<li><a class="sidebar__ep" href="webhook-events.html#lookup">Look Up an Event</a></li>
+<li><a class="sidebar__ep" href="webhook-events.html#fetch">Fetch Event</a></li>
+<li><a class="sidebar__ep" href="webhook-events.html#resend">Resend Events</a></li>
+<li><a class="sidebar__ep" href="webhook-events.html#resend-matching">Resend Matching Events</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="verification.html">校验</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="verification.html#resolve-account">解析银行账号</a></li>
+<li><a class="sidebar__ep" href="verification.html#validate-account">校验账号</a></li>
+<li><a class="sidebar__ep" href="verification.html#resolve-card">解析卡 BIN</a></li>
+</ul></div>
+<div class="sidebar__group">
+<a class="sidebar__group-title" href="miscellaneous.html">其他接口</a>
+<ul class="sidebar__eps">
+<li><a class="sidebar__ep" href="miscellaneous.html#bank">查询银行列表</a></li>
+<li><a class="sidebar__ep" href="miscellaneous.html#country">查询/搜索国家</a></li>
+<li><a class="sidebar__ep" href="miscellaneous.html#avs-states">查询州/省列表（AVS）</a></li>
+</ul></div>
+</aside>
+<main class="content">
+<div class="content__eyebrow">API 参考</div>
+<h1>直接借记</h1>
+<p class="lead">直接借记 API 用于管理客户银行账户上的支付授权。</p>
+<section class="endpoint" id="activation-charge">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">触发激活扣款</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--put">PUT</span> <span class="endpoint__path">/directdebit/activation-charge</span></p>
+<p>代客户对待处理的授权委托发起激活扣款</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div><div class="param"><div class="param__head"><span class="param__name">content-type</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">application/json</code></p></div></div>
+<h3>请求体参数（Body Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">customer_ids</span><span class="param__type">array</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">处于待处理授权委托状态的客户 ID 数组。</p></div></div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">#!/bin/sh
+curl https://api.paystack.co/directdebit/activation-charge
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ 
+&quot;customer_ids&quot;: [28958104, 983697220]
+}&#x27;
+-X PUT</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">Ok
+{
+&quot;status&quot;: true,
+&quot;message&quot;: &quot;Mandate is queued for retry&quot;
+}</pre></div>
+</section>
+<section class="endpoint" id="mandate-authorizations">
+<div class="endpoint__head"><h2 style="margin:0;font-size:20px">查询授权委托列表</h2></div>
+<p style="margin:6px 0 10px"><span class="method method--get">GET</span> <span class="endpoint__path">/directdebit/mandate-authorizations</span></p>
+<p>获取集成中的直接借记授权委托列表</p>
+<h3>请求头（Headers）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">authorization</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">取值设为 <code class="inline">Bearer SECRET_KEY</code></p></div></div>
+<h3>查询参数（Query Parameters）</h3>
+<div class="params"><div class="param"><div class="param__head"><span class="param__name">cursor</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">要获取的下一组支付授权的游标值，可从响应的 meta 对象中获取</p></div><div class="param"><div class="param__head"><span class="param__name">status</span><span class="param__type">String</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">按支付授权状态筛选，可选值：<code class="inline">pending</code>，<code class="inline">active</code>，<code class="inline">revoked</code></p></div><div class="param"><div class="param__head"><span class="param__name">per_page</span><span class="param__type">Integer</span><span class="param__use param__use--required">必填</span></div><p class="param__desc">每次请求获取的支付授权数量</p></div></div>
+<div class="snippet"><div class="snippet__label"><span class="title">请求示例</span><span>cURL</span></div><pre class="code">#!/bin/sh
+url=&quot;https://api.paystack.co/directdebit/mandate-authorizations&quot;
+authorization=&quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+
+curl &quot;$url&quot; -H &quot;$authorization&quot; -X GET</pre></div>
+<div class="snippet"><div class="snippet__label"><span class="title">响应示例</span><span>JSON</span></div><pre class="code">Ok
+{
+&quot;status&quot;: true,
+&quot;message&quot;: &quot;Mandate authorizations retrieved successfully&quot;,
+&quot;data&quot;: [
+{
+&quot;id&quot;: 112244,
+&quot;status&quot;: &quot;active&quot;,
+&quot;mandate_id&quot;: 1560169,
+&quot;authorization_id&quot;: 1069309917,
+&quot;authorization_code&quot;: &quot;AUTH_lEt8QgrSfW&quot;,
+&quot;integration_id&quot;: 463433,
+&quot;account_number&quot;: &quot;0123456789&quot;,
+&quot;bank_code&quot;: &quot;058&quot;,
+&quot;bank_name&quot;: &quot;Guaranty Trust Bank&quot;,
+&quot;customer&quot;: {
+&quot;id&quot;: 28958104,
+&quot;customer_code&quot;: &quot;CUS_5kye9bc41uw15pb&quot;,
+&quot;email&quot;: &quot;customer@email.com&quot;,
+&quot;first_name&quot;: &quot;Booker&quot;,
+&quot;last_name&quot;: &quot;Jones&quot;
+},
+&quot;authorized_at&quot;: &quot;2025-06-23T12:47:10.632Z&quot;
+}
+],
+&quot;meta&quot;: {
+&quot;per_page&quot;: 10,
+&quot;next&quot;: &quot;MTI1OTc=&quot;,
+&quot;count&quot;: 10,
+&quot;total&quot;: 40
+}
+}</pre></div>
+</section>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/api/" target="_blank" rel="noopener">paystack.com/docs/api</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

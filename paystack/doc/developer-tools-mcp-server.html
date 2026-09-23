@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCP 服务端测试版 · Paystack 开发文档（中文）</title>
+<meta name="description" content="MCP 服务端测试版 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<h2>MCP 服务端测试版</h2>
+<p>Paystack MCP 服务端使 AI 助手能够使用模型上下文协议与整个 Paystack APIs 进行交互。</p>
+<p>MCP 服务端目前处于公共预览版。如果你在使用过程中遇到任何问题或有建议，你可以<a href="https://github.com/PaystackOSS/paystack-mcp-server/issues">创建一个问题</a>告知我们或<a href="https://github.com/PaystackOSS/paystack-mcp-server/pulls">打开一个PR</a>添加功能。</p>
+<h2>简介</h2>
+<p><a href="https://modelcontextprotocol.io/">模型上下文协议 (MCP)</a>是一个开放标准，允许AI助手连接到外部工具和数据源。 Paystack MCP 服务端使用此标准将整个 Paystack API 暴露给使用 <a href="https://github.com/PaystackOSS/openapi">Paystack OpenAPI 规范</a> 的 AI 代理。</p>
+<p><a href="https://paystack.com/docs/static/e0b90b9a7cdbc1eed4060e5e09ccd754/8c557/paystack_mcp_architecture.png">![图片 1：显示 Paystack MCP 服务端如何工作的图片</a>](https://paystack.com/docs/static/e0b90b9a7cdbc1eed4060e5e09ccd754/61583/paystack_mcp_architecture.png)</p>
+<p>服务端通过 OpenAPI 解析器动态发现所有可用的 API 接口，并通过一组工具访问它们。这意味着MCP已准备好所有记录的APIs，你可以使用自然语言与Paystack集成进行交互，而无需编写代码或参考文档。</p>
+<h2>要求</h2>
+<p>在设置 MCP 服务端之前，请确保你具备以下条件：</p>
+<ul><li>Node.js v18 或更高版本</li><li>npm 或纱线</li></ul>
+<h2>开始使用</h2>
+<p>使用 <code class="inline">npx</code> 安装并运行服务端：</p>
+<pre class="code">npx @paystack/mcp-server --api-key sk_test_your_key_here
+</pre>
+<h3>配置选项</h3>
+<p>你可以通过两种方式提供你的 API 密钥：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>方法</th><th>用途</th></tr></thead><tbody><tr><td>CLI参数（推荐）</td><td><code class="inline">--api-key sk_test_...</code></td></tr><tr><td>环境变量</td><td>设置<code class="inline">PAYSTACK_TEST_SECRET_KEY</code></td></tr></tbody></table></div>
+<p>仅允许测试键 (<code class="inline">sk_test_*</code>)。服务端在启动时校验这一点并拒绝实时密钥，以防止实时集成发生意外操作。</p>
+<h2>它是如何运作的</h2>
+<p>服务端通过以下工具和资源公开 Paystack API：</p>
+<h3>工具</h3>
+<div class="table-wrap"><table class="data"><thead><tr><th>工具</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">get_paystack_operation</code></td><td>通过操作ID获取操作详细信息（方法、路径、参数）</td></tr><tr><td><code class="inline">make_paystack_request</code></td><td>执行 Paystack API 请求</td></tr></tbody></table></div>
+<h3>资源</h3>
+<div class="table-wrap"><table class="data"><thead><tr><th>资源</th><th>URI</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">paystack_operation_list</code></td><td><code class="inline">paystack://operations/list</code></td><td>列出所有可用的 Paystack 操作及其详细信息</td></tr><tr><td><code class="inline">paystack_skill</code></td><td><code class="inline">paystack://skill</code></td><td>包含 API 文档、代码片段和最佳实践的知识资源。</td></tr></tbody></table></div>
+<h3>示例</h3>
+<p>当你向助手询问诸如“获取我的 Paystack 业务的最后 5 笔交易”之类的问题时，幕后会发生以下情况。</p>
+<p><strong>1.助手浏览操作</strong> 它读取<code class="inline">paystack_operation_list</code> 来查找与你的请求匹配的操作。响应列出了每个操作；相关资源将如下所示：</p>
+<pre class="code">{
+  &quot;transaction_list&quot;: {
+    &quot;name&quot;: &quot;List Transactions&quot;,
+    &quot;path&quot;: &quot;/transaction&quot;,
+    &quot;method&quot;: &quot;get&quot;,
+    &quot;queryParameter&quot;: [
+      {
+        &quot;name&quot;: &quot;perPage&quot;,
+        &quot;description&quot;: &quot;Records per page&quot;
+      },
+      {
+        &quot;name&quot;: &quot;page&quot;,
+        &quot;description&quot;: &quot;Page number&quot;
+      },
+      {
+        &quot;name&quot;: &quot;status&quot;,
+        &quot;description&quot;: &quot;Filter by status&quot;
+      }
+    ]
+  }
+}</pre>
+<p><strong>2. 助手获取完整的操作详细信息。</strong> 一旦选择了<code class="inline">transaction_list</code>，它就会调用<code class="inline">get_paystack_operation</code>工具来确认确切的方法、路径和参数，然后再发出请求。</p>
+<pre class="code">
+{ &quot;operation_id&quot;: &quot;transaction_list&quot; }
+
+{
+&quot;name&quot;: &quot;List Transactions&quot;,
+&quot;method&quot;: &quot;get&quot;,
+&quot;path&quot;: &quot;/transaction&quot;,
+&quot;queryParameter&quot;: [
+{ &quot;name&quot;: &quot;perPage&quot;, &quot;required&quot;: false },
+{ &quot;name&quot;: &quot;page&quot;, &quot;required&quot;: false },
+{ &quot;name&quot;: &quot;status&quot;, &quot;required&quot;: false }
+]
+}</pre>
+<p><strong>3. 助手执行请求。</strong> 它使用操作详细信息调用 <code class="inline">make_paystack_request</code> 工具，将参数 (<code class="inline">perPage=5</code>) 作为查询字符串附加到路径。服务端对 Paystack 进行 API 调用并返回响应。</p>
+<pre class="code">
+{
+&quot;request&quot;: {
+&quot;method&quot;: &quot;GET&quot;,
+&quot;path&quot;: &quot;/transaction?perPage=5&quot;
+}
+}
+
+
+{
+&quot;status&quot;: true,
+&quot;message&quot;: &quot;Transactions retrieved&quot;,
+&quot;data&quot;: [
+{ &quot;id&quot;: 4099260516, &quot;reference&quot;: &quot;re4lyvq3s3&quot;, &quot;amount&quot;: 50000, &quot;currency&quot;: &quot;NGN&quot;, &quot;status&quot;: &quot;success&quot; },
+{ &quot;id&quot;: 4099260517, &quot;reference&quot;: &quot;qa1b2c3d4e&quot;, &quot;amount&quot;: 120000, &quot;currency&quot;: &quot;NGN&quot;, &quot;status&quot;: &quot;success&quot; }
+
+],
+&quot;meta&quot;: { &quot;total&quot;: 1284, &quot;perPage&quot;: 5, &quot;page&quot;: 1 }
+}</pre>
+<p><strong>4. 助理回复。</strong> 它使用来自 API 的响应来生成用户友好的摘要：</p>
+<pre class="code">Here are your last 5 transactions:
+1. NGN 500.00 — customer@example.com (success)
+2. NGN 1,200.00 — another@example.com (success)
+…</pre>
+<h2>客户整合</h2>
+<p>Paystack MCP 服务端可与任何 MCP 兼容的客户端配合使用。将以下配置添加到客户端的 MCP 配置文件中。如果你已在本地克隆并构建服务端，请使用本地构建设置。</p>
+<ul><li>托管 (npx)</li></ul>
+<pre class="code">{
+  &quot;mcpServers&quot;: {
+    &quot;paystack&quot;: {
+      &quot;command&quot;: &quot;npx&quot;,
+      &quot;args&quot;: [
+        &quot;@paystack/mcp-server&quot;,
+        &quot;--api-key&quot;,
+        &quot;sk_test_...&quot;
+      ]
+    }
+  }
+}</pre>
+<p>When using <code class="inline">command: &quot;node&quot;</code>, ensure you're running Node v18 or later. If you use a version manager, you might need to provide the full path to your Node binary. Run <code class="inline">which node</code> on macOS/Linux or <code class="inline">where node</code> on Windows to get the path.</p>
+<h2>及时推荐</h2>
+<p>为了在使用 MCP 服务端时获得最佳结果，请在提示中具体说明并始终在请求中包含“Paystack”。服务端提供内置指令，帮助AI助手找到正确的API详细信息。</p>
+<p><strong>好的提示：</strong></p>
+<ul><li>“初始化 50000 NGN 的 Paystack 交易”</li><li>“在我的 Paystack 账户上使用邮箱 user@example.com 创建客户”</li><li>“我如何使用 Paystack API 汇款？”</li><li>“向我展示一个用于校验 Paystack 交易的 cURL 示例”</li></ul>
+<p><strong>不太有效的提示：</strong></p>
+<ul><li>“列出我的交易”（不清楚使用哪个服务）</li><li>“向客户收费”（缺少有关 Paystack 的上下文）</li></ul>
+<p>一个好的提示包括：你想要做什么、你需要哪个 Paystack 功能或接口，以及任何特定参数。这有助于助手从 Paystack API 中选择正确的操作，而无需猜测。</p>
+<h2>故障排除</h2>
+<div class="table-wrap"><table class="data"><thead><tr><th>问题</th><th>解决方案</th></tr></thead><tbody><tr><td>服务端在启动时静默退出</td><td>检查 <code class="inline">PAYSTACK_TEST_SECRET_KEY</code> 是否已设置或者你是否传递了 <code class="inline">--api-key</code> 标志</td></tr><tr><td>“无效密钥”错误</td><td>密钥必须以 <code class="inline">sk_test_</code> 开头不允许使用实时密钥</td></tr><tr><td>工具未出现在客户端中</td><td>确保服务端正在运行并且客户端配置路径正确</td></tr><tr><td>请求超时</td><td>检查与 <code class="inline">api.paystack.co</code> 的网络连接，并确保你的防火墙或代理设置不会阻止请求</td></tr></tbody></table></div>
+<p>有关更多信息，请查看 GitHub 上的 <a href="https://github.com/PaystackOSS/paystack-mcp-server">Paystack MCP 服务端存储库</a>。</p>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/developer/tools-mcp-server/" target="_blank" rel="noopener">https://paystack.com/docs/developer/tools-mcp-server/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>

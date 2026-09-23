@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简介 · Paystack 开发文档（中文）</title>
+<meta name="description" content="简介 · Paystack 开发文档中文版">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="topbar__brand" href="../index.html"><span class="topbar__logo">P</span>Paystack 中文文档</a>
+  <nav class="topbar__tabs">
+    <a class="topbar__tab topbar__tab--active" href="index.html">开发文档</a>
+    <a class="topbar__tab" href="../api/index.html">API 参考</a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__meta">内容译自 paystack.com/docs · 仅供内部参考</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar__section"><div class="sidebar__caption">文档</div><a class="sidebar__ep" href="index.html">文档首页</a><a class="sidebar__ep" href="../api/index.html">API 参考</a></div>
+<div class="sidebar__section"><div class="sidebar__caption">收款 Payments</div>
+<a class="sidebar__ep" href="payments.html">概览</a>
+<a class="sidebar__ep" href="payments-accept-payments.html">受理支付</a>
+<a class="sidebar__ep" href="payments-webhooks.html">Webhook 回调</a>
+<a class="sidebar__ep" href="payments-verify-payments.html">支付校验</a>
+<a class="sidebar__ep" href="payments-payment-channels.html">支付渠道</a>
+<a class="sidebar__ep" href="payments-direct-debit.html">直接借记</a>
+<a class="sidebar__ep" href="payments-recurring-charges.html">周期扣款</a>
+<a class="sidebar__ep" href="payments-bulk-charge.html">批量扣款</a>
+<a class="sidebar__ep" href="payments-subscriptions.html">订阅</a>
+<a class="sidebar__ep" href="payments-split-payments.html">分账</a>
+<a class="sidebar__ep" href="payments-multi-split-payments.html">多级分账</a>
+<a class="sidebar__ep" href="payments-dedicated-virtual-accounts.html" style="background:#e8f7fd;color:#0a7ea4;font-weight:600">专属虚拟账户</a>
+<a class="sidebar__ep" href="payments-apple-pay.html">Apple Pay</a>
+<a class="sidebar__ep" href="payments-partial-debits.html">部分扣款</a>
+<a class="sidebar__ep" href="payments-card-preauthorization.html">卡片预授权</a>
+<a class="sidebar__ep" href="payments-manage-disputes.html">争议处理</a>
+<a class="sidebar__ep" href="payments-refunds.html">退款</a>
+<a class="sidebar__ep" href="payments-test-payments.html">测试支付</a>
+<a class="sidebar__ep" href="payments-metadata.html">Metadata 元数据</a>
+<a class="sidebar__ep" href="payments-gateway-responses.html">网关返回码</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">终端 Terminal</div>
+<a class="sidebar__ep" href="terminal.html">概览</a>
+<a class="sidebar__ep" href="terminal-invoice-payments.html">账单收款</a>
+<a class="sidebar__ep" href="terminal-push-payment-requests.html">推送收款请求</a>
+<a class="sidebar__ep" href="terminal-custom-apps.html">自定义应用</a>
+<a class="sidebar__ep" href="terminal-virtual-terminal.html">虚拟终端</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">转账 Transfers</div>
+<a class="sidebar__ep" href="transfers.html">概览</a>
+<a class="sidebar__ep" href="transfers-how-transfers-work.html">转账如何运作</a>
+<a class="sidebar__ep" href="transfers-creating-transfer-recipients.html">创建收款人</a>
+<a class="sidebar__ep" href="transfers-single-transfers.html">单笔转账</a>
+<a class="sidebar__ep" href="transfers-bulk-transfers.html">批量转账</a>
+<a class="sidebar__ep" href="transfers-managing-transfers.html">转账管理</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">身份验证 Identity Verification</div>
+<a class="sidebar__ep" href="identity-verification.html">概览</a>
+<a class="sidebar__ep" href="identity-verification-verify-account-number.html">校验银行账号</a>
+<a class="sidebar__ep" href="identity-verification-resolve-card-bin.html">解析卡 BIN</a>
+<a class="sidebar__ep" href="identity-verification-validate-customer.html">校验客户信息</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">开发工具 Developer Tools</div>
+<a class="sidebar__ep" href="developer-tools.html">概览</a>
+<a class="sidebar__ep" href="developer-tools-inlinejs.html">InlineJS</a>
+<a class="sidebar__ep" href="developer-tools-android-sdk.html">Android SDK</a>
+<a class="sidebar__ep" href="developer-tools-ios-sdk.html">iOS SDK</a>
+<a class="sidebar__ep" href="developer-tools-flutter-sdk.html">Flutter SDK</a>
+<a class="sidebar__ep" href="developer-tools-mcp-server.html">MCP Server</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">接入指南 Guides</div>
+<a class="sidebar__ep" href="guides.html">概览</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_vue_app.html">Vue 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept_payments_on_your_react_app.html">React 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-on-your-android-app.html">Android 应用接入收款</a>
+<a class="sidebar__ep" href="guides-accept-payments-in-your-flutter-app.html">Flutter 应用接入收款</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_react_native.html">React Native 终端应用</a>
+<a class="sidebar__ep" href="guides-building_terminal_apps_flutter.html">Flutter 终端应用</a>
+<a class="sidebar__ep" href="guides-using_the_paystack_checkout_in_a_mobile_webview.html">移动端 WebView 使用 Checkout</a>
+<a class="sidebar__ep" href="guides-migrating-from-inlinejs-v1-to-v2.html">InlineJS V1 升级 V2</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-android.html">迁移到 Paystack UI（Android）</a>
+<a class="sidebar__ep" href="guides-migrating-to-paystack-ui-ios.html">迁移到 Paystack UI（iOS）</a>
+</div>
+<div class="sidebar__section"><div class="sidebar__caption">变更日志 Changelog</div>
+<a class="sidebar__ep" href="changelog-api.html">API 变更日志</a>
+</div>
+</aside>
+<main class="content">
+<p>了解如何为你的客户创建虚拟账户来向你付款。</p>
+<p>此功能仅适用于在尼日利亚和加纳成功完成<a href="https://support.paystack.com/hc/en-us/articles/360009881220-How-do-I-activate-my-Paystack-Registered-Business-">上线流程</a>的注册企业。</p>
+<h2>简介</h2>
+<p>专属虚拟账户 (DVA) 是 Paystack Dashboard 和 API 上的一项功能，可让你为客户创建银行账户。这些账户允许你的客户在你的业务上进行不同的交易。</p>
+<p>当你为客户创建专属虚拟账户 (DVA) 时，到该账户的所有银行转账都将自动记录为该客户的交易。</p>
+<p>创建 DVA 并将其分配给客户涉及三个步骤：</p>
+<ol><li>创建客户</li><li>校验客户（某些业务类别需要）</li><li>为客户创建DVA</li></ol>
+<p>基于上述步骤，有两种可能的集成流程：</p>
+<ol><li><strong>多步骤账户分配</strong>：在此流程中，你将为每个步骤发出请求并处理响应，然后再继续下一步。</li><li><strong>单步账户分配</strong>：在此流程中，你将必要的数据传递给接口，它将处理 DVA 的创建和分配给客户。</li></ol>
+<p>两个流程都涉及异步进程，因此你需要设置 Webhook 来获取请求的更新。</p>
+<h2>设置Webhook</h2>
+<p>首先，你需要监听 <code class="inline">charge.success</code> 事件。银行转账是通过外部渠道进行的，我们只有在转账完成后才会收到通知。了解付款何时完成的唯一方法是<a href="https://paystack.com/docs/payments/webhooks/">通过 Webhook</a>。</p>
+<p><code class="inline">charge.success</code> Webhook 事件可让你知道何时收到银行转帐付款。以下是 <code class="inline">charge.success</code> 事件中专属虚拟账户支付的授权对象示例：</p>
+<pre class="code">{
+  &quot;authorization&quot;: {
+    &quot;authorization_code&quot;: &quot;AUTH_0ozsafcpdf&quot;,
+    &quot;bin&quot;: &quot;413XXX&quot;,
+    &quot;last4&quot;: &quot;X011&quot;,
+    &quot;exp_month&quot;: &quot;01&quot;,
+    &quot;exp_year&quot;: &quot;2020&quot;,
+    &quot;channel&quot;: &quot;dedicated_nuban&quot;,
+    &quot;card_type&quot;: &quot;transfer&quot;,
+    &quot;bank&quot;: &quot;First City Monument Bank&quot;,
+    &quot;country_code&quot;: &quot;NG&quot;,
+    &quot;brand&quot;: &quot;Managed Account&quot;,
+    &quot;reusable&quot;: false,
+    &quot;signature&quot;: null,
+    &quot;sender_bank&quot;: &quot;First City Monument Bank&quot;,
+    &quot;sender_bank_account_number&quot;: &quot;XXXXXX0011&quot;,
+    &quot;sender_country&quot;: &quot;NG&quot;,
+    &quot;sender_name&quot;: &quot;RANDALL AKANBI HORTON&quot;,
+    &quot;narration&quot;: &quot;NIP: RHODA CHURCH -1123344343/44343231232&quot;,
+    &quot;receiver_bank_account_number&quot;: &quot;9930000902&quot;,
+    &quot;receiver_bank&quot;: &quot;Test Bank&quot;
+  }
+}</pre>
+<h2>多步骤账户分配</h2>
+<p>这适合想要控制账户创建和分配给客户的每个步骤的商户。在此流程中，你将管理客户的创建、客户的校验以及 DVA 的创建。</p>
+<h3>创建客户</h3>
+<p>专属虚拟账户与客户绑定，因此你需要通过将 <code class="inline">email</code>、<code class="inline">first_name</code>、<code class="inline">last_name</code> 和 <code class="inline">phone</code> 传递给 <a href="https://paystack.com/docs/api/customer#create">创建客户API</a> 来创建客户。</p>
+<p>如果你的平台上已存在客户，请确保设置客户的 <code class="inline">first_name</code>、<code class="inline">last_name</code> 和 <code class="inline">phone</code>。这是因为我们需要客户的详细信息来创建银行账户。对于没有这些详细信息创建的客户，你可以在使用 <a href="https://paystack.com/docs/api/dedicated-virtual-account#create">创建专属虚拟账户API</a> 创建虚拟账户时通过传递 <code class="inline">first_name</code>、<code class="inline">last_name</code> 和 <code class="inline">phone</code> 来更新客户记录</p>
+<h3>校验客户</h3>
+<p>这仅适用于尼日利亚企业。</p>
+<p>出于合规原因，在<strong>投注</strong>、<strong>金融服务</strong>和<strong>一般服务</strong>业务类别下提供服务的企业只能为个人身份信息已校验的客户生成银行帐号。然后，该信息将用于命名银行帐号。 <a href="https://paystack.com/docs/identity-verification/validate-customer/">校验客户的身份。</a>的方法如下</p>
+<p>生成专属虚拟账户需要客户个人信息，并且只能在客户明确同意的情况下使用，而不是默认使用。</p>
+<h3>创建专属虚拟账户</h3>
+<p>要为客户创建专属虚拟账户，请向我们的<a href="https://paystack.com/docs/api/dedicated-virtual-account#create">创建专属虚拟账户API</a>发送<code class="inline">POST</code>请求。</p>
+<pre class="code">curl https://api.paystack.co/dedicated_account
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;customer&quot;: &quot;CUS_358xertt55&quot;, &quot;preferred_bank&quot;: &quot;test-bank&quot;}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;NUBAN successfully created&quot;,
+  &quot;data&quot;: {
+    &quot;bank&quot;: {
+      &quot;name&quot;: &quot;Test Bank&quot;,
+      &quot;id&quot;: 24,
+      &quot;slug&quot;: &quot;test-bank&quot;
+    },
+    &quot;account_name&quot;: &quot;KaroKart Rhoda Church&quot;,
+    &quot;account_number&quot;: &quot;9930000737&quot;,
+    &quot;assigned&quot;: true,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;metadata&quot;: null,
+    &quot;active&quot;: true,
+    &quot;id&quot;: 253,
+    &quot;created_at&quot;: &quot;2019-12-12T12:39:04.000Z&quot;,
+    &quot;updated_at&quot;: &quot;2020-01-06T15:51:24.000Z&quot;,
+    &quot;assignment&quot;: {
+      &quot;integration&quot;: 100043,
+      &quot;assignee_id&quot;: 7454289,
+      &quot;assignee_type&quot;: &quot;Customer&quot;,
+      &quot;expired&quot;: false,
+      &quot;account_type&quot;: &quot;PAY-WITH-TRANSFER-RECURRING&quot;,
+      &quot;assigned_at&quot;: &quot;2020-01-06T15:51:24.764Z&quot;
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 7454289,
+      &quot;first_name&quot;: &quot;Rhoda&quot;,
+      &quot;last_name&quot;: &quot;Church&quot;,
+      &quot;email&quot;: &quot;rhodachurch@email.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_kpb3qj71u1m0rw8&quot;,
+      &quot;phone&quot;: &quot;+2349053267565&quot;,
+      &quot;risk_action&quot;: &quot;default&quot;
+    }
+  }
+}</pre>
+<p>当客户尝试向创建的帐号进行转账时，账户名称将遵循格式<strong>产品名称/客户名称</strong>。</p>
+<p>对于提供虚拟账户即服务的企业，我们有一个命名功能，可让你根据要提供服务的公司来个性化账户名称。你可以发送邮箱至 <a href="mailto:support@paystack.com">support@paystack.com</a>，以便我们审核该功能并将其扩展到你的企业。</p>
+<p>默认情况下，你最多可为客户生成 <strong>1,000 个专用银行账户</strong>。在审查你的业务和用例后，可以增加此限制。要增加你的业务限额，请发送邮箱至 <a href="mailto:support@paystack.com">support@paystack.com</a></p>
+<p>要使用测试密钥创建专属虚拟账户，请在请求正文参数中使用 <code class="inline">test-bank</code> 作为 <code class="inline">preferred_bank</code>。</p>
+<p>你还可以使用我们的 <a href="https://demobank.paystackintegrations.com/">模拟银行</a> 应用程序转账到测试虚拟账户。</p>
+<h2>单步账户分配</h2>
+<p>在此流程中，你将客户详细信息传递给我们，我们负责创建 DVA 并将其分配给客户。你的请求参数取决于你的业务类别。出于合规性原因，某些企业需要校验其客户。</p>
+<h3>所需合规性</h3>
+<p>这仅适用于尼日利亚企业。</p>
+<p>在业务类别 -<strong>投注</strong>、<strong>金融服务</strong> 和<strong>一般服务</strong> 下提供服务的企业需要先校验客户的个人身份信息，然后才能生成银行账户。</p>
+<p>此类别的商户需要添加客户的银行详细信息以进行校验：</p>
+<pre class="code">curl https://api.paystack.co/dedicated_account/assign
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{
+&quot;email&quot;: &quot;janedoe@test.com&quot;,
+&quot;first_name&quot;: &quot;Jane&quot;,
+&quot;middle_name&quot;: &quot;Karen&quot;,
+&quot;last_name&quot;: &quot;Doe&quot;,
+&quot;phone&quot;: &quot;+2348100000000&quot;,
+&quot;preferred_bank&quot;: &quot;test-bank&quot;,
+&quot;country&quot;: &quot;NG&quot;,
+&quot;account_number&quot;: &quot;0123456789&quot;,
+&quot;bvn&quot;: &quot;20012345678&quot;,
+&quot;bank_code&quot;: &quot;007&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Assign dedicated account in progress&quot;
+}</pre>
+<p>由于客户校验步骤，你将收到两个 Webhook 事件。如果客户校验步骤失败，我们将向你发送 <code class="inline">customeridentification.failed</code> 和 <code class="inline">assigndedicatedaccount.failed</code> 事件。如果一切顺利，我们将向你发送 <code class="inline">customeridentification.success</code> 和 <code class="inline">assigndedicatedaccount.success</code> 事件。检查 <a href="https://paystack.com/docs/payments/dedicated-virtual-accounts/#handling-events">处理事件</a> 部分以了解这些事件的结构。</p>
+<h3>可选合规性</h3>
+<p>对于此类商户，你只需传递客户数据和首选银行：</p>
+<pre class="code">curl https://api.paystack.co/dedicated_account/assign
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{
+&quot;email&quot;: &quot;janedoe@test.com&quot;,
+&quot;first_name&quot;: &quot;Jane&quot;,
+&quot;middle_name&quot;: &quot;Karen&quot;,
+&quot;last_name&quot;: &quot;Doe&quot;,
+&quot;phone&quot;: &quot;+2348100000000&quot;,
+&quot;preferred_bank&quot;: &quot;test-bank&quot;,
+&quot;country&quot;: &quot;NG&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Assign dedicated account in progress&quot;
+}</pre>
+<p><code class="inline">dedicatedaccount.assign.success</code> 事件在成功创建和分配DVA 时发送，而<code class="inline">dedicatedaccount.assign.failed</code> 事件在无法创建账户时发送。你应该查看 <a href="https://paystack.com/docs/payments/dedicated-virtual-accounts/#handling-events">处理事件</a> 部分以了解这些事件的结构。</p>
+<h2>处理事件</h2>
+<p>我们为 DVA 创建和分配的不同阶段发送以下事件：</p>
+<div class="table-wrap"><table class="data"><thead><tr><th>活动</th><th>描述</th></tr></thead><tbody><tr><td><code class="inline">customeridentification.success</code></td><td>当客户的身份得到校验时发送此信息</td></tr><tr><td><code class="inline">customeridentification.failed</code></td><td>当无法校验客户身份时发送此信息</td></tr><tr><td><code class="inline">dedicatedaccount.assign.success</code></td><td>当 DVA 成功创建并分配给客户时发送</td></tr><tr><td><code class="inline">dedicatedaccount.assign.failed</code></td><td>当无法创建 DVA 并将其分配给客户时发送此消息</td></tr></tbody></table></div>
+<pre class="code">{
+  &quot;event&quot;: &quot;customeridentification.failed&quot;,
+  &quot;data&quot;: {
+    &quot;customer_id&quot;: 82796315,
+    &quot;customer_code&quot;: &quot;CUS_XXXXXXXXXXXXXXX&quot;,
+    &quot;email&quot;: &quot;email@email.com&quot;,
+    &quot;identification&quot;: {
+      &quot;country&quot;: &quot;NG&quot;,
+      &quot;type&quot;: &quot;bank_account&quot;,
+      &quot;bvn&quot;: &quot;123*****456&quot;,
+      &quot;account_number&quot;: &quot;012****345&quot;,
+      &quot;bank_code&quot;: &quot;999991&quot;
+    },
+    &quot;reason&quot;: &quot;Account number or BVN is incorrect&quot;
+  }
+}</pre>
+<h2>获取客户的专属虚拟账户</h2>
+<p>如果你想找回客户的专属虚拟账户，请拨打<a href="https://paystack.com/docs/api/customer#fetch">获取客户API</a>接口。你可以从响应中的 <code class="inline">dedicated_account</code> 对象中检索专属虚拟账户：</p>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Customer retrieved&quot;,
+  &quot;data&quot;: {
+    &quot;transactions&quot;: [],
+    &quot;subscriptions&quot;: [],
+    &quot;authorizations&quot;: [],
+    &quot;first_name&quot;: &quot;Rhoda&quot;,
+    &quot;last_name&quot;: &quot;Church&quot;,
+    &quot;email&quot;: &quot;rhodachurch@email.com&quot;,
+    &quot;phone&quot;: &quot;08154211006&quot;,
+    &quot;domain&quot;: &quot;live&quot;,
+    &quot;customer_code&quot;: &quot;CUS_dy1r7ts03zstbq5&quot;,
+    &quot;dedicated_account&quot;: {
+      &quot;bank&quot;: {
+        &quot;name&quot;: &quot;Test Bank&quot;,
+        &quot;id&quot;: 24,
+        &quot;slug&quot;: &quot;test-bank&quot;
+      },
+      &quot;id&quot;: 173,
+      &quot;account_name&quot;: &quot;KAROKART/RHODA CHURCH&quot;,
+      &quot;account_number&quot;: &quot;9930020212&quot;,
+      &quot;created_at&quot;: &quot;2019-12-09T13:31:38.000Z&quot;,
+      &quot;updated_at&quot;: &quot;2019-12-09T16:04:25.000Z&quot;,
+      &quot;currency&quot;: &quot;NGN&quot;,
+      &quot;active&quot;: true,
+      &quot;assigned&quot;: true,
+      &quot;assignment&quot;: {
+        &quot;assignee_id&quot;: 1530104,
+        &quot;assignee_type&quot;: &quot;Integration&quot;,
+        &quot;account_type&quot;: &quot;PAY-WITH-TRANSFER-RECURRING&quot;,
+        &quot;integration&quot;: 100043
+      }
+    }
+  }
+}</pre>
+<h2>重新查询客户专属虚拟账户</h2>
+<p>当客户向专属虚拟账户进行转账时，系统会自动为客户创建一笔交易，并将 Webhook 发送到你的服务端以通知你该交易。这通常会在几分钟内发生。</p>
+<p>In some cases, the notification could take longer to come in. When this happens, the customer might reach out to you that their account/wallet hasn't been credited, or they would try to refresh their balance in your app.</p>
+<p>在这种情况下，你可以使用 <a href="https://paystack.com/docs/api/dedicated-virtual-account#requery">重新查询专属虚拟账户API</a> 接口检查虚拟账户中是否有尚未处理的新交易。调用此接口将触发后台重新查询过程，如果发现任何待处理的交易，则会创建该交易，并将Webhook通知发送到你的服务端。</p>
+<pre class="code">curl https://api.paystack.co/dedicated_account/requery?account_number={accountNumber}&amp;provider_slug={provider_slug}&amp;date={yyyy-mm-dd}
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-X GET</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;We are checking the status of your transfer. We will send you a notification once it is confirmed&quot;
+}</pre>
+<p>你只能每十分钟重新查询一次专属虚拟账户。如果你尝试在 10 分钟内多次重新查询专属虚拟账户，则该请求将不会被处理。</p>
+<h2>专属虚拟账户分摊付款</h2>
+<p>专属虚拟账户的拆分付款允许你将收到的资金自动拆分到你的主结算银行账户和一个或多个银行账户之间的专属虚拟账户中。</p>
+<p>有两种方法可以在专属虚拟账户上添加分期付款：</p>
+<ol><li><a href="https://paystack.com/docs/payments/dedicated-virtual-accounts/#add-a-subaccount-when-creating-a-dedicated-virtual-account">创建专属虚拟账户时添加子账户</a></li><li><a href="https://paystack.com/docs/payments/dedicated-virtual-accounts/#add-a-subaccount-to-an-existing-dedicated-virtual-account">将子账户添加到现有专属虚拟账户</a></li></ol>
+<p>对于专属虚拟账户的多次分割付款：</p>
+<ol><li><a href="https://paystack.com/docs/payments/dedicated-virtual-accounts/#add-a-split-code-when-creating-a-dedicated-virtual-account">创建专属虚拟账户时添加分割代码</a></li><li><a href="https://paystack.com/docs/payments/dedicated-virtual-accounts/#add-a-split-code-to-an-existing-dedicated-virtual-account">将分割代码添加到现有的专属虚拟账户</a></li></ol>
+<h3>创建专属虚拟账户时添加子账户</h3>
+<p>当你为客户创建专属虚拟账户时，你可以将子账户代码添加到负载中</p>
+<pre class="code">curl https://api.paystack.co/dedicated_account
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;customer&quot;: 481193,
+&quot;preferred_bank&quot;:&quot;test-bank&quot;,
+&quot;subaccount&quot;: &quot;SUB_ACCOUNTCODE&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Assigned Managed Account Successfully Created&quot;,
+  &quot;data&quot;: {
+    &quot;bank&quot;: {
+      &quot;name&quot;: &quot;Test Bank&quot;,
+      &quot;id&quot;: 24,
+      &quot;slug&quot;: &quot;test-bank&quot;
+    },
+    &quot;account_name&quot;: &quot;KAROKART/YINKA ADE&quot;,
+    &quot;account_number&quot;: &quot;6731105168&quot;,
+    &quot;assigned&quot;: true,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;metadata&quot;: null,
+    &quot;active&quot;: true,
+    &quot;id&quot;: 97,
+    &quot;created_at&quot;: &quot;2019-11-13T13:52:39.000Z&quot;,
+    &quot;updated_at&quot;: &quot;2020-03-17T07:52:23.000Z&quot;,
+    &quot;assignment&quot;: {
+      &quot;integration&quot;: 100043,
+      &quot;assignee_id&quot;: 17328,
+      &quot;assignee_type&quot;: &quot;Customer&quot;,
+      &quot;expired&quot;: false,
+      &quot;account_type&quot;: &quot;PAY-WITH-TRANSFER-RECURRING&quot;,
+      &quot;assigned_at&quot;: &quot;2020-03-17T07:52:23.023Z&quot;,
+      &quot;expired_at&quot;: null
+    },
+    &quot;split_config&quot;: {
+      &quot;subaccount&quot;: &quot;ACC_qwerty&quot;
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 17328,
+      &quot;first_name&quot;: &quot;YINKA&quot;,
+      &quot;last_name&quot;: &quot;ADE&quot;,
+      &quot;email&quot;: &quot;yinka@testemail.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_xxxxxxxx&quot;,
+      &quot;phone&quot;: null,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;
+    }
+  }
+}</pre>
+<h3>将子账户添加到现有专属虚拟账户</h3>
+<p>更新现有专属虚拟账户时，你可以传递子账户代码作为参数之一。</p>
+<pre class="code">curl https://api.paystack.co/dedicated_account/split
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;account_number&quot;: &quot;0033322211&quot;, &quot;subaccount&quot;: &quot;SUB_ACCOUNTCODE&quot; }&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Subaccount assigned&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 22495,
+    &quot;account_name&quot;: &quot;KAROKART/YINKA ADE&quot;,
+    &quot;account_number&quot;: &quot;0033322211&quot;,
+    &quot;assigned&quot;: 1,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;metadata&quot;: null,
+    &quot;active&quot;: 1,
+    &quot;last_assignment_id&quot;: 525,
+    &quot;createdAt&quot;: &quot;2020-03-20T11:03:43.000Z&quot;,
+    &quot;updatedAt&quot;: &quot;2020-03-20T11:03:43.000Z&quot;,
+    &quot;assignment_id&quot;: 525,
+    &quot;split_config&quot;: {
+      &quot;subaccount&quot;: &quot;ACCT_4r33icuptxl40vv&quot;
+    }
+  }
+}</pre>
+<p>你还可以使用此接口编辑任何专属虚拟账户上的现有子账户。如果专属虚拟账户有子账户，则使用此接口将子账户更新为新子账户。</p>
+<h3>创建专属虚拟账户时添加分割代码</h3>
+<p>当你为客户创建专属虚拟账户时，你可以将拆分代码添加到负载中</p>
+<pre class="code">curl https://api.paystack.co/dedicated_account
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;customer&quot;: 481193,
+&quot;preferred_bank&quot;:&quot;test-bank&quot;,
+&quot;split_code&quot;: &quot;SPL_e7jnRLtzla&quot;
+}&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Assigned Managed Account Successfully Created&quot;,
+  &quot;data&quot;: {
+    &quot;bank&quot;: {
+      &quot;name&quot;: &quot;Test Bank&quot;,
+      &quot;id&quot;: 24,
+      &quot;slug&quot;: &quot;test-bank&quot;
+    },
+    &quot;account_name&quot;: &quot;KAROKART/YINKA ADE&quot;,
+    &quot;account_number&quot;: &quot;6731105168&quot;,
+    &quot;assigned&quot;: true,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;metadata&quot;: null,
+    &quot;active&quot;: true,
+    &quot;id&quot;: 97,
+    &quot;created_at&quot;: &quot;2019-11-13T13:52:39.000Z&quot;,
+    &quot;updated_at&quot;: &quot;2020-03-17T07:52:23.000Z&quot;,
+    &quot;assignment&quot;: {
+      &quot;integration&quot;: 100043,
+      &quot;assignee_id&quot;: 17328,
+      &quot;assignee_type&quot;: &quot;Customer&quot;,
+      &quot;expired&quot;: false,
+      &quot;account_type&quot;: &quot;PAY-WITH-TRANSFER-RECURRING&quot;,
+      &quot;assigned_at&quot;: &quot;2020-03-17T07:52:23.023Z&quot;,
+      &quot;expired_at&quot;: null
+    },
+    &quot;split_config&quot;: {
+      &quot;split_code&quot;: &quot;SPL_e7jnRLtzla&quot;
+    },
+    &quot;customer&quot;: {
+      &quot;id&quot;: 17328,
+      &quot;first_name&quot;: &quot;YINKA&quot;,
+      &quot;last_name&quot;: &quot;ADE&quot;,
+      &quot;email&quot;: &quot;yinka@testemail.com&quot;,
+      &quot;customer_code&quot;: &quot;CUS_xxxxxxxx&quot;,
+      &quot;phone&quot;: null,
+      &quot;metadata&quot;: null,
+      &quot;risk_action&quot;: &quot;default&quot;
+    }
+  }
+}</pre>
+<h3>将分割代码添加到现有的专属虚拟账户</h3>
+<p>更新现有专属虚拟账户时，你可以传递分割代码作为参数之一。</p>
+<pre class="code">curl https://api.paystack.co/dedicated_account/split
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;account_number&quot;: &quot;0033322211&quot;, &quot;split_code&quot;: &quot;SPL_e7jnRLtzla&quot; }&#x27;
+-X POST</pre>
+<pre class="code">{
+  &quot;status&quot;: true,
+  &quot;message&quot;: &quot;Subaccount assigned&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 22495,
+    &quot;account_name&quot;: &quot;KAROKART/YINKA ADE&quot;,
+    &quot;account_number&quot;: &quot;0033322211&quot;,
+    &quot;assigned&quot;: 1,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;metadata&quot;: null,
+    &quot;active&quot;: 1,
+    &quot;last_assignment_id&quot;: 525,
+    &quot;createdAt&quot;: &quot;2020-03-20T11:03:43.000Z&quot;,
+    &quot;updatedAt&quot;: &quot;2020-03-20T11:03:43.000Z&quot;,
+    &quot;assignment_id&quot;: 525,
+    &quot;split_config&quot;: {
+      &quot;split_code&quot;: &quot;SPL_e7jnRLtzla&quot;
+    }
+  }
+}</pre>
+<p>你还可以使用此接口编辑任何专属虚拟账户上的现有拆分代码。如果专属虚拟账户有拆分代码，则使用此接口将拆分代码更新为新的拆分代码。</p>
+<h3>移除分割</h3>
+<p>这允许你删除分配给任何专属虚拟账户的子账户代码，以便后续收到的交易完全结算到主结算账户中</p>
+<pre class="code">curl https://api.paystack.co/dedicated_account/split
+-H &quot;Authorization: Bearer YOUR_SECRET_KEY&quot;
+-H &quot;Content-Type: application/json&quot;
+-d &#x27;{ &quot;account_number&quot;: &quot;0033322211&quot; }&#x27;
+-X DELETE</pre>
+<pre class="code">{
+  &quot;status&quot;: &quot;success&quot;,
+  &quot;message&quot;: &quot;Subaccount unassigned&quot;,
+  &quot;data&quot;: {
+    &quot;id&quot;: 22173,
+    &quot;split_config&quot;: null,
+    &quot;account_name&quot;: &quot;KAROKART/YINKA ADE&quot;,
+    &quot;account_number&quot;: &quot;0033322211&quot;,
+    &quot;currency&quot;: &quot;NGN&quot;,
+    &quot;assigned&quot;: true,
+    &quot;active&quot;: true,
+    &quot;createdAt&quot;: &quot;2020-03-11T15:14:00.707Z&quot;,
+    &quot;updatedAt&quot;: &quot;2020-03-11T15:14:00.707Z&quot;
+  }
+}</pre>
+<h2>入境转账审批</h2>
+<p>仅 Paystack-Titan 虚拟账户支持此功能。</p>
+<p>入站转账批准允许企业接受或拒绝个人交易至<strong>Paystack-Titan 虚拟账户</strong>。此功能适用于专属虚拟账户和转账付款。它使企业能够控制他们希望接收的虚拟账户交易，从而减少与管理不需要的交易和处理退款相关的管理费用。</p>
+<p>要启用此功能，请转到“设置”页面，然后在仪表板上的<a href="https://dashboard.paystack.com/#/settings/preferences">首选项选项卡</a>中查找虚拟账户。选择 <code class="inline">Inbound Transfer Approval</code> 选项并提供将处理 Webhook 事件的 Webhook url。</p>
+<p><a href="https://paystack.com/docs/static/3a9ffe4e914d266b2b661a5b0637ffd6/8c557/virtual_accounts_approval.png">![图 1：仪表板中的转移批准图像</a>](https://paystack.com/docs/static/3a9ffe4e914d266b2b661a5b0637ffd6/1134b/virtual_accounts_approval.png)</p>
+<p>当客户尝试转账到账户时，Paystack 将发送一个 Webhook 事件，其中包含付款人账户和接收人账户的详细信息。你可以使用这些详细信息来做出决定。</p>
+<pre class="code">{
+  &quot;payer_account_number&quot;: &quot;44940573849&quot;,
+  &quot;payer_account_name&quot;: &quot;CIOKARAINE LAMAR&quot;,
+  &quot;payer_bank_code&quot;: &quot;00711&quot;,
+  &quot;payer_bank_name&quot;: &quot;Guaranty Trust Bank&quot;,
+  &quot;receiver_account_number&quot;: &quot;00000000001&quot;,
+  &quot;receiver_account_name&quot;: &quot;AUBREY GRAHAM&quot;,
+  &quot;recipient_account_type&quot;: &quot;bank_transfer OR dedicated_nuban&quot;,
+  &quot;session_id&quot;: &quot;10000000000000000000000000000&quot;,
+  &quot;sent_at&quot;: &quot;2024-07-31T11:28:06.872Z&quot;,
+  &quot;provider&quot;: &quot;titan-paystack&quot;,
+  &quot;amount&quot;: 10000,
+  &quot;narration&quot;: &quot;Transfer from CIOKARAINE LAMAR&quot;
+}</pre>
+<p>请避免长时间运行的任务。我们要求在 5 秒内回复，否则 Paystack 将自动接受入站转账。还要确保你为“接受”和“拒绝”响应返回 HTTP 200 OK 状态代码。</p>
+<p>你的服务端应在 5 秒内响应包含 <code class="inline">decision</code>（<code class="inline">REJECT</code> 或 <code class="inline">ACCEPT</code>）的 JSON 响应。你可以包含一个 <code class="inline">reason</code> 参数来解释该决定。这将显示在你的仪表板上。</p>
+<pre class="code">{
+  &quot;decision&quot;: &quot;REJECT || ACCEPT&quot;,
+  &quot;reason&quot;: &quot;Optional explanation here&quot;
+}</pre>
+<p>如果我们无法获得你的批准接口，我们将自动接受转账并完成交易。我们不会重试 Webhook 事件。</p>
+</main>
+</div>
+<footer class="site-footer">
+  中文翻译版 · 原文地址：<a href="https://paystack.com/docs/payments/dedicated-virtual-accounts/" target="_blank" rel="noopener">https://paystack.com/docs/payments/dedicated-virtual-accounts/</a> · 代码示例保持原样
+</footer>
+</body>
+</html>
