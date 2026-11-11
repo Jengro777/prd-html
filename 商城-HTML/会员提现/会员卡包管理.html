@@ -4,103 +4,3004 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>我的卡包</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/reset.css" />
+    <script src="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/antd.min.js"></script>
     <style>
-        :root { --tos-primary: #42b7ae; --tos-primary-bg: #e6f7f6; --tos-bg: #f5f7fa; --tos-text: #333; --tos-text-secondary: #666; --tos-text-muted: #999; --tos-success: #52c41a; --tos-warning: #faad14; --tos-error: #f5222d; --tos-border: #e5e7eb; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--tos-bg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--tos-text); -webkit-font-smoothing: antialiased; }
-        .sidebar { width: 200px; flex-shrink: 0; background: #fff; border-right: 1px solid #f0f2f5; position: fixed; left: 0; top: 0; bottom: 0; display: flex; flex-direction: column; z-index: 10; }
-        .sidebar__end-select { width: calc(100% - 24px); height: 32px; margin: 8px 12px 0; padding: 0 26px 0 10px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; font-size: 13px; color: #333; outline: none; cursor: pointer; font-family: inherit; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%2710%27><path d=%27M2 4l3 3 3-3%27 fill=%27none%27 stroke=%27%23999%27 stroke-width=%271.5%27 stroke-linecap=%27round%27/></svg>"); background-repeat: no-repeat; background-position: right 8px center; }
-        .sidebar__end-select:focus { border-color: #42b7ae; box-shadow: 0 0 0 2px rgba(66,183,174,.16); }
-        .sidebar__head { padding: 20px 16px 16px; border-bottom: 1px solid #f0f2f5; display: flex; align-items: center; gap: 10px; }
-        .sidebar__logo { width: 34px; height: 34px; border-radius: 8px; background: var(--tos-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
-        .sidebar__title { font-size: 15px; font-weight: 700; white-space: nowrap; }
-        .sidebar__nav { flex: 1; padding: 8px 0; overflow-y: auto; }
-        .sidebar__group-title { padding: 12px 14px 4px; font-size: 10px; color: var(--tos-text-muted); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
-        .sidebar__item { display: flex; align-items: center; gap: 8px; padding: 9px 14px; font-size: 13px; color: var(--tos-text-secondary); cursor: pointer; text-decoration: none; border-left: 3px solid transparent; transition: all .12s; }
-        .sidebar__item:hover { background: #f5f5f5; color: var(--tos-text); }
-        .sidebar__item--active { color: var(--tos-primary); font-weight: 600; background: var(--tos-primary-bg); border-left-color: var(--tos-primary); }
-        .sidebar__item i { width: 16px; text-align: center; font-size: 12px; }
-        .h5-container { width: 414px; margin: 0 auto; min-height: 100vh; background: var(--tos-bg); position: relative; }
-        .h5-header { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 16px; background: #fff; border-bottom: 1px solid var(--tos-border); }
-        .h5-header__back { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--tos-text); cursor: pointer; background: none; border: none; }
-        .h5-header__title { flex: 1; font-size: 17px; font-weight: 600; text-align: center; }
-        .h5-header__menu { width: 32px; height: 32px; display: none; align-items: center; justify-content: center; font-size: 20px; color: var(--tos-text); cursor: pointer; background: none; border: none; flex-shrink: 0; }
-        .h5-page { padding: 16px; }
-        .h5-alert { background: #e6f7f6; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: var(--tos-primary); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-        .card-list { display: flex; flex-direction: column; gap: 10px; }
-        .bank-card { background: #fff; border-radius: 10px; padding: 16px; border: 1px solid #f0f2f5; display: flex; gap: 12px; }
-        .bank-card--default { border-color: var(--tos-primary); background: var(--tos-primary-bg); }
-        .bank-card__icon { width: 44px; height: 32px; border-radius: 6px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-        .bank-card__info { flex: 1; min-width: 0; }
-        .bank-card__bank { font-size: 15px; font-weight: 700; }
-        .bank-card__num { font-family: monospace; font-size: 13px; color: var(--tos-text-secondary); margin-top: 2px; }
-        .bank-card__holder { font-size: 12px; color: var(--tos-text-muted); }
-        .bank-card__tags { display: flex; gap: 4px; margin-top: 4px; }
-        .bank-card__tag { font-size: 10px; padding: 1px 6px; border-radius: 3px; font-weight: 600; }
-        .tag-default { background: #f0faf0; color: var(--tos-success); }
-        .tag-debit { background: #e6f7f6; color: var(--tos-primary); }
-        .tag-credit { background: #fff7e6; color: var(--tos-warning); }
-        .bank-card__actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
-        .btn-sm { padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; border: 1px solid var(--tos-border); background: #fff; cursor: pointer; font-family: inherit; white-space: nowrap; }
-        .btn-sm--danger { border-color: #fecaca; color: var(--tos-error); background: #fff; }
-        .btn-sm--primary { border-color: var(--tos-primary); color: var(--tos-primary); }
-        .add-btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px; border: 1px dashed var(--tos-border); border-radius: 10px; color: var(--tos-text-secondary); font-size: 15px; cursor: pointer; margin-top: 8px; }
-        .add-btn:active { border-color: var(--tos-primary); color: var(--tos-primary); background: rgba(66,183,174,.04); }
-        .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 100; display: none; align-items: center; justify-content: center; }
-        .modal-mask.show { display: flex; }
-        .modal-box { background: #fff; border-radius: 12px; width: 300px; padding: 20px; text-align: center; }
-        .modal-box h3 { font-size: 16px; margin-bottom: 8px; }
-        .modal-box p { font-size: 14px; color: var(--tos-text-secondary); margin-bottom: 16px; }
-        .modal-box .btns { display: flex; gap: 8px; }
-        .btn { flex: 1; height: 40px; border-radius: 8px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; font-family: inherit; }
-        .btn--outline { background: #fff; border: 1px solid var(--tos-border); color: var(--tos-text-secondary); }
-        .btn--danger { background: var(--tos-error); color: #fff; }
-        @media (max-width: 680px) { .sidebar { display: none; } .h5-header__menu { display: flex; } .h5-container { width: 100%; } }
+        :root {
+            --tos-primary: #42b7ae;
+            --tos-primary-hover: #339b94;
+            --tos-primary-bg: #e6f7f6;
+            --tos-bg: #f5f7fa;
+            --tos-panel: #ffffff;
+            --tos-text: #333333;
+            --tos-text-secondary: #666666;
+            --tos-text-muted: #999999;
+            --tos-success: #52c41a;
+            --tos-warning: #faad14;
+            --tos-error: #f5222d;
+            --tos-border: #e5e7eb;
+            --tos-border-soft: #f0f1f2;
+            --tos-radius-card: 12px;
+            --tos-radius-control: 8px;
+            --tos-shadow-pop: 0 20px 60px rgba(15, 23, 42, 0.18);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            min-height: 100%;
+        }
+
+        body {
+            margin: 0;
+            overflow-x: hidden;
+            background: var(--tos-bg);
+            color: var(--tos-text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button {
+            color: inherit;
+        }
+
+        button:focus-visible,
+        input:focus-visible,
+        a:focus-visible {
+            outline: 2px solid rgba(66, 183, 174, 0.45);
+            outline-offset: 2px;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .sidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+            z-index: 80;
+            display: flex;
+            width: 200px;
+            flex-direction: column;
+            border-right: 1px solid var(--tos-border-soft);
+            background: #fff;
+            transition: transform 0.22s ease;
+        }
+
+        .sidebar__end-select {
+            width: calc(100% - 24px);
+            height: 32px;
+            margin: 8px 12px 0;
+            padding: 0 26px 0 10px;
+            border: 1px solid var(--tos-border);
+            border-radius: 8px;
+            outline: none;
+            background-color: #fff;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 4l3 3 3-3' fill='none' stroke='%23999' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            color: var(--tos-text);
+            font-size: 13px;
+            cursor: pointer;
+            appearance: none;
+        }
+
+        .sidebar__end-select:focus {
+            border-color: var(--tos-primary);
+            box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.16);
+        }
+
+        .sidebar__head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 20px 16px 16px;
+            border-bottom: 1px solid var(--tos-border-soft);
+        }
+
+        .sidebar__logo {
+            display: flex;
+            width: 34px;
+            height: 34px;
+            flex: 0 0 34px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: var(--tos-primary);
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .sidebar__title {
+            font-size: 15px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .sidebar__nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .sidebar__group-title {
+            padding: 12px 14px 4px;
+            color: var(--tos-text-muted);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .sidebar__item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 14px;
+            border-left: 3px solid transparent;
+            color: var(--tos-text-secondary);
+            font-size: 13px;
+            text-decoration: none;
+            transition: background-color 0.12s, color 0.12s;
+        }
+
+        .sidebar__item:hover {
+            background: #fafafa;
+            color: var(--tos-text);
+        }
+
+        .sidebar__item--active {
+            border-left-color: var(--tos-primary);
+            background: var(--tos-primary-bg);
+            color: var(--tos-primary);
+            font-weight: 600;
+        }
+
+        .sidebar__icon {
+            width: 16px;
+            flex: 0 0 16px;
+            text-align: center;
+            font-size: 15px;
+            line-height: 1;
+        }
+
+        .sidebar-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 70;
+            display: none;
+            background: rgba(15, 23, 42, 0.32);
+        }
+
+        .h5-container {
+            position: relative;
+            width: 414px;
+            min-height: 100vh;
+            margin: 0 auto;
+            overflow: hidden;
+            background: var(--tos-bg);
+            box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.03);
+        }
+
+        .h5-header {
+            position: relative;
+            z-index: 30;
+            display: flex;
+            height: 52px;
+            align-items: center;
+            gap: 8px;
+            padding: 0 12px;
+            border-bottom: 1px solid var(--tos-border-soft);
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        .h5-header--wallet {
+            height: 92px;
+            align-items: flex-start;
+            padding-top: 12px;
+            border-bottom: 0;
+            border-radius: 0 0 50% 50% / 0 0 24px 24px;
+            background: var(--tos-primary);
+            color: #fff;
+        }
+
+        .h5-header__menu,
+        .h5-header__back,
+        .h5-header__placeholder {
+            display: flex;
+            width: 32px;
+            height: 32px;
+            flex: 0 0 32px;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+        }
+
+        .h5-header__menu,
+        .h5-header__back {
+            cursor: pointer;
+        }
+
+        .h5-header__menu {
+            display: none;
+            font-size: 20px;
+        }
+
+        .h5-header__back {
+            font-size: 22px;
+            font-weight: 300;
+        }
+
+        .h5-header__menu:hover,
+        .h5-header__back:hover {
+            background: rgba(15, 23, 42, 0.05);
+        }
+
+        .h5-header--wallet .h5-header__menu:hover,
+        .h5-header--wallet .h5-header__back:hover {
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .h5-header__copy {
+            min-width: 0;
+            flex: 1;
+            padding-top: 4px;
+            text-align: center;
+        }
+
+        .h5-header__title {
+            overflow: hidden;
+            margin: 0;
+            font-size: 17px;
+            font-weight: 600;
+            line-height: 24px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .h5-header__subtitle {
+            margin: 1px 0 0;
+            color: rgba(255, 255, 255, 0.76);
+            font-size: 11px;
+            line-height: 16px;
+        }
+
+        .h5-content {
+            min-height: calc(100vh - 52px);
+            padding: 16px 18px 32px;
+        }
+
+        .h5-content--wallet {
+            padding-top: 22px;
+        }
+
+        .wallet-summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            color: var(--tos-text-muted);
+            font-size: 12px;
+        }
+
+        .wallet-summary strong {
+            color: var(--tos-text-secondary);
+            font-weight: 600;
+        }
+
+        .card-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+        }
+
+        .payment-card {
+            position: relative;
+            display: flex;
+            min-height: 82px;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 16px;
+            overflow: hidden;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.16s ease, box-shadow 0.16s ease;
+        }
+
+        .payment-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+        }
+
+        .payment-card:active {
+            transform: translateY(0);
+        }
+
+        .payment-card--wallet-mtn {
+            background: #e9ad45;
+            color: #fff;
+        }
+
+        .payment-card--wallet-vodafone {
+            background: #4b9d99;
+            color: #fff;
+        }
+
+        .payment-card--wallet-airtel {
+            background: #c5525a;
+            color: #fff;
+        }
+
+        .payment-card--debit {
+            border-color: #f0eadf;
+            background: #fffaf1;
+            color: var(--tos-text);
+        }
+
+        .payment-card--credit {
+            border-color: #f3e9eb;
+            background: #fff8f9;
+            color: var(--tos-text);
+        }
+
+        .payment-card--large {
+            min-height: 118px;
+            padding: 20px;
+            cursor: default;
+        }
+
+        .payment-card--large:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .provider-logo {
+            display: flex;
+            width: 44px;
+            height: 44px;
+            flex: 0 0 44px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: -0.2px;
+        }
+
+        .payment-card--large .provider-logo {
+            width: 50px;
+            height: 50px;
+            flex-basis: 50px;
+            font-size: 11px;
+        }
+
+        .provider-logo--mtn {
+            border: 3px solid #fff4a8;
+            background: #f4d400;
+            color: #153c70;
+            font-size: 9px;
+        }
+
+        .provider-logo--vodafone {
+            position: relative;
+            border: 4px solid #fff;
+            background: #d9282f;
+            color: transparent;
+        }
+
+        .provider-logo--vodafone::before {
+            position: absolute;
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: #fff;
+            content: "";
+        }
+
+        .provider-logo--airtel {
+            border: 4px solid #fff;
+            background: #fff;
+            color: #e12a35;
+            font-family: Georgia, serif;
+            font-size: 24px;
+            font-style: italic;
+            font-weight: 700;
+        }
+
+        .provider-logo--bank,
+        .provider-logo--cmb {
+            border: 1px solid #fee2e2;
+            background: #e11d2e;
+            color: #fff;
+            font-family: Georgia, serif;
+            font-size: 21px;
+            font-weight: 700;
+        }
+
+        .provider-logo--credit,
+        .provider-logo--boc {
+            border: 1px solid #fecdd3;
+            background: #df4267;
+            color: #fff;
+            font-family: Georgia, serif;
+            font-size: 21px;
+            font-weight: 700;
+        }
+
+        .payment-card__body {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .payment-card__head {
+            display: flex;
+            min-width: 0;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .payment-card__name {
+            overflow: hidden;
+            font-size: 15px;
+            font-weight: 650;
+            line-height: 21px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .payment-card--large .payment-card__name {
+            font-size: 16px;
+        }
+
+        .payment-card__owner,
+        .payment-card__type {
+            color: currentColor;
+            font-size: 11px;
+            font-weight: 400;
+            opacity: 0.88;
+            white-space: nowrap;
+        }
+
+        .payment-card__detail {
+            margin-top: 5px;
+            font-size: 12px;
+            letter-spacing: 0.25px;
+            line-height: 18px;
+            opacity: 0.9;
+        }
+
+        .payment-card__detail--mono {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        }
+
+        .payment-card__control {
+            display: flex;
+            flex: 0 0 auto;
+            align-self: flex-start;
+            padding-top: 2px;
+        }
+
+        .default-label {
+            color: #b42318;
+            font-size: 11px;
+            font-weight: 650;
+            white-space: nowrap;
+        }
+
+        .payment-card--debit .default-label,
+        .payment-card--credit .default-label {
+            color: #d9363e;
+        }
+
+        .set-default-btn {
+            padding: 2px 0;
+            border: 0;
+            background: transparent;
+            color: currentColor;
+            font-size: 11px;
+            opacity: 0.9;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .set-default-btn:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .add-payment {
+            display: flex;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-top: 54px;
+            padding: 10px;
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .add-payment__icon {
+            display: flex;
+            width: 54px;
+            height: 54px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #d1d5db;
+            color: #fff;
+            font-size: 36px;
+            font-weight: 200;
+            line-height: 1;
+            transition: background-color 0.16s ease;
+        }
+
+        .add-payment:hover .add-payment__icon {
+            background: var(--tos-primary);
+        }
+
+        .add-payment__title {
+            color: var(--tos-text);
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .add-payment__desc {
+            max-width: 290px;
+            color: var(--tos-text-muted);
+            font-size: 12px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .empty-state {
+            padding: 54px 20px;
+            color: var(--tos-text-muted);
+            text-align: center;
+        }
+
+        .empty-state__icon {
+            display: flex;
+            width: 62px;
+            height: 62px;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+            border-radius: 50%;
+            background: #eceff3;
+            color: #adb3bd;
+            font-size: 27px;
+        }
+
+        .empty-state h2 {
+            margin: 0 0 6px;
+            color: var(--tos-text-secondary);
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .empty-state p {
+            margin: 0;
+            font-size: 12px;
+        }
+
+        .detail-actions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            margin-top: 18px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        .detail-action {
+            display: flex;
+            min-height: 140px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            border: 0;
+            background: transparent;
+            color: var(--tos-text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .detail-action + .detail-action {
+            border-left: 1px solid var(--tos-border-soft);
+        }
+
+        .detail-action:hover {
+            background: #fafafa;
+            color: var(--tos-text);
+        }
+
+        .detail-action__icon {
+            width: 34px;
+            height: 34px;
+            color: #6b7280;
+        }
+
+        .detail-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            background: var(--tos-primary-bg);
+            color: #397f79;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .detail-note__icon {
+            flex: 0 0 auto;
+            font-size: 14px;
+            line-height: 20px;
+        }
+
+        .bank-detail-hero {
+            padding: 20px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+        }
+
+        .bank-detail-hero__head {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .bank-detail-hero__logo {
+            display: flex;
+            width: 46px;
+            height: 46px;
+            flex: 0 0 46px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: #f3f5f7;
+            color: #4b5563;
+        }
+
+        .bank-detail-hero__logo svg {
+            width: 30px;
+            height: 30px;
+        }
+
+        .bank-detail-hero__name {
+            font-size: 16px;
+            font-weight: 650;
+            line-height: 23px;
+        }
+
+        .bank-detail-hero__type {
+            margin-top: 2px;
+            color: var(--tos-text-muted);
+            font-size: 12px;
+            line-height: 18px;
+        }
+
+        .bank-detail-hero__number {
+            margin-top: 24px;
+            color: var(--tos-text);
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            line-height: 28px;
+        }
+
+        .bank-detail-hero__holder {
+            margin-top: 5px;
+            color: var(--tos-text-muted);
+            font-size: 12px;
+            line-height: 18px;
+        }
+
+        .bank-detail-section {
+            margin-top: 22px;
+        }
+
+        .bank-detail-section__title {
+            margin: 0 0 10px;
+            color: var(--tos-text);
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 24px;
+        }
+
+        .bank-detail-panel {
+            overflow: hidden;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+        }
+
+        .bank-info-row,
+        .bank-action-row {
+            display: flex;
+            width: 100%;
+            min-height: 62px;
+            align-items: center;
+            gap: 14px;
+            padding: 0 18px;
+            border: 0;
+            background: transparent;
+        }
+
+        .bank-info-row + .bank-info-row,
+        .bank-action-row + .bank-action-row {
+            border-top: 1px solid #f3f4f6;
+        }
+
+        .bank-info-row__label {
+            flex: 1;
+            color: var(--tos-text-muted);
+            font-size: 13px;
+            line-height: 20px;
+            text-align: left;
+        }
+
+        .bank-info-row__value {
+            flex: 0 0 auto;
+            color: var(--tos-text);
+            font-size: 13px;
+            line-height: 20px;
+            text-align: right;
+        }
+
+        .bank-action-row {
+            color: var(--tos-text-secondary);
+            font-size: 13px;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .bank-action-row:hover {
+            background: #fafafa;
+            color: var(--tos-text);
+        }
+
+        .bank-action-row__label {
+            flex: 1;
+        }
+
+        .bank-action-row__state {
+            color: var(--tos-primary);
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .bank-action-row__chevron {
+            width: 17px;
+            height: 17px;
+            flex: 0 0 17px;
+            color: #9aa2ad;
+        }
+
+        .bank-security-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-top: 24px;
+            color: var(--tos-text-muted);
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .bank-security-note svg {
+            width: 18px;
+            height: 18px;
+            flex: 0 0 18px;
+            margin-top: 1px;
+            color: #9aa2ad;
+        }
+
+        .form-panel {
+            border: 1px solid var(--tos-border-soft);
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        .readonly-row {
+            display: flex;
+            min-height: 66px;
+            align-items: center;
+            gap: 14px;
+            padding: 0 18px;
+        }
+
+        .readonly-row + .readonly-row,
+        .form-line + .form-line {
+            border-top: 1px solid #f4f5f7;
+        }
+
+        .readonly-row__label {
+            width: 74px;
+            flex: 0 0 74px;
+            color: var(--tos-text-muted);
+            font-size: 13px;
+        }
+
+        .readonly-row__value {
+            min-width: 0;
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .form-line {
+            display: flex;
+            min-height: 68px;
+            align-items: center;
+            gap: 14px;
+            padding: 0 18px;
+        }
+
+        .form-line__label {
+            width: 74px;
+            flex: 0 0 74px;
+            color: var(--tos-text-muted);
+            font-size: 13px;
+        }
+
+        .form-line__control {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .text-input {
+            width: 100%;
+            height: 42px;
+            padding: 0;
+            border: 0;
+            outline: none;
+            background: transparent;
+            color: var(--tos-text);
+            font-size: 15px;
+        }
+
+        .text-input::placeholder {
+            color: #bfc4cc;
+        }
+
+        .field-error {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            margin: 12px 2px 0;
+            color: var(--tos-error);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .primary-btn {
+            display: flex;
+            width: 100%;
+            height: 46px;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 1px solid var(--tos-primary);
+            border-radius: 8px;
+            background: var(--tos-primary);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.16s ease, border-color 0.16s ease;
+        }
+
+        .primary-btn:hover {
+            border-color: var(--tos-primary-hover);
+            background: var(--tos-primary-hover);
+        }
+
+        .primary-btn:disabled {
+            border-color: #cbd5e1;
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .primary-btn--spaced {
+            margin-top: 20px;
+        }
+
+        .primary-btn--small {
+            height: 40px;
+            font-size: 14px;
+        }
+
+        .secondary-btn {
+            display: flex;
+            width: 100%;
+            height: 42px;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--tos-border);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--tos-text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .secondary-btn:hover {
+            background: #fafafa;
+        }
+
+        .pay-tabs {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            margin-bottom: 14px;
+            border-bottom: 1px solid rgba(229, 231, 235, 0.7);
+            background: #f5f7fa;
+        }
+
+        .pay-tab {
+            position: relative;
+            flex: 1;
+            padding: 10px 0 14px;
+            border: 0;
+            background: transparent;
+            color: var(--tos-text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .pay-tab--active {
+            color: var(--tos-text);
+            font-weight: 650;
+        }
+
+        .pay-tab--active::after {
+            position: absolute;
+            right: 18px;
+            bottom: -1px;
+            left: 18px;
+            height: 2px;
+            border-radius: 2px 2px 0 0;
+            background: var(--tos-primary);
+            content: "";
+        }
+
+        .security-banner {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding: 11px 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.92);
+            color: #5f8c87;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .security-banner__icon {
+            display: flex;
+            width: 16px;
+            height: 16px;
+            flex: 0 0 16px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--tos-primary);
+            color: #fff;
+            font-size: 10px;
+        }
+
+        .add-card-panel {
+            overflow: hidden;
+            border: 1px solid rgba(240, 241, 242, 0.9);
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        .add-card-panel__inner {
+            padding: 0 16px;
+        }
+
+        .field-group {
+            padding: 15px 0;
+            border-bottom: 1px solid #f2f3f5;
+        }
+
+        .field-group:last-child {
+            border-bottom: 0;
+        }
+
+        .field-group__label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 6px;
+            color: var(--tos-text-muted);
+            font-size: 12px;
+            line-height: 18px;
+        }
+
+        .required {
+            color: var(--tos-error);
+        }
+
+        .field-input {
+            width: 100%;
+            height: 32px;
+            padding: 0;
+            border: 0;
+            outline: none;
+            background: transparent;
+            color: var(--tos-text);
+            font-size: 16px;
+        }
+
+        .field-input::placeholder {
+            color: #c5cad1;
+            font-size: 14px;
+        }
+
+        .field-input--mono {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+            letter-spacing: 0.3px;
+        }
+
+        .field-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 16px;
+        }
+
+        .field-row__item {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .field-row__item--cvv {
+            flex: 0 0 96px;
+        }
+
+        .field-help-btn {
+            display: inline-flex;
+            width: 22px;
+            height: 22px;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+            border: 1px solid var(--tos-primary);
+            border-radius: 50%;
+            background: transparent;
+            color: var(--tos-primary);
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .card-brand-row {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .card-brand {
+            display: inline-flex;
+            height: 18px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 3px;
+            font-size: 8px;
+            font-weight: 800;
+            letter-spacing: -0.1px;
+        }
+
+        .card-brand--visa {
+            width: 34px;
+            background: #1a1f71;
+            color: #fff;
+            font-style: italic;
+            font-size: 10px;
+        }
+
+        .card-brand--mastercard {
+            position: relative;
+            width: 32px;
+            background: transparent;
+        }
+
+        .card-brand--mastercard::before,
+        .card-brand--mastercard::after {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            content: "";
+        }
+
+        .card-brand--mastercard::before {
+            left: 4px;
+            background: #e51b23;
+        }
+
+        .card-brand--mastercard::after {
+            right: 4px;
+            background: #f5a623;
+            opacity: 0.9;
+        }
+
+        .card-brand--unionpay {
+            width: 34px;
+            background: #14509a;
+            color: #fff;
+            font-size: 7px;
+        }
+
+        .provider-list {
+            overflow: hidden;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        .provider-option {
+            position: relative;
+            display: flex;
+            min-height: 58px;
+            align-items: center;
+            gap: 12px;
+            padding: 0 16px;
+            cursor: pointer;
+        }
+
+        .provider-option + .provider-option {
+            border-top: 1px solid #f2f3f5;
+        }
+
+        .provider-option:hover {
+            background: #fafafa;
+        }
+
+        .provider-option:focus-within,
+        .unbind-reason:focus-within {
+            outline: 2px solid rgba(66, 183, 174, 0.24);
+            outline-offset: 1px;
+        }
+
+        .provider-option input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .provider-option .provider-logo {
+            width: 32px;
+            height: 32px;
+            flex-basis: 32px;
+            font-size: 8px;
+        }
+
+        .provider-option .provider-logo--airtel {
+            font-size: 19px;
+        }
+
+        .provider-option__name {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .radio-mark {
+            position: relative;
+            width: 18px;
+            height: 18px;
+            flex: 0 0 18px;
+            border: 1px solid #c9ced6;
+            border-radius: 50%;
+            background: #fff;
+        }
+
+        .provider-option input:checked ~ .radio-mark,
+        .unbind-reason input:checked ~ .radio-mark {
+            border-color: var(--tos-primary);
+        }
+
+        .provider-option input:checked ~ .radio-mark::after,
+        .unbind-reason input:checked ~ .radio-mark::after {
+            position: absolute;
+            inset: 3px;
+            border-radius: 50%;
+            background: var(--tos-primary);
+            content: "";
+        }
+
+        .agreement {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 2px;
+            margin-top: 16px;
+            color: var(--tos-text-muted);
+            font-size: 12px;
+            line-height: 20px;
+        }
+
+        .agreement-check {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--tos-text-muted);
+            cursor: pointer;
+        }
+
+        .agreement-check input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .agreement-check__mark {
+            position: relative;
+            width: 16px;
+            height: 16px;
+            flex: 0 0 16px;
+            border: 1px solid #c9ced6;
+            border-radius: 50%;
+            background: #fff;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+        }
+
+        .agreement-check input:focus-visible + .agreement-check__mark {
+            outline: 2px solid rgba(66, 183, 174, 0.3);
+            outline-offset: 2px;
+        }
+
+        .agreement-check input:checked + .agreement-check__mark {
+            border-color: var(--tos-primary);
+        }
+
+        .agreement-check input:checked + .agreement-check__mark::after {
+            position: absolute;
+            inset: 3px;
+            border-radius: 50%;
+            background: var(--tos-primary);
+            content: "";
+        }
+
+        .agreement-check__text {
+            white-space: nowrap;
+        }
+
+        .agreement-link {
+            color: var(--tos-text-secondary);
+            font-size: 12px;
+            line-height: 20px;
+            text-decoration: none;
+        }
+
+        .wallet-phone-input {
+            padding: 15px 16px 13px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: 12px 12px 0 0;
+            background: #fff;
+        }
+
+        .wallet-phone-input__label {
+            color: var(--tos-text-muted);
+            font-size: 11px;
+        }
+
+        .wallet-phone-input__control {
+            margin-top: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #d8dde5;
+        }
+
+        .wallet-phone-input__control:focus-within {
+            border-color: var(--tos-primary);
+        }
+
+        .wallet-phone-input .field-input {
+            height: 32px;
+            font-size: 18px;
+            font-weight: 650;
+            letter-spacing: 0.4px;
+        }
+
+        .wallet-provider-list {
+            border-top: 0;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .upgrade-panel {
+            margin-top: 14px;
+            padding: 12px 14px;
+            border: 1px solid #f0e7d8;
+            border-radius: 8px;
+            background: #fffbf4;
+            color: #8a6d3b;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .unbind-reason-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .unbind-reason {
+            position: relative;
+            display: flex;
+            min-height: 58px;
+            align-items: center;
+            gap: 10px;
+            padding: 0 16px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--tos-text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .unbind-reason:hover {
+            border-color: #d7dce3;
+        }
+
+        .unbind-reason input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .unbind-reason__text {
+            flex: 1;
+        }
+
+        .modal-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(32, 38, 45, 0.42);
+        }
+
+        .modal-card {
+            position: relative;
+            width: min(100%, 340px);
+            padding: 24px 22px;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: var(--tos-shadow-pop);
+            text-align: center;
+        }
+
+        .modal-card--wide {
+            width: min(100%, 356px);
+        }
+
+        .modal-card__close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            width: 30px;
+            height: 30px;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            color: #9ca3af;
+            font-size: 22px;
+            font-weight: 300;
+            cursor: pointer;
+        }
+
+        .modal-card__close:hover {
+            background: #f5f5f5;
+            color: var(--tos-text-secondary);
+        }
+
+        .modal-card__title {
+            margin: 0 0 8px;
+            color: var(--tos-text);
+            font-size: 20px;
+            font-weight: 650;
+            line-height: 1.4;
+        }
+
+        .modal-card__title--failed {
+            color: var(--tos-error);
+        }
+
+        .modal-card__desc {
+            margin: 0;
+            color: var(--tos-text-muted);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        .modal-card__actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 22px;
+        }
+
+        .modal-link-btn {
+            padding: 6px;
+            border: 0;
+            background: transparent;
+            color: var(--tos-text-muted);
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .modal-link-btn:hover {
+            color: var(--tos-error);
+        }
+
+        .verification-target {
+            margin-top: 4px;
+            color: var(--tos-text-secondary);
+            font-size: 13px;
+        }
+
+        .verification-target strong {
+            color: var(--tos-text);
+            font-weight: 500;
+        }
+
+        .code-boxes {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 20px 0 14px;
+        }
+
+        .code-box {
+            width: 44px;
+            height: 48px;
+            padding: 0;
+            border: 1px solid #d8dde5;
+            border-radius: 8px;
+            outline: none;
+            background: #fff;
+            color: var(--tos-text);
+            font-size: 22px;
+            font-weight: 600;
+            text-align: center;
+            caret-color: var(--tos-primary);
+        }
+
+        .code-box:focus {
+            border-color: var(--tos-primary);
+            box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.12);
+        }
+
+        .code-boxes--error .code-box {
+            border-color: var(--tos-error);
+        }
+
+        .resend-row {
+            min-height: 24px;
+            color: var(--tos-text-muted);
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .resend-btn {
+            padding: 3px 6px;
+            border: 0;
+            background: transparent;
+            color: var(--tos-primary);
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .resend-btn:disabled {
+            color: #aeb5bf;
+            cursor: default;
+        }
+
+        .demo-hint {
+            margin: 10px 0 0;
+            color: #b08952;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .cvv-illustration {
+            position: relative;
+            width: 118px;
+            height: 64px;
+            margin: 18px auto 8px;
+            border-radius: 8px;
+            background: #dcecf4;
+        }
+
+        .cvv-illustration::before {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            left: 12px;
+            height: 10px;
+            border-radius: 2px;
+            background: #88a8b9;
+            content: "";
+        }
+
+        .cvv-illustration__dots {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            left: 12px;
+            display: flex;
+            gap: 3px;
+        }
+
+        .cvv-illustration__dots span {
+            width: 13px;
+            height: 5px;
+            border-radius: 1px;
+            background: #fff;
+        }
+
+        .cvv-illustration__badge {
+            position: absolute;
+            right: 7px;
+            bottom: -7px;
+            display: flex;
+            width: 29px;
+            height: 29px;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #df4267;
+            border-radius: 50%;
+            background: #fff;
+            color: #df4267;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            z-index: 300;
+            display: flex;
+            max-width: calc(100vw - 40px);
+            align-items: center;
+            gap: 8px;
+            padding: 11px 16px;
+            border-radius: 8px;
+            background: rgba(17, 24, 39, 0.88);
+            color: #fff;
+            font-size: 13px;
+            line-height: 1.4;
+            transform: translateX(-50%);
+            box-shadow: 0 8px 30px rgba(15, 23, 42, 0.2);
+        }
+
+        .toast__check {
+            display: flex;
+            width: 18px;
+            height: 18px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--tos-success);
+            font-size: 11px;
+        }
+
+        .fade-enter-active,
+        .fade-leave-active {
+            transition: opacity 0.16s ease;
+        }
+
+        .fade-enter-from,
+        .fade-leave-to {
+            opacity: 0;
+        }
+
+        @media (max-width: 680px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar--open {
+                transform: translateX(0);
+            }
+
+            .sidebar-backdrop {
+                display: block;
+            }
+
+            .h5-container {
+                width: 100%;
+                box-shadow: none;
+            }
+
+            .h5-header__menu {
+                display: flex;
+            }
+
+            .modal-layer {
+                padding: 16px;
+            }
+
+            .code-boxes {
+                gap: 8px;
+            }
+
+            .code-box {
+                width: 42px;
+                height: 46px;
+            }
+        }
+
+        @media (max-width: 370px) {
+            .h5-content {
+                padding-right: 14px;
+                padding-left: 14px;
+            }
+
+            .payment-card {
+                padding-right: 13px;
+                padding-left: 13px;
+            }
+
+            .code-boxes {
+                gap: 6px;
+            }
+
+            .code-box {
+                width: 38px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
     </style>
 </head>
 <body>
-
-    <aside class="sidebar">
-        <select class="sidebar__end-select" onchange="if(this.value)location.href=this.value"><option value="" selected>会员端</option><option value="运营端/运营-会员提现审核.html">运营端</option></select>
-        <div class="sidebar__head"><div class="sidebar__logo"><i class="fas fa-wallet"></i></div><span class="sidebar__title">会员中心</span></div>
-        <nav class="sidebar__nav">
-            <div class="sidebar__group-title">提现管理</div>
-            <a class="sidebar__item" href="会员提现申请.html"><i class="fas fa-coins"></i> 提现</a>
-            <a class="sidebar__item" href="会员提现记录.html"><i class="fas fa-list-check"></i> 提现记录</a>
-            <a class="sidebar__item" href="会员钱包明细.html"><i class="fas fa-file-invoice"></i> 钱包明细</a>
-            <a class="sidebar__item" href="会员提现详情.html"><i class="fas fa-receipt"></i> 提现详情</a>
-            <div class="sidebar__group-title">账户管理</div>
-            <a class="sidebar__item sidebar__item--active" href="会员卡包管理.html"><i class="fas fa-credit-card"></i> 我的卡包</a>
-            <a class="sidebar__item" href="会员绑定银行卡.html"><i class="fas fa-plus-circle"></i> 绑定银行卡</a>
-        </nav>
-    </aside>
-    <div class="h5-container">
-        <div class="h5-header">
-            <button class="h5-header__menu" onclick="document.getElementById('sidebar').style.display='block';this.style.display='none';">☰</button>
-            <button class="h5-header__back" onclick="location.href='会员提现申请.html'">←</button>
-            <span class="h5-header__title">我的卡包</span>
-            <span style="width:32px;"></span>
-        </div>
-        <div class="h5-page">
-            <div class="h5-alert">💡 已绑定 <strong id="cardCount">3</strong> / 5 张银行卡，默认卡优先用于提现。</div>
-            <div class="card-list" id="cardList">
-                <div class="bank-card bank-card--default" data-id="CARD_001"><div class="bank-card__icon">🏦</div><div class="bank-card__info"><div class="bank-card__bank">中国工商银行</div><div class="bank-card__num">6212 **** **** 8899</div><div class="bank-card__holder">持卡人：张三</div><div class="bank-card__tags"><span class="bank-card__tag tag-default">默认卡</span><span class="bank-card__tag tag-debit">储蓄卡</span></div></div></div>
-                <div class="bank-card" data-id="CARD_002"><div class="bank-card__icon">🏦</div><div class="bank-card__info"><div class="bank-card__bank">中国建设银行</div><div class="bank-card__num">4367 **** **** 1234</div><div class="bank-card__holder">持卡人：张三</div><div class="bank-card__tags"><span class="bank-card__tag tag-debit">储蓄卡</span></div></div><div class="bank-card__actions"><button class="btn-sm btn-sm--primary" onclick="setDefault('CARD_002')">设为默认</button><button class="btn-sm btn-sm--danger" onclick="confirmUnbind('CARD_002','中国建设银行','4367****1234')">解绑</button></div></div>
-                <div class="bank-card" data-id="CARD_003"><div class="bank-card__icon">🏛️</div><div class="bank-card__info"><div class="bank-card__bank">招商银行</div><div class="bank-card__num">6225 **** **** 5678</div><div class="bank-card__holder">持卡人：张三</div><div class="bank-card__tags"><span class="bank-card__tag tag-credit">信用卡</span></div></div><div class="bank-card__actions"><button class="btn-sm btn-sm--primary" onclick="setDefault('CARD_003')">设为默认</button><button class="btn-sm btn-sm--danger" onclick="confirmUnbind('CARD_003','招商银行','6225****5678')">解绑</button></div></div>
+    <div id="app" v-cloak>
+        <div v-if="sidebarOpen" class="sidebar-backdrop" @click="sidebarOpen = false"></div>
+        <aside class="sidebar" :class="{ 'sidebar--open': sidebarOpen }">
+            <select class="sidebar__end-select" onchange="if(this.value)location.href=this.value">
+                <option value="" selected>会员端</option>
+                <option value="运营端/运营-会员提现审核.html">运营端</option>
+            </select>
+            <div class="sidebar__head">
+                <div class="sidebar__logo">¥</div>
+                <span class="sidebar__title">会员中心</span>
             </div>
-            <div class="add-btn" onclick="location.href='会员绑定银行卡.html'">＋ 添加新银行卡</div>
-        </div>
-        <div class="modal-mask" id="unbindModal"><div class="modal-box"><h3>确认解绑</h3><p id="unbindText">确定要解绑该银行卡吗？</p><div class="btns"><button class="btn btn--outline" onclick="closeUnbind()">取消</button><button class="btn btn--danger" onclick="doUnbind()">确认解绑</button></div></div></div>
+            <nav class="sidebar__nav" aria-label="会员中心导航">
+                <div class="sidebar__group-title">提现管理</div>
+                <a class="sidebar__item" href="会员提现申请.html"><span class="sidebar__icon">¥</span>提现</a>
+                <a class="sidebar__item" href="会员提现记录.html"><span class="sidebar__icon">☷</span>提现记录</a>
+                <a class="sidebar__item" href="会员钱包明细.html"><span class="sidebar__icon">▤</span>我的钱包</a>
+                <a class="sidebar__item" href="会员提现详情.html"><span class="sidebar__icon">▤</span>提现详情</a>
+                <div class="sidebar__group-title">账户管理</div>
+                <a class="sidebar__item sidebar__item--active" href="会员卡包管理.html"><span class="sidebar__icon">▣</span>我的卡包</a>
+                <a class="sidebar__item" href="会员绑定银行卡.html"><span class="sidebar__icon">＋</span>添加支付方式</a>
+            </nav>
+        </aside>
+
+        <main class="h5-container">
+            <header class="h5-header" :class="{ 'h5-header--wallet': screen === 'list' }">
+                <button class="h5-header__menu" type="button" aria-label="打开导航" @click="sidebarOpen = true">☰</button>
+                <button class="h5-header__back" type="button" aria-label="返回" @click="goBack">‹</button>
+                <div class="h5-header__copy">
+                    <h1 class="h5-header__title">{{ headerTitle }}</h1>
+                    <p v-if="screen === 'list'" class="h5-header__subtitle">账户与安全</p>
+                </div>
+                <span class="h5-header__placeholder" aria-hidden="true"></span>
+            </header>
+
+            <div class="h5-content" :class="{ 'h5-content--wallet': screen === 'list' }">
+                <section v-if="screen === 'list'" aria-labelledby="wallet-title">
+                    <h2 id="wallet-title" class="sr-only">我的支付方式</h2>
+                    <div class="wallet-summary">
+                        <span>已绑定 <strong>{{ methods.length }}</strong> 个支付方式</span>
+                        <span>默认方式优先用于提现</span>
+                    </div>
+
+                    <div v-if="methods.length" class="card-stack">
+                        <article
+                            v-for="card in methods"
+                            :key="card.id"
+                            class="payment-card"
+                            :class="cardClass(card)"
+                            tabindex="0"
+                            role="button"
+                            :aria-label="'查看' + cardTitle(card)"
+                            @click="openDetail(card)"
+                            @keydown.enter="openDetail(card)"
+                            @keydown.space.prevent="openDetail(card)"
+                        >
+                            <div class="provider-logo" :class="logoClass(card)">
+                                <template v-if="card.kind === 'wallet' && card.brand === 'vodafone'"></template>
+                                <template v-else>{{ logoText(card) }}</template>
+                            </div>
+                            <div class="payment-card__body">
+                                <div class="payment-card__head">
+                                    <span class="payment-card__name">{{ card.title }}</span>
+                                    <span v-if="card.kind === 'wallet'" class="payment-card__owner">{{ card.owner }}</span>
+                                    <span v-else class="payment-card__type">{{ card.cardType }}</span>
+                                </div>
+                                <div
+                                    class="payment-card__detail"
+                                    :class="{ 'payment-card__detail--mono': card.kind !== 'wallet' }"
+                                >
+                                    {{ cardPrimaryDetail(card) }}
+                                </div>
+                            </div>
+                            <div class="payment-card__control">
+                                <span v-if="card.isDefault" class="default-label">默认</span>
+                                <button
+                                    v-else
+                                    type="button"
+                                    class="set-default-btn"
+                                    @click.stop="setDefault(card.id)"
+                                >
+                                    设为默认
+                                </button>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div v-else class="empty-state">
+                        <div class="empty-state__icon">▣</div>
+                        <h2>还没有支付方式</h2>
+                        <p>添加钱包或银行卡后即可提现</p>
+                    </div>
+
+                    <button class="add-payment" type="button" @click="openAdd('wallet')">
+                        <span class="add-payment__icon" aria-hidden="true">＋</span>
+                        <span class="add-payment__title">添加支付方式</span>
+                        <span class="add-payment__desc">方便资产管理、安全快捷支付、享受平台福利</span>
+                    </button>
+                </section>
+
+                <section v-else-if="screen === 'detail' && currentCard" aria-labelledby="detail-card-title">
+                    <template v-if="currentCard.kind === 'wallet'">
+                        <article class="payment-card payment-card--large" :class="cardClass(currentCard)">
+                            <div class="provider-logo" :class="logoClass(currentCard)">
+                                <template v-if="currentCard.brand === 'vodafone'"></template>
+                                <template v-else>{{ logoText(currentCard) }}</template>
+                            </div>
+                            <div class="payment-card__body">
+                                <div class="payment-card__head">
+                                    <span id="detail-card-title" class="payment-card__name">{{ detailCardName(currentCard) }}</span>
+                                    <span class="payment-card__owner">{{ currentCard.owner }}</span>
+                                </div>
+                                <div class="payment-card__detail">{{ cardPrimaryDetail(currentCard) }}</div>
+                            </div>
+                            <div class="payment-card__control">
+                                <span v-if="currentCard.isDefault" class="default-label">默认</span>
+                            </div>
+                        </article>
+
+                        <div class="detail-actions">
+                            <button class="detail-action" type="button" @click="openChangePhone">
+                                <svg class="detail-action__icon" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                                    <path d="M7.2 12.3A9.5 9.5 0 0 1 24 9.7l2.3 2.9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    <path d="M26.7 7.4v5.6h-5.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M24.8 19.7A9.5 9.5 0 0 1 8 22.3l-2.3-2.9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    <path d="M5.3 24.6v-5.6h5.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span>修改手机号</span>
+                            </button>
+                            <button class="detail-action" type="button" @click="openUnbind">
+                                <svg class="detail-action__icon" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                                    <path d="M13.3 18.7 18.7 13.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    <path d="m16.4 22-1.8 1.8a4.9 4.9 0 0 1-7-7l3.1-3.1a4.9 4.9 0 0 1 6.9 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    <path d="m15.6 10 1.8-1.8a4.9 4.9 0 0 1 7 7l-3.1 3.1a4.9 4.9 0 0 1-6.9 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                </svg>
+                                <span>解绑卡片</span>
+                            </button>
+                        </div>
+
+                        <div class="detail-note">
+                            <span class="detail-note__icon" aria-hidden="true">✓</span>
+                            <span>支付信息已加密保存，仅用于身份校验和提现到账。</span>
+                        </div>
+                    </template>
+
+                    <template v-else>
+                        <article class="bank-detail-hero">
+                            <div class="bank-detail-hero__head">
+                                <div class="bank-detail-hero__logo" aria-hidden="true">
+                                    <svg viewBox="0 0 32 32" fill="none">
+                                        <path d="m4.5 11 11.5-6 11.5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M7 13h18M8.5 13v9M13.5 13v9M18.5 13v9M23.5 13v9M5 24h22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                        <path d="M4 27h24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div id="detail-card-title" class="bank-detail-hero__name">{{ currentCard.bankName }}</div>
+                                    <div class="bank-detail-hero__type">{{ currentCard.cardType }}</div>
+                                </div>
+                            </div>
+                            <div class="bank-detail-hero__number">{{ detailCardNumber(currentCard) }}</div>
+                            <div class="bank-detail-hero__holder">持卡人：{{ cardHolderName(currentCard) }}</div>
+                        </article>
+
+                        <section class="bank-detail-section" aria-labelledby="card-info-title">
+                            <h2 id="card-info-title" class="bank-detail-section__title">卡片信息</h2>
+                            <div class="bank-detail-panel">
+                                <div class="bank-info-row">
+                                    <span class="bank-info-row__label">预留手机号</span>
+                                    <span class="bank-info-row__value">{{ currentCard.phone }}</span>
+                                </div>
+                                <div class="bank-info-row">
+                                    <span class="bank-info-row__label">持卡人</span>
+                                    <span class="bank-info-row__value">{{ cardHolderName(currentCard) }}</span>
+                                </div>
+                                <div class="bank-info-row">
+                                    <span class="bank-info-row__label">卡类型</span>
+                                    <span class="bank-info-row__value">{{ currentCard.cardType }}</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="bank-detail-section" aria-labelledby="card-management-title">
+                            <h2 id="card-management-title" class="bank-detail-section__title">卡片管理</h2>
+                            <div class="bank-detail-panel">
+                                <button class="bank-action-row" type="button" @click="setDefault(currentCard.id)">
+                                    <span class="bank-action-row__label">
+                                        {{ currentCard.kind === 'credit' ? '设为默认信用卡' : '设为默认银行卡' }}
+                                    </span>
+                                    <span v-if="currentCard.isDefault" class="bank-action-row__state">当前默认</span>
+                                    <svg class="bank-action-row__chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                                        <path d="m7.5 4.5 5 5.5-5 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                                <button class="bank-action-row" type="button" @click="openChangePhone">
+                                    <span class="bank-action-row__label">修改预留手机号</span>
+                                    <svg class="bank-action-row__chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                                        <path d="m7.5 4.5 5 5.5-5 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                                <button class="bank-action-row" type="button" @click="openUnbind">
+                                    <span class="bank-action-row__label">
+                                        {{ currentCard.kind === 'credit' ? '解绑信用卡' : '解绑银行卡' }}
+                                    </span>
+                                    <svg class="bank-action-row__chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                                        <path d="m7.5 4.5 5 5.5-5 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </section>
+
+                        <div class="bank-security-note">
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M12 3 5.5 5.7v5.6c0 4.4 2.8 7.8 6.5 9.7 3.7-1.9 6.5-5.3 6.5-9.7V5.7L12 3Z" fill="currentColor" opacity=".16"/>
+                                <path d="m8.8 12 2.1 2.1 4.4-4.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>支付信息已加密保存，仅用于身份校验和提现到账。</span>
+                        </div>
+                    </template>
+                </section>
+
+                <section v-else-if="screen === 'change-phone' && currentCard" aria-labelledby="change-phone-title">
+                    <div class="form-panel">
+                        <div class="readonly-row">
+                            <span class="readonly-row__label">卡片</span>
+                            <span class="readonly-row__value">{{ detailCardName(currentCard) }}（尾号{{ lastFour(currentCard) }}）</span>
+                        </div>
+                        <div class="form-line">
+                            <label class="form-line__label" for="newPhone">手机号</label>
+                            <div class="form-line__control">
+                                <input
+                                    id="newPhone"
+                                    v-model="newPhone"
+                                    class="text-input"
+                                    type="tel"
+                                    inputmode="numeric"
+                                    maxlength="16"
+                                    placeholder="请输入新的预留手机号"
+                                    @input="newPhone = sanitizePhone($event.target.value)"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <p v-if="formError" class="field-error"><span>!</span>{{ formError }}</p>
+                    <button class="primary-btn primary-btn--spaced" type="button" @click="requestPhoneChange">下一步</button>
+                </section>
+
+                <section v-else-if="screen === 'unbind' && currentCard" aria-labelledby="unbind-title">
+                    <div class="unbind-reason-list">
+                        <label class="unbind-reason">
+                            <span class="unbind-reason__text">账户安全与隐私</span>
+                            <input v-model="unbindReason" type="radio" value="privacy" />
+                            <span class="radio-mark" aria-hidden="true"></span>
+                        </label>
+                        <label class="unbind-reason">
+                            <span class="unbind-reason__text">不再使用这张卡</span>
+                            <input v-model="unbindReason" type="radio" value="unused" />
+                            <span class="radio-mark" aria-hidden="true"></span>
+                        </label>
+                        <label class="unbind-reason">
+                            <span class="unbind-reason__text">我想要解绑</span>
+                            <input v-model="unbindReason" type="radio" value="wanted" />
+                            <span class="radio-mark" aria-hidden="true"></span>
+                        </label>
+                    </div>
+                    <button class="primary-btn primary-btn--spaced" type="button" @click="unbindConfirmOpen = true">下一步</button>
+                </section>
+
+                <section v-else-if="screen === 'add'" aria-labelledby="add-payment-title">
+                    <h2 id="add-payment-title" class="sr-only">添加支付方式</h2>
+                    <div class="pay-tabs" role="tablist" aria-label="支付方式类型">
+                        <button
+                            v-for="tab in tabs"
+                            :key="tab.value"
+                            type="button"
+                            role="tab"
+                            class="pay-tab"
+                            :class="{ 'pay-tab--active': addTab === tab.value }"
+                            :aria-selected="addTab === tab.value"
+                            @click="switchTab(tab.value)"
+                        >
+                            {{ tab.label }}
+                        </button>
+                    </div>
+
+                    <div v-if="addTab === 'wallet'" role="tabpanel">
+                        <div class="wallet-phone-input">
+                            <label class="wallet-phone-input__label" for="walletPhone">手机号码</label>
+                            <div class="wallet-phone-input__control">
+                                <input
+                                    id="walletPhone"
+                                    v-model="walletForm.phone"
+                                    class="field-input field-input--mono"
+                                    type="tel"
+                                    inputmode="numeric"
+                                    autocomplete="tel"
+                                    placeholder="请输入数字钱包手机号"
+                                    @input="walletForm.phone = formatGroupedPhone($event.target.value)"
+                                />
+                            </div>
+                        </div>
+                        <div class="provider-list wallet-provider-list">
+                            <label v-for="provider in walletProviders" :key="provider.id" class="provider-option">
+                                <span class="provider-logo" :class="provider.logoClass">
+                                    <template v-if="provider.id === 'vodafone'"></template>
+                                    <template v-else>{{ provider.logoText }}</template>
+                                </span>
+                                <span class="provider-option__name">{{ provider.name }}</span>
+                                <input v-model="walletForm.provider" type="radio" :value="provider.id" />
+                                <span class="radio-mark" aria-hidden="true"></span>
+                            </label>
+                        </div>
+
+                        <div class="agreement">
+                            <label class="agreement-check">
+                                <input v-model="walletAgreement" type="checkbox" @change="formError = ''" />
+                                <span class="agreement-check__mark" aria-hidden="true"></span>
+                                <span class="agreement-check__text">我已阅读并同意</span>
+                            </label>
+                            <a href="javascript:void(0)" class="agreement-link" @click="showAgreement">《支付服务协议》</a>
+                        </div>
+                        <p v-if="formError" class="field-error"><span>!</span>{{ formError }}</p>
+                        <button class="primary-btn primary-btn--spaced" type="button" @click="prepareBind('wallet')">
+                            同意协议并下一步
+                        </button>
+                        <div class="upgrade-panel">钱包绑定后将用于提现到账，请确认手机号与钱包账户注册号码一致。</div>
+                    </div>
+
+                    <div v-else-if="addTab === 'bank'" role="tabpanel">
+                        <div class="security-banner">
+                            <span class="security-banner__icon" aria-hidden="true">✓</span>
+                            <span>将为您加密处理信息，请放心使用</span>
+                        </div>
+                        <div class="add-card-panel">
+                            <div class="add-card-panel__inner">
+                                <div class="field-group">
+                                    <label class="field-group__label" for="bankCardNumber">卡号 <span class="required">*</span></label>
+                                    <input
+                                        id="bankCardNumber"
+                                        v-model="bankForm.cardNumber"
+                                        class="field-input field-input--mono"
+                                        type="text"
+                                        inputmode="numeric"
+                                        autocomplete="cc-number"
+                                        maxlength="23"
+                                        placeholder="请绑定持卡人本人的银行卡"
+                                        @input="bankForm.cardNumber = formatCardNumber($event.target.value)"
+                                    />
+                                </div>
+                                <div class="field-group">
+                                    <label class="field-group__label" for="bankCardType">卡类型</label>
+                                    <input id="bankCardType" class="field-input" type="text" value="借记卡" readonly aria-readonly="true" />
+                                </div>
+                                <div class="field-group">
+                                    <label class="field-group__label" for="bankPhone">手机号 <span class="required">*</span></label>
+                                    <input
+                                        id="bankPhone"
+                                        v-model="bankForm.phone"
+                                        class="field-input"
+                                        type="tel"
+                                        inputmode="numeric"
+                                        autocomplete="tel"
+                                        maxlength="16"
+                                        placeholder="请输入银行卡预留手机号"
+                                        @input="bankForm.phone = sanitizePhone($event.target.value)"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="agreement">
+                            <label class="agreement-check">
+                                <input v-model="bankAgreement" type="checkbox" @change="formError = ''" />
+                                <span class="agreement-check__mark" aria-hidden="true"></span>
+                                <span class="agreement-check__text">我已阅读并同意</span>
+                            </label>
+                            <a href="javascript:void(0)" class="agreement-link" @click="showAgreement">《支付服务协议》</a>
+                        </div>
+                        <p v-if="formError" class="field-error"><span>!</span>{{ formError }}</p>
+                        <button class="primary-btn primary-btn--spaced" type="button" @click="prepareBind('bank')">
+                            同意协议并下一步
+                        </button>
+                    </div>
+
+                    <div v-else role="tabpanel">
+                        <div class="security-banner">
+                            <span class="security-banner__icon" aria-hidden="true">✓</span>
+                            <span>将为您加密处理信息，请放心使用</span>
+                        </div>
+                        <div class="add-card-panel">
+                            <div class="add-card-panel__inner">
+                                <div class="field-group">
+                                    <div class="field-group__label">
+                                        <label for="creditCardNumber">卡号 <span class="required">*</span></label>
+                                        <span class="card-brand-row" aria-label="支持 Visa、Mastercard、银联">
+                                            <span class="card-brand card-brand--visa">VISA</span>
+                                            <span class="card-brand card-brand--mastercard" title="Mastercard"></span>
+                                            <span class="card-brand card-brand--unionpay">银联</span>
+                                        </span>
+                                    </div>
+                                    <input
+                                        id="creditCardNumber"
+                                        v-model="creditForm.cardNumber"
+                                        class="field-input field-input--mono"
+                                        type="text"
+                                        inputmode="numeric"
+                                        autocomplete="cc-number"
+                                        maxlength="23"
+                                        placeholder="请输入信用卡号"
+                                        @input="creditForm.cardNumber = formatCardNumber($event.target.value)"
+                                    />
+                                </div>
+                                <div class="field-group">
+                                    <label class="field-group__label" for="cardholderName">持卡人姓名 <span class="required">*</span></label>
+                                    <input
+                                        id="cardholderName"
+                                        v-model="creditForm.name"
+                                        class="field-input"
+                                        type="text"
+                                        autocomplete="cc-name"
+                                        maxlength="30"
+                                        placeholder="请输入卡面姓名"
+                                    />
+                                </div>
+                                <div class="field-group">
+                                    <div class="field-row">
+                                        <div class="field-row__item">
+                                            <label class="field-group__label" for="expiry">有效期（月/年） <span class="required">*</span></label>
+                                            <input
+                                                id="expiry"
+                                                v-model="creditForm.expiry"
+                                                class="field-input field-input--mono"
+                                                type="text"
+                                                inputmode="numeric"
+                                                autocomplete="cc-exp"
+                                                maxlength="5"
+                                                placeholder="MM/YY"
+                                                @input="creditForm.expiry = formatExpiry($event.target.value)"
+                                            />
+                                        </div>
+                                        <div class="field-row__item field-row__item--cvv">
+                                            <label class="field-group__label" for="cvv">
+                                                CVV <span class="required">*</span>
+                                                <button class="field-help-btn" type="button" aria-label="了解 CVV" @click="cvvOpen = true">i</button>
+                                            </label>
+                                            <input
+                                                id="cvv"
+                                                v-model="creditForm.cvv"
+                                                class="field-input field-input--mono"
+                                                type="password"
+                                                inputmode="numeric"
+                                                autocomplete="cc-csc"
+                                                maxlength="4"
+                                                placeholder="3 位数字"
+                                                @input="creditForm.cvv = sanitizeDigits($event.target.value, 4)"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="agreement">
+                            <label class="agreement-check">
+                                <input v-model="creditAgreement" type="checkbox" @change="formError = ''" />
+                                <span class="agreement-check__mark" aria-hidden="true"></span>
+                                <span class="agreement-check__text">我已阅读并同意</span>
+                            </label>
+                            <a href="javascript:void(0)" class="agreement-link" @click="showAgreement">《支付服务协议》</a>
+                        </div>
+                        <p v-if="formError" class="field-error"><span>!</span>{{ formError }}</p>
+                        <button class="primary-btn primary-btn--spaced" type="button" @click="prepareBind('credit')">
+                            保存卡片
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+            <transition name="fade">
+                <div v-if="verificationOpen" class="modal-layer" @click.self="closeVerification">
+                    <div class="modal-card modal-card--wide" role="dialog" aria-modal="true" aria-labelledby="verification-title">
+                        <button class="modal-card__close" type="button" aria-label="关闭" @click="closeVerification">×</button>
+                        <h3 id="verification-title" class="modal-card__title">短信验证</h3>
+                        <p class="modal-card__desc">验证码已发送至</p>
+                        <div class="verification-target"><strong>{{ maskPhone(verificationPhone) }}</strong></div>
+                        <div class="code-boxes" :class="{ 'code-boxes--error': codeError }">
+                            <input
+                                v-for="(_, index) in codeLength"
+                                :key="index"
+                                :ref="el => setCodeRef(el, index)"
+                                class="code-box"
+                                type="tel"
+                                inputmode="numeric"
+                                maxlength="1"
+                                :aria-label="'验证码第' + (index + 1) + '位'"
+                                :value="verificationDigits[index] || ''"
+                                @input="handleCodeInput(index, $event)"
+                                @keydown.backspace="handleCodeBackspace(index, $event)"
+                                @paste.prevent="handleCodePaste($event)"
+                            />
+                        </div>
+                        <div class="resend-row">
+                            <button v-if="countdown > 0" class="resend-btn" type="button" disabled>{{ countdown }} 秒后重发</button>
+                            <button v-else class="resend-btn" type="button" @click="resendCode">重新发送</button>
+                        </div>
+                        <p class="demo-hint">演示验证码：{{ demoCode }}</p>
+                        <div class="modal-card__actions">
+                            <button class="primary-btn primary-btn--small" type="button" @click="verifyCurrentCode(false)">
+                                {{ verificationMode === 'changePhone' ? '确认修改' : '确认绑定' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </transition>
+
+            <transition name="fade">
+                <div v-if="cvvOpen" class="modal-layer" @click.self="cvvOpen = false">
+                    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="cvv-title">
+                        <h3 id="cvv-title" class="modal-card__title">什么是 CVV？</h3>
+                        <p class="modal-card__desc">CVV 是卡片背面的 3 位数字，用于确认卡片由本人使用。</p>
+                        <div class="cvv-illustration" aria-hidden="true">
+                            <div class="cvv-illustration__dots">
+                                <span></span><span></span><span></span><span></span><span></span><span></span>
+                            </div>
+                            <span class="cvv-illustration__badge">123</span>
+                        </div>
+                        <div class="modal-card__actions">
+                            <button class="secondary-btn" type="button" @click="cvvOpen = false">知道了</button>
+                        </div>
+                    </div>
+                </div>
+            </transition>
+
+            <transition name="fade">
+                <div v-if="failureModal.open" class="modal-layer" @click.self="closeFailure">
+                    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="failure-title">
+                        <button class="modal-card__close" type="button" aria-label="关闭" @click="closeFailure">×</button>
+                        <h3 id="failure-title" class="modal-card__title modal-card__title--failed">{{ failureModal.title }}</h3>
+                        <p class="modal-card__desc">{{ failureModal.message }}</p>
+                        <div class="modal-card__actions">
+                            <button class="primary-btn primary-btn--small" type="button" @click="closeFailure">我知道了</button>
+                        </div>
+                    </div>
+                </div>
+            </transition>
+
+            <transition name="fade">
+                <div v-if="unbindConfirmOpen" class="modal-layer" @click.self="unbindConfirmOpen = false">
+                    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="unbind-confirm-title">
+                        <h3 id="unbind-confirm-title" class="modal-card__title">确认解绑</h3>
+                        <p class="modal-card__desc">解绑后无法便捷管理该卡相关资产，无法使用快捷支付功能。</p>
+                        <div class="modal-card__actions">
+                            <button class="primary-btn primary-btn--small" type="button" @click="unbindConfirmOpen = false">我再想想</button>
+                            <button class="modal-link-btn" type="button" @click="confirmUnbind">仍要解绑</button>
+                        </div>
+                    </div>
+                </div>
+            </transition>
+
+            <transition name="fade">
+                <div v-if="toastMessage" class="toast" role="status" aria-live="polite">
+                    <span class="toast__check">✓</span>
+                    <span>{{ toastMessage }}</span>
+                </div>
+            </transition>
+        </main>
     </div>
-</div>
-<script>
-let pendingUnbindId=null;
-function setDefault(id){document.querySelectorAll('.bank-card').forEach(card=>{card.classList.remove('bank-card--default');const tags=card.querySelector('.bank-card__tags');const defTag=tags?.querySelector('.tag-default');if(defTag)defTag.remove();const actions=card.querySelector('.bank-card__actions');if(actions){const btns=actions.querySelectorAll('button');btns.forEach(b=>{if(b.textContent.includes('设为默认'))b.style.display='';});}});const target=document.querySelector('.bank-card[data-id="'+id+'"]');if(target){target.classList.add('bank-card--default');const tags=target.querySelector('.bank-card__tags');if(tags&&!tags.querySelector('.tag-default')){const span=document.createElement('span');span.className='bank-card__tag tag-default';span.textContent='默认卡';tags.insertBefore(span,tags.firstChild);}const actions=target.querySelector('.bank-card__actions');if(actions){const btns=actions.querySelectorAll('button');btns.forEach(b=>{if(b.textContent.includes('设为默认'))b.style.display='none';});}}}
-function confirmUnbind(id,name,num){pendingUnbindId=id;document.getElementById('unbindText').textContent='确定要解绑 '+name+'（'+num+'）吗？解绑后将从卡包中移除。';document.getElementById('unbindModal').classList.add('show');}
-function closeUnbind(){document.getElementById('unbindModal').classList.remove('show');pendingUnbindId=null;}
-function doUnbind(){if(!pendingUnbindId)return;const el=document.querySelector('.bank-card[data-id="'+pendingUnbindId+'"]');const wasDefault=el?.classList.contains('bank-card--default');el?.remove();if(wasDefault){const first=document.querySelector('.bank-card:not([data-id=""])');if(first)setDefault(first.getAttribute('data-id'));}const count=document.querySelectorAll('.bank-card').length;document.getElementById('cardCount').textContent=count;closeUnbind();}
-document.getElementById('unbindModal').addEventListener('click',function(e){if(e.target===this)closeUnbind();});
-</script>
+
+    <script>
+        const {
+            createApp,
+            computed,
+            nextTick,
+            onBeforeUnmount,
+            reactive,
+            ref,
+            watch,
+        } = Vue;
+
+        const app = createApp({
+            setup() {
+                const methods = ref([
+                    {
+                        id: 'wallet-mtn',
+                        kind: 'wallet',
+                        brand: 'mtn',
+                        title: 'MTN',
+                        owner: 'j***',
+                        phone: '+233 53******88',
+                        isDefault: true,
+                    },
+                    {
+                        id: 'wallet-vodafone',
+                        kind: 'wallet',
+                        brand: 'vodafone',
+                        title: 'Vodafone',
+                        owner: 'j***',
+                        phone: '+233 53******88',
+                        isDefault: false,
+                    },
+                    {
+                        id: 'wallet-airtel',
+                        kind: 'wallet',
+                        brand: 'airtel',
+                        title: 'AirtelTigo',
+                        owner: 'j***',
+                        phone: '+233 53******88',
+                        isDefault: false,
+                    },
+                    {
+                        id: 'bank-cmb',
+                        kind: 'bank',
+                        brand: 'cmb',
+                        bankName: '招商银行',
+                        cardType: '借记卡',
+                        cardNumber: '8348****3849',
+                        phone: '0535****088',
+                        holderName: '张三',
+                        isDefault: false,
+                    },
+                    {
+                        id: 'bank-boc',
+                        kind: 'credit',
+                        brand: 'boc',
+                        bankName: '中国银行',
+                        cardType: '信用卡',
+                        cardNumber: '8348****3849',
+                        phone: '0535****088',
+                        holderName: '张三',
+                        isDefault: false,
+                    },
+                ]);
+
+                const initialParams = new URLSearchParams(window.location.search);
+                const initialTab = initialParams.get('tab');
+                const screen = ref(initialParams.get('view') === 'add' ? 'add' : 'list');
+                const previousScreen = ref('list');
+                const selectedId = ref('');
+                const sidebarOpen = ref(false);
+                const addTab = ref(['wallet', 'bank', 'credit'].includes(initialTab) ? initialTab : 'wallet');
+                const formError = ref('');
+                const newPhone = ref('');
+                const unbindReason = ref('wanted');
+                const unbindConfirmOpen = ref(false);
+                const cvvOpen = ref(false);
+                const toastMessage = ref('');
+                const walletAgreement = ref(false);
+                const bankAgreement = ref(false);
+                const creditAgreement = ref(false);
+                let toastTimer = null;
+
+                const tabs = [
+                    { value: 'wallet', label: '数字钱包' },
+                    { value: 'bank', label: '银行卡' },
+                    { value: 'credit', label: '信用卡' },
+                ];
+
+                const walletProviders = [
+                    { id: 'mtn', name: 'MTN', logoClass: 'provider-logo--mtn', logoText: 'MTN' },
+                    { id: 'vodafone', name: 'VODAFONE', logoClass: 'provider-logo--vodafone', logoText: '' },
+                    { id: 'airtel', name: 'AIRTELTIGO', logoClass: 'provider-logo--airtel', logoText: 'a' },
+                ];
+
+                const walletForm = reactive({
+                    phone: '0535 770 088',
+                    provider: 'vodafone',
+                });
+                const bankForm = reactive({
+                    cardNumber: '',
+                    phone: '',
+                });
+                const creditForm = reactive({
+                    cardNumber: '',
+                    name: '',
+                    expiry: '',
+                    cvv: '',
+                });
+
+                const currentCard = computed(() => {
+                    return methods.value.find((card) => card.id === selectedId.value);
+                });
+
+                const headerTitle = computed(() => {
+                    if (screen.value === 'list') return '卡包';
+                    if (screen.value === 'add') return '添加支付方式';
+                    if (screen.value === 'change-phone') {
+                        return currentCard.value?.kind === 'wallet' ? '修改钱包手机号' : '修改银行预留手机号';
+                    }
+                    if (screen.value === 'unbind') return '解绑卡片';
+                    if (screen.value === 'detail') {
+                        if (currentCard.value?.kind === 'wallet') return '移动钱包';
+                        if (currentCard.value?.kind === 'credit') return '信用卡详情';
+                        return '银行卡详情';
+                    }
+                    return '卡包';
+                });
+
+                const verificationOpen = ref(false);
+                const verificationMode = ref('add');
+                const verificationType = ref('wallet');
+                const verificationPhone = ref('');
+                const verificationDigits = ref([]);
+                const verificationLength = ref(4);
+                const codeLength = computed(() => verificationLength.value);
+                const demoCode = computed(() => verificationLength.value === 4 ? '3455' : '345500');
+                const codeError = ref(false);
+                const countdown = ref(0);
+                const codeRefs = ref([]);
+                let countdownTimer = null;
+                let autoVerifyTimer = null;
+
+                const failureModal = reactive({
+                    open: false,
+                    title: 'Failed',
+                    message: '',
+                    retryCode: false,
+                });
+
+                const showToast = (message) => {
+                    toastMessage.value = message;
+                    window.clearTimeout(toastTimer);
+                    toastTimer = window.setTimeout(() => {
+                        toastMessage.value = '';
+                    }, 2200);
+                };
+
+                const sanitizeDigits = (value, max = 20) => {
+                    return String(value || '').replace(/\D/g, '').slice(0, max);
+                };
+
+                const sanitizePhone = (value) => {
+                    return String(value || '').replace(/[^\d\s+]/g, '').slice(0, 16);
+                };
+
+                const formatGroupedPhone = (value) => {
+                    const digits = sanitizeDigits(value, 12);
+                    if (digits.length <= 4) return digits;
+                    if (digits.length <= 7) return `${digits.slice(0, 4)} ${digits.slice(4)}`;
+                    return `${digits.slice(0, 4)} ${digits.slice(4, 7)} ${digits.slice(7)}`;
+                };
+
+                const formatCardNumber = (value) => {
+                    const digits = sanitizeDigits(value, 19);
+                    return digits.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+                };
+
+                const formatExpiry = (value) => {
+                    const digits = sanitizeDigits(value, 4);
+                    if (digits.length <= 2) return digits;
+                    return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+                };
+
+                const maskPhone = (phone) => {
+                    const raw = String(phone || '').replace(/\s/g, '');
+                    if (!raw) return '已绑定手机号';
+                    if (raw.length <= 5) return raw;
+                    return `${raw.slice(0, 4)}****${raw.slice(-3)}`;
+                };
+
+                const cardClass = (card) => {
+                    if (card.kind === 'wallet') return `payment-card--wallet-${card.brand}`;
+                    return `payment-card--${card.kind}`;
+                };
+
+                const logoClass = (card) => {
+                    return `provider-logo--${card.brand || 'bank'}`;
+                };
+
+                const logoText = (card) => {
+                    if (card.kind === 'wallet' && card.brand === 'mtn') return 'MTN';
+                    if (card.kind === 'wallet' && card.brand === 'airtel') return 'a';
+                    if (card.brand === 'boc') return '中';
+                    return 'M';
+                };
+
+                const cardTitle = (card) => {
+                    if (card.kind === 'wallet') return card.title;
+                    return `${card.bankName}${card.cardType}`;
+                };
+
+                const detailCardName = (card) => {
+                    if (!card) return '';
+                    if (card.kind === 'wallet') return `${card.title} Mobile Money`;
+                    return `${card.bankName}${card.cardType}`;
+                };
+
+                const cardPrimaryDetail = (card) => {
+                    return card.kind === 'wallet' ? card.phone : card.cardNumber;
+                };
+
+                const detailCardNumber = (card) => {
+                    if (!card) return '';
+                    const compact = String(card.cardNumber || '').replace(/\s/g, '');
+                    if (compact.includes('*') && compact.length >= 8) {
+                        return `${compact.slice(0, 4)} **** **** ${compact.slice(-4)}`;
+                    }
+                    return String(card.cardNumber || '').replace(/(.{4})/g, '$1 ').trim();
+                };
+
+                const cardHolderName = (card) => {
+                    return card?.holderName || '张三';
+                };
+
+                const lastFour = (card) => {
+                    if (!card) return '0000';
+                    const raw = String(card.cardNumber || card.phone || '').replace(/\D/g, '');
+                    return raw.slice(-4) || '0000';
+                };
+
+                const setDefault = (id) => {
+                    methods.value.forEach((card) => {
+                        card.isDefault = card.id === id;
+                    });
+                    showToast('已设为默认支付方式');
+                };
+
+                const openDetail = (card) => {
+                    selectedId.value = card.id;
+                    previousScreen.value = 'list';
+                    screen.value = 'detail';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+
+                const openAdd = (tab = 'wallet') => {
+                    previousScreen.value = screen.value === 'list' ? 'list' : screen.value;
+                    addTab.value = tab;
+                    formError.value = '';
+                    screen.value = 'add';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+
+                const switchTab = (tab) => {
+                    addTab.value = tab;
+                    formError.value = '';
+                };
+
+                const openChangePhone = () => {
+                    newPhone.value = '';
+                    formError.value = '';
+                    screen.value = 'change-phone';
+                };
+
+                const openUnbind = () => {
+                    unbindReason.value = 'wanted';
+                    screen.value = 'unbind';
+                };
+
+                const requestPhoneChange = () => {
+                    const digits = sanitizeDigits(newPhone.value, 13);
+                    if (digits.length < 9) {
+                        formError.value = '请输入正确的手机号';
+                        return;
+                    }
+                    formError.value = '';
+                    verificationMode.value = 'changePhone';
+                    verificationType.value = currentCard.value?.kind || 'bank';
+                    verificationPhone.value = newPhone.value;
+                    verificationLength.value = 6;
+                    openVerification();
+                };
+
+                const openVerification = () => {
+                    verificationDigits.value = Array(verificationLength.value).fill('');
+                    codeError.value = false;
+                    verificationOpen.value = true;
+                    startCountdown();
+                    nextTick(() => codeRefs.value[0]?.focus());
+                };
+
+                const closeVerification = () => {
+                    window.clearTimeout(autoVerifyTimer);
+                    autoVerifyTimer = null;
+                    verificationOpen.value = false;
+                    codeError.value = false;
+                    stopCountdown();
+                };
+
+                const startCountdown = () => {
+                    stopCountdown();
+                    countdown.value = 60;
+                    countdownTimer = window.setInterval(() => {
+                        countdown.value -= 1;
+                        if (countdown.value <= 0) stopCountdown();
+                    }, 1000);
+                };
+
+                const stopCountdown = () => {
+                    if (countdownTimer) {
+                        window.clearInterval(countdownTimer);
+                        countdownTimer = null;
+                    }
+                };
+
+                const resendCode = () => {
+                    verificationDigits.value = Array(verificationLength.value).fill('');
+                    codeError.value = false;
+                    startCountdown();
+                    nextTick(() => codeRefs.value[0]?.focus());
+                    showToast('验证码已重新发送');
+                };
+
+                const setCodeRef = (element, index) => {
+                    if (element) codeRefs.value[index] = element;
+                };
+
+                const handleCodeInput = (index, event) => {
+                    const digits = sanitizeDigits(event.target.value, 1);
+                    verificationDigits.value[index] = digits;
+                    event.target.value = digits;
+                    codeError.value = false;
+
+                    if (digits && index < verificationLength.value - 1) {
+                        nextTick(() => codeRefs.value[index + 1]?.focus());
+                    }
+                    if (verificationDigits.value.every(Boolean)) {
+                        window.clearTimeout(autoVerifyTimer);
+                        autoVerifyTimer = window.setTimeout(() => verifyCurrentCode(true), 240);
+                    }
+                };
+
+                const handleCodeBackspace = (index, event) => {
+                    if (verificationDigits.value[index]) return;
+                    if (index > 0) {
+                        event.preventDefault();
+                        verificationDigits.value[index - 1] = '';
+                        nextTick(() => codeRefs.value[index - 1]?.focus());
+                    }
+                };
+
+                const handleCodePaste = (event) => {
+                    const text = event.clipboardData?.getData('text') || '';
+                    const digits = sanitizeDigits(text, verificationLength.value).split('');
+                    if (!digits.length) return;
+                    verificationDigits.value = Array.from(
+                        { length: verificationLength.value },
+                        (_, index) => digits[index] || ''
+                    );
+                    codeError.value = false;
+                    const focusIndex = Math.min(digits.length, verificationLength.value - 1);
+                    nextTick(() => codeRefs.value[focusIndex]?.focus());
+                    if (verificationDigits.value.every(Boolean)) {
+                        window.clearTimeout(autoVerifyTimer);
+                        autoVerifyTimer = window.setTimeout(() => verifyCurrentCode(true), 240);
+                    }
+                };
+
+                const showFailure = (message, retryCode = false, title = 'Failed') => {
+                    failureModal.open = true;
+                    failureModal.title = title;
+                    failureModal.message = message;
+                    failureModal.retryCode = retryCode;
+                };
+
+                const closeFailure = () => {
+                    const shouldRetry = failureModal.retryCode;
+                    failureModal.open = false;
+                    failureModal.retryCode = false;
+                    if (shouldRetry && verificationOpen.value) {
+                        verificationDigits.value = Array(verificationLength.value).fill('');
+                        codeError.value = true;
+                        nextTick(() => codeRefs.value[0]?.focus());
+                    }
+                };
+
+                const verifyCurrentCode = (auto = false) => {
+                    const inputCode = verificationDigits.value.join('');
+                    if (inputCode.length !== verificationLength.value) {
+                        if (!auto) showFailure('请输入完整的验证码。', false, '提示');
+                        return;
+                    }
+                    window.clearTimeout(autoVerifyTimer);
+
+                    if (inputCode !== demoCode.value) {
+                        codeError.value = true;
+                        showFailure(
+                            verificationMode.value === 'changePhone'
+                                ? '验证码不正确，请重新输入。'
+                                : '信息验证失败，请确认绑定卡片信息。',
+                            true
+                        );
+                        return;
+                    }
+
+                    if (verificationMode.value === 'changePhone') {
+                        completePhoneChange();
+                    } else {
+                        completeBinding();
+                    }
+                };
+
+                const completePhoneChange = () => {
+                    if (!currentCard.value) return;
+                    currentCard.value.phone = formatMaskedPhone(newPhone.value);
+                    if (currentCard.value.kind !== 'wallet') {
+                        currentCard.value.phone = maskPhone(newPhone.value);
+                    }
+                    const cardId = currentCard.value.id;
+                    closeVerification();
+                    selectedId.value = cardId;
+                    screen.value = 'detail';
+                    showToast('预留手机号已更新');
+                };
+
+                const formatMaskedPhone = (value) => {
+                    const raw = sanitizeDigits(value, 13);
+                    if (raw.length <= 6) return raw;
+                    return `${raw.slice(0, 2)}******${raw.slice(-2)}`;
+                };
+
+                const inferBankName = (digits) => {
+                    const prefixes = [
+                        ['6222', '中国工商银行'],
+                        ['6212', '中国建设银行'],
+                        ['4367', '中国建设银行'],
+                        ['6228', '中国农业银行'],
+                        ['6217', '中国银行'],
+                        ['6225', '招商银行'],
+                        ['6210', '中国邮政储蓄银行'],
+                        ['6226', '交通银行'],
+                    ];
+                    const match = prefixes.find(([prefix]) => digits.startsWith(prefix));
+                    return match ? match[1] : '银行卡';
+                };
+
+                const maskedCardNumber = (digits) => {
+                    return `${digits.slice(0, 4)}****${digits.slice(-4)}`;
+                };
+
+                const completeBinding = () => {
+                    let card;
+                    if (verificationType.value === 'wallet') {
+                        const provider = walletProviders.find((item) => item.id === walletForm.provider);
+                        const rawPhone = sanitizeDigits(walletForm.phone, 12);
+                        card = {
+                            id: `wallet-${walletForm.provider}-${Date.now()}`,
+                            kind: 'wallet',
+                            brand: walletForm.provider,
+                            title: provider?.name || 'Mobile Money',
+                            owner: '当前账户',
+                            phone: `+233 ${rawPhone.slice(0, 2)}******${rawPhone.slice(-2)}`,
+                            isDefault: methods.value.length === 0,
+                        };
+                    } else if (verificationType.value === 'bank') {
+                        const rawCard = sanitizeDigits(bankForm.cardNumber, 19);
+                        card = {
+                            id: `bank-${Date.now()}`,
+                            kind: 'bank',
+                            brand: 'cmb',
+                            bankName: inferBankName(rawCard),
+                            cardType: '借记卡',
+                            cardNumber: maskedCardNumber(rawCard),
+                            phone: maskPhone(bankForm.phone),
+                            holderName: '张三',
+                            isDefault: methods.value.length === 0,
+                        };
+                    } else {
+                        const rawCard = sanitizeDigits(creditForm.cardNumber, 19);
+                        card = {
+                            id: `credit-${Date.now()}`,
+                            kind: 'credit',
+                            brand: 'boc',
+                            bankName: inferBankName(rawCard) === '银行卡' ? '信用卡' : inferBankName(rawCard),
+                            cardType: '信用卡',
+                            cardNumber: maskedCardNumber(rawCard),
+                            phone: '0535****088',
+                            holderName: creditForm.name.trim() || '张三',
+                            isDefault: methods.value.length === 0,
+                        };
+                    }
+
+                    methods.value.push(card);
+                    closeVerification();
+                    screen.value = 'list';
+                    previousScreen.value = 'list';
+                    showToast('支付方式已添加');
+                };
+
+                const prepareBind = (type) => {
+                    formError.value = '';
+                    verificationMode.value = 'add';
+                    verificationType.value = type;
+
+                    if (type === 'wallet') {
+                        const rawPhone = sanitizeDigits(walletForm.phone, 12);
+                        if (!walletForm.provider) {
+                            formError.value = '请选择数字钱包';
+                            return;
+                        }
+                        if (rawPhone.length < 9) {
+                            formError.value = '请输入正确的数字钱包手机号';
+                            return;
+                        }
+                        if (!walletAgreement.value) {
+                            formError.value = '请阅读并同意《支付服务协议》';
+                            return;
+                        }
+                        if (walletForm.provider === 'airtel') {
+                            showFailure(
+                                'The mobile money wallet is Unavailable. 当前钱包服务暂不可用，请更换其他钱包后重试。'
+                            );
+                            return;
+                        }
+                        verificationPhone.value = `+233 ${walletForm.phone}`;
+                        verificationLength.value = 4;
+                    } else if (type === 'bank') {
+                        const rawCard = sanitizeDigits(bankForm.cardNumber, 19);
+                        const rawPhone = sanitizeDigits(bankForm.phone, 13);
+                        if (rawCard.length < 16 || rawCard.length > 19) {
+                            formError.value = '请填写 16-19 位银行卡号';
+                            return;
+                        }
+                        if (rawPhone.length < 9) {
+                            formError.value = '请输入银行卡预留手机号';
+                            return;
+                        }
+                        if (!bankAgreement.value) {
+                            formError.value = '请阅读并同意《支付服务协议》';
+                            return;
+                        }
+                        verificationPhone.value = bankForm.phone;
+                        verificationLength.value = 6;
+                    } else {
+                        const rawCard = sanitizeDigits(creditForm.cardNumber, 19);
+                        if (rawCard.length < 16 || rawCard.length > 19) {
+                            formError.value = '请填写正确的信用卡号';
+                            return;
+                        }
+                        if (creditForm.name.trim().length < 2) {
+                            formError.value = '请输入卡面姓名';
+                            return;
+                        }
+                        if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(creditForm.expiry)) {
+                            formError.value = '请输入正确的有效期';
+                            return;
+                        }
+                        if (!/^\d{3,4}$/.test(creditForm.cvv)) {
+                            formError.value = '请输入 3 位 CVV';
+                            return;
+                        }
+                        if (!creditAgreement.value) {
+                            formError.value = '请阅读并同意《支付服务协议》';
+                            return;
+                        }
+                        verificationPhone.value = '0535 770 088';
+                        verificationLength.value = 6;
+                    }
+
+                    openVerification();
+                };
+
+                const confirmUnbind = () => {
+                    if (!currentCard.value) return;
+                    const removedId = currentCard.value.id;
+                    const wasDefault = currentCard.value.isDefault;
+                    methods.value = methods.value.filter((card) => card.id !== removedId);
+                    if (wasDefault && methods.value.length) {
+                        methods.value[0].isDefault = true;
+                    }
+                    unbindConfirmOpen.value = false;
+                    selectedId.value = '';
+                    screen.value = 'list';
+                    showToast('卡片已解绑');
+                };
+
+                const showAgreement = () => {
+                    showFailure(
+                        '支付服务协议内容仅用于原型演示：平台将按约定处理您的支付信息，并提供提现与账户安全服务。',
+                        false,
+                        '支付服务协议'
+                    );
+                };
+
+                const goBack = () => {
+                    if (failureModal.open) {
+                        closeFailure();
+                        return;
+                    }
+                    if (cvvOpen.value) {
+                        cvvOpen.value = false;
+                        return;
+                    }
+                    if (verificationOpen.value) {
+                        closeVerification();
+                        return;
+                    }
+                    if (unbindConfirmOpen.value) {
+                        unbindConfirmOpen.value = false;
+                        return;
+                    }
+                    if (screen.value === 'change-phone' || screen.value === 'unbind') {
+                        screen.value = 'detail';
+                        formError.value = '';
+                        return;
+                    }
+                    if (screen.value === 'detail') {
+                        screen.value = 'list';
+                        selectedId.value = '';
+                        return;
+                    }
+                    if (screen.value === 'add') {
+                        screen.value = previousScreen.value === 'detail' ? 'detail' : 'list';
+                        return;
+                    }
+                    window.location.href = '会员提现申请.html';
+                };
+
+                watch(screen, (nextScreen) => {
+                    const titles = {
+                        list: '我的卡包',
+                        add: '添加支付方式',
+                        detail: '支付方式详情',
+                        'change-phone': '修改预留手机号',
+                        unbind: '解绑卡片',
+                    };
+                    document.title = titles[nextScreen] || '我的卡包';
+                }, { immediate: true });
+
+                onBeforeUnmount(() => {
+                    stopCountdown();
+                    window.clearTimeout(toastTimer);
+                    window.clearTimeout(autoVerifyTimer);
+                });
+
+                return {
+                    methods,
+                    screen,
+                    selectedId,
+                    currentCard,
+                    headerTitle,
+                    sidebarOpen,
+                    tabs,
+                    addTab,
+                    walletProviders,
+                    walletForm,
+                    bankForm,
+                    creditForm,
+                    walletAgreement,
+                    bankAgreement,
+                    creditAgreement,
+                    formError,
+                    newPhone,
+                    unbindReason,
+                    unbindConfirmOpen,
+                    cvvOpen,
+                    verificationOpen,
+                    verificationMode,
+                    verificationPhone,
+                    verificationDigits,
+                    verificationLength,
+                    codeLength,
+                    demoCode,
+                    codeError,
+                    countdown,
+                    failureModal,
+                    toastMessage,
+                    cardClass,
+                    logoClass,
+                    logoText,
+                    cardTitle,
+                    detailCardName,
+                    cardPrimaryDetail,
+                    detailCardNumber,
+                    cardHolderName,
+                    lastFour,
+                    setDefault,
+                    openDetail,
+                    openAdd,
+                    switchTab,
+                    openChangePhone,
+                    openUnbind,
+                    requestPhoneChange,
+                    closeVerification,
+                    resendCode,
+                    setCodeRef,
+                    handleCodeInput,
+                    handleCodeBackspace,
+                    handleCodePaste,
+                    verifyCurrentCode,
+                    closeFailure,
+                    prepareBind,
+                    confirmUnbind,
+                    showAgreement,
+                    goBack,
+                    maskPhone,
+                    sanitizePhone,
+                    formatGroupedPhone,
+                    formatCardNumber,
+                    formatExpiry,
+                    sanitizeDigits,
+                };
+            },
+        });
+        if (window.antd) app.use(antd);
+        app.mount('#app');
+    </script>
 </body>
 </html>

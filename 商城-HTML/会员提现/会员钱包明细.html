@@ -3,101 +3,1742 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>钱包明细</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <title>我的钱包</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/reset.css" />
+    <script src="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/antd.min.js"></script>
     <style>
-        :root { --tos-primary: #42b7ae; --tos-primary-bg: #e6f7f6; --tos-bg: #f5f7fa; --tos-text: #333; --tos-text-secondary: #666; --tos-text-muted: #999; --tos-success: #52c41a; --tos-warning: #faad14; --tos-error: #f5222d; --tos-border: #e5e7eb; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--tos-bg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--tos-text); -webkit-font-smoothing: antialiased; }
-        .sidebar { width: 200px; flex-shrink: 0; background: #fff; border-right: 1px solid #f0f2f5; position: fixed; left: 0; top: 0; bottom: 0; display: flex; flex-direction: column; z-index: 10; }
-        .sidebar__end-select { width: calc(100% - 24px); height: 32px; margin: 8px 12px 0; padding: 0 26px 0 10px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; font-size: 13px; color: #333; outline: none; cursor: pointer; font-family: inherit; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%2710%27><path d=%27M2 4l3 3 3-3%27 fill=%27none%27 stroke=%27%23999%27 stroke-width=%271.5%27 stroke-linecap=%27round%27/></svg>"); background-repeat: no-repeat; background-position: right 8px center; }
-        .sidebar__end-select:focus { border-color: #42b7ae; box-shadow: 0 0 0 2px rgba(66,183,174,.16); }
-        .sidebar__head { padding: 20px 16px 16px; border-bottom: 1px solid #f0f2f5; display: flex; align-items: center; gap: 10px; }
-        .sidebar__logo { width: 34px; height: 34px; border-radius: 8px; background: var(--tos-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
-        .sidebar__title { font-size: 15px; font-weight: 700; white-space: nowrap; }
-        .sidebar__nav { flex: 1; padding: 8px 0; overflow-y: auto; }
-        .sidebar__group-title { padding: 12px 14px 4px; font-size: 10px; color: var(--tos-text-muted); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
-        .sidebar__item { display: flex; align-items: center; gap: 8px; padding: 9px 14px; font-size: 13px; color: var(--tos-text-secondary); cursor: pointer; text-decoration: none; border-left: 3px solid transparent; transition: all .12s; }
-        .sidebar__item:hover { background: #f5f5f5; color: var(--tos-text); }
-        .sidebar__item--active { color: var(--tos-primary); font-weight: 600; background: var(--tos-primary-bg); border-left-color: var(--tos-primary); }
-        .sidebar__item i { width: 16px; text-align: center; font-size: 12px; }
-        .h5-container { width: 414px; margin: 0 auto; min-height: 100vh; background: var(--tos-bg); position: relative; }
-        .h5-header { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 16px; background: #fff; border-bottom: 1px solid var(--tos-border); }
-        .h5-header__back { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--tos-text); cursor: pointer; background: none; border: none; }
-        .h5-header__title { flex: 1; font-size: 17px; font-weight: 600; text-align: center; }
-        .h5-header__menu { width: 32px; height: 32px; display: none; align-items: center; justify-content: center; font-size: 20px; color: var(--tos-text); cursor: pointer; background: none; border: none; flex-shrink: 0; }
-        .h5-page { padding: 12px 16px 24px; }
-        .h5-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-        .h5-stat { background: #fff; border-radius: 8px; padding: 12px; border: 1px solid #f0f2f5; }
-        .h5-stat__label { font-size: 11px; color: var(--tos-text-muted); }
-        .h5-stat__value { font-size: 18px; font-weight: 700; margin-top: 2px; }
-        .h5-filter { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
-        .h5-filter-chip { flex-shrink: 0; padding: 6px 12px; border-radius: 16px; font-size: 12px; border: 1px solid var(--tos-border); background: #fff; color: var(--tos-text-secondary); cursor: pointer; white-space: nowrap; }
-        .h5-filter-chip--active { background: var(--tos-primary); color: #fff; border-color: var(--tos-primary); }
-        .h5-tx-list { display: flex; flex-direction: column; gap: 6px; }
-        .h5-tx-card { background: #fff; border-radius: 10px; padding: 12px 14px; border: 1px solid #f0f2f5; display: flex; align-items: center; gap: 12px; }
-        .h5-tx-card__icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-        .tx-income { background: #f0faf0; } .tx-withdraw { background: #fff1f0; } .tx-refund { background: var(--tos-primary-bg); } .tx-reward { background: #fff7e6; } .tx-adjust { background: #f5f0ff; }
-        .h5-tx-card__info { flex: 1; min-width: 0; }
-        .h5-tx-card__type { font-size: 14px; font-weight: 600; }
-        .h5-tx-card__ref { font-size: 11px; color: var(--tos-text-muted); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .h5-tx-card__date { font-size: 11px; color: var(--tos-text-muted); }
-        .h5-tx-card__amount { text-align: right; flex-shrink: 0; }
-        .h5-tx-card__amount .in { color: var(--tos-success); font-weight: 700; font-size: 15px; }
-        .h5-tx-card__amount .out { color: var(--tos-error); font-weight: 700; font-size: 15px; }
-        .h5-tx-card__amount .balance { font-size: 11px; color: var(--tos-text-muted); margin-top: 2px; }
-        .h5-empty { text-align: center; padding: 48px 20px; color: var(--tos-text-muted); font-size: 14px; }
-        @media (max-width: 680px) { .sidebar { display: none; } .h5-header__menu { display: flex; } .h5-container { width: 100%; } }
+        :root {
+            --tos-primary: #42b7ae;
+            --tos-primary-hover: #339b94;
+            --tos-primary-bg: #e6f7f6;
+            --tos-bg: #f5f7fa;
+            --tos-card: #ffffff;
+            --tos-text: #333333;
+            --tos-text-secondary: #666666;
+            --tos-text-muted: #999999;
+            --tos-success: #52c41a;
+            --tos-warning: #faad14;
+            --tos-error: #f5222d;
+            --tos-border: #e5e7eb;
+            --tos-border-soft: #f0f1f2;
+            --tos-radius-card: 12px;
+            --tos-radius-control: 8px;
+            --tos-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.03);
+            --tos-shadow-pop: 0 20px 60px rgba(15, 23, 42, 0.18);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            min-height: 100%;
+        }
+
+        body {
+            margin: 0;
+            overflow-x: hidden;
+            background: var(--tos-bg);
+            color: var(--tos-text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            color: inherit;
+        }
+
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        a:focus-visible {
+            outline: 2px solid rgba(66, 183, 174, 0.42);
+            outline-offset: 2px;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+
+        .h5-sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .sidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+            z-index: 80;
+            display: flex;
+            width: 200px;
+            flex-direction: column;
+            border-right: 1px solid var(--tos-border-soft);
+            background: #fff;
+            transition: transform 0.22s ease;
+        }
+
+        .sidebar__end-select {
+            width: calc(100% - 24px);
+            height: 32px;
+            margin: 8px 12px 0;
+            padding: 0 26px 0 10px;
+            border: 1px solid var(--tos-border);
+            border-radius: 8px;
+            outline: none;
+            background-color: #fff;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 4l3 3 3-3' fill='none' stroke='%23999' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            color: var(--tos-text);
+            font-size: 13px;
+            cursor: pointer;
+            appearance: none;
+        }
+
+        .sidebar__end-select:focus {
+            border-color: var(--tos-primary);
+            box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.16);
+        }
+
+        .sidebar__head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 20px 16px 16px;
+            border-bottom: 1px solid var(--tos-border-soft);
+        }
+
+        .sidebar__logo {
+            display: flex;
+            width: 34px;
+            height: 34px;
+            flex: 0 0 34px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: var(--tos-primary);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .sidebar__title {
+            font-size: 15px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .sidebar__nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .sidebar__group-title {
+            padding: 12px 14px 4px;
+            color: var(--tos-text-muted);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .sidebar__item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 14px;
+            border-left: 3px solid transparent;
+            color: var(--tos-text-secondary);
+            font-size: 13px;
+            text-decoration: none;
+            transition: background-color 0.12s, color 0.12s;
+        }
+
+        .sidebar__item:hover {
+            background: #fafafa;
+            color: var(--tos-text);
+        }
+
+        .sidebar__item--active {
+            border-left-color: var(--tos-primary);
+            background: var(--tos-primary-bg);
+            color: var(--tos-primary);
+            font-weight: 600;
+        }
+
+        .sidebar__icon {
+            width: 16px;
+            flex: 0 0 16px;
+            text-align: center;
+            font-size: 15px;
+            line-height: 1;
+        }
+
+        .sidebar-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 70;
+            display: none;
+            background: rgba(15, 23, 42, 0.32);
+        }
+
+        .h5-container {
+            position: relative;
+            width: 414px;
+            min-height: 100vh;
+            margin: 0 auto;
+            overflow: hidden;
+            background: var(--tos-bg);
+            box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.03);
+        }
+
+        .h5-header {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            display: flex;
+            height: 52px;
+            align-items: center;
+            gap: 8px;
+            padding: 0 12px;
+            border-bottom: 1px solid var(--tos-border-soft);
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        .h5-header__menu,
+        .h5-header__back,
+        .h5-header__placeholder {
+            display: flex;
+            width: 32px;
+            height: 32px;
+            flex: 0 0 32px;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+        }
+
+        .h5-header__menu,
+        .h5-header__back {
+            cursor: pointer;
+        }
+
+        .h5-header__menu {
+            display: none;
+            font-size: 20px;
+        }
+
+        .h5-header__back {
+            font-size: 22px;
+            font-weight: 300;
+        }
+
+        .h5-header__menu:hover,
+        .h5-header__back:hover {
+            background: rgba(15, 23, 42, 0.05);
+        }
+
+        .h5-header__title {
+            overflow: hidden;
+            flex: 1;
+            margin: 0;
+            font-size: 17px;
+            font-weight: 600;
+            line-height: 32px;
+            text-align: center;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .h5-page {
+            min-height: calc(100vh - 52px);
+            padding: 18px 18px 30px;
+        }
+
+        .h5-balance-card {
+            margin-bottom: 12px;
+            padding: 20px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            background: var(--tos-card);
+            box-shadow: var(--tos-shadow-card);
+        }
+
+        .h5-balance-card__top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .h5-balance-card__label {
+            color: var(--tos-text-muted);
+            font-size: 13px;
+            line-height: 20px;
+        }
+
+        .h5-eye-btn {
+            display: flex;
+            width: 32px;
+            height: 28px;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            color: #4b5563;
+            cursor: pointer;
+        }
+
+        .h5-eye-btn:hover {
+            background: #f5f7fa;
+        }
+
+        .h5-eye-btn svg {
+            width: 23px;
+            height: 23px;
+        }
+
+        .h5-balance-card__amount {
+            display: flex;
+            min-height: 48px;
+            align-items: baseline;
+            gap: 3px;
+            margin-top: 10px;
+            color: var(--tos-text);
+            font-size: 30px;
+            font-weight: 650;
+            letter-spacing: 0.2px;
+            line-height: 1.35;
+        }
+
+        .h5-balance-card__currency {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .h5-balance-card__footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 3px;
+        }
+
+        .h5-balance-card__hint {
+            margin: 0;
+            color: var(--tos-text-muted);
+            font-size: 11px;
+            line-height: 18px;
+        }
+
+        .h5-balance-link {
+            flex: 0 0 auto;
+            padding: 3px 0;
+            border: 0;
+            background: transparent;
+            color: var(--tos-primary);
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 18px;
+            cursor: pointer;
+        }
+
+        .h5-balance-link:hover {
+            color: var(--tos-primary-hover);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        .h5-ledger-entry {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            background: var(--tos-card);
+            box-shadow: var(--tos-shadow-card);
+            text-align: left;
+            cursor: pointer;
+            transition: border-color 0.16s ease, transform 0.16s ease;
+        }
+
+        .h5-ledger-entry:hover {
+            border-color: #d9dee5;
+            transform: translateY(-1px);
+        }
+
+        .h5-ledger-entry__icon,
+        .h5-feature__icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--tos-primary);
+        }
+
+        .h5-ledger-entry__icon {
+            width: 36px;
+            height: 36px;
+            flex: 0 0 36px;
+            border-radius: 8px;
+            background: var(--tos-primary-bg);
+        }
+
+        .h5-ledger-entry__icon svg,
+        .h5-feature__icon svg {
+            width: 23px;
+            height: 23px;
+        }
+
+        .h5-ledger-entry__body {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .h5-ledger-entry__title {
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 20px;
+        }
+
+        .h5-ledger-entry__desc {
+            margin-top: 2px;
+            color: var(--tos-text-muted);
+            font-size: 11px;
+            line-height: 17px;
+        }
+
+        .h5-chevron {
+            width: 18px;
+            height: 18px;
+            flex: 0 0 18px;
+            color: #8f98a3;
+        }
+
+        .h5-section {
+            margin-top: 22px;
+        }
+
+        .h5-section__title {
+            margin: 0;
+            color: var(--tos-text);
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 24px;
+        }
+
+        .h5-section__desc {
+            margin: 3px 0 0;
+            color: var(--tos-text-muted);
+            font-size: 11px;
+            line-height: 18px;
+        }
+
+        .h5-feature-panel {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            margin-top: 12px;
+            padding: 4px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            background: var(--tos-card);
+            box-shadow: var(--tos-shadow-card);
+        }
+
+        .h5-feature {
+            display: flex;
+            min-width: 0;
+            min-height: 92px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--tos-text-secondary);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .h5-feature:hover {
+            background: #fafafa;
+            color: var(--tos-text);
+        }
+
+        .h5-feature__icon {
+            height: 28px;
+        }
+
+        .h5-feature__label {
+            overflow: hidden;
+            max-width: 100%;
+            font-size: 12px;
+            line-height: 18px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .h5-quick-recharge {
+            margin-top: 22px;
+            padding: 18px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            background: var(--tos-card);
+            box-shadow: var(--tos-shadow-card);
+        }
+
+        .h5-quick-options {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .h5-quick-option {
+            height: 36px;
+            border: 1px solid var(--tos-border);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--tos-text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .h5-quick-option:hover {
+            border-color: var(--tos-primary);
+            color: var(--tos-primary);
+        }
+
+        .h5-quick-option--active {
+            border-color: var(--tos-primary);
+            background: var(--tos-primary-bg);
+            color: var(--tos-primary);
+            font-weight: 600;
+        }
+
+        .h5-quick-input {
+            position: relative;
+            display: flex;
+            height: 46px;
+            align-items: center;
+            margin-top: 10px;
+            padding: 0 13px;
+            border: 1px solid var(--tos-border);
+            border-radius: 8px;
+            background: #fff;
+            transition: border-color 0.16s ease, box-shadow 0.16s ease;
+        }
+
+        .h5-quick-input:focus-within {
+            border-color: var(--tos-primary);
+            box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.12);
+        }
+
+        .h5-quick-input__currency {
+            flex: 0 0 auto;
+            color: var(--tos-text-secondary);
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .h5-quick-input input {
+            min-width: 0;
+            flex: 1;
+            height: 42px;
+            padding: 0 8px;
+            border: 0;
+            outline: 0;
+            background: transparent;
+            color: var(--tos-text);
+            font-size: 15px;
+        }
+
+        .h5-quick-input input::placeholder {
+            color: #b9c0c9;
+        }
+
+        .h5-quick-input input::-webkit-outer-spin-button,
+        .h5-quick-input input::-webkit-inner-spin-button {
+            margin: 0;
+            appearance: none;
+        }
+
+        .h5-quick-submit {
+            width: 100%;
+            height: 44px;
+            margin-top: 10px;
+            border: 1px solid var(--tos-primary);
+            border-radius: 8px;
+            background: var(--tos-primary);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .h5-quick-submit:hover {
+            border-color: var(--tos-primary-hover);
+            background: var(--tos-primary-hover);
+        }
+
+        .h5-quick-submit:disabled {
+            border-color: #b8dedb;
+            background: #b8dedb;
+            cursor: not-allowed;
+        }
+
+        .h5-ledger-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .h5-ledger-header h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 650;
+            line-height: 26px;
+        }
+
+        .h5-ledger-header p {
+            margin: 3px 0 0;
+            color: var(--tos-text-muted);
+            font-size: 11px;
+        }
+
+        .h5-ledger-header__link {
+            flex: 0 0 auto;
+            padding: 4px 0;
+            border: 0;
+            background: transparent;
+            color: var(--tos-primary);
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .h5-summary-panel {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            overflow: hidden;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            background: #fff;
+            box-shadow: var(--tos-shadow-card);
+        }
+
+        .h5-summary-item {
+            min-height: 74px;
+            padding: 13px 15px;
+        }
+
+        .h5-summary-item:nth-child(even) {
+            border-left: 1px solid var(--tos-border-soft);
+        }
+
+        .h5-summary-item:nth-child(n + 3) {
+            border-top: 1px solid var(--tos-border-soft);
+        }
+
+        .h5-summary-item__label {
+            color: var(--tos-text-muted);
+            font-size: 11px;
+            line-height: 17px;
+        }
+
+        .h5-summary-item__value {
+            margin-top: 3px;
+            color: var(--tos-text);
+            font-size: 17px;
+            font-weight: 650;
+            line-height: 24px;
+        }
+
+        .h5-summary-item__value--income {
+            color: var(--tos-success);
+        }
+
+        .h5-summary-item__value--expense {
+            color: var(--tos-error);
+        }
+
+        .h5-summary-item__value--primary {
+            color: var(--tos-primary);
+        }
+
+        .h5-filter-bar {
+            display: flex;
+            gap: 7px;
+            margin: 16px 0 10px;
+            overflow-x: auto;
+            padding: 1px 0 4px;
+            scrollbar-width: none;
+        }
+
+        .h5-filter-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .h5-filter-chip {
+            height: 32px;
+            flex: 0 0 auto;
+            padding: 0 13px;
+            border: 1px solid var(--tos-border);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--tos-text-secondary);
+            font-size: 12px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .h5-filter-chip:hover {
+            border-color: var(--tos-primary);
+            color: var(--tos-primary);
+        }
+
+        .h5-filter-chip--active {
+            border-color: var(--tos-primary);
+            background: var(--tos-primary-bg);
+            color: var(--tos-primary);
+            font-weight: 600;
+        }
+
+        .h5-transaction-panel {
+            overflow: hidden;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: var(--tos-radius-card);
+            background: #fff;
+            box-shadow: var(--tos-shadow-card);
+        }
+
+        .h5-transaction {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 13px 14px;
+        }
+
+        .h5-transaction + .h5-transaction {
+            border-top: 1px solid #f3f4f6;
+        }
+
+        .h5-transaction:hover {
+            background: #fafafa;
+        }
+
+        .h5-transaction__icon {
+            display: flex;
+            width: 36px;
+            height: 36px;
+            flex: 0 0 36px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: var(--tos-primary-bg);
+            color: var(--tos-primary);
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .h5-transaction__icon--income {
+            background: #f0faf0;
+            color: var(--tos-success);
+        }
+
+        .h5-transaction__icon--withdraw {
+            background: #fff1f0;
+            color: var(--tos-error);
+        }
+
+        .h5-transaction__icon--reward {
+            background: #fff7e6;
+            color: #d48806;
+        }
+
+        .h5-transaction__body {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .h5-transaction__title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 19px;
+        }
+
+        .h5-transaction__ref {
+            overflow: hidden;
+            margin-top: 2px;
+            color: var(--tos-text-muted);
+            font-size: 10px;
+            line-height: 16px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .h5-transaction__amount {
+            flex: 0 0 auto;
+            text-align: right;
+        }
+
+        .h5-transaction__value {
+            font-size: 14px;
+            font-weight: 650;
+            line-height: 20px;
+        }
+
+        .h5-transaction__value--in {
+            color: var(--tos-success);
+        }
+
+        .h5-transaction__value--out {
+            color: var(--tos-error);
+        }
+
+        .h5-transaction__balance {
+            margin-top: 2px;
+            color: var(--tos-text-muted);
+            font-size: 10px;
+            line-height: 15px;
+        }
+
+        .h5-empty {
+            padding: 54px 20px;
+            color: var(--tos-text-muted);
+            text-align: center;
+        }
+
+        .h5-empty__icon {
+            display: flex;
+            width: 52px;
+            height: 52px;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            border-radius: 50%;
+            background: #f1f3f5;
+            color: #aeb5bf;
+            font-size: 22px;
+        }
+
+        .h5-empty p {
+            margin: 0;
+            font-size: 12px;
+        }
+
+        .h5-modal-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(32, 38, 45, 0.42);
+        }
+
+        .h5-modal-card {
+            position: relative;
+            width: min(100%, 350px);
+            padding: 24px 22px 22px;
+            border-radius: var(--tos-radius-card);
+            background: #fff;
+            box-shadow: var(--tos-shadow-pop);
+        }
+
+        .h5-modal-card__close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            width: 30px;
+            height: 30px;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            color: #9ca3af;
+            font-size: 22px;
+            font-weight: 300;
+            cursor: pointer;
+        }
+
+        .h5-modal-card__close:hover {
+            background: #f5f5f5;
+            color: var(--tos-text-secondary);
+        }
+
+        .h5-modal-card__title {
+            margin: 0;
+            color: var(--tos-text);
+            font-size: 19px;
+            font-weight: 650;
+            line-height: 28px;
+            text-align: center;
+        }
+
+        .h5-modal-card__desc {
+            margin: 5px 0 18px;
+            color: var(--tos-text-muted);
+            font-size: 12px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .h5-form-label {
+            display: block;
+            margin: 14px 0 7px;
+            color: var(--tos-text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .h5-money-input {
+            display: flex;
+            height: 46px;
+            align-items: center;
+            padding: 0 12px;
+            border: 1px solid var(--tos-border);
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .h5-money-input:focus-within {
+            border-color: var(--tos-primary);
+            box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.12);
+        }
+
+        .h5-money-input span {
+            color: var(--tos-text-secondary);
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .h5-money-input input {
+            min-width: 0;
+            flex: 1;
+            height: 42px;
+            padding: 0 8px;
+            border: 0;
+            outline: 0;
+            background: transparent;
+            color: var(--tos-text);
+            font-size: 16px;
+        }
+
+        .h5-account-select {
+            width: 100%;
+            height: 44px;
+            padding: 0 34px 0 12px;
+            border: 1px solid var(--tos-border);
+            border-radius: 8px;
+            outline: none;
+            background-color: #fff;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%23999' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            color: var(--tos-text);
+            font-size: 13px;
+            appearance: none;
+        }
+
+        .h5-account-select:focus {
+            border-color: var(--tos-primary);
+            box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.12);
+        }
+
+        .h5-form-error {
+            margin: 9px 0 0;
+            color: var(--tos-error);
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .h5-modal-note {
+            margin-top: 12px;
+            padding: 10px 11px;
+            border-radius: 8px;
+            background: #f7f9fa;
+            color: var(--tos-text-muted);
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .h5-modal-submit {
+            width: 100%;
+            height: 44px;
+            margin-top: 18px;
+            border: 1px solid var(--tos-primary);
+            border-radius: 8px;
+            background: var(--tos-primary);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .h5-modal-submit:hover {
+            border-color: var(--tos-primary-hover);
+            background: var(--tos-primary-hover);
+        }
+
+        .h5-modal-submit:disabled {
+            border-color: #a7d8d4;
+            background: #a7d8d4;
+            cursor: wait;
+        }
+
+        .h5-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            z-index: 300;
+            display: flex;
+            max-width: calc(100vw - 40px);
+            align-items: center;
+            gap: 8px;
+            padding: 11px 16px;
+            border-radius: 8px;
+            background: rgba(17, 24, 39, 0.9);
+            color: #fff;
+            font-size: 13px;
+            line-height: 1.4;
+            transform: translateX(-50%);
+            box-shadow: 0 8px 30px rgba(15, 23, 42, 0.2);
+        }
+
+        .h5-toast__check {
+            display: flex;
+            width: 18px;
+            height: 18px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--tos-success);
+            font-size: 11px;
+        }
+
+        .h5-fade-enter-active,
+        .h5-fade-leave-active {
+            transition: opacity 0.16s ease;
+        }
+
+        .h5-fade-enter-from,
+        .h5-fade-leave-to {
+            opacity: 0;
+        }
+
+        @media (max-width: 680px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar--open {
+                transform: translateX(0);
+            }
+
+            .sidebar-backdrop {
+                display: block;
+            }
+
+            .h5-container {
+                width: 100%;
+                box-shadow: none;
+            }
+
+            .h5-header__menu {
+                display: flex;
+            }
+
+            .h5-modal-layer {
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 370px) {
+            .h5-page {
+                padding-right: 14px;
+                padding-left: 14px;
+            }
+
+            .h5-balance-card {
+                padding: 18px;
+            }
+
+            .h5-balance-card__amount {
+                font-size: 27px;
+            }
+
+            .h5-quick-recharge {
+                padding: 16px;
+            }
+
+            .h5-feature__label {
+                font-size: 11px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
     </style>
 </head>
 <body>
+    <div id="app" v-cloak>
+        <div v-if="sidebarOpen" class="sidebar-backdrop" @click="sidebarOpen = false"></div>
+        <aside class="sidebar" :class="{ 'sidebar--open': sidebarOpen }">
+            <select class="sidebar__end-select" onchange="if(this.value)location.href=this.value">
+                <option value="" selected>会员端</option>
+                <option value="运营端/运营-会员提现审核.html">运营端</option>
+            </select>
+            <div class="sidebar__head">
+                <div class="sidebar__logo">₵</div>
+                <span class="sidebar__title">会员中心</span>
+            </div>
+            <nav class="sidebar__nav" aria-label="会员中心导航">
+                <div class="sidebar__group-title">提现管理</div>
+                <a class="sidebar__item" href="会员提现申请.html"><span class="sidebar__icon">₵</span>提现</a>
+                <a class="sidebar__item" href="会员提现记录.html"><span class="sidebar__icon">☷</span>提现记录</a>
+                <a class="sidebar__item sidebar__item--active" href="会员钱包明细.html"><span class="sidebar__icon">▤</span>我的钱包</a>
+                <a class="sidebar__item" href="会员提现详情.html"><span class="sidebar__icon">▥</span>提现详情</a>
+                <div class="sidebar__group-title">账户管理</div>
+                <a class="sidebar__item" href="会员卡包管理.html"><span class="sidebar__icon">▣</span>我的卡包</a>
+                <a class="sidebar__item" href="会员绑定银行卡.html"><span class="sidebar__icon">＋</span>添加支付方式</a>
+            </nav>
+        </aside>
 
-    <aside class="sidebar">
-        <select class="sidebar__end-select" onchange="if(this.value)location.href=this.value"><option value="" selected>会员端</option><option value="运营端/运营-会员提现审核.html">运营端</option></select>
-        <div class="sidebar__head"><div class="sidebar__logo"><i class="fas fa-wallet"></i></div><span class="sidebar__title">会员中心</span></div>
-        <nav class="sidebar__nav">
-            <div class="sidebar__group-title">提现管理</div>
-            <a class="sidebar__item" href="会员提现申请.html"><i class="fas fa-coins"></i> 提现</a>
-            <a class="sidebar__item" href="会员提现记录.html"><i class="fas fa-list-check"></i> 提现记录</a>
-            <a class="sidebar__item sidebar__item--active" href="会员钱包明细.html"><i class="fas fa-file-invoice"></i> 钱包明细</a>
-            <a class="sidebar__item" href="会员提现详情.html"><i class="fas fa-receipt"></i> 提现详情</a>
-            <div class="sidebar__group-title">账户管理</div>
-            <a class="sidebar__item" href="会员卡包管理.html"><i class="fas fa-credit-card"></i> 我的卡包</a>
-            <a class="sidebar__item" href="会员绑定银行卡.html"><i class="fas fa-plus-circle"></i> 绑定银行卡</a>
-        </nav>
-    </aside>
-    <div class="h5-container">
-        <div class="h5-header">
-            <button class="h5-header__menu" onclick="document.getElementById('sidebar').style.display='block';this.style.display='none';">☰</button>
-            <button class="h5-header__back" onclick="history.back()">←</button>
-            <span class="h5-header__title">钱包明细</span>
-            <span style="width:32px;"></span>
-        </div>
-        <div class="h5-page">
-            <div class="h5-stats">
-                <div class="h5-stat"><div class="h5-stat__label">期初余额</div><div class="h5-stat__value">¥5,280</div></div>
-                <div class="h5-stat"><div class="h5-stat__label">累计收入</div><div class="h5-stat__value" style="color:var(--tos-success);">+¥14,620</div></div>
-                <div class="h5-stat"><div class="h5-stat__label">累计支出</div><div class="h5-stat__value" style="color:var(--tos-error);">-¥11,650</div></div>
-                <div class="h5-stat"><div class="h5-stat__label">当前余额</div><div class="h5-stat__value" style="color:var(--tos-primary);">¥8,250</div></div>
+        <main class="h5-container">
+            <header class="h5-header">
+                <button class="h5-header__menu" type="button" aria-label="打开导航" @click="sidebarOpen = true">☰</button>
+                <button class="h5-header__back" type="button" aria-label="返回" @click="goBack">‹</button>
+                <h1 class="h5-header__title">{{ pageTitle }}</h1>
+                <span class="h5-header__placeholder" aria-hidden="true"></span>
+            </header>
+
+            <div class="h5-page">
+                <section v-if="screen === 'home'" aria-labelledby="wallet-balance-title">
+                    <div class="h5-balance-card">
+                        <div class="h5-balance-card__top">
+                            <span id="wallet-balance-title" class="h5-balance-card__label">可用余额</span>
+                            <button
+                                class="h5-eye-btn"
+                                type="button"
+                                :aria-label="balanceVisible ? '隐藏余额' : '显示余额'"
+                                :aria-pressed="balanceVisible"
+                                @click="balanceVisible = !balanceVisible"
+                            >
+                                <svg v-if="balanceVisible" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M2.8 12s3.4-6 9.2-6 9.2 6 9.2 6-3.4 6-9.2 6-9.2-6-9.2-6Z" stroke="currentColor" stroke-width="1.5"/>
+                                    <circle cx="12" cy="12" r="2.7" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                                <svg v-else viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M3.2 10.1c2.4 2.5 5.3 3.8 8.8 3.8s6.4-1.3 8.8-3.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                    <path d="m5.2 12.5-1.6 2.1M9.4 14.1l-.8 2.4M14.6 14.1l.8 2.4M18.8 12.5l1.6 2.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="h5-balance-card__amount" aria-live="polite">
+                            <span class="h5-balance-card__currency">GH₵</span>
+                            <span>{{ balanceVisible ? formatAmount(balance) : '*****' }}</span>
+                        </div>
+                        <div class="h5-balance-card__footer">
+                            <p class="h5-balance-card__hint">余额可用于商城消费或提现</p>
+                            <button class="h5-balance-link" type="button" @click="goWithdraw">提现 ›</button>
+                        </div>
+                    </div>
+
+                    <button class="h5-ledger-entry" type="button" @click="openLedger">
+                        <span class="h5-ledger-entry__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <rect x="4" y="3.5" width="16" height="17" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                                <path d="M7.5 8h9M7.5 12h9M7.5 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                            </svg>
+                        </span>
+                        <span class="h5-ledger-entry__body">
+                            <span class="h5-ledger-entry__title">收支明细</span>
+                            <span class="h5-ledger-entry__desc">查看收入、支出与账户余额变化</span>
+                        </span>
+                        <svg class="h5-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                            <path d="m7.5 4.5 5 5.5-5 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+
+                    <section class="h5-section" aria-labelledby="common-features-title">
+                        <h2 id="common-features-title" class="h5-section__title">常用功能</h2>
+                        <div class="h5-feature-panel">
+                            <a class="h5-feature" href="会员提现记录.html">
+                                <span class="h5-feature__icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <path d="M12 20V5M7.5 9.5 12 5l4.5 4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </span>
+                                <span class="h5-feature__label">提现记录</span>
+                            </a>
+                            <button class="h5-feature" type="button" @click="openLedger">
+                                <span class="h5-feature__icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <rect x="4" y="3.5" width="16" height="17" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                                        <path d="M7.5 8h9M7.5 12h9M7.5 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                    </svg>
+                                </span>
+                                <span class="h5-feature__label">钱包明细</span>
+                            </button>
+                            <a class="h5-feature" href="会员卡包管理.html">
+                                <span class="h5-feature__icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <rect x="3" y="5.5" width="18" height="13" rx="2.2" stroke="currentColor" stroke-width="1.6"/>
+                                        <path d="M3 9.5h18" stroke="currentColor" stroke-width="1.6"/>
+                                        <path d="M7 15h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                    </svg>
+                                </span>
+                                <span class="h5-feature__label">卡包</span>
+                            </a>
+                            <a class="h5-feature" href="会员绑定银行卡.html">
+                                <span class="h5-feature__icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                                    </svg>
+                                </span>
+                                <span class="h5-feature__label">添加支付</span>
+                            </a>
+                        </div>
+                    </section>
+
+                    <section class="h5-quick-recharge" aria-labelledby="quick-recharge-title">
+                        <h2 id="quick-recharge-title" class="h5-section__title">快捷充值</h2>
+                        <p class="h5-section__desc">选择金额或输入自定义充值金额</p>
+                        <div class="h5-quick-options" aria-label="快捷充值金额">
+                            <button
+                                v-for="amount in quickAmounts"
+                                :key="amount"
+                                class="h5-quick-option"
+                                :class="{ 'h5-quick-option--active': quickAmount === String(amount) }"
+                                type="button"
+                                @click="selectQuickAmount(amount)"
+                            >
+                                GH₵{{ amount }}
+                            </button>
+                        </div>
+                        <div class="h5-quick-input">
+                            <span class="h5-quick-input__currency" aria-hidden="true">GH₵</span>
+                            <input
+                                v-model="quickAmount"
+                                type="text"
+                                inputmode="decimal"
+                                placeholder="输入其他充值金额"
+                                aria-label="自定义充值金额"
+                                @input="quickAmount = normalizeMoneyInput($event.target.value)"
+                            />
+                        </div>
+                        <button
+                            class="h5-quick-submit"
+                            type="button"
+                            :disabled="!isPositiveAmount(quickAmount)"
+                            @click="openRecharge(quickAmount)"
+                        >
+                            充值此金额
+                        </button>
+                    </section>
+                </section>
+
+                <section v-else aria-labelledby="ledger-title">
+                    <div class="h5-ledger-header">
+                        <div>
+                            <h2 id="ledger-title">收支明细</h2>
+                            <p>收入、支出与账户余额变化</p>
+                        </div>
+                        <button class="h5-ledger-header__link" type="button" @click="openRecharge()">充值</button>
+                    </div>
+
+                    <div class="h5-summary-panel">
+                        <div class="h5-summary-item">
+                            <div class="h5-summary-item__label">期初余额</div>
+                            <div class="h5-summary-item__value">GH₵{{ formatAmount(initialBalance) }}</div>
+                        </div>
+                        <div class="h5-summary-item">
+                            <div class="h5-summary-item__label">累计收入</div>
+                            <div class="h5-summary-item__value h5-summary-item__value--income">+GH₵{{ formatAmount(totalIncome) }}</div>
+                        </div>
+                        <div class="h5-summary-item">
+                            <div class="h5-summary-item__label">累计支出</div>
+                            <div class="h5-summary-item__value h5-summary-item__value--expense">-GH₵{{ formatAmount(totalExpense) }}</div>
+                        </div>
+                        <div class="h5-summary-item">
+                            <div class="h5-summary-item__label">当前余额</div>
+                            <div class="h5-summary-item__value h5-summary-item__value--primary">GH₵{{ formatAmount(balance) }}</div>
+                        </div>
+                    </div>
+
+                    <div class="h5-filter-bar" role="group" aria-label="流水类型筛选">
+                        <button
+                            v-for="filter in filters"
+                            :key="filter.value"
+                            class="h5-filter-chip"
+                            :class="{ 'h5-filter-chip--active': activeFilter === filter.value }"
+                            type="button"
+                            :aria-pressed="activeFilter === filter.value"
+                            @click="activeFilter = filter.value"
+                        >
+                            {{ filter.label }}
+                        </button>
+                    </div>
+
+                    <div v-if="filteredTransactions.length" class="h5-transaction-panel">
+                        <article v-for="transaction in filteredTransactions" :key="transaction.id" class="h5-transaction">
+                            <div class="h5-transaction__icon" :class="'h5-transaction__icon--' + transaction.type">
+                                {{ transactionIcon(transaction.type) }}
+                            </div>
+                            <div class="h5-transaction__body">
+                                <div class="h5-transaction__title">{{ transaction.label }}</div>
+                                <div class="h5-transaction__ref">{{ transaction.ref }}</div>
+                                <div class="h5-transaction__ref">{{ transaction.date }} · {{ transaction.id }}</div>
+                            </div>
+                            <div class="h5-transaction__amount">
+                                <div
+                                    class="h5-transaction__value"
+                                    :class="transaction.income > 0 ? 'h5-transaction__value--in' : 'h5-transaction__value--out'"
+                                >
+                                    {{ transaction.income > 0 ? '+' : '-' }}GH₵{{ formatAmount(transaction.income || transaction.expense) }}
+                                </div>
+                                <div class="h5-transaction__balance">余额 GH₵{{ formatAmount(transaction.balance) }}</div>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div v-else class="h5-empty">
+                        <div class="h5-empty__icon" aria-hidden="true">▤</div>
+                        <p>暂无流水记录</p>
+                    </div>
+                </section>
             </div>
-            <div class="h5-filter" id="filterBar">
-                <span class="h5-filter-chip h5-filter-chip--active" data-type="" onclick="filterType(this,'')">全部</span>
-                <span class="h5-filter-chip" data-type="income" onclick="filterType(this,'income')">佣金收入</span>
-                <span class="h5-filter-chip" data-type="withdraw" onclick="filterType(this,'withdraw')">提现</span>
-                <span class="h5-filter-chip" data-type="refund" onclick="filterType(this,'refund')">退款</span>
-                <span class="h5-filter-chip" data-type="reward" onclick="filterType(this,'reward')">奖励金</span>
-            </div>
-            <div class="h5-tx-list" id="txList"></div>
-        </div>
+
+            <transition name="h5-fade">
+                <div v-if="rechargeOpen" class="h5-modal-layer" @click.self="closeRecharge">
+                    <div class="h5-modal-card" role="dialog" aria-modal="true" aria-labelledby="recharge-title">
+                        <button
+                            class="h5-modal-card__close"
+                            type="button"
+                            aria-label="关闭充值弹窗"
+                            :disabled="recharging"
+                            @click="closeRecharge"
+                        >
+                            ×
+                        </button>
+                        <h2 id="recharge-title" class="h5-modal-card__title">充值到钱包</h2>
+                        <p class="h5-modal-card__desc">充值金额将进入可用余额</p>
+
+                        <label class="h5-form-label" for="rechargeAmount">充值金额</label>
+                        <div class="h5-money-input">
+                            <span aria-hidden="true">GH₵</span>
+                            <input
+                                id="rechargeAmount"
+                                v-model="rechargeAmount"
+                                type="text"
+                                inputmode="decimal"
+                                placeholder="请输入充值金额"
+                                :disabled="recharging"
+                                @input="rechargeAmount = normalizeMoneyInput($event.target.value); rechargeError = ''"
+                            />
+                        </div>
+
+                        <label class="h5-form-label" for="rechargeAccount">支付方式</label>
+                        <select id="rechargeAccount" v-model="rechargeAccount" class="h5-account-select" :disabled="recharging">
+                            <option value="cmb">招商银行 储蓄卡 · 尾号 3849</option>
+                            <option value="mtn">MTN 数字钱包 · 尾号 0088</option>
+                            <option value="boc">中国银行 信用卡 · 尾号 3849</option>
+                        </select>
+
+                        <p v-if="rechargeError" class="h5-form-error">{{ rechargeError }}</p>
+                        <div class="h5-modal-note">充值实时到账，本页面为原型演示，不会产生真实扣款。</div>
+                        <button class="h5-modal-submit" type="button" :disabled="recharging" @click="confirmRecharge">
+                            {{ recharging ? '充值处理中…' : '确认充值' }}
+                        </button>
+                    </div>
+                </div>
+            </transition>
+
+            <transition name="h5-fade">
+                <div v-if="toastMessage" class="h5-toast" role="status" aria-live="polite">
+                    <span class="h5-toast__check">✓</span>
+                    <span>{{ toastMessage }}</span>
+                </div>
+            </transition>
+        </main>
     </div>
-</div>
-<script>
-const txs=[{id:'MBL-20260105-001',type:'income',label:'佣金收入',icon:'💼',ref:'推广佣金 · 1月结算',date:'01-05',income:1500,expense:0,balance:6780},{id:'MBL-20260120-002',type:'reward',label:'奖励金',icon:'🎁',ref:'新会员邀请奖励',date:'01-20',income:200,expense:0,balance:6980},{id:'MBL-20260210-003',type:'withdraw',label:'提现',icon:'🏦',ref:'MWD-20260210-1001',date:'02-10',income:0,expense:1500,balance:5480},{id:'MBL-20260215-004',type:'income',label:'佣金收入',icon:'💼',ref:'推广佣金 · 2月结算',date:'02-15',income:3200,expense:0,balance:8680},{id:'MBL-20260301-005',type:'refund',label:'退款',icon:'↩️',ref:'订单退款 ORD-20260228-889',date:'03-01',income:0,expense:280,balance:8400},{id:'MBL-20260315-006',type:'withdraw',label:'提现',icon:'🏦',ref:'MWD-20260315-1001',date:'03-15',income:0,expense:2000,balance:6400},{id:'MBL-20260320-007',type:'income',label:'佣金收入',icon:'💼',ref:'推广佣金 · 3月结算',date:'03-20',income:5000,expense:0,balance:11400},{id:'MBL-20260401-008',type:'withdraw',label:'提现',icon:'🏦',ref:'MWD-20260401-2003',date:'04-01',income:0,expense:5000,balance:6400},{id:'MBL-20260405-009',type:'adjust',label:'调账',icon:'⚙️',ref:'多扣费用返还',date:'04-05',income:150,expense:0,balance:6550},{id:'MBL-20260420-010',type:'reward',label:'奖励金',icon:'🎁',ref:'月度活跃奖励 TOP10',date:'04-20',income:500,expense:0,balance:7050},{id:'MBL-20260520-012',type:'withdraw',label:'提现',icon:'🏦',ref:'MWD-20260520-3015',date:'05-20',income:0,expense:1500,balance:5550},{id:'MBL-20260601-013',type:'income',label:'佣金收入',icon:'💼',ref:'推广佣金 · 5月结算',date:'06-01',income:2800,expense:0,balance:8350},{id:'MBL-20260701-016',type:'withdraw',label:'提现',icon:'🏦',ref:'MWD-20260701-5008',date:'07-01',income:0,expense:3500,balance:5250}];
-const txClass={income:'tx-income',withdraw:'tx-withdraw',refund:'tx-refund',reward:'tx-reward',adjust:'tx-adjust'};
-let typeFilter='';
-function renderList(){const f=typeFilter?txs.filter(t=>t.type===typeFilter):txs;const c=document.getElementById('txList');if(!f.length){c.innerHTML='<div class="h5-empty">📭<br>暂无流水记录</div>';return;}c.innerHTML=f.map(t=>'<div class="h5-tx-card" data-type="'+t.type+'"><div class="h5-tx-card__icon '+(txClass[t.type]||'tx-income')+'">'+t.icon+'</div><div class="h5-tx-card__info"><div class="h5-tx-card__type">'+t.label+'</div><div class="h5-tx-card__ref">'+t.ref+'</div><div class="h5-tx-card__date">'+t.date+' · '+t.id+'</div></div><div class="h5-tx-card__amount"><div class="'+(t.income>0?'in':'out')+'">'+(t.income>0?'+¥'+t.income:(t.expense>0?'-¥'+t.expense:'—'))+'</div><div class="balance">余额 ¥'+t.balance.toLocaleString()+'</div></div></div>').join('');}
-function filterType(el,type){typeFilter=type;document.querySelectorAll('.h5-filter-chip').forEach(c=>c.classList.remove('h5-filter-chip--active'));el.classList.add('h5-filter-chip--active');renderList();}
-renderList();
-</script>
+
+    <script>
+        const {
+            computed,
+            createApp,
+            nextTick,
+            onBeforeUnmount,
+            ref,
+        } = Vue;
+
+        const app = createApp({
+            setup() {
+                const initialView = new URLSearchParams(window.location.search).get('view');
+                const screen = ref(initialView === 'ledger' ? 'ledger' : 'home');
+                const sidebarOpen = ref(false);
+                const balanceVisible = ref(false);
+                const balance = ref(8250);
+                const initialBalance = ref(5280);
+                const totalIncome = ref(14620);
+                const totalExpense = ref(11650);
+                const quickAmounts = [100, 500, 1000];
+                const quickAmount = ref('');
+                const rechargeOpen = ref(false);
+                const rechargeAmount = ref('');
+                const rechargeAccount = ref('cmb');
+                const rechargeError = ref('');
+                const recharging = ref(false);
+                const toastMessage = ref('');
+                const activeFilter = ref('');
+                let toastTimer = null;
+                let rechargeTimer = null;
+
+                const filters = [
+                    { value: '', label: '全部' },
+                    { value: 'income', label: '佣金收入' },
+                    { value: 'withdraw', label: '提现' },
+                    { value: 'recharge', label: '充值' },
+                    { value: 'refund', label: '退款' },
+                    { value: 'reward', label: '奖励金' },
+                ];
+
+                const transactions = ref([
+                    {
+                        id: 'MBL-20261028-028',
+                        type: 'income',
+                        label: '佣金收入',
+                        ref: '推广佣金 · 10月结算',
+                        date: '10-28 09:12',
+                        income: 2800,
+                        expense: 0,
+                        balance: 8250,
+                    },
+                    {
+                        id: 'MBL-20261012-027',
+                        type: 'reward',
+                        label: '奖励金',
+                        ref: '月度活跃奖励',
+                        date: '10-12 16:08',
+                        income: 500,
+                        expense: 0,
+                        balance: 5450,
+                    },
+                    {
+                        id: 'MBL-20260915-024',
+                        type: 'withdraw',
+                        label: '提现',
+                        ref: 'MWD-20260915-1024',
+                        date: '09-15 11:26',
+                        income: 0,
+                        expense: 2000,
+                        balance: 4950,
+                    },
+                    {
+                        id: 'MBL-20260820-021',
+                        type: 'income',
+                        label: '佣金收入',
+                        ref: '推广佣金 · 8月结算',
+                        date: '08-20 10:05',
+                        income: 3200,
+                        expense: 0,
+                        balance: 6950,
+                    },
+                    {
+                        id: 'MBL-20260701-018',
+                        type: 'withdraw',
+                        label: '提现',
+                        ref: 'MWD-20260701-5008',
+                        date: '07-01 08:30',
+                        income: 0,
+                        expense: 3500,
+                        balance: 3750,
+                    },
+                    {
+                        id: 'MBL-20260601-016',
+                        type: 'income',
+                        label: '佣金收入',
+                        ref: '推广佣金 · 5月结算',
+                        date: '06-01 09:40',
+                        income: 2800,
+                        expense: 0,
+                        balance: 7250,
+                    },
+                    {
+                        id: 'MBL-20260520-014',
+                        type: 'withdraw',
+                        label: '提现',
+                        ref: 'MWD-20260520-3015',
+                        date: '05-20 16:45',
+                        income: 0,
+                        expense: 1500,
+                        balance: 4450,
+                    },
+                    {
+                        id: 'MBL-20260430-012',
+                        type: 'refund',
+                        label: '退款',
+                        ref: '订单退款 ORD-20260428-889',
+                        date: '04-30 14:18',
+                        income: 280,
+                        expense: 0,
+                        balance: 5950,
+                    },
+                    {
+                        id: 'MBL-20260420-010',
+                        type: 'reward',
+                        label: '奖励金',
+                        ref: '月度活跃奖励 TOP10',
+                        date: '04-20 12:20',
+                        income: 500,
+                        expense: 0,
+                        balance: 5670,
+                    },
+                    {
+                        id: 'MBL-20260405-009',
+                        type: 'adjust',
+                        label: '调账',
+                        ref: '多扣费用返还',
+                        date: '04-05 10:00',
+                        income: 150,
+                        expense: 0,
+                        balance: 5170,
+                    },
+                ]);
+
+                const pageTitle = computed(() => screen.value === 'ledger' ? '收支明细' : '我的钱包');
+
+                const filteredTransactions = computed(() => {
+                    if (!activeFilter.value) return transactions.value;
+                    return transactions.value.filter((transaction) => transaction.type === activeFilter.value);
+                });
+
+                const formatAmount = (value) => {
+                    return Number(value || 0).toLocaleString('zh-CN', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    });
+                };
+
+                const normalizeMoneyInput = (value) => {
+                    let normalized = String(value || '').replace(/[^\d.]/g, '');
+                    const firstDot = normalized.indexOf('.');
+                    if (firstDot !== -1) {
+                        normalized = normalized.slice(0, firstDot + 1)
+                            + normalized.slice(firstDot + 1).replace(/\./g, '');
+                    }
+                    const parts = normalized.split('.');
+                    if (parts[1]?.length > 2) {
+                        parts[1] = parts[1].slice(0, 2);
+                    }
+                    normalized = parts.join('.');
+                    if (normalized.length > 9) normalized = normalized.slice(0, 9);
+                    return normalized;
+                };
+
+                const isPositiveAmount = (value) => {
+                    return Number(value) > 0;
+                };
+
+                const selectQuickAmount = (amount) => {
+                    quickAmount.value = String(amount);
+                };
+
+                const openLedger = () => {
+                    screen.value = 'ledger';
+                    activeFilter.value = '';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+
+                const goWithdraw = () => {
+                    window.location.href = '会员提现申请.html';
+                };
+
+                const openRecharge = (amount) => {
+                    const initialAmount = amount === undefined ? quickAmount.value : amount;
+                    rechargeAmount.value = isPositiveAmount(initialAmount) ? String(initialAmount) : '';
+                    rechargeError.value = '';
+                    rechargeOpen.value = true;
+                    nextTick(() => {
+                        document.getElementById('rechargeAmount')?.focus();
+                    });
+                };
+
+                const closeRecharge = () => {
+                    if (recharging.value) return;
+                    rechargeOpen.value = false;
+                    rechargeError.value = '';
+                };
+
+                const showToast = (message) => {
+                    toastMessage.value = message;
+                    window.clearTimeout(toastTimer);
+                    toastTimer = window.setTimeout(() => {
+                        toastMessage.value = '';
+                    }, 2200);
+                };
+
+                const currentDateLabel = () => {
+                    const now = new Date();
+                    const month = String(now.getMonth() + 1).padStart(2, '0');
+                    const day = String(now.getDate()).padStart(2, '0');
+                    return `${month}-${day} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                };
+
+                const accountLabels = {
+                    cmb: '招商银行储蓄卡 · 尾号3849',
+                    mtn: 'MTN 数字钱包 · 尾号0088',
+                    boc: '中国银行信用卡 · 尾号3849',
+                };
+
+                const confirmRecharge = () => {
+                    const amount = Math.round(Number(rechargeAmount.value) * 100) / 100;
+                    if (!Number.isFinite(amount) || amount <= 0) {
+                        rechargeError.value = '请输入正确的充值金额';
+                        return;
+                    }
+                    if (amount > 50000) {
+                        rechargeError.value = '单笔充值金额不能超过 GH₵50,000.00';
+                        return;
+                    }
+
+                    rechargeError.value = '';
+                    recharging.value = true;
+                    window.clearTimeout(rechargeTimer);
+                    rechargeTimer = window.setTimeout(() => {
+                        balance.value = Math.round((balance.value + amount) * 100) / 100;
+                        totalIncome.value = Math.round((totalIncome.value + amount) * 100) / 100;
+                        const now = new Date();
+                        const dateId = [
+                            now.getFullYear(),
+                            String(now.getMonth() + 1).padStart(2, '0'),
+                            String(now.getDate()).padStart(2, '0'),
+                        ].join('');
+                        transactions.value.unshift({
+                            id: `MBL-${dateId}-${String(Date.now()).slice(-3)}`,
+                            type: 'recharge',
+                            label: '钱包充值',
+                            ref: accountLabels[rechargeAccount.value],
+                            date: currentDateLabel(),
+                            income: amount,
+                            expense: 0,
+                            balance: balance.value,
+                        });
+                        balanceVisible.value = true;
+                        recharging.value = false;
+                        rechargeOpen.value = false;
+                        rechargeAmount.value = '';
+                        quickAmount.value = '';
+                        showToast(`充值成功，GH₵${formatAmount(amount)} 已到账`);
+                    }, 600);
+                };
+
+                const goBack = () => {
+                    if (rechargeOpen.value) {
+                        closeRecharge();
+                        return;
+                    }
+                    if (screen.value === 'ledger') {
+                        screen.value = 'home';
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        return;
+                    }
+                    if (window.history.length > 1) {
+                        window.history.back();
+                    } else {
+                        window.location.href = '会员提现申请.html';
+                    }
+                };
+
+                const transactionIcon = (type) => {
+                    const icons = {
+                        income: '₵',
+                        withdraw: '↑',
+                        recharge: '+',
+                        refund: '↩',
+                        reward: '★',
+                        adjust: '↔',
+                    };
+                    return icons[type] || '₵';
+                };
+
+                onBeforeUnmount(() => {
+                    window.clearTimeout(toastTimer);
+                    window.clearTimeout(rechargeTimer);
+                });
+
+                return {
+                    screen,
+                    pageTitle,
+                    sidebarOpen,
+                    balanceVisible,
+                    balance,
+                    initialBalance,
+                    totalIncome,
+                    totalExpense,
+                    quickAmounts,
+                    quickAmount,
+                    rechargeOpen,
+                    rechargeAmount,
+                    rechargeAccount,
+                    rechargeError,
+                    recharging,
+                    toastMessage,
+                    activeFilter,
+                    filters,
+                    filteredTransactions,
+                    formatAmount,
+                    normalizeMoneyInput,
+                    isPositiveAmount,
+                    selectQuickAmount,
+                    openLedger,
+                    goWithdraw,
+                    openRecharge,
+                    closeRecharge,
+                    confirmRecharge,
+                    goBack,
+                    transactionIcon,
+                };
+            },
+        });
+
+        if (window.antd) app.use(antd);
+        app.mount('#app');
+    </script>
 </body>
 </html>

@@ -58,6 +58,7 @@
         .tos-table { width: 100%; min-width: 900px; border-collapse: collapse; }
         .tos-table th { padding: 10px 12px; background: #fafafa; border-bottom: 1px solid var(--tos-border-soft); color: var(--tos-text-secondary); font-size: 13px; font-weight: 500; text-align: left; white-space: nowrap; }
         .tos-table td { padding: 10px 12px; border-bottom: 1px solid #f5f5f5; color: var(--tos-text); font-size: 14px; vertical-align: middle; }
+        .tos-table td:last-child { min-width: 210px; }
         .tos-table tr:hover td { background: #fafafa; }
         .tos-table th:first-child, .tos-table td:first-child { width: 40px; text-align: center; }
         .tos-tag { display: inline-flex; height: 22px; align-items: center; padding: 0 8px; border-radius: var(--tos-radius-tag); font-size: 12px; font-weight: 500; white-space: nowrap; }
@@ -197,6 +198,7 @@
                     <button class="tos-filter-tab tos-filter-tab--active" onclick="filterByTransferStatus('pending', this)">待转账</button>
                     <button class="tos-filter-tab" onclick="filterByTransferStatus('processing', this)">处理中</button>
                     <button class="tos-filter-tab" onclick="filterByTransferStatus('failed', this)">转账失败</button>
+                    <button class="tos-filter-tab" onclick="filterByTransferStatus('rejected', this)">已驳回</button>
                 </div>
                 <div class="tos-table-wrap">
                     <table class="tos-table" id="pendingTable">
@@ -215,6 +217,7 @@
                                 <td><span class="tos-tag tos-tag--default">待转账</span></td>
                                 <td style="text-align:right;">
                                     <button class="tos-btn tos-btn--primary tos-btn--sm" onclick="doTransfer('TX-20260723-001','张建国','12580')">执行转账</button>
+                                    <button class="tos-btn tos-btn--danger tos-btn--sm" onclick="rejectAudit('TX-20260723-001','张建国')">驳回审核</button>
                                     <button class="tos-btn tos-btn--link tos-btn--sm" onclick="showTransferDetail('TX-20260723-001')">详情</button>
                                 </td>
                             </tr>
@@ -229,6 +232,7 @@
                                 <td><span class="tos-tag tos-tag--default">待转账</span></td>
                                 <td style="text-align:right;">
                                     <button class="tos-btn tos-btn--primary tos-btn--sm" onclick="doTransfer('TX-20260723-002','李美玲','8700')">执行转账</button>
+                                    <button class="tos-btn tos-btn--danger tos-btn--sm" onclick="rejectAudit('TX-20260723-002','李美玲')">驳回审核</button>
                                     <button class="tos-btn tos-btn--link tos-btn--sm" onclick="showTransferDetail('TX-20260723-002')">详情</button>
                                 </td>
                             </tr>
@@ -243,6 +247,7 @@
                                 <td><span class="tos-tag tos-tag--default">待转账</span></td>
                                 <td style="text-align:right;">
                                     <button class="tos-btn tos-btn--primary tos-btn--sm" onclick="doTransfer('TX-20260722-005','王大力','3500')">执行转账</button>
+                                    <button class="tos-btn tos-btn--danger tos-btn--sm" onclick="rejectAudit('TX-20260722-005','王大力')">驳回审核</button>
                                     <button class="tos-btn tos-btn--link tos-btn--sm" onclick="showTransferDetail('TX-20260722-005')">详情</button>
                                 </td>
                             </tr>
@@ -257,6 +262,7 @@
                                 <td><span class="tos-tag tos-tag--default">待转账</span></td>
                                 <td style="text-align:right;">
                                     <button class="tos-btn tos-btn--primary tos-btn--sm" onclick="doTransfer('TX-20260722-003','陈小红','15000')">执行转账</button>
+                                    <button class="tos-btn tos-btn--danger tos-btn--sm" onclick="rejectAudit('TX-20260722-003','陈小红')">驳回审核</button>
                                     <button class="tos-btn tos-btn--link tos-btn--sm" onclick="showTransferDetail('TX-20260722-003')">详情</button>
                                 </td>
                             </tr>
@@ -438,6 +444,54 @@
         openModal('查询转账状态',
             '<p>转账单号：<strong>' + txId + '</strong></p><p>当前状态：银行处理中</p><p style="color:var(--tos-text-muted);">预计 2 小时内到账，请耐心等待。</p>',
             '<button class="tos-btn tos-btn--primary" onclick="closeTransferModal()">确定</button>');
+    }
+
+    function rejectAudit(txId, name) {
+        var bodyHtml = '<p>确认驳回 <strong>' + name + '</strong> 的这笔提现审核？</p>' +
+            '<p>转账单号：<strong style="font-family:monospace;">' + txId + '</strong></p>' +
+            '<div style="margin-top:14px;"><label for="rejectReason" style="display:block;font-size:13px;color:var(--tos-text-secondary);margin-bottom:6px;">驳回原因</label>' +
+            '<select id="rejectReason" style="width:100%;height:36px;padding:0 10px;border:1px solid var(--tos-border);border-radius:var(--tos-radius-control);font-size:13px;font-family:inherit;outline:none;">' +
+            '<option value="收款账户信息有误">收款账户信息有误</option>' +
+            '<option value="风险校验未通过">风险校验未通过</option>' +
+            '<option value="提现资料不完整">提现资料不完整</option>' +
+            '</select></div>' +
+            '<p style="color:var(--tos-text-muted);margin-top:10px;">驳回后该笔申请将退出转账流程，状态更新为“已驳回”。</p>';
+        openModal('驳回审核', bodyHtml,
+            '<button class="tos-btn" onclick="closeTransferModal()">取消</button>' +
+            '<button class="tos-btn tos-btn--danger" onclick="confirmRejectAudit()">确认驳回</button>',
+            { action: 'rejectAudit', txId: txId, name: name });
+    }
+
+    function confirmRejectAudit() {
+        if (!_modalCallback || _modalCallback.action !== 'rejectAudit') return;
+        var callback = _modalCallback;
+        var reasonSelect = document.getElementById('rejectReason');
+        var reason = reasonSelect ? reasonSelect.value : '审核驳回';
+        var rows = document.querySelectorAll('#pendingTable tbody tr');
+        for (var i = 0; i < rows.length; i++) {
+            var td = rows[i].querySelector('td.text-mono');
+            if (td && td.textContent.trim() === callback.txId) {
+                rows[i].setAttribute('data-status', 'rejected');
+                var tag = rows[i].querySelector('.tos-tag');
+                if (tag) {
+                    tag.className = 'tos-tag tos-tag--error';
+                    tag.textContent = '已驳回';
+                }
+                var checkbox = rows[i].querySelector('.row-cb');
+                if (checkbox) {
+                    checkbox.checked = false;
+                    checkbox.disabled = true;
+                }
+                var actionCell = rows[i].querySelector('td:last-child');
+                if (actionCell) {
+                    actionCell.innerHTML = '<button class="tos-btn tos-btn--link tos-btn--sm" onclick="showTransferDetail(\'' + callback.txId + '\')">详情</button>';
+                }
+                break;
+            }
+        }
+        closeTransferModal();
+        applyStatusFilter();
+        showToast('已驳回审核：' + callback.txId + '（' + reason + '）');
     }
 
     function toggleAllCheckbox(el) {

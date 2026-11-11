@@ -4,114 +4,845 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>提现记录</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/reset.css" />
+    <script src="https://cdn.jsdelivr.net/npm/ant-design-vue@4.2.6/dist/antd.min.js"></script>
     <style>
-        :root { --tos-primary: #42b7ae; --tos-primary-hover: #339b94; --tos-primary-bg: #e6f7f6; --tos-bg: #f5f7fa; --tos-text: #333; --tos-text-secondary: #666; --tos-text-muted: #999; --tos-success: #52c41a; --tos-warning: #faad14; --tos-error: #f5222d; --tos-border: #e5e7eb; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--tos-bg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--tos-text); -webkit-font-smoothing: antialiased; }
-        .sidebar { width: 200px; flex-shrink: 0; background: #fff; border-right: 1px solid #f0f2f5; position: fixed; left: 0; top: 0; bottom: 0; display: flex; flex-direction: column; z-index: 10; }
-        .sidebar__end-select { width: calc(100% - 24px); height: 32px; margin: 8px 12px 0; padding: 0 26px 0 10px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; font-size: 13px; color: #333; outline: none; cursor: pointer; font-family: inherit; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%2710%27><path d=%27M2 4l3 3 3-3%27 fill=%27none%27 stroke=%27%23999%27 stroke-width=%271.5%27 stroke-linecap=%27round%27/></svg>"); background-repeat: no-repeat; background-position: right 8px center; }
-        .sidebar__end-select:focus { border-color: #42b7ae; box-shadow: 0 0 0 2px rgba(66,183,174,.16); }
-        .sidebar__head { padding: 20px 16px 16px; border-bottom: 1px solid #f0f2f5; display: flex; align-items: center; gap: 10px; }
-        .sidebar__logo { width: 34px; height: 34px; border-radius: 8px; background: var(--tos-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
-        .sidebar__title { font-size: 15px; font-weight: 700; white-space: nowrap; }
-        .sidebar__nav { flex: 1; padding: 8px 0; overflow-y: auto; }
-        .sidebar__group-title { padding: 12px 14px 4px; font-size: 10px; color: var(--tos-text-muted); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
-        .sidebar__item { display: flex; align-items: center; gap: 8px; padding: 9px 14px; font-size: 13px; color: var(--tos-text-secondary); cursor: pointer; text-decoration: none; border-left: 3px solid transparent; transition: all .12s; }
-        .sidebar__item:hover { background: #f5f5f5; color: var(--tos-text); }
-        .sidebar__item--active { color: var(--tos-primary); font-weight: 600; background: var(--tos-primary-bg); border-left-color: var(--tos-primary); }
-        .sidebar__item i { width: 16px; text-align: center; font-size: 12px; }
-        .h5-container { width: 414px; margin: 0 auto; min-height: 100vh; background: var(--tos-bg); position: relative; }
-        .h5-header { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 16px; background: #fff; border-bottom: 1px solid var(--tos-border); }
-        .h5-header__back { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--tos-text); cursor: pointer; background: none; border: none; }
-        .h5-header__title { flex: 1; font-size: 17px; font-weight: 600; text-align: center; }
-        .h5-header__menu { width: 32px; height: 32px; display: none; align-items: center; justify-content: center; font-size: 20px; color: var(--tos-text); cursor: pointer; background: none; border: none; flex-shrink: 0; }
-        .h5-page { padding: 12px 16px 24px; }
-        .h5-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-        .h5-stat { background: #fff; border-radius: 8px; padding: 12px; border: 1px solid #f0f2f5; }
-        .h5-stat__label { font-size: 11px; color: var(--tos-text-muted); }
-        .h5-stat__value { font-size: 18px; font-weight: 700; margin-top: 2px; }
-        .h5-filter { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
-        .h5-filter-chip { flex-shrink: 0; padding: 6px 14px; border-radius: 16px; font-size: 13px; border: 1px solid var(--tos-border); background: #fff; color: var(--tos-text-secondary); cursor: pointer; white-space: nowrap; }
-        .h5-filter-chip--active { background: var(--tos-primary); color: #fff; border-color: var(--tos-primary); }
-        .h5-record-list { display: flex; flex-direction: column; gap: 8px; }
-        .h5-record-card { background: #fff; border-radius: 10px; padding: 14px; border: 1px solid #f0f2f5; }
-        .h5-record-card__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .h5-record-card__id { font-family: monospace; font-size: 13px; color: var(--tos-primary); font-weight: 600; }
-        .h5-record-card__row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
-        .h5-record-card__row .label { color: var(--tos-text-muted); }
-        .h5-record-card__row .value { font-weight: 500; text-align: right; }
-        .h5-record-card__footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; font-size: 12px; }
-        .h5-tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; }
-        .h5-tag--success { background: #f0faf0; color: var(--tos-success); }
-        .h5-tag--warning { background: #fff7e6; color: var(--tos-warning); }
-        .h5-tag--error { background: #fff1f0; color: var(--tos-error); }
-        .h5-tag--primary { background: var(--tos-primary-bg); color: var(--tos-primary); }
-        .h5-tag--default { background: #f5f5f5; color: var(--tos-text-secondary); }
-        .h5-empty { text-align: center; padding: 48px 20px; color: var(--tos-text-muted); font-size: 14px; }
-        .h5-modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 100; display: none; align-items: flex-end; justify-content: center; }
-        .h5-modal-mask.show { display: flex; }
-        .h5-modal { background: #fff; border-radius: 12px 12px 0 0; width: 100%; max-width: 414px; padding: 20px 16px; padding-bottom: max(20px, env(safe-area-inset-bottom)); animation: slideUp .25s ease; max-height: 70vh; overflow-y: auto; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .h5-modal h3 { font-size: 17px; font-weight: 700; text-align: center; margin-bottom: 12px; }
-        .h5-modal .info-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; border-bottom: 1px solid #f5f5f5; }
-        .h5-modal .info-row:last-child { border-bottom: none; }
-        .h5-btn-main { width: 100%; height: 44px; border-radius: 8px; font-size: 16px; font-weight: 600; border: none; cursor: pointer; font-family: inherit; margin-top: 12px; background: var(--tos-primary); color: #fff; }
-        @media (max-width: 680px) { .sidebar { display: none; } .h5-header__menu { display: flex; } .h5-container { width: 100%; } }
+        :root {
+            --tos-primary: #42b7ae;
+            --tos-primary-hover: #339b94;
+            --tos-primary-bg: #e6f7f6;
+            --tos-bg: #f5f7fa;
+            --tos-card: #ffffff;
+            --tos-text: #333333;
+            --tos-text-secondary: #666666;
+            --tos-text-muted: #999999;
+            --tos-success: #52c41a;
+            --tos-warning: #faad14;
+            --tos-error: #f5222d;
+            --tos-border: #e5e7eb;
+            --tos-border-soft: #f0f1f2;
+            --tos-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        body {
+            overflow-x: hidden;
+            background: var(--tos-bg);
+            color: var(--tos-text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        button:focus-visible,
+        a:focus-visible {
+            outline: 2px solid rgba(66, 183, 174, 0.42);
+            outline-offset: 2px;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+
+        .sidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+            z-index: 80;
+            display: flex;
+            width: 200px;
+            flex-direction: column;
+            border-right: 1px solid var(--tos-border-soft);
+            background: #fff;
+            transition: transform 0.22s ease;
+        }
+
+        .sidebar__end-select {
+            width: calc(100% - 24px);
+            height: 32px;
+            margin: 8px 12px 0;
+            padding: 0 26px 0 10px;
+            border: 1px solid var(--tos-border);
+            border-radius: 8px;
+            outline: none;
+            background-color: #fff;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 4l3 3 3-3' fill='none' stroke='%23999' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            color: var(--tos-text);
+            font-size: 13px;
+            cursor: pointer;
+            appearance: none;
+        }
+
+        .sidebar__end-select:focus {
+            border-color: var(--tos-primary);
+            box-shadow: 0 0 0 2px rgba(66, 183, 174, 0.16);
+        }
+
+        .sidebar__head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 20px 16px 16px;
+            border-bottom: 1px solid var(--tos-border-soft);
+        }
+
+        .sidebar__logo {
+            display: flex;
+            width: 34px;
+            height: 34px;
+            flex: 0 0 34px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: var(--tos-primary);
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .sidebar__title {
+            font-size: 15px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .sidebar__nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .sidebar__group-title {
+            padding: 12px 14px 4px;
+            color: var(--tos-text-muted);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .sidebar__item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 14px;
+            border-left: 3px solid transparent;
+            color: var(--tos-text-secondary);
+            font-size: 13px;
+            text-decoration: none;
+            transition: background-color 0.12s, color 0.12s;
+        }
+
+        .sidebar__item:hover {
+            background: #fafafa;
+            color: var(--tos-text);
+        }
+
+        .sidebar__item--active {
+            border-left-color: var(--tos-primary);
+            background: var(--tos-primary-bg);
+            color: var(--tos-primary);
+            font-weight: 600;
+        }
+
+        .sidebar__icon {
+            width: 16px;
+            flex: 0 0 16px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .sidebar-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 70;
+            display: none;
+            background: rgba(15, 23, 42, 0.32);
+        }
+
+        .h5-container {
+            width: 414px;
+            min-height: 100vh;
+            margin: 0 auto;
+            border-right: 1px solid rgba(15, 23, 42, 0.02);
+            border-left: 1px solid rgba(15, 23, 42, 0.02);
+            background: var(--tos-bg);
+        }
+
+        .h5-header {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            display: flex;
+            height: 52px;
+            align-items: center;
+            gap: 8px;
+            padding: 0 12px;
+            border-bottom: 1px solid var(--tos-border-soft);
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        .h5-header__menu,
+        .h5-header__back,
+        .h5-header__placeholder {
+            display: flex;
+            width: 32px;
+            height: 32px;
+            flex: 0 0 32px;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+        }
+
+        .h5-header__menu {
+            display: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .h5-header__back {
+            font-size: 22px;
+            font-weight: 300;
+            cursor: pointer;
+        }
+
+        .h5-header__menu:hover,
+        .h5-header__back:hover {
+            background: #f5f7fa;
+        }
+
+        .h5-header__title {
+            flex: 1;
+            font-size: 17px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .h5-page {
+            padding: 14px 16px 30px;
+        }
+
+        .h5-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 9px;
+        }
+
+        .h5-summary-card {
+            min-height: 66px;
+            padding: 12px 13px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: var(--tos-shadow);
+        }
+
+        .h5-summary-card__label {
+            color: var(--tos-text-muted);
+            font-size: 11px;
+            line-height: 17px;
+        }
+
+        .h5-summary-card__value {
+            margin-top: 4px;
+            color: var(--tos-text);
+            font-size: 18px;
+            font-weight: 650;
+            line-height: 24px;
+        }
+
+        .h5-summary-card__value--error {
+            color: var(--tos-error);
+        }
+
+        .h5-summary-card__value--success {
+            color: var(--tos-success);
+        }
+
+        .h5-summary-card__value--warning {
+            color: #d48806;
+        }
+
+        .h5-filter-bar {
+            display: flex;
+            gap: 7px;
+            margin: 13px 0 10px;
+            overflow-x: auto;
+            padding: 1px 0 4px;
+            scrollbar-width: none;
+        }
+
+        .h5-filter-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .h5-filter-chip {
+            height: 32px;
+            flex: 0 0 auto;
+            padding: 0 14px;
+            border: 1px solid var(--tos-border);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--tos-text-secondary);
+            font-size: 12px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .h5-filter-chip:hover {
+            border-color: var(--tos-primary);
+            color: var(--tos-primary);
+        }
+
+        .h5-filter-chip--active {
+            border-color: var(--tos-primary);
+            background: var(--tos-primary);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .h5-record-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .h5-record-card {
+            padding: 14px 15px 13px;
+            border: 1px solid var(--tos-border-soft);
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: var(--tos-shadow);
+        }
+
+        .h5-record-card__head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            min-height: 24px;
+        }
+
+        .h5-record-card__id {
+            overflow: hidden;
+            color: var(--tos-primary);
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+            font-size: 12px;
+            font-weight: 600;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .h5-status {
+            display: inline-flex;
+            height: 22px;
+            flex: 0 0 auto;
+            align-items: center;
+            padding: 0 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .h5-status--success {
+            background: #f0faf0;
+            color: var(--tos-success);
+        }
+
+        .h5-status--primary {
+            background: var(--tos-primary-bg);
+            color: var(--tos-primary);
+        }
+
+        .h5-status--warning {
+            background: #fff7e6;
+            color: #d48806;
+        }
+
+        .h5-status--error {
+            background: #fff1f0;
+            color: var(--tos-error);
+        }
+
+        .h5-status--default {
+            background: #f5f5f5;
+            color: var(--tos-text-secondary);
+        }
+
+        .h5-record-card__rows {
+            margin-top: 10px;
+        }
+
+        .h5-record-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 3px 0;
+            font-size: 12px;
+            line-height: 19px;
+        }
+
+        .h5-record-row__label {
+            color: var(--tos-text-muted);
+        }
+
+        .h5-record-row__value {
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .h5-record-row__value--amount {
+            color: var(--tos-error);
+            font-weight: 600;
+        }
+
+        .h5-record-row__value--fee {
+            color: #d48806;
+        }
+
+        .h5-record-row__value--arrival {
+            color: var(--tos-primary);
+            font-weight: 600;
+        }
+
+        .h5-record-card__footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #f3f4f6;
+        }
+
+        .h5-record-meta {
+            display: flex;
+            min-width: 0;
+            align-items: center;
+            gap: 6px;
+            color: var(--tos-text-muted);
+            font-size: 10px;
+        }
+
+        .h5-record-meta__time {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .h5-method-icon {
+            display: inline-flex;
+            width: 18px;
+            height: 18px;
+            flex: 0 0 18px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 6px;
+            font-weight: 800;
+        }
+
+        .h5-method-icon--bank {
+            border-radius: 4px;
+            background: #eef1f4;
+            color: #596273;
+            font-size: 9px;
+        }
+
+        .h5-method-icon--mtn {
+            border: 2px solid #fff3a1;
+            background: #f4d400;
+            color: #153c70;
+        }
+
+        .h5-method-icon--vodafone {
+            border: 2px solid #d9282f;
+            background: #d9282f;
+        }
+
+        .h5-method-icon--vodafone::before {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #fff;
+            content: "";
+        }
+
+        .h5-detail-link {
+            flex: 0 0 auto;
+            border: 0;
+            background: transparent;
+            color: var(--tos-primary);
+            font-size: 12px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .h5-detail-link:hover {
+            text-decoration: underline;
+        }
+
+        .h5-empty {
+            padding: 56px 20px;
+            color: var(--tos-text-muted);
+            text-align: center;
+        }
+
+        .h5-empty__icon {
+            display: flex;
+            width: 52px;
+            height: 52px;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            border-radius: 50%;
+            background: #eceff3;
+            color: #adb3bd;
+            font-size: 22px;
+        }
+
+        .h5-empty p {
+            font-size: 12px;
+        }
+
+        @media (max-width: 680px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar--open {
+                transform: translateX(0);
+            }
+
+            .sidebar-backdrop {
+                display: block;
+            }
+
+            .h5-container {
+                width: 100%;
+                border: 0;
+            }
+
+            .h5-header__menu {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 370px) {
+            .h5-page {
+                padding-right: 14px;
+                padding-left: 14px;
+            }
+
+            .h5-summary-card__value {
+                font-size: 17px;
+            }
+        }
     </style>
 </head>
 <body>
+    <div id="app" v-cloak>
+        <div v-if="sidebarOpen" class="sidebar-backdrop" @click="sidebarOpen = false"></div>
+        <aside class="sidebar" :class="{ 'sidebar--open': sidebarOpen }">
+            <select class="sidebar__end-select" onchange="if(this.value)location.href=this.value">
+                <option value="" selected>会员端</option>
+                <option value="运营端/运营-会员提现审核.html">运营端</option>
+            </select>
+            <div class="sidebar__head">
+                <div class="sidebar__logo">₵</div>
+                <span class="sidebar__title">会员中心</span>
+            </div>
+            <nav class="sidebar__nav" aria-label="会员中心导航">
+                <div class="sidebar__group-title">提现管理</div>
+                <a class="sidebar__item" href="会员提现申请.html"><span class="sidebar__icon">₵</span>提现</a>
+                <a class="sidebar__item sidebar__item--active" href="会员提现记录.html"><span class="sidebar__icon">☷</span>提现记录</a>
+                <a class="sidebar__item" href="会员钱包明细.html"><span class="sidebar__icon">▤</span>我的钱包</a>
+                <a class="sidebar__item" href="会员提现详情.html"><span class="sidebar__icon">▥</span>提现详情</a>
+                <div class="sidebar__group-title">账户管理</div>
+                <a class="sidebar__item" href="会员卡包管理.html"><span class="sidebar__icon">▣</span>我的卡包</a>
+                <a class="sidebar__item" href="会员绑定银行卡.html"><span class="sidebar__icon">＋</span>添加支付方式</a>
+            </nav>
+        </aside>
 
-    <aside class="sidebar">
-        <select class="sidebar__end-select" onchange="if(this.value)location.href=this.value"><option value="" selected>会员端</option><option value="运营端/运营-会员提现审核.html">运营端</option></select>
-        <div class="sidebar__head"><div class="sidebar__logo"><i class="fas fa-wallet"></i></div><span class="sidebar__title">会员中心</span></div>
-        <nav class="sidebar__nav">
-            <div class="sidebar__group-title">提现管理</div>
-            <a class="sidebar__item" href="会员提现申请.html"><i class="fas fa-coins"></i> 提现</a>
-            <a class="sidebar__item sidebar__item--active" href="会员提现记录.html"><i class="fas fa-list-check"></i> 提现记录</a>
-            <a class="sidebar__item" href="会员钱包明细.html"><i class="fas fa-file-invoice"></i> 钱包明细</a>
-            <a class="sidebar__item" href="会员提现详情.html"><i class="fas fa-receipt"></i> 提现详情</a>
-            <div class="sidebar__group-title">账户管理</div>
-            <a class="sidebar__item" href="会员卡包管理.html"><i class="fas fa-credit-card"></i> 我的卡包</a>
-            <a class="sidebar__item" href="会员绑定银行卡.html"><i class="fas fa-plus-circle"></i> 绑定银行卡</a>
-        </nav>
-    </aside>
-    <div class="h5-container">
-        <div class="h5-header">
-            <button class="h5-header__menu" onclick="document.getElementById('sidebar').style.display='block';this.style.display='none';">☰</button>
-            <button class="h5-header__back" onclick="location.href='会员提现申请.html'">←</button>
-            <span class="h5-header__title">提现记录</span>
-            <span style="width:32px;"></span>
-        </div>
-        <div class="h5-page">
-            <div class="h5-stats">
-                <div class="h5-stat"><div class="h5-stat__label">全部提现</div><div class="h5-stat__value">7 笔</div></div>
-                <div class="h5-stat"><div class="h5-stat__label">累计提现</div><div class="h5-stat__value" style="color:var(--tos-error);">¥15,000</div></div>
-                <div class="h5-stat"><div class="h5-stat__label">已到账</div><div class="h5-stat__value" style="color:var(--tos-success);">¥7,991</div></div>
-                <div class="h5-stat"><div class="h5-stat__label">处理中</div><div class="h5-stat__value" style="color:var(--tos-warning);">¥7,000</div></div>
+        <main class="h5-container">
+            <header class="h5-header">
+                <button class="h5-header__menu" type="button" aria-label="打开导航" @click="sidebarOpen = true">☰</button>
+                <button class="h5-header__back" type="button" aria-label="返回" @click="goBack">‹</button>
+                <h1 class="h5-header__title">提现记录</h1>
+                <span class="h5-header__placeholder" aria-hidden="true"></span>
+            </header>
+
+            <div class="h5-page">
+                <section class="h5-summary-grid" aria-label="提现统计">
+                    <div class="h5-summary-card">
+                        <div class="h5-summary-card__label">全部提现</div>
+                        <div class="h5-summary-card__value">{{ summary.count }} 笔</div>
+                    </div>
+                    <div class="h5-summary-card">
+                        <div class="h5-summary-card__label">累计提现</div>
+                        <div class="h5-summary-card__value h5-summary-card__value--error">{{ formatMoney(summary.total) }}</div>
+                    </div>
+                    <div class="h5-summary-card">
+                        <div class="h5-summary-card__label">已到账</div>
+                        <div class="h5-summary-card__value h5-summary-card__value--success">{{ formatMoney(summary.received) }}</div>
+                    </div>
+                    <div class="h5-summary-card">
+                        <div class="h5-summary-card__label">处理中</div>
+                        <div class="h5-summary-card__value h5-summary-card__value--warning">{{ formatMoney(summary.processing) }}</div>
+                    </div>
+                </section>
+
+                <div class="h5-filter-bar" role="group" aria-label="提现状态筛选">
+                    <button
+                        v-for="filter in filters"
+                        :key="filter.value"
+                        class="h5-filter-chip"
+                        :class="{ 'h5-filter-chip--active': activeFilter === filter.value }"
+                        type="button"
+                        :aria-pressed="activeFilter === filter.value"
+                        @click="activeFilter = filter.value"
+                    >
+                        {{ filter.label }}
+                    </button>
+                </div>
+
+                <div v-if="filteredRecords.length" class="h5-record-list">
+                    <article v-for="record in filteredRecords" :key="record.id" class="h5-record-card">
+                        <div class="h5-record-card__head">
+                            <span class="h5-record-card__id">{{ record.id }}</span>
+                            <span class="h5-status" :class="'h5-status--' + statusTone(record.status)">
+                                {{ record.statusLabel }}
+                            </span>
+                        </div>
+                        <div class="h5-record-card__rows">
+                            <div class="h5-record-row">
+                                <span class="h5-record-row__label">提现金额</span>
+                                <span class="h5-record-row__value h5-record-row__value--amount">-{{ formatMoney(record.amount) }}</span>
+                            </div>
+                            <div class="h5-record-row">
+                                <span class="h5-record-row__label">手续费</span>
+                                <span class="h5-record-row__value h5-record-row__value--fee">-{{ formatMoney(record.fee) }}</span>
+                            </div>
+                            <div class="h5-record-row">
+                                <span class="h5-record-row__label">到账金额</span>
+                                <span class="h5-record-row__value h5-record-row__value--arrival">{{ formatMoney(record.arrival) }}</span>
+                            </div>
+                        </div>
+                        <div class="h5-record-card__footer">
+                            <div class="h5-record-meta">
+                                <span class="h5-record-meta__time">{{ record.time }}</span>
+                                <span aria-hidden="true">·</span>
+                                <span class="h5-method-icon" :class="'h5-method-icon--' + methodKey(record.method)">
+                                    {{ methodIcon(record.method) }}
+                                </span>
+                                <span>{{ record.methodLabel }}</span>
+                            </div>
+                            <a class="h5-detail-link" :href="detailHref(record.id)">详情 ›</a>
+                        </div>
+                    </article>
+                </div>
+
+                <div v-else class="h5-empty">
+                    <div class="h5-empty__icon" aria-hidden="true">▤</div>
+                    <p>暂无提现记录</p>
+                </div>
             </div>
-            <div class="h5-filter" id="filterBar">
-                <span class="h5-filter-chip h5-filter-chip--active" data-status="" onclick="filterStatus(this,'')">全部</span>
-                <span class="h5-filter-chip" data-status="pending" onclick="filterStatus(this,'pending')">处理中</span>
-                <span class="h5-filter-chip" data-status="processing" onclick="filterStatus(this,'processing')">审核中</span>
-                <span class="h5-filter-chip" data-status="completed" onclick="filterStatus(this,'completed')">已到账</span>
-                <span class="h5-filter-chip" data-status="rejected" onclick="filterStatus(this,'rejected')">已驳回</span>
-            </div>
-            <div class="h5-record-list" id="recordList"></div>
-        </div>
-        <div class="h5-modal-mask" id="detailModal"><div class="h5-modal"><h3>提现详情</h3><div id="detailContent"></div><button class="h5-btn-main" onclick="closeDetail()">关闭</button></div></div>
+        </main>
     </div>
-</div>
-<script>
-const records=[{id:'MWD-20260315-1001',time:'2026-03-15 14:23',amount:2000,fee:2,arrival:1998,method:'🏦 银行卡',account:'中国工商银行 · 6212****8899',status:'completed',statusLabel:'已到账',remark:'3月收益提现'},{id:'MWD-20260401-2003',time:'2026-04-01 09:12',amount:5000,fee:5,arrival:4995,method:'🔵 支付宝',account:'支付宝 · zhang***@163.com',status:'completed',statusLabel:'已到账',remark:'季度提现'},{id:'MWD-20260520-3015',time:'2026-05-20 16:45',amount:1500,fee:1.5,arrival:998.3,method:'🟢 微信零钱',account:'微信零钱 · 张***三',status:'completed',statusLabel:'已到账',remark:'佣金提现'},{id:'MWD-20260610-4022',time:'2026-06-10 11:08',amount:800,fee:1,arrival:799,method:'🏦 银行卡',account:'招商银行 · 尾号1234',status:'processing',statusLabel:'审核中',remark:''},{id:'MWD-20260701-5008',time:'2026-07-01 08:30',amount:3500,fee:3.5,arrival:3496.5,method:'🏦 银行卡',account:'中国银行 · 尾号8899',status:'pending',statusLabel:'处理中',remark:''},{id:'MWD-20260625-4099',time:'2026-06-25 13:55',amount:1200,fee:1.2,arrival:1198.8,method:'🔵 支付宝',account:'支付宝 · zhang***@163.com',status:'rejected',statusLabel:'已驳回',remark:'账户信息有误'},{id:'MWD-20260715-6012',time:'2026-07-15 18:22',amount:1000,fee:1,arrival:999,method:'🏦 银行卡',account:'中国建设银行 · 4367****1234',status:'failed',statusLabel:'失败',remark:'银行通道异常'}];
-const tagClass={completed:'h5-tag--success',processing:'h5-tag--primary',pending:'h5-tag--warning',rejected:'h5-tag--error',failed:'h5-tag--default'};
-let currentFilter='';
-function renderList(){const filtered=currentFilter?records.filter(r=>r.status===currentFilter):records;const c=document.getElementById('recordList');if(!filtered.length){c.innerHTML='<div class="h5-empty">📭<br>暂无提现记录</div>';return;}c.innerHTML=filtered.map(r=>'<div class="h5-record-card" data-status="'+r.status+'"><div class="h5-record-card__header"><span class="h5-record-card__id" onclick="showDetail(\''+r.id+'\')">'+r.id+'</span><span class="h5-tag '+tagClass[r.status]+'">'+r.statusLabel+'</span></div><div class="h5-record-card__row"><span class="label">提现金额</span><span class="value" style="color:var(--tos-error);">-¥'+r.amount.toFixed(2)+'</span></div><div class="h5-record-card__row"><span class="label">手续费</span><span class="value" style="color:var(--tos-warning);">-¥'+r.fee.toFixed(2)+'</span></div><div class="h5-record-card__row"><span class="label">到账金额</span><span class="value" style="color:var(--tos-primary);">¥'+r.arrival.toFixed(2)+'</span></div><div class="h5-record-card__footer"><span style="color:var(--tos-text-muted);">'+r.time+' · '+r.method+'</span><span style="color:var(--tos-primary);cursor:pointer;" onclick="showDetail(\''+r.id+'\')">详情 ›</span></div></div>').join('');}
-function filterStatus(el,status){currentFilter=status;document.querySelectorAll('.h5-filter-chip').forEach(c=>c.classList.remove('h5-filter-chip--active'));el.classList.add('h5-filter-chip--active');renderList();}
-function showDetail(id){const r=records.find(x=>x.id===id);if(!r)return;document.getElementById('detailContent').innerHTML='<div class="info-row"><span>单号</span><strong style="font-family:monospace;">'+r.id+'</strong></div><div class="info-row"><span>时间</span><strong>'+r.time+'</strong></div><div class="info-row"><span>金额</span><strong style="color:var(--tos-error);">-¥'+r.amount.toFixed(2)+'</strong></div><div class="info-row"><span>手续费</span><strong style="color:var(--tos-warning);">-¥'+r.fee.toFixed(2)+'</strong></div><div class="info-row"><span>到账</span><strong style="color:var(--tos-primary);font-size:16px;">¥'+r.arrival.toFixed(2)+'</strong></div><div class="info-row"><span>方式</span><strong>'+r.method+'</strong></div><div class="info-row"><span>账户</span><strong>'+r.account+'</strong></div><div class="info-row"><span>状态</span><span class="h5-tag '+tagClass[r.status]+'">'+r.statusLabel+'</span></div><div class="info-row"><span>备注</span><strong>'+(r.remark||'—')+'</strong></div>';document.getElementById('detailModal').classList.add('show');}
-function closeDetail(){document.getElementById('detailModal').classList.remove('show');}
-document.getElementById('detailModal').addEventListener('click',function(e){if(e.target===this)closeDetail();});
-renderList();
-</script>
+
+    <script>
+        const { computed, createApp, ref } = Vue;
+
+        const app = createApp({
+            setup() {
+                const sidebarOpen = ref(false);
+                const activeFilter = ref('');
+                const filters = [
+                    { value: '', label: '全部' },
+                    { value: 'pending', label: '处理中' },
+                    { value: 'processing', label: '审核中' },
+                    { value: 'completed', label: '已到账' },
+                    { value: 'rejected', label: '已驳回' },
+                    { value: 'failed', label: '失败' },
+                ];
+
+                const sampleRecords = [
+                    {
+                        id: 'MWD-20260315-1001',
+                        time: '2026-03-15 14:23',
+                        amount: 2000,
+                        fee: 2,
+                        arrival: 1998,
+                        method: 'bank',
+                        methodLabel: '银行卡',
+                        status: 'completed',
+                        statusLabel: '已到账',
+                    },
+                    {
+                        id: 'MWD-20260401-2003',
+                        time: '2026-04-01 09:12',
+                        amount: 5000,
+                        fee: 5,
+                        arrival: 4995,
+                        method: 'mtn',
+                        methodLabel: 'MTN Mobile Money',
+                        status: 'completed',
+                        statusLabel: '已到账',
+                    },
+                    {
+                        id: 'MWD-20260520-3015',
+                        time: '2026-05-20 16:45',
+                        amount: 1500,
+                        fee: 1.5,
+                        arrival: 998.3,
+                        method: 'vodafone',
+                        methodLabel: 'Vodafone Cash',
+                        status: 'completed',
+                        statusLabel: '已到账',
+                    },
+                    {
+                        id: 'MWD-20260610-4022',
+                        time: '2026-06-10 11:08',
+                        amount: 800,
+                        fee: 1,
+                        arrival: 799,
+                        method: 'bank',
+                        methodLabel: '银行卡',
+                        status: 'processing',
+                        statusLabel: '审核中',
+                    },
+                    {
+                        id: 'MWD-20260701-5008',
+                        time: '2026-07-01 08:30',
+                        amount: 3500,
+                        fee: 3.5,
+                        arrival: 3496.5,
+                        method: 'bank',
+                        methodLabel: '银行卡',
+                        status: 'pending',
+                        statusLabel: '处理中',
+                    },
+                    {
+                        id: 'MWD-20260625-4099',
+                        time: '2026-06-25 13:55',
+                        amount: 1200,
+                        fee: 1.2,
+                        arrival: 1198.8,
+                        method: 'mtn',
+                        methodLabel: 'MTN Mobile Money',
+                        status: 'rejected',
+                        statusLabel: '已驳回',
+                    },
+                    {
+                        id: 'MWD-20260715-6012',
+                        time: '2026-07-15 18:22',
+                        amount: 1000,
+                        fee: 1,
+                        arrival: 999,
+                        method: 'bank',
+                        methodLabel: '银行卡',
+                        status: 'failed',
+                        statusLabel: '失败',
+                    },
+                ];
+
+                let storedRecords = [];
+                try {
+                    storedRecords = JSON.parse(localStorage.getItem('member_withdraw_records') || '[]');
+                } catch (error) {
+                    storedRecords = [];
+                }
+
+                const normalizedStored = storedRecords
+                    .filter((record) => record?.id && !sampleRecords.some((sample) => sample.id === record.id))
+                    .map((record) => ({
+                        id: record.id,
+                        time: record.timestamp || '',
+                        amount: Number(record.amount) || 0,
+                        fee: Number(record.fee) || 0,
+                        arrival: Number(record.arrival) || 0,
+                        method: ['mtn', 'vodafone', 'bank'].includes(record.method) ? record.method : 'bank',
+                        methodLabel: record.methodLabel || '银行卡',
+                        status: record.status || 'pending',
+                        statusLabel: record.statusLabel || '处理中',
+                    }));
+
+                const records = ref([...normalizedStored, ...sampleRecords]);
+
+                const filteredRecords = computed(() => {
+                    if (!activeFilter.value) return records.value;
+                    return records.value.filter((record) => record.status === activeFilter.value);
+                });
+
+                const summary = computed(() => {
+                    return records.value.reduce((result, record) => {
+                        result.count += 1;
+                        result.total += record.amount;
+                        if (record.status === 'completed') result.received += record.arrival;
+                        if (record.status === 'pending' || record.status === 'processing') result.processing += record.amount;
+                        return result;
+                    }, { count: 0, total: 0, received: 0, processing: 0 });
+                });
+
+                const formatMoney = (value) => {
+                    return `¥${Number(value || 0).toLocaleString('zh-CN', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    })}`;
+                };
+
+                const statusTone = (status) => ({
+                    completed: 'success',
+                    processing: 'primary',
+                    pending: 'warning',
+                    rejected: 'error',
+                    failed: 'default',
+                }[status] || 'default');
+
+                const methodKey = (method) => {
+                    if (method === 'mtn' || method === 'vodafone') return method;
+                    return 'bank';
+                };
+
+                const methodIcon = (method) => methodKey(method) === 'bank' ? '银' : methodKey(method) === 'mtn' ? 'MTN' : '';
+                const detailHref = (id) => `会员提现详情.html?id=${encodeURIComponent(id)}`;
+                const goBack = () => {
+                    window.location.href = '会员提现申请.html';
+                };
+
+                return {
+                    sidebarOpen,
+                    activeFilter,
+                    filters,
+                    filteredRecords,
+                    summary,
+                    formatMoney,
+                    statusTone,
+                    methodKey,
+                    methodIcon,
+                    detailHref,
+                    goBack,
+                };
+            },
+        });
+
+        if (window.antd) app.use(antd);
+        app.mount('#app');
+    </script>
 </body>
 </html>
