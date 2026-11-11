@@ -630,16 +630,6 @@
             font-size: 11px;
         }
 
-        .h5-ledger-header__link {
-            flex: 0 0 auto;
-            padding: 4px 0;
-            border: 0;
-            background: transparent;
-            color: var(--tos-primary);
-            font-size: 12px;
-            cursor: pointer;
-        }
-
         .h5-summary-panel {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -678,15 +668,15 @@
         }
 
         .h5-summary-item__value--income {
-            color: var(--tos-success);
+            color: var(--tos-text);
         }
 
         .h5-summary-item__value--expense {
-            color: var(--tos-error);
+            color: var(--tos-text);
         }
 
         .h5-summary-item__value--primary {
-            color: var(--tos-primary);
+            color: var(--tos-text);
         }
 
         .h5-filter-bar {
@@ -721,9 +711,9 @@
         }
 
         .h5-filter-chip--active {
-            border-color: var(--tos-primary);
-            background: var(--tos-primary-bg);
-            color: var(--tos-primary);
+            border-color: #cbd5e1;
+            background: #f3f4f6;
+            color: var(--tos-text);
             font-weight: 600;
         }
 
@@ -758,25 +748,25 @@
             align-items: center;
             justify-content: center;
             border-radius: 8px;
-            background: var(--tos-primary-bg);
-            color: var(--tos-primary);
+            background: #f3f4f6;
+            color: #6b7280;
             font-size: 16px;
             font-weight: 700;
         }
 
         .h5-transaction__icon--income {
-            background: #f0faf0;
-            color: var(--tos-success);
+            background: #f3f4f6;
+            color: #6b7280;
         }
 
         .h5-transaction__icon--withdraw {
-            background: #fff1f0;
-            color: var(--tos-error);
+            background: #f3f4f6;
+            color: #6b7280;
         }
 
         .h5-transaction__icon--reward {
-            background: #fff7e6;
-            color: #d48806;
+            background: #f3f4f6;
+            color: #6b7280;
         }
 
         .h5-transaction__body {
@@ -815,11 +805,11 @@
         }
 
         .h5-transaction__value--in {
-            color: var(--tos-success);
+            color: var(--tos-text);
         }
 
         .h5-transaction__value--out {
-            color: var(--tos-error);
+            color: var(--tos-text);
         }
 
         .h5-transaction__balance {
@@ -1280,7 +1270,6 @@
                             <h2 id="ledger-title">收支明细</h2>
                             <p>收入、支出与账户余额变化</p>
                         </div>
-                        <button class="h5-ledger-header__link" type="button" @click="openRecharge()">充值</button>
                     </div>
 
                     <div class="h5-summary-panel">
