@@ -28,7 +28,7 @@
         .h5-header { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 16px; background: #fff; border-bottom: 1px solid #f0f2f5; }
         .h5-header__back { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--tos-text); cursor: pointer; background: none; border: none; }
         .h5-header__title { flex: 1; font-size: 17px; font-weight: 600; text-align: center; }
-        .h5-header__action { font-size: 14px; color: var(--tos-primary); cursor: pointer; background: none; border: none; font-weight: 500; white-space: nowrap; }
+        .h5-header__action { font-size: 14px; color: var(--tos-text-secondary); cursor: pointer; background: none; border: none; font-weight: 500; white-space: nowrap; }
         .h5-header__menu { width: 32px; height: 32px; display: none; align-items: center; justify-content: center; font-size: 20px; color: var(--tos-text); cursor: pointer; background: none; border: none; flex-shrink: 0; }
         .h5-page { padding: 14px 16px 84px; }
         .h5-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 12px; }
@@ -40,7 +40,7 @@
         .h5-pay-tabs { position: relative; display: flex; margin: 0 -2px 16px; border-bottom: 1px solid #f0f2f5; }
         .h5-pay-tab { position: relative; flex: 1; height: 40px; padding: 0 6px; border: 0; background: transparent; color: var(--tos-text-secondary); font-size: 13px; cursor: pointer; }
         .h5-pay-tab--active { color: var(--tos-text); font-weight: 600; }
-        .h5-pay-tab--active::after { position: absolute; right: 15%; bottom: -1px; left: 15%; height: 2px; border-radius: 2px 2px 0 0; background: var(--tos-primary); content: ""; }
+        .h5-pay-tab--active::after { position: absolute; right: 15%; bottom: -1px; left: 15%; height: 2px; border-radius: 2px 2px 0 0; background: #6b7280; content: ""; }
         .h5-brand-icon { display: inline-flex; width: 30px; height: 30px; align-items: center; justify-content: center; border-radius: 50%; font-size: 8px; font-weight: 800; }
         .h5-brand-icon--bank { border-radius: 8px; background: #f0f2f5; color: #596273; font-size: 12px; }
         .h5-brand-icon--mtn { border: 3px solid #fff3a1; background: #f4d400; color: #153c70; font-size: 7px; }
@@ -50,12 +50,12 @@
         .h5-brand-icon--credit { border: 1px solid #f3d2d9; border-radius: 4px; background: #df4267; color: #fff; font-size: 9px; }
         .h5-account-chips { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
         .h5-account-chip { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border: 1px solid var(--tos-border); border-radius: 8px; cursor: pointer; font-size: 14px; background: #fff; transition: border-color .15s, background-color .15s; }
-        .h5-account-chip:hover { border-color: #b9deda; }
-        .h5-account-chip--active { border-color: var(--tos-primary); background: var(--tos-primary-bg); }
+        .h5-account-chip:hover { border-color: #cbd5e1; }
+        .h5-account-chip--active { border-color: #cbd5e1; background: #f7f8fa; }
         .h5-account-chip__info { flex: 1; }
         .h5-account-chip__name { font-weight: 600; font-size: 14px; }
         .h5-account-chip__detail { font-size: 11px; color: var(--tos-text-muted); margin-top: 2px; }
-        .h5-account-chip__tag { font-size: 10px; background: var(--tos-primary-bg); color: var(--tos-primary); padding: 1px 6px; border-radius: 3px; margin-left: 6px; }
+        .h5-account-chip__tag { font-size: 10px; background: #f0f1f2; color: var(--tos-text-secondary); padding: 1px 6px; border-radius: 3px; margin-left: 6px; }
         .h5-form-group { margin-bottom: 14px; }
         .h5-form-label { font-size: 13px; font-weight: 600; color: var(--tos-text-secondary); margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
         .h5-form-label .req { color: var(--tos-error); }
@@ -71,7 +71,7 @@
         .h5-btn--primary { background: var(--tos-primary); color: #fff; }
         .h5-btn--primary:active { background: var(--tos-primary-hover); }
         .h5-btn--outline:active { background: #f5f5f5; }
-        .h5-alert { background: #e6f7f6; border-radius: 8px; padding: 10px 12px; font-size: 11px; color: #397f79; margin-bottom: 0; display: flex; align-items: flex-start; gap: 7px; line-height: 1.65; }
+        .h5-alert { background: #f7f8fa; border-radius: 8px; padding: 10px 12px; font-size: 11px; color: var(--tos-text-secondary); margin-bottom: 0; display: flex; align-items: flex-start; gap: 7px; line-height: 1.65; }
         .h5-modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 100; display: flex; align-items: flex-end; justify-content: center; }
         .h5-modal { background: #fff; border-radius: 12px 12px 0 0; width: 100%; max-width: 414px; padding: 20px 16px; padding-bottom: max(20px, env(safe-area-inset-bottom)); animation: slideUp .25s ease; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -120,8 +120,8 @@
 
         <div class="h5-page">
             <div class="h5-metrics">
-                <div class="h5-metric"><div class="h5-metric__label">可提现余额</div><div class="h5-metric__value" style="color:var(--tos-primary);">¥10,250.00</div></div>
-                <div class="h5-metric"><div class="h5-metric__label">冻结金额</div><div class="h5-metric__value" style="color:var(--tos-warning);">¥1,330.00</div></div>
+                <div class="h5-metric"><div class="h5-metric__label">可提现余额</div><div class="h5-metric__value">¥10,250.00</div></div>
+                <div class="h5-metric"><div class="h5-metric__label">冻结金额</div><div class="h5-metric__value">¥1,330.00</div></div>
                 <div class="h5-metric"><div class="h5-metric__label">账户总余额</div><div class="h5-metric__value">¥12,580.00</div></div>
                 <div class="h5-metric"><div class="h5-metric__label">待结算奖励</div><div class="h5-metric__value">¥1,000.00</div></div>
             </div>
@@ -129,7 +129,7 @@
             <div class="h5-card">
                 <div class="h5-card__title">收款方式</div>
                 <div class="h5-pay-tabs" id="payMethods">
-                    <button class="h5-pay-tab h5-pay-tab--active" type="button" data-group="wallet" onclick="switchMethod('wallet')">数字钱包</button>
+                    <button class="h5-pay-tab h5-pay-tab--active" type="button" data-group="wallet" onclick="switchMethod('wallet')">移动钱包</button>
                     <button class="h5-pay-tab" type="button" data-group="bank" onclick="switchMethod('bank')">银行卡</button>
                     <button class="h5-pay-tab" type="button" data-group="credit" onclick="switchMethod('credit')">信用卡</button>
                 </div>
@@ -183,7 +183,7 @@
 let currentGroup='wallet',currentMethod='mtn',selectedAccountId='MTN_001';
 const FEE_RATE=0.001;
 const METHOD_GROUPS={
-    wallet:{label:'数字钱包',accounts:[
+    wallet:{label:'移动钱包',accounts:[
         {id:'MTN_001',name:'MTN Mobile Money',detail:'+233 53******88 · j***',method:'mtn',methodLabel:'MTN Mobile Money',iconClass:'mtn',iconText:'MTN',isDefault:true},
         {id:'VOD_001',name:'Vodafone Cash',detail:'+233 53******88 · j***',method:'vodafone',methodLabel:'Vodafone Cash',iconClass:'vodafone',iconText:''},
         {id:'ATL_001',name:'AirtelTigo Money',detail:'+233 53******88 · j***',method:'airtel',methodLabel:'AirtelTigo Money',iconClass:'airtel',iconText:'a'}
